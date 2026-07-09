@@ -87,12 +87,14 @@ const heroViews = [
 
 let heroIndex = 0;
 let heroTimer;
+let heroChangeTimer;
 
 const renderHeroView = (index) => {
   if (!heroView) return;
   const view = heroViews[index];
   heroView.classList.add("is-changing");
-  window.setTimeout(() => {
+  window.clearTimeout(heroChangeTimer);
+  heroChangeTimer = window.setTimeout(() => {
     heroView.innerHTML = `
       <div class="mockup-topbar">
         <div>
@@ -129,14 +131,24 @@ const startHeroRotation = () => {
   heroTimer = window.setInterval(() => {
     heroIndex = (heroIndex + 1) % heroViews.length;
     renderHeroView(heroIndex);
-  }, 3800);
+  }, 1000);
 };
 
 renderHeroView(heroIndex);
 startHeroRotation();
 
-heroMockup?.addEventListener("mouseenter", () => window.clearInterval(heroTimer));
+const pauseHeroRotation = () => {
+  window.clearInterval(heroTimer);
+  window.clearTimeout(heroChangeTimer);
+  heroView?.classList.remove("is-changing");
+};
+
+heroMockup?.addEventListener("mouseenter", pauseHeroRotation);
+heroMockup?.addEventListener("pointerenter", pauseHeroRotation);
+heroMockup?.addEventListener("focusin", pauseHeroRotation);
 heroMockup?.addEventListener("mouseleave", startHeroRotation);
+heroMockup?.addEventListener("pointerleave", startHeroRotation);
+heroMockup?.addEventListener("focusout", startHeroRotation);
 
 productTabs.forEach((tab) => {
   tab.addEventListener("click", () => {

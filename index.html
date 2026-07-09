@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260709-polish">
+  <link rel="stylesheet" href="styles.css?v=20260709-final-polish">
 </head>
 <body>
   <header class="site-header">
@@ -34,16 +34,17 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="eyebrow">Built for dancepreneurs</p>
-        <h1 id="hero-title">Run your dance business beautifully.</h1>
+        <h1 id="hero-title">Run your dance business <span>beautifully.</span></h1>
         <p class="hero-text">Registrations, payments, rosters, communication, reports, and marketing in one graceful platform built for classes, teams, workshops, and intensives.</p>
         <div class="hero-actions">
           <a class="primary-button" href="#demo">Start building free</a>
           <a class="secondary-button" href="#how-it-works">See how it works</a>
         </div>
         <div class="hero-proof" aria-label="Platform highlights">
-          <span><strong>36</strong> paid students</span>
-          <span><strong>$8.6k</strong> tracked revenue</span>
-          <span><strong>0</strong> spreadsheet chaos</span>
+          <span><i class="trust-icon trust-lock" aria-hidden="true"></i>Secure & reliable</span>
+          <span><i class="trust-icon trust-mobile" aria-hidden="true"></i>Mobile friendly</span>
+          <span><i class="trust-icon trust-clock" aria-hidden="true"></i>Save on every week</span>
+          <span><i class="trust-icon trust-heart" aria-hidden="true"></i>Built for dancers</span>
         </div>
       </div>
 
@@ -214,43 +215,70 @@
         <article class="product-platform" aria-label="BeyondEight platform preview">
           <div class="product-panel is-active" role="tabpanel" id="panel-builder" aria-labelledby="tab-builder" data-product-panel="builder">
             <div class="builder-preview">
-              <div><span class="tiny-label">Page editor</span><strong>Summer Intensive</strong><p>Hero, schedule, pricing, waiver, checkout</p></div>
-              <div class="builder-canvas"><span></span><strong>Register for Heels Intensive</strong><i></i><i></i></div>
+              <div class="preview-sidebar-card">
+                <span class="tiny-label">Page editor</span>
+                <strong>Summer Intensive</strong>
+                <p>Hero, schedule, pricing, waiver, checkout</p>
+                <div class="builder-tools">
+                  <span>Hero live</span>
+                  <span>Waiver attached</span>
+                  <span>Checkout ready</span>
+                </div>
+              </div>
+              <div class="builder-canvas">
+                <span></span>
+                <strong>Register for Heels Intensive</strong>
+                <div class="preview-progress"><b style="width: 82%"></b></div>
+                <div class="builder-fields"><i></i><i></i><i></i></div>
+              </div>
             </div>
           </div>
           <div class="product-panel" role="tabpanel" id="panel-portal" aria-labelledby="tab-portal" data-product-panel="portal" hidden>
             <div class="portal-preview">
+              <div class="preview-topbar"><div><span class="tiny-label">Student portal</span><strong>Maya's week</strong></div><span class="status-pill">2 updates</span></div>
               <div class="class-row"><span>Mon</span><p>Contemporary Lab</p><strong>7:00 PM</strong></div>
               <div class="class-row"><span>HW</span><p>Combo video + notes</p><strong>New</strong></div>
               <div class="class-row"><span>$</span><p>Payment plan</p><strong>2 left</strong></div>
+              <div class="portal-grid">
+                <div><span>Homework</span><strong>2 clips</strong></div>
+                <div><span>Balance</span><strong>$85</strong></div>
+              </div>
               <div class="message-preview">Announcement: rehearsal moves to Studio B.</div>
             </div>
           </div>
           <div class="product-panel" role="tabpanel" id="panel-admin" aria-labelledby="tab-admin" data-product-panel="admin" hidden>
             <div class="admin-preview">
+              <div class="preview-topbar"><div><span class="tiny-label">Admin dashboard</span><strong>Tonight's command center</strong></div><span class="status-pill">Live check-in</span></div>
               <div class="product-metrics"><div><span>Today</span><strong>4</strong></div><div><span>Check-ins</span><strong>86</strong></div><div><span>Revenue</span><strong>$3.2k</strong></div></div>
               <div class="class-row"><span>6:00</span><p>Beginner Heels</p><strong>22/24</strong></div>
               <div class="class-row"><span>7:30</span><p>Company Rehearsal</p><strong>18/18</strong></div>
+              <div class="preview-progress"><b style="width: 91%"></b></div>
             </div>
           </div>
           <div class="product-panel" role="tabpanel" id="panel-payments" aria-labelledby="tab-payments" data-product-panel="payments" hidden>
             <div class="payments-preview">
+              <div class="preview-topbar"><div><span class="tiny-label">Payments</span><strong>Summer launch ledger</strong></div><span class="status-pill">Stripe synced</span></div>
               <div class="product-metrics"><div><span>Deposits</span><strong>$4.8k</strong></div><div><span>Plans</span><strong>28</strong></div><div><span>Refunds</span><strong>2</strong></div></div>
               <div class="student-row"><span>MR</span><p>Maya R.</p><strong>Paid</strong></div>
               <div class="student-row"><span>LT</span><p>Leah T.</p><strong>Plan</strong></div>
+              <div class="student-row"><span>NS</span><p>Nia S.</p><strong>Deposit</strong></div>
+              <div class="payment-footer"><span>Next payout</span><strong>$2,840 Friday</strong></div>
             </div>
           </div>
           <div class="product-panel" role="tabpanel" id="panel-marketing" aria-labelledby="tab-marketing" data-product-panel="marketing" hidden>
             <div class="marketing-preview">
-              <div class="campaign-card"><span>Email campaign</span><strong>Audition Prep launch</strong><p>Open rate 64%</p></div>
+              <div class="campaign-card"><span>Email campaign</span><strong>Audition Prep launch</strong><p>Open rate 64%</p><div class="preview-progress"><b style="width: 64%"></b></div></div>
               <div class="qr-card">QR</div>
               <div class="class-row"><span>RF</span><p>Referral campaign</p><strong>19 leads</strong></div>
+              <div class="class-row"><span>EM</span><p>Follow-up sequence</p><strong>Ready</strong></div>
             </div>
           </div>
           <div class="product-panel" role="tabpanel" id="panel-analytics" aria-labelledby="tab-analytics" data-product-panel="analytics" hidden>
             <div class="analytics-preview">
+              <div class="preview-topbar"><div><span class="tiny-label">Analytics</span><strong>Launch performance</strong></div><span class="status-pill">Insights ready</span></div>
               <div class="chart-card"><div class="chart-head"><span>Revenue by launch</span><strong>+32%</strong></div><div class="chart-line" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
               <div class="product-metrics"><div><span>Capacity</span><strong>84%</strong></div><div><span>Attendance</span><strong>91%</strong></div><div><span>Conversion</span><strong>18%</strong></div></div>
+              <div class="insight-row"><span>Top driver</span><p>QR signups converted 42 dancers this week.</p></div>
             </div>
           </div>
         </article>
@@ -261,20 +289,20 @@
       <div class="section-heading center-heading">
         <p class="eyebrow">Pricing</p>
         <h2 id="pricing-title">Choose the plan that grows with you.</h2>
-        <p class="section-subtext">Start free, upgrade when you want deeper analytics, and scale when marketing becomes a bigger part of your business.</p>
+        <p class="section-subtext">Start with a polished launch flow, then upgrade when you need sharper insight and stronger growth tools.</p>
         <button class="compare-button" type="button" data-open-comparison>Compare all tiers</button>
       </div>
       <div class="pricing-grid">
         <article class="price-card">
           <div class="tier-kicker">Starter</div>
           <h3>Launch cleanly.</h3>
-          <p>For new choreographers, teams, and instructors getting organized.</p>
+          <p>For creators launching classes, teams, auditions, and workshops with less admin.</p>
           <strong>Free</strong>
           <ul class="tier-highlights">
             <li>Unlimited dancers</li>
-            <li>Registration, payments, waivers</li>
-            <li>Roster and attendance tools</li>
-            <li>Basic dashboard reports</li>
+            <li>Branded registration pages</li>
+            <li>Payments, waivers, and rosters</li>
+            <li>Simple student portal</li>
           </ul>
           <details class="tier-details">
             <summary>View included tools</summary>
@@ -292,13 +320,13 @@
         <article class="price-card price-growth">
           <div class="tier-kicker">Growth</div>
           <h3>Understand your business.</h3>
-          <p>For dancepreneurs ready to make smarter launch decisions.</p>
+          <p>For dancepreneurs ready to understand what is working and optimize each launch.</p>
           <strong>$20<span>/mo</span></strong>
           <ul class="tier-highlights">
             <li>Everything in Starter</li>
-            <li>Advanced analytics</li>
-            <li>Waitlists and capacity tools</li>
-            <li>Payment plans and reminders</li>
+            <li>Business and revenue insights</li>
+            <li>Capacity, waitlist, and attendance tracking</li>
+            <li>Payment plans and smart reminders</li>
           </ul>
           <details class="tier-details">
             <summary>View growth tools</summary>
@@ -316,13 +344,13 @@
         <article class="price-card price-scale">
           <div class="tier-kicker">Scale</div>
           <h3>Market like a brand.</h3>
-          <p>For studios, production companies, conventions, and growing dance brands.</p>
+          <p>For studios, companies, conventions, and dance brands ready to market at scale.</p>
           <strong>$50<span>/mo</span></strong>
           <ul class="tier-highlights">
             <li>Everything in Growth</li>
-            <li>Email and SMS marketing</li>
-            <li>Funnels, referrals, QR tools</li>
-            <li>White-label branding</li>
+            <li>Campaigns, QR links, and referrals</li>
+            <li>Audience segments and follow-ups</li>
+            <li>Brand-forward growth tools</li>
           </ul>
           <details class="tier-details">
             <summary>View scale tools</summary>
