@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BeyondEight | Dance Business Platform</title>
+  <meta name="description" content="BeyondEight helps dance creators manage registrations, payments, rosters, communication, reports, and marketing in one polished platform.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260709-polish">
 </head>
 <body>
   <header class="site-header">
@@ -21,267 +22,277 @@
       <span></span>
     </button>
     <nav class="site-nav" aria-label="Primary navigation">
-      <a href="#why">Why BeyondEight</a>
-      <a href="#how-it-works">How It Works</a>
-      <a href="#features">Features</a>
+      <a href="#why">Why</a>
+      <a href="#how-it-works">How it Works</a>
+      <a href="#product">Product</a>
       <a href="#pricing">Pricing</a>
     </nav>
     <a class="header-cta" href="#demo">Book demo</a>
   </header>
 
   <main id="top">
-    <section class="hero story-hero">
+    <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow">For Dancepreneurs</p>
-        <h1>Run your dance business beautifully.</h1>
-        <p class="hero-text">Registrations, payments, rosters, communication, and marketing—everything you need to run your dance business in one place.</p>
+        <p class="eyebrow">Built for dancepreneurs</p>
+        <h1 id="hero-title">Run your dance business beautifully.</h1>
+        <p class="hero-text">Registrations, payments, rosters, communication, reports, and marketing in one graceful platform built for classes, teams, workshops, and intensives.</p>
         <div class="hero-actions">
           <a class="primary-button" href="#demo">Start building free</a>
+          <a class="secondary-button" href="#how-it-works">See how it works</a>
         </div>
-        <div class="hero-proof" aria-label="BeyondEight outcomes">
-          <span>No spreadsheet chaos</span>
-          <span>No payment chasing</span>
-          <span>No lost DMs</span>
+        <div class="hero-proof" aria-label="Platform highlights">
+          <span><strong>36</strong> paid students</span>
+          <span><strong>$8.6k</strong> tracked revenue</span>
+          <span><strong>0</strong> spreadsheet chaos</span>
         </div>
       </div>
-      <div class="hero-visual" aria-label="BeyondEight platform preview">
-        <div class="business-home">
-          <div class="before-stack" aria-hidden="true">
-            <div>Google Form</div>
-            <div>Venmo screenshot</div>
-            <div>Roster spreadsheet</div>
-            <div>DM reminders</div>
+
+      <div class="hero-visual" aria-label="BeyondEight dashboard preview">
+        <article class="dashboard-mockup">
+          <div class="mockup-sidebar">
+            <span class="sidebar-logo" aria-hidden="true"></span>
+            <span data-hero-nav>Classes</span>
+            <span data-hero-nav>Roster</span>
+            <span data-hero-nav>Payments</span>
+            <span data-hero-nav>Portal</span>
+            <span data-hero-nav>Analytics</span>
+            <span data-hero-nav>Marketing</span>
           </div>
-          <div class="platform-preview">
-            <div class="preview-header">
-              <span class="preview-logo"><img src="assets/Logo.png" alt=""></span>
+          <div class="mockup-main" data-hero-view aria-live="polite">
+            <div class="mockup-topbar">
               <div>
-                <strong>BeyondEight Studio</strong>
-                <p>Business command center</p>
+                <span class="tiny-label">Live program</span>
+                <strong>Heels Intensive</strong>
+              </div>
+              <span class="status-pill">Registration open</span>
+            </div>
+            <div class="metric-row">
+              <div><span>Registered dancers</span><strong>48</strong></div>
+              <div><span>Paid students</span><strong>42</strong></div>
+              <div><span>Revenue</span><strong>$12.4k</strong></div>
+              <div><span>Waitlist</span><strong>6</strong></div>
+            </div>
+            <div class="mockup-content">
+              <div class="chart-card">
+                <div class="chart-head">
+                  <span>Weekly registrations</span>
+                  <strong>+28%</strong>
+                </div>
+                <div class="chart-line" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+              <div class="registrations-card">
+                <div class="mini-title">Recent registrations</div>
+                <div class="student-row"><span>MR</span><p>Maya R.</p><strong>Paid</strong></div>
+                <div class="student-row"><span>LT</span><p>Leah T.</p><strong>Plan</strong></div>
+                <div class="student-row"><span>NS</span><p>Nia S.</p><strong>New</strong></div>
               </div>
             </div>
-            <div class="preview-hero">
-              <span>Registration live</span>
-              <h3>Summer Heels Intensive</h3>
-              <p>24 spots / waivers signed / payment plans enabled</p>
-            </div>
-            <div class="preview-metrics">
-              <div><span>Registered</span><strong>18</strong></div>
-              <div><span>Paid</span><strong>14</strong></div>
-              <div><span>Waitlist</span><strong>5</strong></div>
-            </div>
-            <div class="preview-list">
-              <div><span class="dot paid"></span><p>Maya R.</p><strong>Paid</strong></div>
-              <div><span class="dot plan"></span><p>Leah T.</p><strong>Plan</strong></div>
-              <div><span class="dot new"></span><p>Nia S.</p><strong>New</strong></div>
-            </div>
           </div>
-        </div>
+        </article>
       </div>
     </section>
 
-    <section class="problem-section" id="why">
+    <section class="feature-strip" id="why" aria-labelledby="feature-strip-title">
+      <div class="section-heading center-heading">
+        <p class="eyebrow">Why BeyondEight</p>
+        <h2 id="feature-strip-title">Everything you need to run your dance business.</h2>
+        <p class="section-subtext">One connected workflow for the moments that usually live across forms, payment apps, group chats, and spreadsheets.</p>
+      </div>
+      <div class="strip-grid">
+        <article class="workflow-card">
+          <div class="workflow-icon registration-icon" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <h3>Registration</h3>
+            <p>Branded forms, waivers, levels, add-ons, and parent details.</p>
+          </div>
+          <div class="mini-form" aria-hidden="true"><span></span><span></span><strong>Open</strong></div>
+        </article>
+        <article class="workflow-card">
+          <div class="workflow-icon payment-icon" aria-hidden="true"><span></span></div>
+          <div>
+            <h3>Payments</h3>
+            <p>Deposits, payment plans, discounts, receipts, and status tracking.</p>
+          </div>
+          <div class="mini-payment" aria-hidden="true"><strong>$420</strong><span>Paid today</span></div>
+        </article>
+        <article class="workflow-card">
+          <div class="workflow-icon roster-icon" aria-hidden="true"><span></span><span></span></div>
+          <div>
+            <h3>Roster management</h3>
+            <p>See who is registered, paid, waitlisted, grouped, or checked in.</p>
+          </div>
+          <div class="mini-roster-lines" aria-hidden="true"><span></span><span></span><span></span></div>
+        </article>
+        <article class="workflow-card">
+          <div class="workflow-icon message-icon" aria-hidden="true"><span></span></div>
+          <div>
+            <h3>Communication</h3>
+            <p>Send updates by roster, class group, payment status, or segment.</p>
+          </div>
+          <div class="mini-message" aria-hidden="true">Reminder sent to 42 dancers</div>
+        </article>
+        <article class="workflow-card">
+          <div class="workflow-icon analytics-icon" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <h3>Reports & analytics</h3>
+            <p>Track revenue, capacity, attendance, retention, and conversion.</p>
+          </div>
+          <div class="mini-trend" aria-hidden="true"><span></span><span></span><span></span><strong>+28%</strong></div>
+        </article>
+        <article class="workflow-card">
+          <div class="workflow-icon marketing-icon" aria-hidden="true"><span></span></div>
+          <div>
+            <h3>Marketing tools</h3>
+            <p>Launch campaigns, follow-ups, QR links, referrals, and funnels.</p>
+          </div>
+          <div class="mini-campaign" aria-hidden="true"><span>Launch email</span><strong>82%</strong></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="how-section" id="how-it-works" aria-labelledby="how-title">
       <div class="section-heading">
-        <p class="eyebrow">The problem</p>
-        <h2>Choreographers are already running companies. Their tools just have not caught up.</h2>
-        <p class="section-subtext">Most creators are stitching together forms, payment apps, spreadsheets, file folders, and group chats. BeyondEight turns that admin pile into one polished business platform.</p>
-      </div>
-      <div class="problem-grid">
-        <article>
-          <span>01</span>
-          <h3>Dancers need a clean place to register.</h3>
-          <p>Not a link buried in a caption, a waiver in one app, and payment instructions somewhere else.</p>
-        </article>
-        <article>
-          <span>02</span>
-          <h3>Creators need to know what is happening.</h3>
-          <p>Who paid, who needs a reminder, who is waitlisted, and who belongs in which session.</p>
-        </article>
-        <article>
-          <span>03</span>
-          <h3>The brand should feel bigger than the admin.</h3>
-          <p>Every class, intensive, and team should look like a real business from the first click.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="flow-strip" id="how-it-works" aria-label="BeyondEight setup flow">
-      <div class="flow-heading">
         <p class="eyebrow">How it works</p>
-        <h2>One branded experience for dancers. One command center for you.</h2>
+        <h2 id="how-title">Simple. Powerful. Built for dancers.</h2>
+        <p>Four calm steps turn scattered admin into a polished dancer experience and a clear business command center.</p>
       </div>
-      <div class="flow-grid">
-        <article class="flow-step">
-          <span class="flow-number">01</span>
-          <div class="flow-mock site-mock" aria-hidden="true">
-            <div class="mock-browser-bar"><span></span><span></span><span></span></div>
-            <div class="mock-hero-block"></div>
-            <div class="mock-lines"><span></span><span></span><span></span></div>
-            <span class="mock-button">Register now</span>
+      <div class="how-layout">
+        <div class="steps-grid">
+          <article>
+            <span>01</span>
+            <h3>Create your space</h3>
+            <p>Publish a branded page for your next class, audition, intensive, or team.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Open registration</h3>
+            <p>Collect details, waivers, add-ons, levels, and emergency contacts.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Collect payments</h3>
+            <p>Accept full payments, deposits, plans, discounts, and receipts.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Manage & grow</h3>
+            <p>Run rosters, attendance, updates, reports, and launches from one place.</p>
+          </article>
+        </div>
+        <div class="dance-visual">
+          <img src="assets/dancer-hero.png" alt="Professional dancer in motion on a soft blush studio background">
+          <div class="dance-card">
+            <span>Class is 82% filled</span>
+            <strong>14 seats left</strong>
           </div>
-          <strong>Publish your site</strong>
-          <p>Turn your next class, team, audition, or intensive into a branded page dancers can trust.</p>
-        </article>
-        <article class="flow-step">
-          <span class="flow-number">02</span>
-          <div class="flow-mock form-mock" aria-hidden="true">
-            <div class="mock-field"></div>
-            <div class="mock-field short"></div>
-            <div class="mock-choice active"></div>
-            <div class="mock-choice"></div>
-            <span class="mock-button">Save registration</span>
-          </div>
-          <strong>Open registration</strong>
-          <p>Collect dancer info, waivers, levels, emergency contacts, add-ons, and parent details in one flow.</p>
-        </article>
-        <article class="flow-step">
-          <span class="flow-number">03</span>
-          <div class="flow-mock payment-mock" aria-hidden="true">
-            <div class="card-chip"></div>
-            <div class="payment-total">$185</div>
-            <div class="payment-meter"><span></span></div>
-            <div class="payment-status">Paid</div>
-          </div>
-          <strong>Collect payments</strong>
-          <p>Accept deposits, full payments, plans, discounts, and receipts without chasing screenshots.</p>
-        </article>
-        <article class="flow-step">
-          <span class="flow-number">04</span>
-          <div class="flow-mock roster-mock" aria-hidden="true">
-            <div><span>AM</span><p>Ari M.</p><strong>Paid</strong></div>
-            <div><span>JL</span><p>Jules L.</p><strong>Plan</strong></div>
-            <div><span>NK</span><p>Nia K.</p><strong>In</strong></div>
-          </div>
-          <strong>Run the room</strong>
-          <p>Manage attendance, rosters, announcements, files, community posts, and class updates.</p>
-        </article>
+        </div>
       </div>
     </section>
 
-    <section class="section-shell feature-story" id="features">
+    <section class="product-section" id="product" aria-labelledby="product-title">
       <div class="section-heading">
-        <p class="eyebrow">What BeyondEight replaces</p>
-        <h2>The tools of a studio, built for individual choreographers.</h2>
-        <p class="section-subtext">It is not just a website. It is the business layer around your work: the public page dancers see, the registration system they use, and the backend that keeps you organized.</p>
+        <p class="eyebrow">Product preview</p>
+        <h2 id="product-title">The operating system for modern dance businesses.</h2>
+        <p>See the platform behind the polished registration link: site builder, portal, admin tools, payments, marketing, and analytics working together.</p>
       </div>
-      <div class="feature-grid">
-        <article class="feature-card">
-          <span class="feature-icon">01</span>
-          <h3>Your public stage</h3>
-          <p>Publish polished pages for workshops, intensives, auditions, teams, privates, merch, and announcements.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon">02</span>
-          <h3>Your registration desk</h3>
-          <p>Collect dancer details, waivers, level preferences, emergency contacts, add-ons, and custom form answers.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon">03</span>
-          <h3>Your checkout counter</h3>
-          <p>Accept deposits, full payments, payment plans, discount codes, recurring billing, refunds, and receipts.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon">04</span>
-          <h3>Your class clipboard</h3>
-          <p>Track who is registered, paid, waitlisted, checked in, grouped by level, and assigned to each session.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon">05</span>
-          <h3>Your dancer portal</h3>
-          <p>Give dancers and parents one place for updates, rehearsal files, reminders, notes, and member-only posts.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon">06</span>
-          <h3>Your business dashboard</h3>
-          <p>Understand revenue, retention, attendance, conversions, profitability, campaigns, and what to launch next.</p>
+      <div class="product-layout">
+        <div class="product-tabs" role="tablist" aria-label="Product preview views">
+          <button type="button" role="tab" aria-selected="true" aria-controls="panel-builder" id="tab-builder" data-product-tab="builder">Website Builder</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="panel-portal" id="tab-portal" data-product-tab="portal">Student Portal</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="panel-admin" id="tab-admin" data-product-tab="admin">Admin Dashboard</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="panel-payments" id="tab-payments" data-product-tab="payments">Payments</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="panel-marketing" id="tab-marketing" data-product-tab="marketing">Marketing</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="panel-analytics" id="tab-analytics" data-product-tab="analytics">Analytics</button>
+        </div>
+        <article class="product-platform" aria-label="BeyondEight platform preview">
+          <div class="product-panel is-active" role="tabpanel" id="panel-builder" aria-labelledby="tab-builder" data-product-panel="builder">
+            <div class="builder-preview">
+              <div><span class="tiny-label">Page editor</span><strong>Summer Intensive</strong><p>Hero, schedule, pricing, waiver, checkout</p></div>
+              <div class="builder-canvas"><span></span><strong>Register for Heels Intensive</strong><i></i><i></i></div>
+            </div>
+          </div>
+          <div class="product-panel" role="tabpanel" id="panel-portal" aria-labelledby="tab-portal" data-product-panel="portal" hidden>
+            <div class="portal-preview">
+              <div class="class-row"><span>Mon</span><p>Contemporary Lab</p><strong>7:00 PM</strong></div>
+              <div class="class-row"><span>HW</span><p>Combo video + notes</p><strong>New</strong></div>
+              <div class="class-row"><span>$</span><p>Payment plan</p><strong>2 left</strong></div>
+              <div class="message-preview">Announcement: rehearsal moves to Studio B.</div>
+            </div>
+          </div>
+          <div class="product-panel" role="tabpanel" id="panel-admin" aria-labelledby="tab-admin" data-product-panel="admin" hidden>
+            <div class="admin-preview">
+              <div class="product-metrics"><div><span>Today</span><strong>4</strong></div><div><span>Check-ins</span><strong>86</strong></div><div><span>Revenue</span><strong>$3.2k</strong></div></div>
+              <div class="class-row"><span>6:00</span><p>Beginner Heels</p><strong>22/24</strong></div>
+              <div class="class-row"><span>7:30</span><p>Company Rehearsal</p><strong>18/18</strong></div>
+            </div>
+          </div>
+          <div class="product-panel" role="tabpanel" id="panel-payments" aria-labelledby="tab-payments" data-product-panel="payments" hidden>
+            <div class="payments-preview">
+              <div class="product-metrics"><div><span>Deposits</span><strong>$4.8k</strong></div><div><span>Plans</span><strong>28</strong></div><div><span>Refunds</span><strong>2</strong></div></div>
+              <div class="student-row"><span>MR</span><p>Maya R.</p><strong>Paid</strong></div>
+              <div class="student-row"><span>LT</span><p>Leah T.</p><strong>Plan</strong></div>
+            </div>
+          </div>
+          <div class="product-panel" role="tabpanel" id="panel-marketing" aria-labelledby="tab-marketing" data-product-panel="marketing" hidden>
+            <div class="marketing-preview">
+              <div class="campaign-card"><span>Email campaign</span><strong>Audition Prep launch</strong><p>Open rate 64%</p></div>
+              <div class="qr-card">QR</div>
+              <div class="class-row"><span>RF</span><p>Referral campaign</p><strong>19 leads</strong></div>
+            </div>
+          </div>
+          <div class="product-panel" role="tabpanel" id="panel-analytics" aria-labelledby="tab-analytics" data-product-panel="analytics" hidden>
+            <div class="analytics-preview">
+              <div class="chart-card"><div class="chart-head"><span>Revenue by launch</span><strong>+32%</strong></div><div class="chart-line" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+              <div class="product-metrics"><div><span>Capacity</span><strong>84%</strong></div><div><span>Attendance</span><strong>91%</strong></div><div><span>Conversion</span><strong>18%</strong></div></div>
+            </div>
+          </div>
         </article>
       </div>
     </section>
 
-    <section class="split-section story-dashboard" id="feature-dashboard">
-      <div class="workflow-copy">
-        <p class="eyebrow">The operating system</p>
-        <h2>Know what is sold, who is coming, and what needs attention.</h2>
-        <p>BeyondEight gives you the calm backend behind the energy of your class. You can launch, fill, message, track, and grow without rebuilding your admin system every time.</p>
-        <ul class="check-list">
-          <li>Create a page for each workshop or program.</li>
-          <li>Choose capacity, pricing, add-ons, and payment rules.</li>
-          <li>Share one link and watch registrations organize themselves.</li>
-          <li>Message dancers by roster, payment status, class group, or community segment.</li>
-        </ul>
-      </div>
-      <div class="dashboard-panel">
-        <div class="panel-top">
-          <div>
-            <span class="tiny-label">Live workshop</span>
-            <strong>Summer Intensive</strong>
-          </div>
-          <span class="status-pill">82% filled</span>
-        </div>
-        <div class="meter" aria-hidden="true"><span></span></div>
-        <div class="dashboard-grid">
-          <div>
-            <span>Registered</span>
-            <strong>41</strong>
-          </div>
-          <div>
-            <span>Paid</span>
-            <strong>36</strong>
-          </div>
-          <div>
-            <span>Waitlist</span>
-            <strong>9</strong>
-          </div>
-          <div>
-            <span>Revenue</span>
-            <strong>$8.6k</strong>
-          </div>
-        </div>
-        <div class="mini-roster">
-          <div><span>AM</span><p>Ari M.</p><strong>Paid</strong></div>
-          <div><span>JL</span><p>Jules L.</p><strong>Plan</strong></div>
-          <div><span>SK</span><p>Sana K.</p><strong>Paid</strong></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="pricing-section" id="pricing">
-      <div class="section-heading">
-        <p class="eyebrow">Simple tiers</p>
-        <h2>Choose the stage your dance business is in.</h2>
-        <p class="section-subtext">Start free with the essentials, upgrade when you need deeper insight, and scale when you are ready to market like a brand.</p>
+    <section class="pricing-section" id="pricing" aria-labelledby="pricing-title">
+      <div class="section-heading center-heading">
+        <p class="eyebrow">Pricing</p>
+        <h2 id="pricing-title">Choose the plan that grows with you.</h2>
+        <p class="section-subtext">Start free, upgrade when you want deeper analytics, and scale when marketing becomes a bigger part of your business.</p>
         <button class="compare-button" type="button" data-open-comparison>Compare all tiers</button>
       </div>
       <div class="pricing-grid">
         <article class="price-card">
           <div class="tier-kicker">Starter</div>
-          <h3>Run your business.</h3>
-          <p>Perfect for new choreographers, dance teams, and instructors getting organized.</p>
+          <h3>Launch cleanly.</h3>
+          <p>For new choreographers, teams, and instructors getting organized.</p>
           <strong>Free</strong>
           <ul class="tier-highlights">
             <li>Unlimited dancers</li>
             <li>Registration, payments, waivers</li>
-            <li>Roster, attendance, portal</li>
-            <li>Basic reporting and dashboard</li>
+            <li>Roster and attendance tools</li>
+            <li>Basic dashboard reports</li>
           </ul>
           <details class="tier-details">
             <summary>View included tools</summary>
             <div class="detail-list">
-              <span>Event and class registration</span>
+              <span>Class registration</span>
               <span>Payment collection</span>
               <span>Digital waivers</span>
               <span>Parent/student portal</span>
-              <span>Calendar and scheduling</span>
-              <span>Custom registration forms</span>
-              <span>Stripe/Square integration</span>
+              <span>Calendar</span>
+              <span>Custom forms</span>
             </div>
           </details>
           <a href="#demo">Start free</a>
         </article>
-        <article class="price-card featured-price">
+        <article class="price-card price-growth">
           <div class="tier-kicker">Growth</div>
           <h3>Understand your business.</h3>
-          <p>Perfect for dancepreneurs ready to make smarter business decisions.</p>
+          <p>For dancepreneurs ready to make smarter launch decisions.</p>
           <strong>$20<span>/mo</span></strong>
           <ul class="tier-highlights">
             <li>Everything in Starter</li>
@@ -298,15 +309,14 @@
               <span>Class profitability</span>
               <span>Discount codes</span>
               <span>Recurring billing</span>
-              <span>Multi-instructor management</span>
             </div>
           </details>
           <a href="#demo">Choose Growth</a>
         </article>
-        <article class="price-card">
+        <article class="price-card price-scale">
           <div class="tier-kicker">Scale</div>
-          <h3>Grow your business.</h3>
-          <p>Perfect for studios, production companies, conventions, and growing dance brands.</p>
+          <h3>Market like a brand.</h3>
+          <p>For studios, production companies, conventions, and growing dance brands.</p>
           <strong>$50<span>/mo</span></strong>
           <ul class="tier-highlights">
             <li>Everything in Growth</li>
@@ -318,12 +328,11 @@
             <summary>View scale tools</summary>
             <div class="detail-list">
               <span>Automated follow-ups</span>
-              <span>Audience segmentation</span>
+              <span>Audience segments</span>
               <span>Affiliate tracking</span>
-              <span>Landing page builder</span>
-              <span>Workflow automations</span>
+              <span>Landing pages</span>
               <span>Custom domain</span>
-              <span>Monthly business insights</span>
+              <span>Monthly insights</span>
             </div>
           </details>
           <a href="#demo">Choose Scale</a>
@@ -359,28 +368,20 @@
               <tr><td>Digital waivers</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
               <tr><td>Roster and attendance tracking</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
               <tr><td>Parent/student portal</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-              <tr><td>Calendar, scheduling, files</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-              <tr><td>Stripe/Square integration</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
               <tr class="compare-group"><th colspan="4">Analytics and business tools</th></tr>
               <tr><td>Basic dashboard and reporting</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
               <tr><td>Advanced analytics</td><td>No</td><td>Yes</td><td>Yes</td></tr>
               <tr><td>Revenue, retention, attendance trends</td><td>No</td><td>Yes</td><td>Yes</td></tr>
               <tr><td>Waitlists and capacity management</td><td>No</td><td>Yes</td><td>Yes</td></tr>
-              <tr><td>Discount codes and coupon campaigns</td><td>No</td><td>Yes</td><td>Yes</td></tr>
               <tr><td>Payment plans and recurring billing</td><td>No</td><td>Yes</td><td>Yes</td></tr>
-              <tr><td>Staff permissions and multi-instructor tools</td><td>No</td><td>Yes</td><td>Yes</td></tr>
               <tr class="compare-group"><th colspan="4">Marketing and growth</th></tr>
               <tr><td>Email and SMS campaigns</td><td>No</td><td>No</td><td>Yes</td></tr>
               <tr><td>Automated follow-up sequences</td><td>No</td><td>No</td><td>Yes</td></tr>
-              <tr><td>Audience segmentation and mailing lists</td><td>No</td><td>No</td><td>Yes</td></tr>
-              <tr><td>Referral, affiliate, ambassador programs</td><td>No</td><td>No</td><td>Yes</td></tr>
-              <tr><td>Landing pages, funnels, lead capture</td><td>No</td><td>No</td><td>Yes</td></tr>
-              <tr><td>QR registration and link-in-bio page</td><td>No</td><td>No</td><td>Yes</td></tr>
-              <tr class="compare-group"><th colspan="4">Automation, branding, support</th></tr>
-              <tr><td>Workflow automations and auto-tagging</td><td>No</td><td>No</td><td>Yes</td></tr>
-              <tr><td>Auto invoices, receipts, certificates</td><td>No</td><td>No</td><td>Yes</td></tr>
+              <tr><td>Audience segmentation</td><td>No</td><td>No</td><td>Yes</td></tr>
+              <tr><td>Referral and ambassador programs</td><td>No</td><td>No</td><td>Yes</td></tr>
+              <tr><td>Landing pages and QR registration</td><td>No</td><td>No</td><td>Yes</td></tr>
+              <tr class="compare-group"><th colspan="4">Branding and support</th></tr>
               <tr><td>Custom domain and white-label portal</td><td>No</td><td>No</td><td>Yes</td></tr>
-              <tr><td>Custom colors, logo, personalized emails</td><td>No</td><td>No</td><td>Yes</td></tr>
               <tr><td>Priority support</td><td>No</td><td>Yes</td><td>Yes</td></tr>
               <tr><td>Monthly business insights</td><td>No</td><td>No</td><td>Yes</td></tr>
             </tbody>
@@ -389,11 +390,12 @@
       </section>
     </div>
 
-    <section class="demo-section" id="demo">
+    <section class="demo-section" id="demo" aria-labelledby="demo-title">
       <div class="demo-copy">
-        <p class="eyebrow">Ready when your next class is</p>
-        <h2>Tell us what you are building.</h2>
-        <p>Share the basics and BeyondEight can map the website, registration flow, payment setup, roster views, and community space around your business.</p>
+        <p class="eyebrow">Request a demo</p>
+        <h2 id="demo-title">Tell us what you are building.</h2>
+        <p>Share the basics and we will map the website, registration flow, payment setup, roster views, and community space around your dance business.</p>
+        <div class="demo-note">Built for workshops, teams, studios, intensives, auditions, memberships, and creator-led dance brands.</div>
       </div>
       <form class="demo-form">
         <label>
@@ -411,6 +413,7 @@
             <option>Class series</option>
             <option>Intensive</option>
             <option>Community membership</option>
+            <option>Audition or team</option>
           </select>
         </label>
         <label>
