@@ -1652,6 +1652,23 @@ h3 {
   color: var(--accent-dark);
 }
 
+.popular-badge {
+  width: max-content;
+  margin: -8px 0 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--coral));
+  color: var(--white);
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  box-shadow: 0 14px 28px rgba(233, 30, 99, 0.2);
+}
+
+.pricing-note {
+  margin: 0 0 16px;
+  font-weight: 800;
+}
+
 .price-card strong {
   display: block;
   margin: 10px 0 20px;
@@ -1739,9 +1756,11 @@ h3 {
 
 .price-growth p,
 .price-growth li,
+.price-growth .pricing-note,
 .price-growth strong span,
 .price-scale p,
 .price-scale li,
+.price-scale .pricing-note,
 .price-scale strong span {
   color: rgba(255, 255, 255, 0.78);
 }
