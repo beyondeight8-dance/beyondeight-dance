@@ -22,6 +22,19 @@ const themeModalTitle = document.querySelector("#theme-modal-title");
 const themeModalPreview = document.querySelector(".theme-modal-preview");
 const themePreviewButtons = document.querySelectorAll("[data-theme-preview]");
 const closeThemePreviewButtons = document.querySelectorAll("[data-close-theme-preview]");
+const authModal = document.querySelector(".auth-modal");
+const authForm = document.querySelector(".auth-form");
+const authTitle = document.querySelector("#auth-title");
+const authCopy = document.querySelector(".auth-copy p:last-child");
+const authSubmit = document.querySelector(".auth-submit");
+const authToggle = document.querySelector("[data-auth-toggle]");
+const authToggleText = document.querySelector("[data-auth-toggle-text]");
+const authConfirmGroup = document.querySelector("[data-auth-confirm]");
+const authTermsGroup = document.querySelector("[data-auth-terms]");
+const authForgot = document.querySelector("[data-auth-forgot]");
+const authGoogle = document.querySelector("[data-auth-google]");
+const authError = document.querySelector(".auth-error");
+const closeAuthButtons = document.querySelectorAll("[data-close-auth]");
 const heroMockup = document.querySelector(".dashboard-mockup");
 const heroView = document.querySelector("[data-hero-view]");
 const heroNavItems = document.querySelectorAll("[data-hero-nav]");
@@ -278,6 +291,83 @@ closeThemePreviewButtons.forEach((button) => button.addEventListener("click", cl
 let setupIndex = 0;
 let setupLaunched = false;
 let generatedSiteUrl = "";
+let authMode = "signup";
+let pendingSetupAfterAuth = false;
+
+const authStorageKey = "beyondeightAuth";
+
+const isAuthenticated = () => {
+  try {
+    return localStorage.getItem(authStorageKey) === "true" || sessionStorage.getItem(authStorageKey) === "true";
+  } catch {
+    return false;
+  }
+};
+
+const setAuthenticated = () => {
+  try {
+    localStorage.setItem(authStorageKey, "true");
+  } catch {
+    sessionStorage.setItem(authStorageKey, "true");
+  }
+};
+
+const setAuthMode = (mode) => {
+  authMode = mode;
+  const isLogin = mode === "login";
+  if (authTitle) authTitle.textContent = isLogin ? "Log in to BeyondEight" : "Create your BeyondEight account";
+  if (authCopy) {
+    authCopy.textContent = isLogin
+      ? "Pick up where you left off and continue building your dance business."
+      : "Save your setup, preview your website, and come back to keep building your dance business.";
+  }
+  if (authSubmit) authSubmit.textContent = isLogin ? "Log in" : "Create account";
+  authConfirmGroup?.toggleAttribute("hidden", isLogin);
+  authTermsGroup?.toggleAttribute("hidden", isLogin);
+  authForgot?.toggleAttribute("hidden", !isLogin);
+  if (authToggleText) authToggleText.textContent = isLogin ? "Need an account?" : "Already have an account?";
+  if (authToggle) authToggle.textContent = isLogin ? "Create one" : "Log in";
+  if (authError) authError.textContent = "";
+};
+
+const openAuth = () => {
+  if (!authModal) return;
+  setAuthMode("signup");
+  authModal.classList.add("is-open");
+  authModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  authModal.querySelector("input, button")?.focus();
+};
+
+const closeAuth = () => {
+  if (!authModal) return;
+  authModal.classList.remove("is-open");
+  authModal.setAttribute("aria-hidden", "true");
+  if (!setupModal?.classList.contains("is-open")) {
+    document.body.classList.remove("modal-open");
+  }
+};
+
+const validateAuthForm = () => {
+  if (!authForm) return false;
+  const email = authForm.elements.authEmail?.value.trim() || "";
+  const password = authForm.elements.authPassword?.value || "";
+  const confirmPassword = authForm.elements.authConfirmPassword?.value || "";
+  const termsAccepted = Boolean(authForm.elements.authTerms?.checked);
+  const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!email) return "Enter your email address.";
+  if (!emailIsValid) return "Enter a valid email address.";
+  if (!password) return "Enter your password.";
+  if (authMode !== "login" && password.length < 8) return "Use at least 8 characters for your password.";
+  if (authMode === "signup") {
+    if (password.length < 8) return "Use at least 8 characters for your password.";
+    if (!confirmPassword) return "Confirm your password.";
+    if (password !== confirmPassword) return "Passwords do not match.";
+    if (!termsAccepted) return "Agree to the Terms and Privacy Policy to continue.";
+  }
+  return "";
+};
 
 const titleCaseDomain = (value) => {
   const slug = (value || "Beyond Movement").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 28);
@@ -382,7 +472,7 @@ const generatedSiteHTML = (state) => {
 </head>
 <body class="${themeClassFor(state.theme)}">
   <div class="site">
-    <header><div class="brand">${state.businessName}</div><nav class="nav">${pages}</nav><div class="actions"><button class="btn secondary">Edit Page</button><button class="btn">Admin Dashboard</button></div></header>
+    <header><div class="brand">${state.businessName}</div><nav class="nav">${pages}</nav><div class="actions"><button class="btn secondary">Edit Page</button><button class="btn">Admin Dashboard</button><button class="btn secondary" onclick="localStorage.removeItem('beyondeightAuth');sessionStorage.removeItem('beyondeightAuth');this.textContent='Logged out';">Log out</button></div></header>
     <main>
       <section class="hero">
         <div><p class="eyebrow">${state.theme}</p><h1>${state.headline}</h1><p class="lead">${state.whatYouDo}</p><div class="tags">${classTags}</div><a class="btn" href="#register">Register now</a></div>
@@ -444,7 +534,7 @@ const stepIsValid = () => {
   return Array.from(requiredFields).every((field) => field.reportValidity());
 };
 
-const openSetup = (event) => {
+const openSetupDirect = (event) => {
   event?.preventDefault();
   setupModal.classList.add("is-open");
   setupModal.setAttribute("aria-hidden", "false");
@@ -456,14 +546,59 @@ const openSetup = (event) => {
   setupModal.querySelector("input, button")?.focus();
 };
 
+const openSetup = (event) => {
+  event?.preventDefault();
+  if (!isAuthenticated()) {
+    pendingSetupAfterAuth = true;
+    openAuth();
+    return;
+  }
+  openSetupDirect(event);
+};
+
 const closeSetup = () => {
   setupModal.classList.remove("is-open");
   setupModal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
 };
 
+// Prototype only: production authentication must use a secure backend or authentication provider.
+authForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const validationMessage = validateAuthForm();
+  if (validationMessage) {
+    if (authError) authError.textContent = validationMessage;
+    return;
+  }
+  setAuthenticated();
+  closeAuth();
+  if (pendingSetupAfterAuth) {
+    pendingSetupAfterAuth = false;
+    openSetupDirect();
+  }
+});
+
+authToggle?.addEventListener("click", () => {
+  setAuthMode(authMode === "login" ? "signup" : "login");
+});
+
+authGoogle?.addEventListener("click", () => {
+  setAuthenticated();
+  closeAuth();
+  if (pendingSetupAfterAuth) {
+    pendingSetupAfterAuth = false;
+    openSetupDirect();
+  }
+});
+
+authForgot?.addEventListener("click", () => {
+  if (authError) authError.textContent = "Password reset is a prototype placeholder. A production app would send a secure reset email.";
+});
+
+closeAuthButtons.forEach((button) => button.addEventListener("click", closeAuth));
 openSetupButtons.forEach((button) => button.addEventListener("click", openSetup));
 document.addEventListener("click", (event) => {
+  if (event.defaultPrevented) return;
   const setupTrigger = event.target.closest?.("[data-open-setup]");
   if (!setupTrigger) return;
   openSetup(event);
@@ -504,6 +639,9 @@ document.addEventListener("keydown", (event) => {
   }
   if (event.key === "Escape" && themeModal?.classList.contains("is-open")) {
     closeThemePreview();
+  }
+  if (event.key === "Escape" && authModal?.classList.contains("is-open")) {
+    closeAuth();
   }
   if (event.key === "Escape" && setupModal?.classList.contains("is-open")) {
     closeSetup();
