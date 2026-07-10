@@ -7,8 +7,8 @@
   <meta name="description" content="BeyondEight helps dance creators manage registrations, payments, rosters, communication, reports, and marketing in one polished platform.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260709-final-polish">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260709-saas-polish">
 </head>
 <body>
   <header class="site-header">
@@ -34,10 +34,10 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="eyebrow">Built for dancepreneurs</p>
-        <h1 id="hero-title">Run your dance business <span>beautifully.</span></h1>
+        <h1 id="hero-title">Run your dance business <span class="hero-emphasis">beautifully.</span></h1>
         <p class="hero-text">Registrations, payments, rosters, communication, reports, and marketing in one graceful platform built for classes, teams, workshops, and intensives.</p>
         <div class="hero-actions">
-          <a class="primary-button" href="#demo">Start building free</a>
+          <a class="primary-button" href="#setup" data-open-setup>Start building free</a>
           <a class="secondary-button" href="#how-it-works">See how it works</a>
         </div>
         <div class="hero-proof" aria-label="Platform highlights">
@@ -103,7 +103,7 @@
     <section class="feature-strip" id="why" aria-labelledby="feature-strip-title">
       <div class="section-heading center-heading">
         <p class="eyebrow">Why BeyondEight</p>
-        <h2 id="feature-strip-title">Everything you need to run your dance business.</h2>
+        <h2 id="feature-strip-title">Everything you need to <span>run</span> your dance business.</h2>
         <p class="section-subtext">One connected workflow for the moments that usually live across forms, payment apps, group chats, and spreadsheets.</p>
       </div>
       <div class="strip-grid">
@@ -161,7 +161,7 @@
     <section class="how-section" id="how-it-works" aria-labelledby="how-title">
       <div class="section-heading">
         <p class="eyebrow">How it works</p>
-        <h2 id="how-title">Simple. Powerful. Built for dancers.</h2>
+        <h2 id="how-title">Simple. Powerful. Built for <span>dancers.</span></h2>
         <p>Four calm steps turn scattered admin into a polished dancer experience and a clear business command center.</p>
       </div>
       <div class="how-layout">
@@ -200,7 +200,7 @@
     <section class="product-section" id="product" aria-labelledby="product-title">
       <div class="section-heading">
         <p class="eyebrow">Product preview</p>
-        <h2 id="product-title">The operating system for modern dance businesses.</h2>
+        <h2 id="product-title">The operating system for <span>modern</span> dance businesses.</h2>
         <p>See the platform behind the polished registration link: site builder, portal, admin tools, payments, marketing, and analytics working together.</p>
       </div>
       <div class="product-layout">
@@ -288,7 +288,7 @@
     <section class="pricing-section" id="pricing" aria-labelledby="pricing-title">
       <div class="section-heading center-heading">
         <p class="eyebrow">Pricing</p>
-        <h2 id="pricing-title">Choose the plan that grows with you.</h2>
+        <h2 id="pricing-title">Choose the plan that <span>grows</span> with you.</h2>
         <p class="section-subtext">Start with a polished launch flow, then upgrade when you need sharper insight and stronger growth tools.</p>
         <button class="compare-button" type="button" data-open-comparison>Compare all tiers</button>
       </div>
@@ -315,10 +315,9 @@
               <span>Custom forms</span>
             </div>
           </details>
-          <a href="#demo">Get started free</a>
+          <a href="#setup" data-open-setup>Get started free</a>
         </article>
         <article class="price-card price-growth">
-          <span class="popular-badge">Most popular</span>
           <div class="tier-kicker">Growth</div>
           <h3>Advanced tools to run<br>smarter.</h3>
           <strong>$20 <span>/mo</span></strong>
@@ -341,7 +340,7 @@
               <span>Recurring billing</span>
             </div>
           </details>
-          <a href="#demo">Start Growth</a>
+          <a href="#setup" data-open-setup>Start Growth</a>
         </article>
         <article class="price-card price-scale">
           <div class="tier-kicker">Scale</div>
@@ -366,10 +365,371 @@
               <span>Monthly insights</span>
             </div>
           </details>
-          <a href="#demo">Start Scaling</a>
+          <a href="#setup" data-open-setup>Start Scaling</a>
         </article>
       </div>
     </section>
+
+    <section class="themes-section" aria-labelledby="themes-title">
+      <div class="section-heading center-heading">
+        <p class="eyebrow">Website themes</p>
+        <h2 id="themes-title">Create a website that <span>moves</span> with your brand.</h2>
+        <p class="section-subtext">Choose a polished starting point for your dance business and customize the details during setup.</p>
+      </div>
+      <div class="theme-grid" aria-label="Website theme options">
+        <article class="theme-card theme-elegant">
+          <button class="theme-preview theme-preview-button" type="button" data-theme-preview="Default Elegant" aria-label="Preview Default Elegant theme">
+            <div class="mini-site-preview">
+              <div class="mini-nav"><i></i><strong>Studio</strong><span>Classes</span><span>About</span><span>Book</span></div>
+              <div class="mini-hero">
+                <div><strong>Elevate your movement.</strong><span class="mini-cta">Register</span></div>
+                <img src="assets/dancer-hero.png" alt="">
+              </div>
+              <div class="mini-content">
+                <article><b>Heels Lab</b><small>Thu 7:00 PM</small></article>
+                <article><b>Contemporary</b><small>Weekend series</small></article>
+                <aside><img src="assets/dancer-hero.png" alt=""><span>Led by dancers, built for growth.</span></aside>
+              </div>
+              <div class="mini-palette"><i></i><i></i><i></i><i></i></div>
+            </div>
+          </button>
+          <h3>Default Elegant</h3>
+          <p>Clean, modern, and beautifully minimal.</p>
+        </article>
+        <article class="theme-card theme-bold">
+          <button class="theme-preview theme-preview-button" type="button" data-theme-preview="Bold & Edgy" aria-label="Preview Bold and Edgy theme">
+            <div class="mini-site-preview">
+              <div class="mini-nav"><i></i><strong>Move</strong><span>Drop-ins</span><span>Team</span><span>Join</span></div>
+              <div class="mini-hero">
+                <div><strong>Make your move.</strong><span class="mini-cta">Join</span></div>
+                <img src="assets/dancer-hero.png" alt="">
+              </div>
+              <div class="mini-content">
+                <article><b>Audition Prep</b><small>High-energy series</small></article>
+                <article><b>Street Jazz</b><small>Open level</small></article>
+                <aside><img src="assets/dancer-hero.png" alt=""><span>Sharp visuals for bold brands.</span></aside>
+              </div>
+              <div class="mini-palette"><i></i><i></i><i></i><i></i></div>
+            </div>
+          </button>
+          <h3>Bold & Edgy</h3>
+          <p>Strong, high-contrast, and full of attitude.</p>
+        </article>
+        <article class="theme-card theme-soft">
+          <button class="theme-preview theme-preview-button" type="button" data-theme-preview="Soft & Graceful" aria-label="Preview Soft and Graceful theme">
+            <div class="mini-site-preview">
+              <div class="mini-nav"><i></i><strong>Grace</strong><span>Classes</span><span>Journal</span><span>Visit</span></div>
+              <div class="mini-hero">
+                <div><strong>Movement is poetry.</strong><span class="mini-cta">Explore</span></div>
+                <img src="assets/dancer-hero.png" alt="">
+              </div>
+              <div class="mini-content">
+                <article><b>Ballet Flow</b><small>Soft technique</small></article>
+                <article><b>Modern Lab</b><small>Four weeks</small></article>
+                <aside><img src="assets/dancer-hero.png" alt=""><span>Quiet, editorial, and refined.</span></aside>
+              </div>
+              <div class="mini-palette"><i></i><i></i><i></i><i></i></div>
+            </div>
+          </button>
+          <h3>Soft & Graceful</h3>
+          <p>Elegant type, soft tones, and refined flow.</p>
+        </article>
+        <article class="theme-card theme-vibrant">
+          <button class="theme-preview theme-preview-button" type="button" data-theme-preview="Vibrant & Playful" aria-label="Preview Vibrant and Playful theme">
+            <div class="mini-site-preview">
+              <div class="mini-nav"><i></i><strong>Pulse</strong><span>Events</span><span>Crew</span><span>Book</span></div>
+              <div class="mini-hero">
+                <div><strong>Dance. Create. Be you.</strong><span class="mini-cta">Book</span></div>
+                <img src="assets/dancer-hero.png" alt="">
+              </div>
+              <div class="mini-content">
+                <article><b>Pop-up Class</b><small>Friday night</small></article>
+                <article><b>Creator Lab</b><small>New drop</small></article>
+                <aside><img src="assets/dancer-hero.png" alt=""><span>Colorful without losing polish.</span></aside>
+              </div>
+              <div class="mini-palette"><i></i><i></i><i></i><i></i></div>
+            </div>
+          </button>
+          <h3>Vibrant & Playful</h3>
+          <p>Youthful, energetic, and full of personality.</p>
+        </article>
+        <article class="theme-card theme-minimal">
+          <button class="theme-preview theme-preview-button" type="button" data-theme-preview="Minimal Black" aria-label="Preview Minimal Black theme">
+            <div class="mini-site-preview">
+              <div class="mini-nav"><i></i><strong>Eight</strong><span>Work</span><span>Artists</span><span>Apply</span></div>
+              <div class="mini-hero">
+                <div><strong>Focus. Create. Perform.</strong><span class="mini-cta">Apply</span></div>
+                <img src="assets/dancer-hero.png" alt="">
+              </div>
+              <div class="mini-content">
+                <article><b>Performance Lab</b><small>Invite only</small></article>
+                <article><b>Private Coaching</b><small>1:1 sessions</small></article>
+                <aside><img src="assets/dancer-hero.png" alt=""><span>Monochrome, spacious, dramatic.</span></aside>
+              </div>
+              <div class="mini-palette"><i></i><i></i><i></i><i></i></div>
+            </div>
+          </button>
+          <h3>Minimal Black</h3>
+          <p>Sleek, modern, and unapologetically focused.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="theme-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
+      <div class="theme-modal-backdrop" data-close-theme-preview></div>
+      <section class="theme-modal-panel">
+        <button class="modal-close" type="button" aria-label="Close theme preview" data-close-theme-preview>Close</button>
+        <p class="eyebrow">Website theme preview</p>
+        <h2 id="theme-modal-title">Default Elegant</h2>
+        <div class="theme-modal-preview"></div>
+      </section>
+    </div>
+
+    <section class="launch-cta" aria-labelledby="launch-title">
+      <div>
+        <h2 id="launch-title">Ready to build your <span>best season</span> yet?</h2>
+        <p>Start with a guided setup for your dance business, registration flow, payments, and first launch page.</p>
+      </div>
+      <a class="primary-button" href="#setup" data-open-setup>Start building free</a>
+    </section>
+
+    <div class="setup-modal" id="setup" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+      <div class="setup-backdrop" data-close-setup></div>
+      <section class="setup-panel website-setup-panel">
+        <button class="modal-close setup-close" type="button" aria-label="Close setup" data-close-setup>Close</button>
+        <div class="setup-shell-heading">BeyondEight sign up & website setup</div>
+        <form class="setup-form">
+          <fieldset class="setup-step is-active" data-setup-step="0">
+            <div class="setup-step-header">
+              <span class="setup-number">1</span>
+              <div><h2 id="setup-title">About Your Brand</h2><p>Let's start with the basics.</p></div>
+            </div>
+            <div class="setup-dots" aria-label="Setup progress"></div>
+            <div class="setup-two-column">
+              <div class="setup-fields setup-stack">
+                <label>Business Name<input type="text" name="businessName" value="Beyond Movement" required></label>
+                <label>Tagline (optional)<input type="text" name="tagline" value="Where confidence meets choreography."></label>
+                <label>Business Type<select name="businessType"><option>Independent Choreographer</option><option>Studio</option><option>Dance Team</option><option>Event Organizer</option></select></label>
+                <div>
+                  <span class="setup-label">Primary Dance Styles</span>
+                  <div class="setup-chip-grid">
+                    <label><input type="checkbox" name="styles" value="Heels" checked><span>Heels</span></label>
+                    <label><input type="checkbox" name="styles" value="Hip Hop" checked><span>Hip Hop</span></label>
+                    <label><input type="checkbox" name="styles" value="Contemporary" checked><span>Contemporary</span></label>
+                    <label><input type="checkbox" name="styles" value="Jazz"><span>Jazz</span></label>
+                    <label><input type="checkbox" name="styles" value="Ballet"><span>Ballet</span></label>
+                    <label><input type="checkbox" name="styles" value="Commercial"><span>Commercial</span></label>
+                    <label><input type="checkbox" name="styles" value="K-Pop"><span>K-Pop</span></label>
+                    <label><input type="checkbox" name="styles" value="Open Style"><span>Open Style</span></label>
+                  </div>
+                </div>
+              </div>
+              <aside class="setup-brand-preview">
+                <img src="assets/dancer-hero.png" alt="">
+                <blockquote><span data-live-quote>We help dancers move with purpose and confidence.</span><span data-live-brand>Beyond Movement</span></blockquote>
+              </aside>
+            </div>
+          </fieldset>
+
+          <fieldset class="setup-step" data-setup-step="1">
+            <div class="setup-step-header">
+              <span class="setup-number">2</span>
+              <div><h2>Your Brand</h2><p>Tell us about your brand identity.</p></div>
+            </div>
+            <div class="setup-dots" aria-label="Setup progress"></div>
+            <div class="setup-two-column setup-brand-grid">
+              <div>
+                <span class="setup-label">How would you describe your brand?</span>
+                <div class="setup-card-options">
+                  <label><input type="radio" name="brandVibe" value="Elegant" checked><span>Elegant</span></label>
+                  <label><input type="radio" name="brandVibe" value="Bold"><span>Bold</span></label>
+                  <label><input type="radio" name="brandVibe" value="High Energy"><span>High Energy</span></label>
+                  <label><input type="radio" name="brandVibe" value="Minimal"><span>Minimal</span></label>
+                  <label><input type="radio" name="brandVibe" value="Feminine"><span>Feminine</span></label>
+                  <label><input type="radio" name="brandVibe" value="Luxury"><span>Luxury</span></label>
+                  <label><input type="radio" name="brandVibe" value="Urban"><span>Urban</span></label>
+                  <label><input type="radio" name="brandVibe" value="Artistic"><span>Artistic</span></label>
+                </div>
+                <label class="setup-logo-upload">Logo (optional)<span data-live-logo>BEYOND<br>MOVEMENT</span><button type="button">Change</button></label>
+              </div>
+              <div class="setup-stack">
+                <div>
+                  <span class="setup-label">Brand Colors (optional)</span>
+                  <div class="setup-swatches"><span></span><span></span><span></span><span></span><span></span></div>
+                </div>
+                <label>Instagram<input type="text" name="instagram" value="@beyond.movement"></label>
+                <label>TikTok<input type="text" name="tiktok" value="@beyond.movement"></label>
+                <label>YouTube<input type="text" name="youtube" value="/beyondmovement"></label>
+                <label>Website<input type="text" name="website" value="www.beyondmovement.com"></label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="setup-step" data-setup-step="2">
+            <div class="setup-step-header">
+              <span class="setup-number">3</span>
+              <div><h2>Tell Us About Your Business</h2><p>This helps us build content that sounds like you.</p></div>
+            </div>
+            <div class="setup-dots" aria-label="Setup progress"></div>
+            <div class="setup-two-column">
+              <div class="setup-fields setup-stack">
+                <label>What do you do?<textarea name="whatYouDo" maxlength="400">We create empowering heels and contemporary choreography for adults. Our classes are all about building confidence, technique, and community.</textarea></label>
+                <label>Your Mission<textarea name="mission" maxlength="200">To empower dancers to express themselves, build confidence, and chase their dreams.</textarea></label>
+                <label>Why should dancers join?<textarea name="whyJoin" maxlength="200">Our classes are welcoming, challenging, and designed to help you grow while feeling supported every step of the way.</textarea></label>
+              </div>
+              <aside class="setup-ai-preview">
+                <span>AI Generated Content Preview</span>
+                <p>Home Headline</p>
+                <h3 data-live-headline>Move with purpose. Dance with passion.</h3>
+                <p>About Us (preview)</p>
+                <div data-live-about>Beyond Movement is a space for dancers to grow, express, and shine. We believe in confidence, creativity, and community.</div>
+                <button type="button">Regenerate Content</button>
+              </aside>
+            </div>
+          </fieldset>
+
+          <fieldset class="setup-step" data-setup-step="3">
+            <div class="setup-step-header">
+              <span class="setup-number">4</span>
+              <div><h2>Choose Your Pages</h2><p>Select the pages you want on your website.</p></div>
+            </div>
+            <div class="setup-dots" aria-label="Setup progress"></div>
+            <div class="setup-two-column setup-pages-layout">
+              <div class="setup-pages">
+                <div>
+                  <span class="setup-label">Essential Pages</span>
+                  <label><input type="checkbox" name="pages" value="Home" checked>Home</label>
+                  <label><input type="checkbox" name="pages" value="About" checked>About</label>
+                  <label><input type="checkbox" name="pages" value="Classes" checked>Classes</label>
+                  <label><input type="checkbox" name="pages" value="Events" checked>Events</label>
+                  <label><input type="checkbox" name="pages" value="Register" checked>Register</label>
+                  <label><input type="checkbox" name="pages" value="Contact" checked>Contact</label>
+                </div>
+                <div>
+                  <span class="setup-label">Optional Pages</span>
+                  <label><input type="checkbox" name="pages" value="Gallery" checked>Gallery</label>
+                  <label><input type="checkbox" name="pages" value="Testimonials">Testimonials</label>
+                  <label><input type="checkbox" name="pages" value="Team" checked>Team</label>
+                  <label><input type="checkbox" name="pages" value="FAQ" checked>FAQ</label>
+                  <label><input type="checkbox" name="pages" value="Blog">Blog</label>
+                  <label><input type="checkbox" name="pages" value="Videos">Videos</label>
+                  <label><input type="checkbox" name="pages" value="Private Members Area" checked>Private Members Area</label>
+                </div>
+              </div>
+              <aside class="setup-site-map">
+                <strong data-live-logo-small>BEYOND<br>MOVEMENT</strong>
+                <span>Home</span><span>About</span><span>Classes</span><span>Events</span><span>Register</span><span>Gallery</span><span>Team</span><span>FAQ</span><span>Contact</span>
+              </aside>
+            </div>
+          </fieldset>
+
+          <fieldset class="setup-step" data-setup-step="4">
+            <div class="setup-step-header">
+              <span class="setup-number">5</span>
+              <div><h2>Business & Registration</h2><p>Choose the tools you need.</p></div>
+            </div>
+            <div class="setup-dots" aria-label="Setup progress"></div>
+            <div class="setup-toggle-grid">
+              <label><span><strong>Event Registration</strong><small>Let dancers sign up for events</small></span><input type="checkbox" checked></label>
+              <label><span><strong>Class Registration</strong><small>Allow sign ups for classes</small></span><input type="checkbox" checked></label>
+              <label><span><strong>Payment Plans</strong><small>Offer installment payments</small></span><input type="checkbox" checked></label>
+              <label><span><strong>Waivers</strong><small>Collect digital waivers</small></span><input type="checkbox" checked></label>
+              <label><span><strong>Waitlists</strong><small>Manage waitlisted dancers</small></span><input type="checkbox" checked></label>
+              <label><span><strong>Promo Codes</strong><small>Create discounts and promos</small></span><input type="checkbox" checked></label>
+              <label><span><strong>Gift Cards</strong><small>Sell and redeem gift cards</small></span><input type="checkbox"></label>
+              <label><span><strong>Email Marketing</strong><small>Send updates via email</small></span><input type="checkbox" checked></label>
+              <label><span><strong>SMS Updates</strong><small>Text announcements</small></span><input type="checkbox" checked></label>
+              <label><span><strong>Calendar</strong><small>Show your schedule</small></span><input type="checkbox" checked></label>
+              <label><span><strong>Private Resources</strong><small>Share files with dancers</small></span><input type="checkbox"></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="setup-step" data-setup-step="5">
+            <div class="setup-step-header">
+              <span class="setup-number">6</span>
+              <div><h2>Choose Your Theme</h2><p>Pick a design that matches your brand.</p></div>
+            </div>
+            <div class="setup-dots" aria-label="Setup progress"></div>
+            <div class="setup-theme-picker">
+              <label class="theme-elegant"><input type="radio" name="setupTheme" value="Default Elegant" checked><span class="theme-preview"><b>BEYOND MOVEMENT</b></span><strong>Default Elegant</strong><small>Clean, modern, and beautifully minimal.</small></label>
+              <label class="theme-bold"><input type="radio" name="setupTheme" value="Bold & Edgy"><span class="theme-preview"><b>MAKE YOUR MOVE</b></span><strong>Bold & Edgy</strong><small>Strong, high-contrast, full of attitude.</small></label>
+              <label class="theme-soft"><input type="radio" name="setupTheme" value="Soft & Graceful"><span class="theme-preview"><b>Movement is poetry.</b></span><strong>Soft & Graceful</strong><small>Soft tones and elegant typography.</small></label>
+              <label class="theme-vibrant"><input type="radio" name="setupTheme" value="Vibrant & Playful"><span class="theme-preview"><b>Dance. For You.</b></span><strong>Vibrant & Playful</strong><small>Colorful, energetic, and fun.</small></label>
+              <label class="theme-minimal"><input type="radio" name="setupTheme" value="Minimal Black"><span class="theme-preview"><b>FOCUS CREATE</b></span><strong>Minimal Black</strong><small>Sleek, minimal, and unapologetically modern.</small></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="setup-step" data-setup-step="6">
+            <div class="setup-step-header">
+              <span class="setup-number">7</span>
+              <div><h2>Add Your Images <span>(Optional)</span></h2><p>Upload your images or let us help you.</p></div>
+            </div>
+            <div class="setup-dots" aria-label="Setup progress"></div>
+            <div class="setup-two-column">
+              <div class="setup-upload-box"><strong>Upload Your Images</strong><span>Drag & drop your images here or click to browse</span><small>JPG, PNG, WEBP up to 10MB</small></div>
+              <div>
+                <span class="setup-label">Or use AI generated images</span>
+                <div class="setup-image-grid">
+                  <img src="assets/dancer-hero.png" alt=""><img src="assets/dancer-hero.png" alt=""><img src="assets/dancer-hero.png" alt="">
+                  <img src="assets/dancer-hero.png" alt=""><img src="assets/dancer-hero.png" alt=""><img src="assets/dancer-hero.png" alt="">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="setup-step setup-review-step" data-setup-step="7">
+            <div class="setup-step-header">
+              <span class="setup-number">8</span>
+              <div><h2>Review & Launch</h2><p>Your website is almost ready to go live.</p></div>
+            </div>
+            <div class="setup-dots" aria-label="Setup progress"></div>
+            <div class="setup-review-layout">
+              <div class="setup-website-preview">
+                <div class="setup-device-tabs"><span>Desktop</span><span>Tablet</span><span>Mobile</span></div>
+                <div class="setup-preview-site">
+                  <strong data-live-logo-small>BEYOND<br>MOVEMENT</strong>
+                  <h3 data-live-headline>Move with purpose. Dance with passion.</h3>
+                  <button type="button">Learn More</button>
+                  <img src="assets/dancer-hero.png" alt="">
+                </div>
+              </div>
+              <aside class="setup-summary">
+                <h3>Your Website</h3>
+                <p><strong>Theme</strong> <span data-live-theme>Default Elegant</span></p>
+                <p><strong>Pages</strong> <span data-live-pages>9 Pages Selected</span></p>
+                <p><strong>Business Tools</strong> 6 Tools Enabled</p>
+                <p><strong>Domain</strong> beyondmovement.com</p>
+              </aside>
+            </div>
+          </fieldset>
+
+          <section class="setup-ready" data-setup-ready hidden>
+            <div class="setup-ready-copy">
+              <span class="ready-check">✓</span>
+              <h2>Your website is ready!</h2>
+              <p>Your beautiful new website is live and ready to impress your dancers.</p>
+              <div class="ready-domain" data-live-domain>beyondmovement.com</div>
+              <div class="ready-actions">
+                <a class="primary-button" href="#" target="_blank" rel="noopener" data-view-generated-site>View My Website</a>
+                <button class="secondary-button" type="button" data-close-setup>Go to Dashboard</button>
+              </div>
+            </div>
+            <div class="ready-phone">
+              <strong data-live-logo-small>BEYOND<br>MOVEMENT</strong>
+              <h3 data-live-headline>Move with purpose. Dance with passion.</h3>
+              <img src="assets/dancer-hero.png" alt="">
+            </div>
+          </section>
+
+          <div class="setup-actions">
+            <button class="secondary-button" type="button" data-setup-prev>Back</button>
+            <button class="primary-button" type="button" data-setup-next>Next</button>
+            <button class="primary-button" type="submit" data-setup-submit hidden>Launch My Website</button>
+          </div>
+          <p class="setup-message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </div>
 
     <div class="comparison-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="comparison-title">
       <div class="comparison-backdrop" data-close-comparison></div>
@@ -426,9 +786,20 @@
         <p class="eyebrow">Request a demo</p>
         <h2 id="demo-title">Tell us what you are building.</h2>
         <p>Share the basics and we will map the website, registration flow, payment setup, roster views, and community space around your dance business.</p>
-        <div class="demo-note">Built for workshops, teams, studios, intensives, auditions, memberships, and creator-led dance brands.</div>
+        <div class="demo-benefit-grid" aria-label="Demo use cases">
+          <article><span>01</span><h3>Workshops</h3><p>Launch one-day events with signup, waivers, and payment.</p></article>
+          <article><span>02</span><h3>Studio classes</h3><p>Keep rosters, levels, and class schedules organized.</p></article>
+          <article><span>03</span><h3>Intensives</h3><p>Handle multi-day registration, deposits, and reminders.</p></article>
+          <article><span>04</span><h3>Auditions</h3><p>Collect applications and sort dancers into clear lists.</p></article>
+          <article><span>05</span><h3>Memberships</h3><p>Create a polished home for recurring dancers.</p></article>
+          <article><span>06</span><h3>Creator-led brands</h3><p>Build a site and portal around your own movement style.</p></article>
+        </div>
       </div>
       <form class="demo-form">
+        <div class="demo-form-heading">
+          <span>Start the conversation</span>
+          <strong>We will tailor the walkthrough to your launch.</strong>
+        </div>
         <label>
           Name
           <input type="text" name="name" placeholder="Your name" required>
