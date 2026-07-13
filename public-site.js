@@ -3,7 +3,10 @@
   const root = document.querySelector("[data-public-site-root]");
   const esc = (value = "") =>
     String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
-  const slug = window.location.pathname.split("/").filter(Boolean)[0];
+  const params = new URLSearchParams(window.location.search);
+  const querySlug = params.get("slug");
+  const slug = querySlug || window.location.pathname.split("/").filter(Boolean)[0];
+  const LOCAL_PUBLISHED_SITES_KEY = "beyondeight.localPublishedSites";
 
   const themeClass = (theme = "") =>
     ({
@@ -19,7 +22,12 @@
       return;
     }
 
-    const bundle = await app.getBusinessBundleBySlug(slug);
+    if (querySlug && window.location.pathname.includes("404.html")) {
+      window.history.replaceState({}, "", `/${slug}`);
+    }
+
+    const localSites = JSON.parse(window.localStorage.getItem(LOCAL_PUBLISHED_SITES_KEY) || "{}");
+    const bundle = localSites[slug] || (await app.getBusinessBundleBySlug(slug));
     if (!bundle) {
       root.innerHTML = `<section class="route-loading"><h1>Website not published yet.</h1><p>This BeyondEight site is private or unavailable.</p><a class="primary-button" href="/">Go home</a></section>`;
       return;

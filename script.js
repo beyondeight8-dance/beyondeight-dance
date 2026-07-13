@@ -310,6 +310,7 @@ let pendingOwnerAction = "";
 
 const GUEST_SETUP_KEY = "beyondeight.guestWebsiteDraft";
 const PENDING_OWNER_ACTION_KEY = "beyondeight.pendingOwnerAction";
+const LOCAL_PUBLISHED_SITES_KEY = "beyondeight.localPublishedSites";
 
 const beyondEight = window.BeyondEight || {};
 const supabaseClient = beyondEight.client;
@@ -498,6 +499,11 @@ const clearGuestSetupDraft = () => {
   window.localStorage.removeItem(PENDING_OWNER_ACTION_KEY);
 };
 
+const localPublicNavigationUrl = (slug) => {
+  const isLocalStaticServer = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+  return isLocalStaticServer ? `/404.html?slug=${encodeURIComponent(slug)}` : `/${slug}`;
+};
+
 const setFormValue = (name, value) => {
   const field = setupForm?.elements?.[name];
   if (!field || value == null) return;
@@ -560,7 +566,7 @@ const validateCurrentSlug = async () => {
     setSlugStatus(availability?.message || "Available.", "success");
     return true;
   } catch (error) {
-    console.warn("Slug check failed:", error);
+    console.info("Slug availability will be rechecked before authenticated publishing.", error);
     setSlugStatus("We will recheck this URL before launch.", "neutral");
     return true;
   }
@@ -733,6 +739,40 @@ const generatedSiteHTML = (state) => {
 
 const launchGeneratedWebsite = async () => {
   const state = getSetupState();
+  if (!currentUser || !supabaseClient) {
+    const slugCheck = beyondEight.validSlug?.(state.slug || state.businessName) || { valid: true, slug: state.slug };
+    if (!slugCheck.valid) throw new Error(slugCheck.message || "Choose a different website URL.");
+    const slug = slugCheck.slug || state.slug;
+    const existing = JSON.parse(window.localStorage.getItem(LOCAL_PUBLISHED_SITES_KEY) || "{}");
+    existing[slug] = {
+      business: {
+        business_name: state.businessName,
+        slug,
+        tagline: state.tagline,
+        description: state.whatYouDo,
+        mission: state.mission,
+        why_join: state.whyJoin,
+        theme: state.theme,
+        status: "published"
+      },
+      settings: {
+        dance_styles: state.styles,
+        selected_pages: state.pages,
+        generated_content: state
+      },
+      pages: state.pages.map((page, index) => ({
+        title: page,
+        page_type: beyondEight.slugify?.(page) || page.toLowerCase(),
+        enabled: true,
+        display_order: index
+      })),
+      publishedAt: new Date().toISOString()
+    };
+    window.localStorage.setItem(LOCAL_PUBLISHED_SITES_KEY, JSON.stringify(existing));
+    generatedSiteUrl = `/${slug}`;
+    viewGeneratedSiteButton?.setAttribute("href", localPublicNavigationUrl(slug));
+    return { business: existing[slug].business, local: true };
+  }
   const result = await beyondEight.publishWebsite?.({
     user: currentUser,
     state,
@@ -741,7 +781,7 @@ const launchGeneratedWebsite = async () => {
   });
   currentBusinessId = result?.business?.id || currentBusinessId;
   generatedSiteUrl = `/${result?.business?.slug || state.slug}`;
-  viewGeneratedSiteButton?.setAttribute("href", generatedSiteUrl);
+  viewGeneratedSiteButton?.setAttribute("href", localPublicNavigationUrl(result?.business?.slug || state.slug));
   return result;
 };
 
@@ -1018,13 +1058,14 @@ const publishCurrentSetup = async () => {
   try {
     setupMessage.textContent = "Publishing your website...";
     setupSubmitButton.disabled = true;
-    await launchGeneratedWebsite();
+    const result = await launchGeneratedWebsite();
     clearGuestSetupDraft();
     setupLaunched = true;
     updateSetupStep();
     setupMessage.textContent = `Your website is live at ${window.location.origin}${generatedSiteUrl}`;
     window.setTimeout(() => {
-      window.location.href = `/dashboard/?published=${encodeURIComponent(generatedSiteUrl)}`;
+      const slug = result?.business?.slug || getSetupState().slug;
+      window.location.href = localPublicNavigationUrl(slug);
     }, 850);
   } catch (error) {
     console.warn("Website publish failed:", error);
@@ -1038,12 +1079,6 @@ setupForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!stepIsValid()) return;
   saveGuestSetupDraft();
-  if (!currentUser) {
-    prepareAuthForOwnerAction("publish");
-    setupMessage.textContent = "Your website path is ready. Create an account to publish it and manage edits later.";
-    openAuth("signup");
-    return;
-  }
   await publishCurrentSetup();
 });
 viewGeneratedSiteButton?.addEventListener("click", () => {
