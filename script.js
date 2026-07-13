@@ -35,6 +35,14 @@ const authForgot = document.querySelector("[data-auth-forgot]");
 const authGoogle = document.querySelector("[data-auth-google]");
 const authError = document.querySelector(".auth-error");
 const closeAuthButtons = document.querySelectorAll("[data-close-auth]");
+const authLoginButtons = document.querySelectorAll("[data-open-auth-login]");
+const authSignupButtons = document.querySelectorAll("[data-open-auth-signup]");
+const authLogoutButtons = document.querySelectorAll("[data-auth-logout]");
+const loggedOutAccount = document.querySelector('[data-auth-state="logged-out"]');
+const loggedInAccount = document.querySelector('[data-auth-state="logged-in"]');
+const userAvatar = document.querySelector("[data-user-avatar]");
+const dashboardLinks = document.querySelectorAll("[data-dashboard-link]");
+const slugStatus = document.querySelector("[data-slug-status]");
 const heroMockup = document.querySelector(".dashboard-mockup");
 const heroView = document.querySelector("[data-hero-view]");
 const heroNavItems = document.querySelectorAll("[data-hero-nav]");
@@ -297,20 +305,11 @@ let currentUser = null;
 let currentBusinessId = null;
 let authReady = false;
 let saveTimer;
+let slugManuallyEdited = false;
 
-const supabaseUrl = "https://awycvqzoijlwivxjgzak.supabase.co";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3eWN2cXpvaWpsd2l2eGpnemFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NzYwMjcsImV4cCI6MjA5OTQ1MjAyN30.H-QFjkNaiAc1gPefQ84CaS5-eSRAIRjuh3OTDgSF6Ak";
-const supabaseSdk = window.supabase || globalThis.supabase || (typeof supabase !== "undefined" ? supabase : null);
-const supabaseClient = supabaseSdk?.createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true
-  }
-});
+const beyondEight = window.BeyondEight || {};
+const supabaseClient = beyondEight.client;
 window.beyondEightSupabaseReady = Boolean(supabaseClient);
-document.documentElement.dataset.supabaseReady = String(Boolean(supabaseClient));
 
 const isAuthenticated = () => Boolean(currentUser);
 
@@ -323,7 +322,36 @@ const setAuthBusy = (isBusy) => {
   if (authGoogle) authGoogle.disabled = isBusy;
 };
 
-const getAuthRedirectUrl = () => window.location.href.split("#")[0];
+const getAuthRedirectUrl = () => `${window.location.origin}/auth/callback/`;
+
+const initialsFor = (user) => {
+  const source = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "BE";
+  return source
+    .split(/[\s@.]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "BE";
+};
+
+const updateHeaderForAuth = async () => {
+  const loggedIn = Boolean(currentUser);
+  if (loggedOutAccount) loggedOutAccount.hidden = loggedIn;
+  if (loggedInAccount) loggedInAccount.hidden = !loggedIn;
+  if (userAvatar && loggedIn) userAvatar.textContent = initialsFor(currentUser);
+  const route = loggedIn ? await beyondEight.routeForUser?.(currentUser).catch(() => "/dashboard/") : "/dashboard/";
+  dashboardLinks.forEach((link) => {
+    link.href = route?.startsWith("/?onboarding") ? "/?onboarding=1" : "/dashboard/";
+  });
+  openSetupButtons.forEach((button) => {
+    if (!loggedIn) {
+      button.textContent = button.dataset.originalText || button.textContent;
+      return;
+    }
+    button.dataset.originalText ||= button.textContent;
+    button.textContent = route?.startsWith("/?onboarding") ? "Continue setup" : "Go to Dashboard";
+  });
+};
 
 const setAuthMode = (mode) => {
   authMode = mode;
@@ -338,14 +366,14 @@ const setAuthMode = (mode) => {
   authConfirmGroup?.toggleAttribute("hidden", isLogin);
   authTermsGroup?.toggleAttribute("hidden", isLogin);
   authForgot?.toggleAttribute("hidden", !isLogin);
-  if (authToggleText) authToggleText.textContent = isLogin ? "Need an account?" : "Already have an account?";
-  if (authToggle) authToggle.textContent = isLogin ? "Create one" : "Log in";
+  if (authToggleText) authToggleText.textContent = isLogin ? "New to BeyondEight?" : "Already have an account?";
+  if (authToggle) authToggle.textContent = isLogin ? "Create an account" : "Log in";
   if (authError) authError.textContent = "";
 };
 
-const openAuth = () => {
+const openAuth = (mode = "signup") => {
   if (!authModal) return;
-  setAuthMode("signup");
+  setAuthMode(mode);
   authModal.classList.add("is-open");
   authModal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
@@ -383,14 +411,16 @@ const validateAuthForm = () => {
 };
 
 const titleCaseDomain = (value) => {
-  const slug = (value || "Beyond Movement").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 28);
-  return `${slug || "beyondmovement"}.com`;
+  const slug = beyondEight.slugify?.(value || "Beyond Movement") || "beyondmovement";
+  return `${window.location.origin}/${slug}`;
 };
 
 const getSetupState = () => {
   const form = setupForm;
   const field = (name, fallback = "") => form?.elements?.[name]?.value?.trim() || fallback;
   const businessName = field("businessName", "Beyond Movement");
+  const fallbackSlug = beyondEight.slugify?.(businessName) || "beyond-movement";
+  const slug = field("businessSlug", fallbackSlug);
   const tagline = field("tagline", "Where confidence meets choreography.");
   const whatYouDo = field("whatYouDo", "We create empowering dance experiences for adults, blending technique, confidence, and community.");
   const mission = field("mission", "To empower dancers to express themselves, build confidence, and chase their dreams.");
@@ -403,6 +433,7 @@ const getSetupState = () => {
   const logoText = businessName.split(/\s+/).slice(0, 2).join("<br>").toUpperCase();
   return {
     businessName,
+    slug,
     tagline,
     businessType,
     brandVibe,
@@ -416,7 +447,7 @@ const getSetupState = () => {
     tiktok: field("tiktok", ""),
     youtube: field("youtube", ""),
     website: field("website", ""),
-    domain: titleCaseDomain(businessName),
+    domain: `${window.location.origin}/${slug || fallbackSlug}`,
     headline: tagline || "Move with purpose. Dance with passion.",
     logoText
   };
@@ -444,6 +475,7 @@ const setRadioValue = (name, value) => {
 const applySetupState = (state = {}) => {
   if (!setupForm || !state) return;
   setFormValue("businessName", state.businessName);
+  setFormValue("businessSlug", state.slug);
   setFormValue("tagline", state.tagline);
   setFormValue("businessType", state.businessType);
   setFormValue("whatYouDo", state.whatYouDo);
@@ -458,6 +490,35 @@ const applySetupState = (state = {}) => {
   setRadioValue("brandVibe", state.brandVibe);
   setRadioValue("setupTheme", state.theme);
   updateSetupPreview();
+};
+
+const setSlugStatus = (message, state = "neutral") => {
+  if (!slugStatus) return;
+  slugStatus.textContent = message;
+  slugStatus.dataset.state = state;
+};
+
+const validateCurrentSlug = async () => {
+  const state = getSetupState();
+  const localCheck = beyondEight.validSlug?.(state.slug) || { valid: true, slug: state.slug, message: "Available format." };
+  if (!localCheck.valid) {
+    setSlugStatus(localCheck.message, "error");
+    return false;
+  }
+  try {
+    const availability = await beyondEight.checkSlugAvailability?.(localCheck.slug, currentBusinessId);
+    if (availability && !availability.valid) {
+      setSlugStatus(availability.message, "error");
+      return false;
+    }
+    if (setupForm?.elements.businessSlug) setupForm.elements.businessSlug.value = localCheck.slug;
+    setSlugStatus(availability?.message || "Available.", "success");
+    return true;
+  } catch (error) {
+    console.warn("Slug check failed:", error);
+    setSlugStatus("We will recheck this URL before launch.", "neutral");
+    return true;
+  }
 };
 
 const setText = (selector, value) => {
@@ -495,61 +556,22 @@ const updateSetupPreview = () => {
 
 const ensureProfile = async () => {
   if (!supabaseClient || !currentUser) return;
-  const email = currentUser.email || "";
-  const fullName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || email.split("@")[0] || "BeyondEight user";
-  const { error } = await supabaseClient.from("profiles").upsert(
-    {
-      id: currentUser.id,
-      email,
-      full_name: fullName,
-      updated_at: new Date().toISOString()
-    },
-    { onConflict: "id" }
-  );
-  if (error) throw error;
+  return beyondEight.ensureProfile?.(currentUser);
 };
 
 const saveOnboardingProgress = async ({ launched = false } = {}) => {
   if (!supabaseClient || !currentUser || !setupForm) return;
   const state = getSetupState();
   try {
-    await ensureProfile();
-    const { data: business, error: businessError } = await supabaseClient
-      .from("businesses")
-      .upsert(
-        {
-          owner_id: currentUser.id,
-          business_name: state.businessName,
-          tagline: state.tagline,
-          business_type: state.businessType,
-          dance_styles: state.styles,
-          brand_vibe: state.brandVibe,
-          theme: state.theme,
-          selected_pages: state.pages,
-          website_status: launched ? "launched" : "draft",
-          updated_at: new Date().toISOString()
-        },
-        { onConflict: "owner_id" }
-      )
-      .select("id")
-      .single();
-
-    if (businessError) throw businessError;
+    if (!(await validateCurrentSlug())) return;
+    const business = await beyondEight.saveOnboarding?.({
+      user: currentUser,
+      state,
+      stepIndex: setupIndex,
+      businessId: currentBusinessId,
+      launched
+    });
     currentBusinessId = business?.id || currentBusinessId;
-
-    const { error: onboardingError } = await supabaseClient.from("onboarding_sessions").upsert(
-      {
-        owner_id: currentUser.id,
-        business_id: currentBusinessId,
-        step_index: setupIndex,
-        setup_state: state,
-        launched: launched || setupLaunched,
-        updated_at: new Date().toISOString()
-      },
-      { onConflict: "owner_id" }
-    );
-
-    if (onboardingError) throw onboardingError;
     if (setupMessage && setupModal?.classList.contains("is-open")) {
       setupMessage.textContent = launched ? "Your website setup is saved and ready." : "Progress saved.";
     }
@@ -571,27 +593,31 @@ const restoreOnboardingProgress = async () => {
   if (!supabaseClient || !currentUser) return;
   try {
     await ensureProfile();
-    const { data: business, error: businessError } = await supabaseClient
-      .from("businesses")
-      .select("id")
-      .eq("owner_id", currentUser.id)
-      .maybeSingle();
-
-    if (businessError) throw businessError;
-    currentBusinessId = business?.id || null;
-
-    const { data, error } = await supabaseClient
-      .from("onboarding_sessions")
-      .select("step_index, setup_state, launched, business_id")
-      .eq("owner_id", currentUser.id)
-      .maybeSingle();
-
-    if (error) throw error;
-    if (!data) return;
-    currentBusinessId = data.business_id || currentBusinessId;
-    applySetupState(data.setup_state);
-    setupIndex = Math.min(Math.max(Number(data.step_index) || 0, 0), setupSteps.length - 1);
-    setupLaunched = Boolean(data.launched);
+    const { business, businesses } = await beyondEight.getPrimaryBusiness?.(currentUser.id);
+    if (!business) return;
+    if (businesses?.length > 1) {
+      window.location.href = "/dashboard/?select=1";
+      return;
+    }
+    const bundle = await beyondEight.getBusinessBundle?.(business.id);
+    currentBusinessId = business.id;
+    const state = bundle?.settings?.generated_content || {};
+    applySetupState({
+      ...state,
+      businessName: business.business_name,
+      slug: business.slug,
+      businessType: business.business_type,
+      tagline: business.tagline,
+      whatYouDo: business.description,
+      mission: business.mission,
+      whyJoin: business.why_join,
+      brandVibe: business.brand_vibe,
+      theme: business.theme,
+      styles: bundle?.settings?.dance_styles || state.styles || [],
+      pages: bundle?.settings?.selected_pages || state.pages || []
+    });
+    setupIndex = Math.min(Math.max(Number(business.current_onboarding_step) || 0, 0), setupSteps.length - 1);
+    setupLaunched = Boolean(business.onboarding_completed);
     updateSetupStep();
   } catch (error) {
     console.warn("Supabase restore failed:", error);
@@ -654,16 +680,18 @@ const generatedSiteHTML = (state) => {
 </html>`;
 };
 
-const launchGeneratedWebsite = () => {
+const launchGeneratedWebsite = async () => {
   const state = getSetupState();
-  const blob = new Blob([generatedSiteHTML(state)], { type: "text/html" });
-  if (generatedSiteUrl) URL.revokeObjectURL(generatedSiteUrl);
-  generatedSiteUrl = URL.createObjectURL(blob);
+  const result = await beyondEight.publishWebsite?.({
+    user: currentUser,
+    state,
+    stepIndex: setupSteps.length - 1,
+    businessId: currentBusinessId
+  });
+  currentBusinessId = result?.business?.id || currentBusinessId;
+  generatedSiteUrl = `/${result?.business?.slug || state.slug}`;
   viewGeneratedSiteButton?.setAttribute("href", generatedSiteUrl);
-  const page = window.open(generatedSiteUrl, "_blank");
-  if (!page) {
-    if (setupMessage) setupMessage.textContent = "Popup blocked. Use View My Website to open the generated site.";
-  }
+  return result;
 };
 
 const renderSetupDots = () => {
@@ -718,7 +746,12 @@ const openSetup = async (event) => {
   }
   if (!isAuthenticated()) {
     pendingSetupAfterAuth = true;
-    openAuth();
+    openAuth("signup");
+    return;
+  }
+  const route = await beyondEight.routeForUser?.(currentUser).catch(() => null);
+  if (route && !route.startsWith("/?onboarding")) {
+    window.location.href = route;
     return;
   }
   await restoreOnboardingProgress();
@@ -844,6 +877,17 @@ const initSupabaseAuth = async () => {
     currentUser = data.session?.user || null;
     authReady = true;
     if (currentUser) await restoreOnboardingProgress();
+    await updateHeaderForAuth();
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("login") === "1" && !currentUser) {
+      openAuth("login");
+    }
+    if (params.get("onboarding") === "1" && currentUser) {
+      const step = Number(params.get("step"));
+      if (!Number.isNaN(step)) setupIndex = Math.min(Math.max(step, 0), setupSteps.length - 1);
+      openSetupDirect();
+    }
 
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
       currentUser = session?.user || null;
@@ -852,10 +896,12 @@ const initSupabaseAuth = async () => {
         setupIndex = 0;
         setupLaunched = false;
         updateSetupStep();
+        await updateHeaderForAuth();
         return;
       }
       if (currentUser && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")) {
         await restoreOnboardingProgress();
+        await updateHeaderForAuth();
         if (pendingSetupAfterAuth && authModal?.classList.contains("is-open")) {
           await completeAuthFlow();
         }
@@ -869,6 +915,17 @@ const initSupabaseAuth = async () => {
 };
 
 closeAuthButtons.forEach((button) => button.addEventListener("click", closeAuth));
+authLoginButtons.forEach((button) => button.addEventListener("click", () => openAuth("login")));
+authSignupButtons.forEach((button) => button.addEventListener("click", () => openAuth("signup")));
+authLogoutButtons.forEach((button) =>
+  button.addEventListener("click", async () => {
+    await beyondEight.signOut?.();
+    currentUser = null;
+    currentBusinessId = null;
+    await updateHeaderForAuth();
+    window.location.href = "/";
+  })
+);
 openSetupButtons.forEach((button) => button.addEventListener("click", openSetup));
 document.addEventListener("click", (event) => {
   if (event.defaultPrevented) return;
@@ -892,25 +949,51 @@ setupNextButton?.addEventListener("click", async () => {
 setupForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!stepIsValid()) return;
-  launchGeneratedWebsite();
-  setupLaunched = true;
-  await saveOnboardingProgress({ launched: true });
-  updateSetupStep();
-  setupMessage.textContent = "Your website setup is ready.";
+  if (!currentUser) {
+    pendingSetupAfterAuth = true;
+    openAuth("signup");
+    return;
+  }
+  if (!(await validateCurrentSlug())) return;
+  try {
+    setupMessage.textContent = "Publishing your website...";
+    setupSubmitButton.disabled = true;
+    await launchGeneratedWebsite();
+    setupLaunched = true;
+    updateSetupStep();
+    setupMessage.textContent = `Your website is live at ${window.location.origin}${generatedSiteUrl}`;
+    window.setTimeout(() => {
+      window.location.href = `/dashboard/?published=${encodeURIComponent(generatedSiteUrl)}`;
+    }, 850);
+  } catch (error) {
+    console.warn("Website publish failed:", error);
+    setupMessage.textContent = error.message || "We could not publish yet. Please check your setup and try again.";
+  } finally {
+    setupSubmitButton.disabled = false;
+  }
 });
 viewGeneratedSiteButton?.addEventListener("click", () => {
-  if (!generatedSiteUrl) {
+  if (generatedSiteUrl) {
+    viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
+  } else {
     const blob = new Blob([generatedSiteHTML(getSetupState())], { type: "text/html" });
     generatedSiteUrl = URL.createObjectURL(blob);
     viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
   }
 });
 setupForm?.addEventListener("input", () => {
+  const businessNameField = setupForm?.elements.businessName;
+  const slugField = setupForm?.elements.businessSlug;
+  if (document.activeElement === slugField) slugManuallyEdited = true;
+  if (document.activeElement === businessNameField && slugField && !slugManuallyEdited) {
+    slugField.value = beyondEight.slugify?.(businessNameField.value) || "";
+  }
   updateSetupPreview();
   queueOnboardingSave();
 });
 setupForm?.addEventListener("change", () => {
   updateSetupPreview();
+  validateCurrentSlug();
   queueOnboardingSave();
 });
 initSupabaseAuth();

@@ -27,7 +27,15 @@
       <a href="#product">Product</a>
       <a href="#pricing">Pricing</a>
     </nav>
-    <a class="header-cta" href="#demo">Book demo</a>
+    <div class="header-account" data-auth-state="logged-out">
+      <button class="header-login" type="button" data-open-auth-login>Log in</button>
+      <button class="header-cta" type="button" data-open-auth-signup>Start building free</button>
+    </div>
+    <div class="header-account header-account-user" data-auth-state="logged-in" hidden>
+      <a class="header-login" href="/dashboard/" data-dashboard-link>My Dashboard</a>
+      <span class="header-avatar" data-user-avatar>BE</span>
+      <button class="header-login" type="button" data-auth-logout>Log out</button>
+    </div>
   </header>
 
   <main id="top">
@@ -536,6 +544,7 @@
             <div class="setup-two-column">
               <div class="setup-fields setup-stack">
                 <label>Business Name<input type="text" name="businessName" value="Beyond Movement" required></label>
+                <label>Public Website URL<input type="text" name="businessSlug" value="beyond-movement" maxlength="50" required><small class="slug-status" data-slug-status>Available format.</small></label>
                 <label>Tagline (optional)<input type="text" name="tagline" value="Where confidence meets choreography."></label>
                 <label>Business Type<select name="businessType"><option>Independent Choreographer</option><option>Studio</option><option>Dance Team</option><option>Event Organizer</option></select></label>
                 <div>
@@ -865,6 +874,8 @@
   </footer>
 
   <script src="assets/supabase.min.js?v=20260712"></script>
+  <script src="app-config.js?v=20260712"></script>
+  <script src="app-services.js?v=20260712"></script>
   <script src="script.js?v=20260712"></script>
 </body>
 </html>

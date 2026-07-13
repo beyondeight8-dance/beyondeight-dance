@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BeyondEight Dashboard</title>
+  <link rel="stylesheet" href="/styles.css?v=20260712-app">
+</head>
+<body class="route-page dashboard-route">
+  <header class="route-header">
+    <a class="brand" href="/" aria-label="BeyondEight home">
+      <span class="brand-mark"><img src="/assets/Logo.png" alt=""></span>
+      <span class="brand-name">Beyond<span>Eight</span></span>
+    </a>
+    <button class="header-login" type="button" data-dashboard-logout>Log out</button>
+  </header>
+  <main class="dashboard-app" data-dashboard-root>
+    <section class="route-loading">
+      <h1>Loading your dashboard...</h1>
+      <p>Finding your saved business and website.</p>
+    </section>
+  </main>
+  <script src="/assets/supabase.min.js?v=20260712"></script>
+  <script src="/app-config.js?v=20260712"></script>
+  <script src="/app-services.js?v=20260712"></script>
+  <script src="/dashboard.js?v=20260712"></script>
+</body>
+</html>
