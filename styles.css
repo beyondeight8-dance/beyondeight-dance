@@ -6482,3 +6482,83 @@ body.generated-minimal .published-cards article {
     min-height: 168px !important;
   }
 }
+
+/* SaaS architecture refinement: preserve the current visual system while reducing scroll fatigue. */
+.hero {
+  min-height: auto !important;
+  padding-top: clamp(48px, 5vw, 76px) !important;
+  padding-bottom: clamp(50px, 5.5vw, 82px) !important;
+}
+
+.feature-strip {
+  margin-top: 0 !important;
+  padding-top: clamp(34px, 4vw, 54px) !important;
+  padding-bottom: clamp(56px, 6vw, 88px) !important;
+}
+
+.how-section,
+.product-section,
+.pricing-section,
+.themes-section,
+.demo-section {
+  min-height: auto !important;
+  padding-top: clamp(58px, 6vw, 92px) !important;
+  padding-bottom: clamp(58px, 6vw, 92px) !important;
+}
+
+.launch-cta {
+  margin-top: clamp(22px, 3vw, 34px) !important;
+  margin-bottom: clamp(52px, 5vw, 76px) !important;
+}
+
+.section-heading {
+  margin-bottom: clamp(24px, 3vw, 38px) !important;
+}
+
+.themes-section {
+  padding-bottom: clamp(50px, 5vw, 76px) !important;
+}
+
+.demo-section {
+  padding-top: clamp(54px, 5.5vw, 84px) !important;
+}
+
+.feature-card,
+.steps-grid,
+.product-platform,
+.pricing-grid,
+.theme-grid,
+.demo-layout {
+  margin-top: clamp(20px, 2.5vw, 34px) !important;
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .feature-strip,
+  .how-section,
+  .product-section,
+  .pricing-section,
+  .themes-section,
+  .demo-section {
+    padding-top: clamp(46px, 8vw, 68px) !important;
+    padding-bottom: clamp(46px, 8vw, 68px) !important;
+  }
+
+  .launch-cta {
+    margin-top: 18px !important;
+    margin-bottom: 58px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero,
+  .feature-strip,
+  .how-section,
+  .product-section,
+  .pricing-section,
+  .themes-section,
+  .demo-section {
+    padding-top: clamp(38px, 9vw, 58px) !important;
+    padding-bottom: clamp(38px, 9vw, 62px) !important;
+  }
+}

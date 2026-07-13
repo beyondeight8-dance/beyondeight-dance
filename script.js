@@ -340,8 +340,9 @@ const updateHeaderForAuth = async () => {
   if (loggedInAccount) loggedInAccount.hidden = !loggedIn;
   if (userAvatar && loggedIn) userAvatar.textContent = initialsFor(currentUser);
   const route = loggedIn ? await beyondEight.routeForUser?.(currentUser).catch(() => "/dashboard/") : "/dashboard/";
+  const needsOnboarding = route?.includes("onboarding=1");
   dashboardLinks.forEach((link) => {
-    link.href = route?.startsWith("/?onboarding") ? "/?onboarding=1" : "/dashboard/";
+    link.href = needsOnboarding ? route : "/dashboard/";
   });
   openSetupButtons.forEach((button) => {
     if (!loggedIn) {
@@ -349,7 +350,7 @@ const updateHeaderForAuth = async () => {
       return;
     }
     button.dataset.originalText ||= button.textContent;
-    button.textContent = route?.startsWith("/?onboarding") ? "Continue setup" : "Go to Dashboard";
+    button.textContent = needsOnboarding ? "Continue setup" : "Go to Dashboard";
   });
 };
 
@@ -750,7 +751,7 @@ const openSetup = async (event) => {
     return;
   }
   const route = await beyondEight.routeForUser?.(currentUser).catch(() => null);
-  if (route && !route.startsWith("/?onboarding")) {
+  if (route && !route.includes("onboarding=1")) {
     window.location.href = route;
     return;
   }
@@ -770,7 +771,10 @@ const completeAuthFlow = async () => {
   if (pendingSetupAfterAuth) {
     pendingSetupAfterAuth = false;
     openSetupDirect();
+    return;
   }
+  const route = currentUser ? await beyondEight.routeForUser?.(currentUser).catch(() => "/dashboard/") : "/dashboard/";
+  window.location.href = route || "/dashboard/";
 };
 
 authForm?.addEventListener("submit", async (event) => {

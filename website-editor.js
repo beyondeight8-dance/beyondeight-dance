@@ -32,7 +32,7 @@
     const businessId = new URLSearchParams(window.location.search).get("business");
     const business = businesses.find((item) => item.id === businessId) || businesses[0];
     if (!business) {
-      window.location.replace("/?onboarding=1");
+      window.location.replace("/dashboard/?onboarding=1");
       return;
     }
     const bundle = await app.getBusinessBundle(business.id);

@@ -7,6 +7,8 @@
     String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
 
   const publicUrl = (business) => `${window.location.origin}/${business.slug}`;
+  const displayName = (user) =>
+    user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "there";
 
   const renderWorkspaceSelector = (businesses) => {
     root.innerHTML = `
@@ -29,14 +31,14 @@
       </section>`;
   };
 
-  const renderDashboard = async (business, businesses) => {
+  const renderDashboard = async (business, businesses, user) => {
     if (!business) {
       root.innerHTML = `
         <section class="dashboard-hero">
-          <p class="eyebrow">Continue setup</p>
-          <h1>Continue setting up your website.</h1>
-          <p>Your account is ready. Finish onboarding to publish your first BeyondEight website.</p>
-          <a class="primary-button" href="/?onboarding=1">Continue setup</a>
+          <p class="eyebrow">Private workspace</p>
+          <h1>Continue building your website.</h1>
+          <p>Welcome back, ${esc(displayName(user))}. Your account is ready. Start onboarding to create your BeyondEight website and dashboard.</p>
+          <a class="primary-button" href="/?onboarding=1&app=1">Begin onboarding</a>
         </section>`;
       return;
     }
@@ -49,14 +51,14 @@
     const bundle = await app.getBusinessBundle(business.id);
     const website = bundle.website;
     const isPublished = Boolean(website?.published);
-    const continueHref = business.onboarding_completed ? `/dashboard/website/?business=${business.id}` : `/?onboarding=1&business=${business.id}&step=${business.current_onboarding_step || 0}`;
+    const continueHref = business.onboarding_completed ? `/dashboard/website/?business=${business.id}` : `/?onboarding=1&app=1&business=${business.id}&step=${business.current_onboarding_step || 0}`;
 
     root.innerHTML = `
       <section class="dashboard-hero">
         <p class="eyebrow">Owner dashboard</p>
-        <h1>${esc(business.business_name)}</h1>
-        <p>${esc(business.tagline || "Manage your BeyondEight website, registrations, and launch tools.")}</p>
-        ${!business.onboarding_completed ? `<a class="primary-button" href="${continueHref}">Continue setting up your website</a>` : ""}
+        <h1>Welcome back, ${esc(displayName(user))}.</h1>
+        <p>${business.onboarding_completed ? `Manage ${esc(business.business_name)} from one private workspace.` : `Continue building ${esc(business.business_name)}. Your progress is saved as you go.`}</p>
+        ${!business.onboarding_completed ? `<a class="primary-button" href="${continueHref}">Continue Building Your Website</a>` : ""}
       </section>
       <section class="dashboard-overview">
         <article class="dashboard-card dashboard-status">
@@ -80,7 +82,7 @@
         </article>
       </section>
       <section class="dashboard-tools">
-        ${["Manage Classes", "Registrations", "Payments", "Students", "Analytics", "Settings"]
+        ${["Classes", "Registrations", "Students", "Payments", "Analytics", "Marketing", "Settings"]
           .map((item) => `<button type="button">${item}<small>Coming next</small></button>`)
           .join("")}
       </section>`;
@@ -97,7 +99,7 @@
     const businesses = await app.listAccessibleBusinesses(user.id);
     const requestedBusinessId = new URLSearchParams(window.location.search).get("business");
     const business = businesses.find((item) => item.id === requestedBusinessId) || businesses[0] || null;
-    await renderDashboard(business, businesses);
+    await renderDashboard(business, businesses, user);
   } catch (error) {
     console.warn("Dashboard failed:", error);
     root.innerHTML = `<section class="route-loading"><h1>We could not load your dashboard.</h1><p>Please refresh or sign in again.</p><a class="primary-button" href="/">Back home</a></section>`;
