@@ -293,24 +293,37 @@ let setupLaunched = false;
 let generatedSiteUrl = "";
 let authMode = "signup";
 let pendingSetupAfterAuth = false;
+let currentUser = null;
+let currentBusinessId = null;
+let authReady = false;
+let saveTimer;
 
-const authStorageKey = "beyondeightAuth";
-
-const isAuthenticated = () => {
-  try {
-    return localStorage.getItem(authStorageKey) === "true" || sessionStorage.getItem(authStorageKey) === "true";
-  } catch {
-    return false;
+const supabaseUrl = "https://awycvqzoijlwivxjgzak.supabase.co";
+const supabaseAnonKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3eWN2cXpvaWpsd2l2eGpnemFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NzYwMjcsImV4cCI6MjA5OTQ1MjAyN30.H-QFjkNaiAc1gPefQ84CaS5-eSRAIRjuh3OTDgSF6Ak";
+const supabaseSdk = window.supabase || globalThis.supabase || (typeof supabase !== "undefined" ? supabase : null);
+const supabaseClient = supabaseSdk?.createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
   }
+});
+window.beyondEightSupabaseReady = Boolean(supabaseClient);
+document.documentElement.dataset.supabaseReady = String(Boolean(supabaseClient));
+
+const isAuthenticated = () => Boolean(currentUser);
+
+const setAuthError = (message = "") => {
+  if (authError) authError.textContent = message;
 };
 
-const setAuthenticated = () => {
-  try {
-    localStorage.setItem(authStorageKey, "true");
-  } catch {
-    sessionStorage.setItem(authStorageKey, "true");
-  }
+const setAuthBusy = (isBusy) => {
+  if (authSubmit) authSubmit.disabled = isBusy;
+  if (authGoogle) authGoogle.disabled = isBusy;
 };
+
+const getAuthRedirectUrl = () => window.location.href.split("#")[0];
 
 const setAuthMode = (mode) => {
   authMode = mode;
@@ -382,6 +395,8 @@ const getSetupState = () => {
   const whatYouDo = field("whatYouDo", "We create empowering dance experiences for adults, blending technique, confidence, and community.");
   const mission = field("mission", "To empower dancers to express themselves, build confidence, and chase their dreams.");
   const whyJoin = field("whyJoin", "Our classes are welcoming, challenging, and designed to help dancers grow while feeling supported.");
+  const businessType = field("businessType", "Independent Choreographer");
+  const brandVibe = form?.querySelector('input[name="brandVibe"]:checked')?.value || "Elegant";
   const theme = form?.querySelector('input[name="setupTheme"]:checked')?.value || "Default Elegant";
   const pages = Array.from(form?.querySelectorAll('input[name="pages"]:checked') || []).map((item) => item.value);
   const styles = Array.from(form?.querySelectorAll('input[name="styles"]:checked') || []).map((item) => item.value);
@@ -389,16 +404,60 @@ const getSetupState = () => {
   return {
     businessName,
     tagline,
+    businessType,
+    brandVibe,
     whatYouDo,
     mission,
     whyJoin,
     theme,
     pages,
     styles,
+    instagram: field("instagram", ""),
+    tiktok: field("tiktok", ""),
+    youtube: field("youtube", ""),
+    website: field("website", ""),
     domain: titleCaseDomain(businessName),
     headline: tagline || "Move with purpose. Dance with passion.",
     logoText
   };
+};
+
+const setFormValue = (name, value) => {
+  const field = setupForm?.elements?.[name];
+  if (!field || value == null) return;
+  field.value = value;
+};
+
+const setCheckedValues = (name, values = []) => {
+  const selectedValues = new Set(values);
+  setupForm?.querySelectorAll(`input[name="${name}"]`).forEach((input) => {
+    input.checked = selectedValues.has(input.value);
+  });
+};
+
+const setRadioValue = (name, value) => {
+  if (!value) return;
+  const radio = setupForm?.querySelector(`input[name="${name}"][value="${CSS.escape(value)}"]`);
+  if (radio) radio.checked = true;
+};
+
+const applySetupState = (state = {}) => {
+  if (!setupForm || !state) return;
+  setFormValue("businessName", state.businessName);
+  setFormValue("tagline", state.tagline);
+  setFormValue("businessType", state.businessType);
+  setFormValue("whatYouDo", state.whatYouDo);
+  setFormValue("mission", state.mission);
+  setFormValue("whyJoin", state.whyJoin);
+  setFormValue("instagram", state.instagram);
+  setFormValue("tiktok", state.tiktok);
+  setFormValue("youtube", state.youtube);
+  setFormValue("website", state.website);
+  setCheckedValues("styles", state.styles);
+  setCheckedValues("pages", state.pages);
+  setRadioValue("brandVibe", state.brandVibe);
+  setRadioValue("setupTheme", state.theme);
+  updateSetupPreview();
 };
 
 const setText = (selector, value) => {
@@ -432,6 +491,112 @@ const updateSetupPreview = () => {
   updateSetupPreview.timer = window.setTimeout(() => {
     document.querySelector(".setup-ai-preview")?.classList.remove("is-updating");
   }, 220);
+};
+
+const ensureProfile = async () => {
+  if (!supabaseClient || !currentUser) return;
+  const email = currentUser.email || "";
+  const fullName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || email.split("@")[0] || "BeyondEight user";
+  const { error } = await supabaseClient.from("profiles").upsert(
+    {
+      id: currentUser.id,
+      email,
+      full_name: fullName,
+      updated_at: new Date().toISOString()
+    },
+    { onConflict: "id" }
+  );
+  if (error) throw error;
+};
+
+const saveOnboardingProgress = async ({ launched = false } = {}) => {
+  if (!supabaseClient || !currentUser || !setupForm) return;
+  const state = getSetupState();
+  try {
+    await ensureProfile();
+    const { data: business, error: businessError } = await supabaseClient
+      .from("businesses")
+      .upsert(
+        {
+          owner_id: currentUser.id,
+          business_name: state.businessName,
+          tagline: state.tagline,
+          business_type: state.businessType,
+          dance_styles: state.styles,
+          brand_vibe: state.brandVibe,
+          theme: state.theme,
+          selected_pages: state.pages,
+          website_status: launched ? "launched" : "draft",
+          updated_at: new Date().toISOString()
+        },
+        { onConflict: "owner_id" }
+      )
+      .select("id")
+      .single();
+
+    if (businessError) throw businessError;
+    currentBusinessId = business?.id || currentBusinessId;
+
+    const { error: onboardingError } = await supabaseClient.from("onboarding_sessions").upsert(
+      {
+        owner_id: currentUser.id,
+        business_id: currentBusinessId,
+        step_index: setupIndex,
+        setup_state: state,
+        launched: launched || setupLaunched,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: "owner_id" }
+    );
+
+    if (onboardingError) throw onboardingError;
+    if (setupMessage && setupModal?.classList.contains("is-open")) {
+      setupMessage.textContent = launched ? "Your website setup is saved and ready." : "Progress saved.";
+    }
+  } catch (error) {
+    console.warn("Supabase save failed:", error);
+    if (setupMessage && setupModal?.classList.contains("is-open")) {
+      setupMessage.textContent = "Supabase is connected, but saving needs the database schema from supabase-schema.sql.";
+    }
+  }
+};
+
+const queueOnboardingSave = () => {
+  if (!currentUser || !supabaseClient) return;
+  window.clearTimeout(saveTimer);
+  saveTimer = window.setTimeout(() => saveOnboardingProgress(), 650);
+};
+
+const restoreOnboardingProgress = async () => {
+  if (!supabaseClient || !currentUser) return;
+  try {
+    await ensureProfile();
+    const { data: business, error: businessError } = await supabaseClient
+      .from("businesses")
+      .select("id")
+      .eq("owner_id", currentUser.id)
+      .maybeSingle();
+
+    if (businessError) throw businessError;
+    currentBusinessId = business?.id || null;
+
+    const { data, error } = await supabaseClient
+      .from("onboarding_sessions")
+      .select("step_index, setup_state, launched, business_id")
+      .eq("owner_id", currentUser.id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return;
+    currentBusinessId = data.business_id || currentBusinessId;
+    applySetupState(data.setup_state);
+    setupIndex = Math.min(Math.max(Number(data.step_index) || 0, 0), setupSteps.length - 1);
+    setupLaunched = Boolean(data.launched);
+    updateSetupStep();
+  } catch (error) {
+    console.warn("Supabase restore failed:", error);
+    setAuthError("Connected to Supabase. Run supabase-schema.sql in your project to enable saved onboarding.");
+  }
 };
 
 const themeClassFor = (theme) => {
@@ -472,7 +637,7 @@ const generatedSiteHTML = (state) => {
 </head>
 <body class="${themeClassFor(state.theme)}">
   <div class="site">
-    <header><div class="brand">${state.businessName}</div><nav class="nav">${pages}</nav><div class="actions"><button class="btn secondary">Edit Page</button><button class="btn">Admin Dashboard</button><button class="btn secondary" onclick="localStorage.removeItem('beyondeightAuth');sessionStorage.removeItem('beyondeightAuth');this.textContent='Logged out';">Log out</button></div></header>
+    <header><div class="brand">${state.businessName}</div><nav class="nav">${pages}</nav><div class="actions"><button class="btn secondary">Edit Page</button><button class="btn">Admin Dashboard</button><button class="btn secondary" onclick="this.textContent='Logged out';">Log out</button></div></header>
     <main>
       <section class="hero">
         <div><p class="eyebrow">${state.theme}</p><h1>${state.headline}</h1><p class="lead">${state.whatYouDo}</p><div class="tags">${classTags}</div><a class="btn" href="#register">Register now</a></div>
@@ -539,20 +704,24 @@ const openSetupDirect = (event) => {
   setupModal.classList.add("is-open");
   setupModal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
-  setupIndex = 0;
-  setupLaunched = false;
   updateSetupPreview();
   updateSetupStep();
   setupModal.querySelector("input, button")?.focus();
 };
 
-const openSetup = (event) => {
+const openSetup = async (event) => {
   event?.preventDefault();
+  if (!authReady && supabaseClient) {
+    const { data } = await supabaseClient.auth.getSession();
+    currentUser = data.session?.user || null;
+    authReady = true;
+  }
   if (!isAuthenticated()) {
     pendingSetupAfterAuth = true;
     openAuth();
     return;
   }
+  await restoreOnboardingProgress();
   openSetupDirect(event);
 };
 
@@ -562,19 +731,59 @@ const closeSetup = () => {
   document.body.classList.remove("modal-open");
 };
 
-// Prototype only: production authentication must use a secure backend or authentication provider.
-authForm?.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const validationMessage = validateAuthForm();
-  if (validationMessage) {
-    if (authError) authError.textContent = validationMessage;
-    return;
-  }
-  setAuthenticated();
+const completeAuthFlow = async () => {
+  await restoreOnboardingProgress();
   closeAuth();
   if (pendingSetupAfterAuth) {
     pendingSetupAfterAuth = false;
     openSetupDirect();
+  }
+};
+
+authForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!supabaseClient) {
+    setAuthError("Supabase could not load. Check your connection and refresh.");
+    return;
+  }
+  const validationMessage = validateAuthForm();
+  if (validationMessage) {
+    setAuthError(validationMessage);
+    return;
+  }
+
+  setAuthBusy(true);
+  setAuthError("");
+  const email = authForm.elements.authEmail.value.trim();
+  const password = authForm.elements.authPassword.value;
+
+  try {
+    const authResponse =
+      authMode === "login"
+        ? await supabaseClient.auth.signInWithPassword({ email, password })
+        : await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { accepted_terms: true },
+              emailRedirectTo: getAuthRedirectUrl()
+            }
+          });
+
+    if (authResponse.error) throw authResponse.error;
+
+    if (!authResponse.data.session && authMode === "signup") {
+      currentUser = null;
+      setAuthError("Account created. If email confirmation is enabled, check your inbox before logging in.");
+      return;
+    }
+
+    currentUser = authResponse.data.session?.user || null;
+    await completeAuthFlow();
+  } catch (error) {
+    setAuthError(error.message || "Supabase could not complete authentication.");
+  } finally {
+    setAuthBusy(false);
   }
 });
 
@@ -582,18 +791,82 @@ authToggle?.addEventListener("click", () => {
   setAuthMode(authMode === "login" ? "signup" : "login");
 });
 
-authGoogle?.addEventListener("click", () => {
-  setAuthenticated();
-  closeAuth();
-  if (pendingSetupAfterAuth) {
-    pendingSetupAfterAuth = false;
-    openSetupDirect();
+authGoogle?.addEventListener("click", async () => {
+  if (!supabaseClient) {
+    setAuthError("Supabase could not load. Check your connection and refresh.");
+    return;
+  }
+  setAuthBusy(true);
+  setAuthError("");
+  try {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: getAuthRedirectUrl() }
+    });
+    if (error) throw error;
+  } catch (error) {
+    setAuthError(error.message || "Google sign-in is not configured yet in Supabase.");
+    setAuthBusy(false);
   }
 });
 
-authForgot?.addEventListener("click", () => {
-  if (authError) authError.textContent = "Password reset is a prototype placeholder. A production app would send a secure reset email.";
+authForgot?.addEventListener("click", async () => {
+  if (!supabaseClient) {
+    setAuthError("Supabase could not load. Check your connection and refresh.");
+    return;
+  }
+  const email = authForm?.elements.authEmail?.value.trim();
+  if (!email) {
+    setAuthError("Enter your email address first.");
+    return;
+  }
+  try {
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: getAuthRedirectUrl()
+    });
+    if (error) throw error;
+    setAuthError("Password reset email requested. Supabase email limits may apply until custom SMTP is connected.");
+  } catch (error) {
+    setAuthError(error.message || "Could not request a password reset.");
+  }
 });
+
+const initSupabaseAuth = async () => {
+  if (!supabaseClient) {
+    setAuthError("Supabase could not load. Check your connection and refresh.");
+    authReady = true;
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (error) throw error;
+    currentUser = data.session?.user || null;
+    authReady = true;
+    if (currentUser) await restoreOnboardingProgress();
+
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      currentUser = session?.user || null;
+      if (event === "SIGNED_OUT") {
+        currentBusinessId = null;
+        setupIndex = 0;
+        setupLaunched = false;
+        updateSetupStep();
+        return;
+      }
+      if (currentUser && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")) {
+        await restoreOnboardingProgress();
+        if (pendingSetupAfterAuth && authModal?.classList.contains("is-open")) {
+          await completeAuthFlow();
+        }
+      }
+    });
+  } catch (error) {
+    authReady = true;
+    console.warn("Supabase session restore failed:", error);
+    setAuthError(error.message || "Supabase session restore failed.");
+  }
+};
 
 closeAuthButtons.forEach((button) => button.addEventListener("click", closeAuth));
 openSetupButtons.forEach((button) => button.addEventListener("click", openSetup));
@@ -607,17 +880,21 @@ closeSetupButtons.forEach((button) => button.addEventListener("click", closeSetu
 setupPrevButton?.addEventListener("click", () => {
   setupIndex = Math.max(0, setupIndex - 1);
   updateSetupStep();
+  queueOnboardingSave();
 });
-setupNextButton?.addEventListener("click", () => {
+setupNextButton?.addEventListener("click", async () => {
   if (!stepIsValid()) return;
+  await saveOnboardingProgress();
   setupIndex = Math.min(setupSteps.length - 1, setupIndex + 1);
   updateSetupStep();
+  queueOnboardingSave();
 });
-setupForm?.addEventListener("submit", (event) => {
+setupForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!stepIsValid()) return;
   launchGeneratedWebsite();
   setupLaunched = true;
+  await saveOnboardingProgress({ launched: true });
   updateSetupStep();
   setupMessage.textContent = "Your website setup is ready.";
 });
@@ -628,8 +905,15 @@ viewGeneratedSiteButton?.addEventListener("click", () => {
     viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
   }
 });
-setupForm?.addEventListener("input", updateSetupPreview);
-setupForm?.addEventListener("change", updateSetupPreview);
+setupForm?.addEventListener("input", () => {
+  updateSetupPreview();
+  queueOnboardingSave();
+});
+setupForm?.addEventListener("change", () => {
+  updateSetupPreview();
+  queueOnboardingSave();
+});
+initSupabaseAuth();
 updateSetupStep();
 updateSetupPreview();
 
