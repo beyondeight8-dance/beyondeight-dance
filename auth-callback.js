@@ -21,6 +21,11 @@
 
     show("Preparing your profile...");
     await app.ensureProfile(user);
+    const pendingOwnerAction = window.localStorage.getItem("beyondeight.pendingOwnerAction");
+    if (pendingOwnerAction) {
+      window.location.replace(`/?onboarding=1&authAction=${encodeURIComponent(pendingOwnerAction)}`);
+      return;
+    }
     show("Loading your workspace...");
     const destination = await app.routeForUser(user);
     window.location.replace(destination);

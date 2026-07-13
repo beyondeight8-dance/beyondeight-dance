@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260713-app">
+  <link rel="stylesheet" href="styles.css?v=20260713-ownerflow-builder">
 </head>
 <body>
   <header class="site-header">
@@ -29,7 +29,7 @@
     </nav>
     <div class="header-account" data-auth-state="logged-out">
       <button class="header-login" type="button" data-open-auth-login>Log in</button>
-      <button class="header-cta" type="button" data-open-auth-signup>Start building free</button>
+      <button class="header-cta" type="button" data-open-setup>Start building free</button>
     </div>
     <div class="header-account header-account-user" data-auth-state="logged-in" hidden>
       <a class="header-login" href="/dashboard/" data-dashboard-link>Dashboard</a>
@@ -533,7 +533,7 @@
       <div class="setup-backdrop" data-close-setup></div>
       <section class="setup-panel website-setup-panel">
         <button class="modal-close setup-close" type="button" aria-label="Close setup" data-close-setup>Close</button>
-        <div class="setup-shell-heading">BeyondEight sign up & website setup</div>
+        <div class="setup-shell-heading">BeyondEight website setup</div>
         <form class="setup-form">
           <fieldset class="setup-step is-active" data-setup-step="0">
             <div class="setup-step-header">
@@ -543,7 +543,7 @@
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column">
               <div class="setup-fields setup-stack">
-                <label>Business Name<input type="text" name="businessName" value="Beyond Movement" required></label>
+                <label>Website or Business Name<input type="text" name="businessName" value="Beyond Movement" required></label>
                 <label>Public Website URL<input type="text" name="businessSlug" value="beyond-movement" maxlength="50" required><small class="slug-status" data-slug-status>Available format.</small></label>
                 <label>Tagline (optional)<input type="text" name="tagline" value="Where confidence meets choreography."></label>
                 <label>Business Type<select name="businessType"><option>Independent Choreographer</option><option>Studio</option><option>Dance Team</option><option>Event Organizer</option></select></label>
@@ -873,9 +873,9 @@
     <p>Beyond the 8 counts. Beyond the limits.</p>
   </footer>
 
-  <script src="assets/supabase.min.js?v=20260713"></script>
-  <script src="app-config.js?v=20260713"></script>
-  <script src="app-services.js?v=20260713"></script>
-  <script src="script.js?v=20260713"></script>
+  <script src="assets/supabase.min.js?v=20260713-ownerflow"></script>
+  <script src="app-config.js?v=20260713-ownerflow"></script>
+  <script src="app-services.js?v=20260713-ownerflow"></script>
+  <script src="script.js?v=20260713-ownerflow"></script>
 </body>
 </html>

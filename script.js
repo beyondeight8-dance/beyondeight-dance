@@ -306,6 +306,10 @@ let currentBusinessId = null;
 let authReady = false;
 let saveTimer;
 let slugManuallyEdited = false;
+let pendingOwnerAction = "";
+
+const GUEST_SETUP_KEY = "beyondeight.guestWebsiteDraft";
+const PENDING_OWNER_ACTION_KEY = "beyondeight.pendingOwnerAction";
 
 const beyondEight = window.BeyondEight || {};
 const supabaseClient = beyondEight.client;
@@ -381,6 +385,12 @@ const openAuth = (mode = "signup") => {
   authModal.querySelector("input, button")?.focus();
 };
 
+const prepareAuthForOwnerAction = (action = "") => {
+  pendingSetupAfterAuth = true;
+  pendingOwnerAction = action;
+  if (action) window.localStorage.setItem(PENDING_OWNER_ACTION_KEY, action);
+};
+
 const closeAuth = () => {
   if (!authModal) return;
   authModal.classList.remove("is-open");
@@ -452,6 +462,40 @@ const getSetupState = () => {
     headline: tagline || "Move with purpose. Dance with passion.",
     logoText
   };
+};
+
+const saveGuestSetupDraft = () => {
+  if (!setupForm) return;
+  window.localStorage.setItem(
+    GUEST_SETUP_KEY,
+    JSON.stringify({
+      state: getSetupState(),
+      stepIndex: setupIndex,
+      savedAt: new Date().toISOString()
+    })
+  );
+};
+
+const restoreGuestSetupDraft = () => {
+  try {
+    const raw = window.localStorage.getItem(GUEST_SETUP_KEY);
+    if (!raw) return false;
+    const draft = JSON.parse(raw);
+    if (draft?.state) applySetupState(draft.state);
+    if (Number.isFinite(Number(draft?.stepIndex))) {
+      setupIndex = Math.min(Math.max(Number(draft.stepIndex), 0), setupSteps.length - 1);
+    }
+    updateSetupStep();
+    return true;
+  } catch (error) {
+    console.warn("Could not restore local website draft:", error);
+    return false;
+  }
+};
+
+const clearGuestSetupDraft = () => {
+  window.localStorage.removeItem(GUEST_SETUP_KEY);
+  window.localStorage.removeItem(PENDING_OWNER_ACTION_KEY);
 };
 
 const setFormValue = (name, value) => {
@@ -561,7 +605,14 @@ const ensureProfile = async () => {
 };
 
 const saveOnboardingProgress = async ({ launched = false } = {}) => {
-  if (!supabaseClient || !currentUser || !setupForm) return;
+  if (!setupForm) return;
+  if (!currentUser || !supabaseClient) {
+    saveGuestSetupDraft();
+    if (setupMessage && setupModal?.classList.contains("is-open")) {
+      setupMessage.textContent = "Website draft saved on this device. Create an account when you are ready to publish or edit.";
+    }
+    return;
+  }
   const state = getSetupState();
   try {
     if (!(await validateCurrentSlug())) return;
@@ -585,7 +636,6 @@ const saveOnboardingProgress = async ({ launched = false } = {}) => {
 };
 
 const queueOnboardingSave = () => {
-  if (!currentUser || !supabaseClient) return;
   window.clearTimeout(saveTimer);
   saveTimer = window.setTimeout(() => saveOnboardingProgress(), 650);
 };
@@ -746,8 +796,8 @@ const openSetup = async (event) => {
     authReady = true;
   }
   if (!isAuthenticated()) {
-    pendingSetupAfterAuth = true;
-    openAuth("signup");
+    restoreGuestSetupDraft();
+    openSetupDirect(event);
     return;
   }
   const route = await beyondEight.routeForUser?.(currentUser).catch(() => null);
@@ -766,11 +816,18 @@ const closeSetup = () => {
 };
 
 const completeAuthFlow = async () => {
+  restoreGuestSetupDraft();
   await restoreOnboardingProgress();
   closeAuth();
   if (pendingSetupAfterAuth) {
     pendingSetupAfterAuth = false;
-    openSetupDirect();
+    const action = pendingOwnerAction || window.localStorage.getItem(PENDING_OWNER_ACTION_KEY);
+    pendingOwnerAction = "";
+    if (action === "publish") {
+      await publishCurrentSetup();
+    } else {
+      openSetupDirect();
+    }
     return;
   }
   const route = currentUser ? await beyondEight.routeForUser?.(currentUser).catch(() => "/dashboard/") : "/dashboard/";
@@ -836,6 +893,7 @@ authGoogle?.addEventListener("click", async () => {
   setAuthBusy(true);
   setAuthError("");
   try {
+    if (setupModal?.classList.contains("is-open")) saveGuestSetupDraft();
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: getAuthRedirectUrl() }
@@ -888,9 +946,14 @@ const initSupabaseAuth = async () => {
       openAuth("login");
     }
     if (params.get("onboarding") === "1" && currentUser) {
+      restoreGuestSetupDraft();
       const step = Number(params.get("step"));
       if (!Number.isNaN(step)) setupIndex = Math.min(Math.max(step, 0), setupSteps.length - 1);
       openSetupDirect();
+      const authAction = params.get("authAction") || window.localStorage.getItem(PENDING_OWNER_ACTION_KEY);
+      if (authAction === "publish") {
+        window.setTimeout(() => publishCurrentSetup(), 250);
+      }
     }
 
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
@@ -950,19 +1013,13 @@ setupNextButton?.addEventListener("click", async () => {
   updateSetupStep();
   queueOnboardingSave();
 });
-setupForm?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (!stepIsValid()) return;
-  if (!currentUser) {
-    pendingSetupAfterAuth = true;
-    openAuth("signup");
-    return;
-  }
+const publishCurrentSetup = async () => {
   if (!(await validateCurrentSlug())) return;
   try {
     setupMessage.textContent = "Publishing your website...";
     setupSubmitButton.disabled = true;
     await launchGeneratedWebsite();
+    clearGuestSetupDraft();
     setupLaunched = true;
     updateSetupStep();
     setupMessage.textContent = `Your website is live at ${window.location.origin}${generatedSiteUrl}`;
@@ -975,6 +1032,19 @@ setupForm?.addEventListener("submit", async (event) => {
   } finally {
     setupSubmitButton.disabled = false;
   }
+};
+
+setupForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!stepIsValid()) return;
+  saveGuestSetupDraft();
+  if (!currentUser) {
+    prepareAuthForOwnerAction("publish");
+    setupMessage.textContent = "Your website path is ready. Create an account to publish it and manage edits later.";
+    openAuth("signup");
+    return;
+  }
+  await publishCurrentSetup();
 });
 viewGeneratedSiteButton?.addEventListener("click", () => {
   if (generatedSiteUrl) {
