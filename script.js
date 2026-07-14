@@ -50,6 +50,8 @@ const specialtyInput = document.querySelector("[data-specialty-input]");
 const specialtyTags = document.querySelector("[data-specialty-tags]");
 const specialtySuggestions = document.querySelector("[data-specialty-suggestions]");
 const logoUploadInput = document.querySelector("[data-logo-upload]");
+const logoUploadStatus = document.querySelector("[data-logo-upload-status]");
+const logoUploadLabel = document.querySelector(".setup-logo-upload");
 const heroMockup = document.querySelector(".dashboard-mockup");
 const heroView = document.querySelector("[data-hero-view]");
 const heroNavItems = document.querySelectorAll("[data-hero-nav]");
@@ -749,6 +751,17 @@ const logoHTMLFor = (state) => {
   return `<span class="logo-lockup logo-font-${state.logoFont || "serif"}">${image}<span>${state.logoText}</span></span>`;
 };
 
+const updateLogoUploadState = (fileName = "") => {
+  logoUploadLabel?.classList.toggle("is-uploaded", Boolean(logoImageDataUrl));
+  const uploadAction = logoUploadLabel?.querySelector("strong");
+  if (uploadAction) uploadAction.textContent = logoImageDataUrl ? "Change image" : "Upload image";
+  if (logoUploadStatus) {
+    logoUploadStatus.textContent = logoImageDataUrl
+      ? `${fileName || "Logo image"} selected. It will appear beside your wordmark.`
+      : "Optional. Choose a logo image from your computer.";
+  }
+};
+
 const updateSetupPreview = () => {
   if (!setupForm) return;
   const state = getSetupState();
@@ -758,6 +771,7 @@ const updateSetupPreview = () => {
   setText("[data-live-quote]", state.mission);
   setHTML("[data-live-logo]", logoHTMLFor(state));
   setHTML("[data-live-logo-small]", logoHTMLFor(state));
+  updateLogoUploadState();
   setText("[data-live-headline]", state.headline);
   setText("[data-live-about]", aboutText);
   document.querySelectorAll("[data-live-specialties]").forEach((node) => {
@@ -1394,6 +1408,8 @@ logoUploadInput?.addEventListener("change", () => {
   reader.addEventListener("load", () => {
     logoImageDataUrl = String(reader.result || "");
     updateSetupPreview();
+    updateLogoUploadState(file.name);
+    saveGuestSetupDraft();
     queueOnboardingSave();
   });
   reader.readAsDataURL(file);
