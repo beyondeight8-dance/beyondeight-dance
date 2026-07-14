@@ -244,7 +244,7 @@
 
   const publishWebsite = async ({ user, state, stepIndex, businessId }) => {
     const business = await saveOnboarding({ user, state, stepIndex, businessId, launched: true });
-    const { data: website, error: websiteError } = await client
+    let websiteResponse = await client
       .from("websites")
       .upsert(
         {
@@ -258,7 +258,26 @@
       )
       .select("*")
       .single();
-    if (websiteError) throw websiteError;
+    if (websiteResponse.error && /owner_id/i.test(websiteResponse.error.message || "")) {
+      console.warn("websites.owner_id is a legacy required column. Run supabase-repair-legacy-owner-id.sql.");
+      websiteResponse = await client
+        .from("websites")
+        .upsert(
+          {
+            business_id: business.id,
+            owner_id: user.id,
+            theme: state.theme,
+            published: true,
+            published_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: "business_id" }
+        )
+        .select("*")
+        .single();
+    }
+    if (websiteResponse.error) throw websiteResponse.error;
+    const website = websiteResponse.data;
 
     const pages = (state.pages || ["Home", "About", "Classes", "Register", "Contact"]).map((title, index) => ({
       website_id: website.id,
@@ -276,8 +295,15 @@
       display_order: index
     }));
     if (pages.length) {
-      const { error: pagesError } = await client.from("website_pages").upsert(pages, { onConflict: "website_id,page_type" });
-      if (pagesError) throw pagesError;
+      let pagesResponse = await client.from("website_pages").upsert(pages, { onConflict: "website_id,page_type" });
+      if (pagesResponse.error && /owner_id/i.test(pagesResponse.error.message || "")) {
+        console.warn("website_pages.owner_id is a legacy required column. Run supabase-repair-legacy-owner-id.sql.");
+        pagesResponse = await client.from("website_pages").upsert(
+          pages.map((page) => ({ ...page, owner_id: user.id })),
+          { onConflict: "website_id,page_type" }
+        );
+      }
+      if (pagesResponse.error) throw pagesResponse.error;
     }
     return { business, website };
   };
