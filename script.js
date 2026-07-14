@@ -472,7 +472,7 @@ const getSetupState = () => {
   const mission = field("mission", "To empower dancers to express themselves, build confidence, and chase their dreams.");
   const whyJoin = field("whyJoin", "Our classes are welcoming, challenging, and designed to help dancers grow while feeling supported.");
   const brandVibe = form?.querySelector('input[name="brandVibe"]:checked')?.value || "Elegant";
-  const theme = form?.querySelector('input[name="setupTheme"]:checked')?.value || "Default Elegant";
+  const theme = form?.querySelector('input[name="setupTheme"]:checked')?.value || "Editorial Elegant";
   const pages = Array.from(form?.querySelectorAll('input[name="pages"]:checked') || []).map((item) => item.value);
   const styles = [...selectedSpecialties];
   const logoText = businessName.split(/\s+/).slice(0, 2).join("<br>").toUpperCase();
@@ -705,6 +705,17 @@ const updateSetupPreview = () => {
   setText("[data-live-theme]", state.theme);
   setText("[data-live-pages]", `${state.pages.length} Pages Selected`);
   setText("[data-live-domain]", state.domain);
+  setText(
+    "[data-live-socials]",
+    [
+      state.instagram && "Instagram",
+      state.tiktok && "TikTok",
+      state.youtube && "YouTube",
+      state.website && "Website"
+    ]
+      .filter(Boolean)
+      .join(", ") || "Add later"
+  );
   document.querySelector(".setup-ai-preview")?.classList.add("is-updating");
   window.clearTimeout(updateSetupPreview.timer);
   updateSetupPreview.timer = window.setTimeout(() => {
@@ -795,6 +806,12 @@ const themeClassFor = (theme) => {
     "Bold & Edgy": "generated-bold",
     "Soft & Graceful": "generated-soft",
     "Vibrant & Playful": "generated-vibrant",
+    "Editorial Elegant": "generated-elegant",
+    "Bold Performance": "generated-bold",
+    "Soft Contemporary": "generated-soft",
+    "Vibrant Bollywood": "generated-vibrant",
+    "Classical Heritage": "generated-soft",
+    "Urban Commercial": "generated-bold",
     "Minimal Black": "generated-minimal"
   };
   return map[theme] || "generated-elegant";

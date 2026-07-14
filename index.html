@@ -573,29 +573,16 @@
           <fieldset class="setup-step" data-setup-step="1">
             <div class="setup-step-header">
               <span class="setup-number">2</span>
-              <div><h2>Your Brand</h2><p>Tell us about your brand identity.</p></div>
+              <div><h2>Your Presence</h2><p>Add the places students can recognize and follow you.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
-            <div class="setup-two-column setup-brand-grid">
-              <div>
-                <span class="setup-label">How would you describe your brand?</span>
-                <div class="setup-card-options">
-                  <label><input type="radio" name="brandVibe" value="Elegant" checked><span>Elegant</span></label>
-                  <label><input type="radio" name="brandVibe" value="Bold"><span>Bold</span></label>
-                  <label><input type="radio" name="brandVibe" value="High Energy"><span>High Energy</span></label>
-                  <label><input type="radio" name="brandVibe" value="Minimal"><span>Minimal</span></label>
-                  <label><input type="radio" name="brandVibe" value="Feminine"><span>Feminine</span></label>
-                  <label><input type="radio" name="brandVibe" value="Luxury"><span>Luxury</span></label>
-                  <label><input type="radio" name="brandVibe" value="Urban"><span>Urban</span></label>
-                  <label><input type="radio" name="brandVibe" value="Artistic"><span>Artistic</span></label>
-                </div>
-                <label class="setup-logo-upload">Logo (optional)<span data-live-logo>BEYOND<br>MOVEMENT</span><button type="button">Change</button></label>
+            <div class="setup-two-column setup-presence-grid">
+              <div class="setup-presence-card">
+                <span class="setup-label">Upload Logo</span>
+                <label class="setup-logo-upload"><span data-live-logo>BEYOND<br>MOVEMENT</span><button type="button">Choose logo</button></label>
+                <p>If you skip this, we will create a clean wordmark from your brand name.</p>
               </div>
               <div class="setup-stack">
-                <div>
-                  <span class="setup-label">Brand Colors (optional)</span>
-                  <div class="setup-swatches"><span></span><span></span><span></span><span></span><span></span></div>
-                </div>
                 <label>Instagram<input type="text" name="instagram" value="@beyond.movement"></label>
                 <label>TikTok<input type="text" name="tiktok" value="@beyond.movement"></label>
                 <label>YouTube<input type="text" name="youtube" value="/beyondmovement"></label>
@@ -612,17 +599,17 @@
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column">
               <div class="setup-fields setup-stack">
-                <label>What do you offer?<textarea name="whatYouDo" maxlength="400">I create empowering choreography classes and workshops for adults. My work is all about building confidence, technique, and community.</textarea></label>
-                <label>Your Mission<textarea name="mission" maxlength="200">To empower dancers to express themselves, build confidence, and chase their dreams.</textarea></label>
-                <label>Why should dancers join?<textarea name="whyJoin" maxlength="200">Our classes are welcoming, challenging, and designed to help you grow while feeling supported every step of the way.</textarea></label>
+                <label>What do you teach?<textarea name="whatYouDo" maxlength="400">I teach choreography classes and workshops that help students build confidence, musicality, and performance quality.</textarea></label>
+                <label>What makes your classes different?<textarea name="mission" maxlength="240">My classes balance strong technique with a supportive room where dancers can take risks and find their own style.</textarea></label>
+                <label>What experience do students have when they train with you?<textarea name="whyJoin" maxlength="240">Students leave feeling challenged, seen, and excited to keep growing through movement.</textarea></label>
               </div>
-              <aside class="setup-ai-preview">
-                <span>AI Generated Content Preview</span>
-                <p>Home Headline</p>
+              <aside class="setup-ai-preview setup-story-preview">
+                <p>Homepage preview</p>
                 <h3 data-live-headline>Move with purpose. Dance with passion.</h3>
-                <p>About Us (preview)</p>
+                <p>Hero description</p>
+                <div data-live-quote>Students leave feeling challenged, seen, and excited to keep growing through movement.</div>
+                <p>About section</p>
                 <div data-live-about>Beyond Movement is a space for dancers to grow, express, and shine. We believe in confidence, creativity, and community.</div>
-                <button type="button">Regenerate Content</button>
               </aside>
             </div>
           </fieldset>
@@ -630,93 +617,46 @@
           <fieldset class="setup-step" data-setup-step="3">
             <div class="setup-step-header">
               <span class="setup-number">4</span>
-              <div><h2>Review Your Pages</h2><p>We preselected the pages most independent choreographers need. You can adjust these later.</p></div>
+              <div><h2>Choose Your Theme</h2><p>Pick a design that matches your brand.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
-            <div class="setup-two-column setup-pages-layout">
-              <div class="setup-pages">
-                <div>
-                  <span class="setup-label">Recommended Pages</span>
-                  <label><input type="checkbox" name="pages" value="Home" checked>Home</label>
-                  <label><input type="checkbox" name="pages" value="About" checked>About</label>
-                  <label><input type="checkbox" name="pages" value="Classes & Workshops" checked>Classes & Workshops</label>
-                  <label><input type="checkbox" name="pages" value="Gallery" checked>Gallery</label>
-                  <label><input type="checkbox" name="pages" value="Register" checked>Register</label>
-                  <label><input type="checkbox" name="pages" value="Contact" checked>Contact</label>
-                </div>
-                <div>
-                  <span class="setup-label">Optional Add-ons</span>
-                  <label><input type="checkbox" name="pages" value="Testimonials">Testimonials</label>
-                  <label><input type="checkbox" name="pages" value="FAQ" checked>FAQ</label>
-                  <label><input type="checkbox" name="pages" value="Blog">Blog</label>
-                  <label><input type="checkbox" name="pages" value="Videos">Videos</label>
-                </div>
-              </div>
-              <aside class="setup-site-map">
-                <strong data-live-logo-small>BEYOND<br>MOVEMENT</strong>
-                <span>Home</span><span>About</span><span>Classes & Workshops</span><span>Gallery</span><span>Register</span><span>Contact</span>
-              </aside>
+            <div class="setup-theme-picker">
+              <label class="theme-elegant"><input type="radio" name="setupTheme" value="Editorial Elegant" checked><span class="theme-preview theme-mini-site"><b>Editorial</b><img src="assets/dancer-hero.png" alt=""><i>Book class</i><em>Gallery</em></span><strong>Editorial Elegant</strong><small>Refined, spacious, and magazine-like.</small></label>
+              <label class="theme-bold"><input type="radio" name="setupTheme" value="Bold Performance"><span class="theme-preview theme-mini-site"><b>Perform</b><img src="assets/dancer-hero.png" alt=""><i>Join drop-in</i><em>Classes</em></span><strong>Bold Performance</strong><small>High-contrast and stage-ready.</small></label>
+              <label class="theme-soft"><input type="radio" name="setupTheme" value="Soft Contemporary"><span class="theme-preview theme-mini-site"><b>Flow</b><img src="assets/dancer-hero.png" alt=""><i>Explore</i><em>About</em></span><strong>Soft Contemporary</strong><small>Gentle, editorial, and expressive.</small></label>
+              <label class="theme-vibrant"><input type="radio" name="setupTheme" value="Vibrant Bollywood"><span class="theme-preview theme-mini-site"><b>Energy</b><img src="assets/dancer-hero.png" alt=""><i>Register</i><em>Workshops</em></span><strong>Vibrant Bollywood</strong><small>Colorful, joyful, and full of movement.</small></label>
+              <label class="theme-classical"><input type="radio" name="setupTheme" value="Classical Heritage"><span class="theme-preview theme-mini-site"><b>Heritage</b><img src="assets/dancer-hero.png" alt=""><i>Learn</i><em>Story</em></span><strong>Classical Heritage</strong><small>Warm, traditional, and graceful.</small></label>
+              <label class="theme-commercial"><input type="radio" name="setupTheme" value="Urban Commercial"><span class="theme-preview theme-mini-site"><b>Move</b><img src="assets/dancer-hero.png" alt=""><i>Book</i><em>Videos</em></span><strong>Urban Commercial</strong><small>Modern, confident, and sharp.</small></label>
+              <label class="theme-minimal"><input type="radio" name="setupTheme" value="Minimal Black"><span class="theme-preview theme-mini-site"><b>Focus</b><img src="assets/dancer-hero.png" alt=""><i>Apply</i><em>Contact</em></span><strong>Minimal Black</strong><small>Luxurious, quiet, and dramatic.</small></label>
             </div>
           </fieldset>
 
           <fieldset class="setup-step" data-setup-step="4">
             <div class="setup-step-header">
               <span class="setup-number">5</span>
-              <div><h2>Classes & Registration</h2><p>Choose the tools you need for your classes, workshops, and students.</p></div>
-            </div>
-            <div class="setup-dots" aria-label="Setup progress"></div>
-            <div class="setup-toggle-grid">
-              <label><span><strong>Event Registration</strong><small>Let dancers sign up for events</small></span><input type="checkbox" checked></label>
-              <label><span><strong>Class Registration</strong><small>Allow sign ups for classes</small></span><input type="checkbox" checked></label>
-              <label><span><strong>Payment Plans</strong><small>Offer installment payments</small></span><input type="checkbox" checked></label>
-              <label><span><strong>Waivers</strong><small>Collect digital waivers</small></span><input type="checkbox" checked></label>
-              <label><span><strong>Waitlists</strong><small>Manage waitlisted dancers</small></span><input type="checkbox" checked></label>
-              <label><span><strong>Promo Codes</strong><small>Create discounts and promos</small></span><input type="checkbox" checked></label>
-              <label><span><strong>Gift Cards</strong><small>Sell and redeem gift cards</small></span><input type="checkbox"></label>
-              <label><span><strong>Email Marketing</strong><small>Send updates via email</small></span><input type="checkbox" checked></label>
-              <label><span><strong>SMS Updates</strong><small>Text announcements</small></span><input type="checkbox" checked></label>
-              <label><span><strong>Calendar</strong><small>Show your schedule</small></span><input type="checkbox" checked></label>
-              <label><span><strong>Private Resources</strong><small>Share files with dancers</small></span><input type="checkbox"></label>
-            </div>
-          </fieldset>
-
-          <fieldset class="setup-step" data-setup-step="5">
-            <div class="setup-step-header">
-              <span class="setup-number">6</span>
-              <div><h2>Choose Your Theme</h2><p>Pick a design that matches your brand.</p></div>
-            </div>
-            <div class="setup-dots" aria-label="Setup progress"></div>
-            <div class="setup-theme-picker">
-              <label class="theme-elegant"><input type="radio" name="setupTheme" value="Default Elegant" checked><span class="theme-preview"><b>BEYOND MOVEMENT</b></span><strong>Default Elegant</strong><small>Clean, modern, and beautifully minimal.</small></label>
-              <label class="theme-bold"><input type="radio" name="setupTheme" value="Bold & Edgy"><span class="theme-preview"><b>MAKE YOUR MOVE</b></span><strong>Bold & Edgy</strong><small>Strong, high-contrast, full of attitude.</small></label>
-              <label class="theme-soft"><input type="radio" name="setupTheme" value="Soft & Graceful"><span class="theme-preview"><b>Movement is poetry.</b></span><strong>Soft & Graceful</strong><small>Soft tones and elegant typography.</small></label>
-              <label class="theme-vibrant"><input type="radio" name="setupTheme" value="Vibrant & Playful"><span class="theme-preview"><b>Dance. For You.</b></span><strong>Vibrant & Playful</strong><small>Colorful, energetic, and fun.</small></label>
-              <label class="theme-minimal"><input type="radio" name="setupTheme" value="Minimal Black"><span class="theme-preview"><b>FOCUS CREATE</b></span><strong>Minimal Black</strong><small>Sleek, minimal, and unapologetically modern.</small></label>
-            </div>
-          </fieldset>
-
-          <fieldset class="setup-step" data-setup-step="6">
-            <div class="setup-step-header">
-              <span class="setup-number">7</span>
-              <div><h2>Add Your Images <span>(Optional)</span></h2><p>Upload your images or let us help you.</p></div>
+              <div><h2>Bring Your Brand To Life</h2><p>Upload your own images or choose BeyondEight starter images.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column">
               <div class="setup-upload-box"><strong>Upload Your Images</strong><span>Drag & drop your images here or click to browse</span><small>JPG, PNG, WEBP up to 10MB</small></div>
               <div>
-                <span class="setup-label">Or use AI generated images</span>
+                <span class="setup-label">BeyondEight Starter Images</span>
                 <div class="setup-image-grid">
-                  <img src="assets/dancer-hero.png" alt=""><img src="assets/dancer-hero.png" alt=""><img src="assets/dancer-hero.png" alt="">
-                  <img src="assets/dancer-hero.png" alt=""><img src="assets/dancer-hero.png" alt=""><img src="assets/dancer-hero.png" alt="">
+                  <button type="button"><img src="assets/dancer-hero.png" alt=""><span>Hero Image</span></button>
+                  <button type="button"><img src="assets/dancer-hero.png" alt=""><span>About Image</span></button>
+                  <button type="button"><img src="assets/dancer-hero.png" alt=""><span>Gallery Image</span></button>
+                  <button type="button"><img src="assets/dancer-hero.png" alt=""><span>Workshop</span></button>
+                  <button type="button"><img src="assets/dancer-hero.png" alt=""><span>Performance</span></button>
+                  <button type="button"><img src="assets/dancer-hero.png" alt=""><span>Portrait</span></button>
                 </div>
               </div>
             </div>
           </fieldset>
 
-          <fieldset class="setup-step setup-review-step" data-setup-step="7">
+          <fieldset class="setup-step setup-review-step" data-setup-step="5">
             <div class="setup-step-header">
-              <span class="setup-number">8</span>
-              <div><h2>Review & Launch</h2><p>Your website is almost ready to go live.</p></div>
+              <span class="setup-number">6</span>
+              <div><h2>Review & Publish</h2><p>Your choreography website is almost ready.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-review-layout">
@@ -731,10 +671,12 @@
               </div>
               <aside class="setup-summary">
                 <h3>Your Website</h3>
-                <p><strong>Theme</strong> <span data-live-theme>Default Elegant</span></p>
-                <p><strong>Pages</strong> <span data-live-pages>9 Pages Selected</span></p>
-                <p><strong>Business Tools</strong> 6 Tools Enabled</p>
-                <p><strong>Domain</strong> beyondmovement.com</p>
+                <p><strong>Theme</strong> <span data-live-theme>Editorial Elegant</span></p>
+                <p><strong>URL</strong> <span data-live-domain>beyond8dance.com/beyond-movement</span></p>
+                <p><strong>Brand</strong> <span data-live-brand>Beyond Movement</span></p>
+                <p><strong>Social Links</strong> <span data-live-socials>Instagram, TikTok, YouTube</span></p>
+                <p><strong>Specialties</strong> <span data-live-specialties>Heels • Hip Hop • Contemporary</span></p>
+                <p><strong>Images</strong> Starter images selected</p>
               </aside>
             </div>
           </fieldset>

@@ -72,7 +72,7 @@
         </article>
         <article class="dashboard-card">
           <span>Theme</span>
-          <strong>${esc(business.theme || "Default Elegant")}</strong>
+          <strong>${esc(business.theme || "Editorial Elegant")}</strong>
           <p>${esc((bundle.settings?.selected_pages || []).length || "0")} pages selected.</p>
         </article>
         <article class="dashboard-card">
@@ -80,6 +80,19 @@
           <strong>/${esc(business.slug)}</strong>
           <p>${esc(publicUrl(business))}</p>
         </article>
+      </section>
+      <section class="dashboard-card dashboard-payments-card">
+        <div>
+          <span>Payments</span>
+          <strong>How do you collect payments today?</strong>
+          <p>Choose the methods you already use. Stripe can be connected later as an upgrade when you are ready for automated checkout.</p>
+        </div>
+        <div class="payment-method-grid" aria-label="Payment methods">
+          ${["Venmo", "Zelle", "PayPal", "Stripe", "Cash", "Bank Transfer", "Other"]
+            .map((item) => `<button type="button" class="${item === "Stripe" ? "is-upgrade" : ""}">${item}<small>${item === "Stripe" ? "Later upgrade" : "Available now"}</small></button>`)
+            .join("")}
+        </div>
+        <label class="venmo-field">Venmo username<input type="text" placeholder="@yourname" aria-label="Venmo username"></label>
       </section>
       <section class="dashboard-tools">
         ${["Classes", "Registrations", "Students", "Payments", "Analytics", "Marketing", "Settings"]
