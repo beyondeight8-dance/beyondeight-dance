@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260713-setupaccount">
+  <link rel="stylesheet" href="styles.css?v=20260713-previewpublish">
 </head>
 <body>
   <header class="site-header">
@@ -541,13 +541,6 @@
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column">
               <div class="setup-fields setup-stack">
-                <div>
-                  <span class="setup-label">Account Details</span>
-                  <div class="setup-account-grid">
-                    <label>Email<input type="email" name="setupEmail" placeholder="you@example.com" autocomplete="email" required></label>
-                    <label>Password<input type="password" name="setupPassword" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required></label>
-                  </div>
-                </div>
                 <label>Business Name<input type="text" name="businessName" value="Beyond Movement" required></label>
                 <label>Website Name<input type="text" name="websiteName" value="Beyond Movement" required></label>
                 <label>Public Website URL<input type="text" name="businessSlug" value="beyond-movement" maxlength="50" required><small class="slug-status" data-slug-status>Available format.</small></label>
@@ -750,11 +743,15 @@
             <div class="setup-ready-copy">
               <span class="ready-check" aria-hidden="true">&#10003;</span>
               <h2>&#127881; Your website is ready!</h2>
-              <p>Your beautiful new website is live and ready to impress your dancers.</p>
+              <p>Create your free BeyondEight account to publish your website, edit it anytime, and access your dashboard.</p>
               <div class="ready-domain" data-live-domain>beyondmovement.com</div>
-              <div class="ready-actions">
-                <a class="primary-button" href="#" target="_blank" rel="noopener" data-view-generated-site>View My Website</a>
-                <a class="secondary-button" href="/dashboard/">Go to Dashboard</a>
+              <a class="secondary-button ready-preview-link" href="#" target="_blank" rel="noopener" data-view-generated-site>View public preview</a>
+              <div class="ready-publish-card">
+                <button class="auth-google ready-google" type="button" data-ready-google>Continue with Google</button>
+                <div class="auth-divider"><span>OR</span></div>
+                <label>Email<input type="email" name="publishEmail" autocomplete="email" required></label>
+                <label>Password<input type="password" name="publishPassword" autocomplete="new-password" minlength="8" required></label>
+                <button class="primary-button" type="button" data-ready-publish>Publish My Website</button>
               </div>
             </div>
             <div class="ready-phone">
@@ -879,9 +876,9 @@
     <p>Beyond the 8 counts. Beyond the limits.</p>
   </footer>
 
-  <script src="assets/supabase.min.js?v=20260713-setupaccount"></script>
-  <script src="app-config.js?v=20260713-setupaccount"></script>
-  <script src="app-services.js?v=20260713-setupaccount"></script>
-  <script src="script.js?v=20260713-setupaccount"></script>
+  <script src="assets/supabase.min.js?v=20260713-previewpublish"></script>
+  <script src="app-config.js?v=20260713-previewpublish"></script>
+  <script src="app-services.js?v=20260713-previewpublish"></script>
+  <script src="script.js?v=20260713-previewpublish"></script>
 </body>
 </html>

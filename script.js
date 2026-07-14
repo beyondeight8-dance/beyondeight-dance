@@ -17,6 +17,8 @@ const setupSubmitButton = document.querySelector("[data-setup-submit]");
 const setupMessage = document.querySelector(".setup-message");
 const setupReady = document.querySelector("[data-setup-ready]");
 const viewGeneratedSiteButton = document.querySelector("[data-view-generated-site]");
+const readyGoogleButton = document.querySelector("[data-ready-google]");
+const readyPublishButton = document.querySelector("[data-ready-publish]");
 const themeModal = document.querySelector(".theme-modal");
 const themeModalTitle = document.querySelector("#theme-modal-title");
 const themeModalPreview = document.querySelector(".theme-modal-preview");
@@ -427,7 +429,6 @@ const getSetupState = () => {
   const field = (name, fallback = "") => form?.elements?.[name]?.value?.trim() || fallback;
   const businessName = field("businessName", "Beyond Movement");
   const websiteName = field("websiteName", businessName);
-  const setupEmail = field("setupEmail", "");
   const fallbackSlug = beyondEight.slugify?.(websiteName || businessName) || "beyond-movement";
   const slug = field("businessSlug", fallbackSlug);
   const tagline = field("tagline", "Where confidence meets choreography.");
@@ -443,7 +444,6 @@ const getSetupState = () => {
   return {
     businessName,
     websiteName,
-    setupEmail,
     slug,
     tagline,
     businessType,
@@ -465,17 +465,17 @@ const getSetupState = () => {
 };
 
 const getSetupCredentials = () => ({
-  email: setupForm?.elements?.setupEmail?.value?.trim() || "",
-  password: setupForm?.elements?.setupPassword?.value || ""
+  email: setupForm?.elements?.publishEmail?.value?.trim() || "",
+  password: setupForm?.elements?.publishPassword?.value || ""
 });
 
 const validateSetupCredentials = () => {
   if (currentUser) return "";
   const { email, password } = getSetupCredentials();
   const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  if (!email) return "Enter your email address on step 1.";
-  if (!emailIsValid) return "Enter a valid email address on step 1.";
-  if (!password) return "Enter a password on step 1.";
+  if (!email) return "Enter your email address to publish.";
+  if (!emailIsValid) return "Enter a valid email address to publish.";
+  if (!password) return "Enter a password to publish.";
   if (password.length < 8) return "Use at least 8 characters for your password.";
   return "";
 };
@@ -540,7 +540,6 @@ const setRadioValue = (name, value) => {
 
 const applySetupState = (state = {}) => {
   if (!setupForm || !state) return;
-  setFormValue("setupEmail", state.setupEmail);
   setFormValue("businessName", state.businessName);
   setFormValue("websiteName", state.websiteName || state.businessName);
   setFormValue("businessSlug", state.slug);
@@ -754,7 +753,7 @@ const generatedSiteHTML = (state) => {
 </html>`;
 };
 
-const ensureSetupAccountForLaunch = async () => {
+const ensureAccountForPublishing = async () => {
   if (currentUser) return currentUser;
   if (!supabaseClient) throw new Error("Supabase could not load. Check your connection and refresh.");
   const validationMessage = validateSetupCredentials();
@@ -796,9 +795,19 @@ const ensureSetupAccountForLaunch = async () => {
   return currentUser;
 };
 
-const launchGeneratedWebsite = async () => {
+const generateWebsitePreview = () => {
   const state = getSetupState();
-  const launchUser = await ensureSetupAccountForLaunch();
+  if (generatedSiteUrl?.startsWith("blob:")) URL.revokeObjectURL(generatedSiteUrl);
+  generatedSiteUrl = URL.createObjectURL(new Blob([generatedSiteHTML(state)], { type: "text/html" }));
+  viewGeneratedSiteButton?.setAttribute("href", generatedSiteUrl);
+  saveGuestSetupDraft();
+  return { state, previewUrl: generatedSiteUrl };
+};
+
+const finalizeWebsitePublish = async () => {
+  if (!(await validateCurrentSlug())) return null;
+  const state = getSetupState();
+  const launchUser = await ensureAccountForPublishing();
   const result = await beyondEight.publishWebsite?.({
     user: launchUser,
     state,
@@ -841,10 +850,7 @@ const stepIsValid = () => {
   const currentStep = setupSteps[setupIndex];
   if (!currentStep) return true;
   const requiredFields = currentStep.querySelectorAll("[required]");
-  return Array.from(requiredFields).every((field) => {
-    if (currentUser && (field.name === "setupEmail" || field.name === "setupPassword")) return true;
-    return field.reportValidity();
-  });
+  return Array.from(requiredFields).every((field) => field.reportValidity());
 };
 
 const openSetupDirect = (event) => {
@@ -974,6 +980,26 @@ authGoogle?.addEventListener("click", async () => {
   }
 });
 
+readyGoogleButton?.addEventListener("click", async () => {
+  if (!supabaseClient) {
+    setupMessage.textContent = "Supabase could not load. Check your connection and refresh.";
+    return;
+  }
+  try {
+    saveGuestSetupDraft();
+    prepareAuthForOwnerAction("publish");
+    setupMessage.textContent = "Opening Google sign-in...";
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: getAuthRedirectUrl() }
+    });
+    if (error) throw error;
+  } catch (error) {
+    console.warn("Google publish sign-in failed:", error);
+    setupMessage.textContent = error.message || "Google sign-in is not configured yet in Supabase.";
+  }
+});
+
 authForgot?.addEventListener("click", async () => {
   if (!supabaseClient) {
     setAuthError("Supabase could not load. Check your connection and refresh.");
@@ -1082,31 +1108,53 @@ setupNextButton?.addEventListener("click", async () => {
   updateSetupStep();
   queueOnboardingSave();
 });
-const publishCurrentSetup = async () => {
+const showGeneratedPreview = async () => {
   if (!(await validateCurrentSlug())) return;
   try {
-    setupMessage.textContent = "Publishing your website...";
+    setupMessage.textContent = "Generating your website preview...";
     setupSubmitButton.disabled = true;
-    const result = await launchGeneratedWebsite();
-    clearGuestSetupDraft();
+    generateWebsitePreview();
     setupLaunched = true;
     updateSetupStep();
-    setupMessage.textContent = `Your website is live at ${window.location.origin}${generatedSiteUrl}`;
-    const slug = result?.business?.slug || getSetupState().slug;
-    viewGeneratedSiteButton?.setAttribute("href", localPublicNavigationUrl(slug));
+    setupMessage.textContent = "Your preview is ready. Create your free account to publish it.";
   } catch (error) {
-    console.warn("Website publish failed:", error);
-    setupMessage.textContent = error.message || "We could not publish yet. Please check your setup and try again.";
+    console.warn("Website preview failed:", error);
+    setupMessage.textContent = error.message || "We could not generate the preview yet. Please check your setup and try again.";
   } finally {
     setupSubmitButton.disabled = false;
+  }
+};
+
+const publishCurrentSetup = async () => {
+  try {
+    if (readyPublishButton) readyPublishButton.disabled = true;
+    setupMessage.textContent = "Publishing your website...";
+    const result = await finalizeWebsitePublish();
+    if (!result) return;
+    clearGuestSetupDraft();
+    setupMessage.textContent = "Your website is live. Opening your dashboard...";
+    window.setTimeout(() => {
+      window.location.href = "/dashboard/?published=1";
+    }, 600);
+  } catch (error) {
+    console.warn("Website publish failed:", error);
+    setupMessage.textContent = error.message || "We could not publish yet. Please check your account details and try again.";
+  } finally {
+    if (readyPublishButton) readyPublishButton.disabled = false;
   }
 };
 
 setupForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!stepIsValid()) return;
-  await publishCurrentSetup();
+  await showGeneratedPreview();
 });
+setupSubmitButton?.addEventListener("click", async (event) => {
+  event.preventDefault();
+  if (!stepIsValid()) return;
+  await showGeneratedPreview();
+});
+readyPublishButton?.addEventListener("click", publishCurrentSetup);
 viewGeneratedSiteButton?.addEventListener("click", () => {
   if (generatedSiteUrl) {
     viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);

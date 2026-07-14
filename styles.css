@@ -3912,6 +3912,55 @@ h1 {
   gap: 14px;
 }
 
+.ready-preview-link {
+  width: fit-content;
+  margin: 10px 0 22px;
+}
+
+.ready-publish-card {
+  display: grid;
+  gap: 14px;
+  max-width: 460px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.16);
+}
+
+.ready-publish-card label {
+  display: grid;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ready-publish-card input {
+  min-height: 52px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  padding: 0 15px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font: inherit;
+}
+
+.ready-publish-card .auth-divider::before,
+.ready-publish-card .auth-divider::after {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.ready-publish-card .auth-divider span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.ready-google {
+  background: rgba(255, 255, 255, 0.94);
+}
+
 .ready-phone {
   position: relative;
   align-self: center;
@@ -6486,14 +6535,14 @@ body.generated-minimal .published-cards article {
 /* SaaS architecture refinement: preserve the current visual system while reducing scroll fatigue. */
 .hero {
   min-height: auto !important;
-  padding-top: clamp(48px, 5vw, 76px) !important;
-  padding-bottom: clamp(50px, 5.5vw, 82px) !important;
+  padding-top: clamp(38px, 4.2vw, 64px) !important;
+  padding-bottom: clamp(38px, 4.6vw, 68px) !important;
 }
 
 .feature-strip {
   margin-top: 0 !important;
-  padding-top: clamp(34px, 4vw, 54px) !important;
-  padding-bottom: clamp(56px, 6vw, 88px) !important;
+  padding-top: clamp(26px, 3vw, 42px) !important;
+  padding-bottom: clamp(44px, 4.8vw, 72px) !important;
 }
 
 .how-section,
@@ -6502,25 +6551,25 @@ body.generated-minimal .published-cards article {
 .themes-section,
 .demo-section {
   min-height: auto !important;
-  padding-top: clamp(58px, 6vw, 92px) !important;
-  padding-bottom: clamp(58px, 6vw, 92px) !important;
+  padding-top: clamp(46px, 5vw, 78px) !important;
+  padding-bottom: clamp(46px, 5vw, 78px) !important;
 }
 
 .launch-cta {
-  margin-top: clamp(22px, 3vw, 34px) !important;
-  margin-bottom: clamp(52px, 5vw, 76px) !important;
+  margin-top: clamp(16px, 2vw, 28px) !important;
+  margin-bottom: clamp(38px, 4vw, 58px) !important;
 }
 
 .section-heading {
-  margin-bottom: clamp(24px, 3vw, 38px) !important;
+  margin-bottom: clamp(18px, 2.4vw, 30px) !important;
 }
 
 .themes-section {
-  padding-bottom: clamp(50px, 5vw, 76px) !important;
+  padding-bottom: clamp(42px, 4vw, 64px) !important;
 }
 
 .demo-section {
-  padding-top: clamp(54px, 5.5vw, 84px) !important;
+  padding-top: clamp(44px, 4.6vw, 72px) !important;
 }
 
 .feature-card,
@@ -6529,7 +6578,7 @@ body.generated-minimal .published-cards article {
 .pricing-grid,
 .theme-grid,
 .demo-layout {
-  margin-top: clamp(20px, 2.5vw, 34px) !important;
+  margin-top: clamp(16px, 2vw, 28px) !important;
 }
 
 @media (max-width: 980px) {
@@ -6540,13 +6589,13 @@ body.generated-minimal .published-cards article {
   .pricing-section,
   .themes-section,
   .demo-section {
-    padding-top: clamp(46px, 8vw, 68px) !important;
-    padding-bottom: clamp(46px, 8vw, 68px) !important;
+    padding-top: clamp(38px, 7vw, 58px) !important;
+    padding-bottom: clamp(38px, 7vw, 58px) !important;
   }
 
   .launch-cta {
-    margin-top: 18px !important;
-    margin-bottom: 58px !important;
+    margin-top: 14px !important;
+    margin-bottom: 44px !important;
   }
 }
 
@@ -6558,12 +6607,12 @@ body.generated-minimal .published-cards article {
   .pricing-section,
   .themes-section,
   .demo-section {
-    padding-top: clamp(38px, 9vw, 58px) !important;
-    padding-bottom: clamp(38px, 9vw, 62px) !important;
+    padding-top: clamp(32px, 8vw, 50px) !important;
+    padding-bottom: clamp(32px, 8vw, 54px) !important;
   }
 }
 
-/* Auth-first website creation flow */
+/* Account and publish flow */
 .auth-panel {
   max-width: 520px;
   border-radius: 32px;
@@ -6635,18 +6684,6 @@ body.generated-minimal .published-cards article {
 .auth-forgot {
   color: var(--berry);
   font-weight: 900;
-}
-
-.setup-account-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-@media (max-width: 680px) {
-  .setup-account-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .owner-toolbar {
