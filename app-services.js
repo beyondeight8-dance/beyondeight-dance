@@ -303,6 +303,13 @@
           { onConflict: "website_id,page_type" }
         );
       }
+      if (pagesResponse.error && /business_id/i.test(pagesResponse.error.message || "")) {
+        console.warn("website_pages.business_id is a legacy required column. Run supabase-repair-legacy-owner-id.sql.");
+        pagesResponse = await client.from("website_pages").upsert(
+          pages.map((page) => ({ ...page, business_id: business.id, owner_id: user.id })),
+          { onConflict: "website_id,page_type" }
+        );
+      }
       if (pagesResponse.error) throw pagesResponse.error;
     }
     return { business, website };

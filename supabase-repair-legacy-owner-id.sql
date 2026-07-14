@@ -1,5 +1,5 @@
--- BeyondEight repair for old schemas with legacy owner_id columns still marked NOT NULL.
--- Run this if Supabase reports: null value in column "owner_id" violates not-null constraint.
+-- BeyondEight repair for old schemas with legacy required columns.
+-- Run this if Supabase reports null values in legacy owner_id/business_id columns.
 
 do $$
 declare
@@ -35,6 +35,22 @@ begin
     set owner_user_id = coalesce(owner_user_id, owner_id)
     where owner_user_id is null
       and owner_id is not null;
+  end if;
+
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'website_pages'
+      and column_name = 'business_id'
+  ) then
+    alter table public.website_pages alter column business_id drop not null;
+
+    update public.website_pages wp
+    set business_id = w.business_id
+    from public.websites w
+    where wp.website_id = w.id
+      and wp.business_id is null;
   end if;
 end $$;
 
