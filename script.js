@@ -8,6 +8,7 @@ const closeComparisonButtons = document.querySelectorAll("[data-close-comparison
 const setupModal = document.querySelector(".setup-modal");
 const openSetupButtons = document.querySelectorAll("[data-open-setup]");
 const closeSetupButtons = document.querySelectorAll("[data-close-setup]");
+const setupSkipButton = document.querySelector("[data-setup-skip]");
 const setupForm = document.querySelector(".setup-form");
 const setupSteps = document.querySelectorAll("[data-setup-step]");
 const setupProgress = document.querySelector("[data-setup-progress]");
@@ -48,6 +49,7 @@ const slugStatus = document.querySelector("[data-slug-status]");
 const specialtyInput = document.querySelector("[data-specialty-input]");
 const specialtyTags = document.querySelector("[data-specialty-tags]");
 const specialtySuggestions = document.querySelector("[data-specialty-suggestions]");
+const logoUploadInput = document.querySelector("[data-logo-upload]");
 const heroMockup = document.querySelector(".dashboard-mockup");
 const heroView = document.querySelector("[data-hero-view]");
 const heroNavItems = document.querySelectorAll("[data-hero-nav]");
@@ -360,6 +362,7 @@ let saveTimer;
 let slugCheckTimer;
 let slugManuallyEdited = false;
 let pendingOwnerAction = "";
+let logoImageDataUrl = "";
 
 const GUEST_SETUP_KEY = "beyondeight.guestWebsiteDraft";
 const PENDING_OWNER_ACTION_KEY = "beyondeight.pendingOwnerAction";
@@ -490,6 +493,7 @@ const getSetupState = () => {
   const pages = Array.from(form?.querySelectorAll('input[name="pages"]:checked') || []).map((item) => item.value);
   const styles = [...selectedSpecialties];
   const logoText = businessName.split(/\s+/).slice(0, 2).join("<br>").toUpperCase();
+  const logoFont = form?.querySelector('input[name="logoFont"]:checked')?.value || "serif";
   return {
     businessName,
     slug,
@@ -508,7 +512,9 @@ const getSetupState = () => {
     website: field("website", ""),
     domain: `https://beyond8dance.com/${slug || fallbackSlug}`,
     headline: tagline || "Move with purpose. Dance with passion.",
-    logoText
+    logoText,
+    logoFont,
+    logoImage: logoImageDataUrl
   };
 };
 
@@ -578,6 +584,8 @@ const resetGuestSetup = () => {
   setupLaunched = false;
   currentBusinessId = null;
   slugManuallyEdited = false;
+  logoImageDataUrl = "";
+  if (logoUploadInput) logoUploadInput.value = "";
   renderSpecialties();
   setSlugStatus("Start with your brand name and we will check this link.", "neutral");
   updateSetupPreview();
@@ -677,10 +685,12 @@ const applySetupState = (state = {}) => {
   setFormValue("youtube", state.youtube);
   setFormValue("website", state.website);
   selectedSpecialties = Array.isArray(state.styles) ? [...new Set(state.styles.map(normalizeSpecialty).filter(Boolean))] : [];
+  logoImageDataUrl = state.logoImage || "";
   renderSpecialties();
   setCheckedValues("pages", state.pages);
   setRadioValue("brandVibe", state.brandVibe);
   setRadioValue("setupTheme", state.theme);
+  setRadioValue("logoFont", state.logoFont);
   updateSetupPreview();
 };
 
@@ -734,6 +744,11 @@ const setHTML = (selector, value) => {
 const escapeHTML = (value = "") =>
   String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
 
+const logoHTMLFor = (state) => {
+  const image = state.logoImage ? `<img src="${state.logoImage}" alt="">` : "";
+  return `<span class="logo-lockup logo-font-${state.logoFont || "serif"}">${image}<span>${state.logoText}</span></span>`;
+};
+
 const updateSetupPreview = () => {
   if (!setupForm) return;
   const state = getSetupState();
@@ -741,8 +756,8 @@ const updateSetupPreview = () => {
   const aboutText = `${state.businessName} helps students grow through ${stylesText ? `${stylesText} ` : ""}classes and creative work. ${state.whatYouDo} ${state.mission} ${state.whyJoin}`;
   setText("[data-live-brand]", state.businessName);
   setText("[data-live-quote]", state.mission);
-  setHTML("[data-live-logo]", state.logoText);
-  setHTML("[data-live-logo-small]", state.logoText);
+  setHTML("[data-live-logo]", logoHTMLFor(state));
+  setHTML("[data-live-logo-small]", logoHTMLFor(state));
   setText("[data-live-headline]", state.headline);
   setText("[data-live-about]", aboutText);
   document.querySelectorAll("[data-live-specialties]").forEach((node) => {
@@ -1000,6 +1015,7 @@ const updateSetupStep = () => {
   if (setupPrevButton) setupPrevButton.disabled = setupIndex === 0;
   if (setupNextButton) setupNextButton.hidden = setupLaunched || setupIndex === setupSteps.length - 1;
   if (setupSubmitButton) setupSubmitButton.hidden = setupLaunched || setupIndex !== setupSteps.length - 1;
+  if (setupSkipButton) setupSkipButton.hidden = setupLaunched || setupIndex !== 1;
   if (setupMessage) setupMessage.textContent = "";
   renderSetupDots();
 };
@@ -1052,6 +1068,13 @@ const closeSetup = () => {
   setupModal.classList.remove("is-open");
   setupModal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
+};
+
+const skipSetupStep = () => {
+  if (!setupModal?.classList.contains("is-open")) return;
+  setupIndex = Math.min(setupSteps.length - 1, setupIndex + 1);
+  updateSetupStep();
+  queueOnboardingSave();
 };
 
 const completeAuthFlow = async () => {
@@ -1260,6 +1283,7 @@ document.addEventListener("click", (event) => {
   openSetup(event);
 });
 closeSetupButtons.forEach((button) => button.addEventListener("click", closeSetup));
+setupSkipButton?.addEventListener("click", skipSetupStep);
 setupPrevButton?.addEventListener("click", () => {
   setupIndex = Math.max(0, setupIndex - 1);
   updateSetupStep();
@@ -1358,6 +1382,21 @@ specialtyTags?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-remove-specialty]");
   if (!button) return;
   removeSpecialty(button.dataset.removeSpecialty);
+});
+logoUploadInput?.addEventListener("change", () => {
+  const file = logoUploadInput.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    if (setupMessage) setupMessage.textContent = "Please choose an image file for your logo.";
+    return;
+  }
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    logoImageDataUrl = String(reader.result || "");
+    updateSetupPreview();
+    queueOnboardingSave();
+  });
+  reader.readAsDataURL(file);
 });
 setupForm?.addEventListener("input", () => {
   const businessNameField = setupForm?.elements.businessName;

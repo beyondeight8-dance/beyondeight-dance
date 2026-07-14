@@ -530,7 +530,7 @@
     <div class="setup-modal" id="setup" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="setup-title">
       <div class="setup-backdrop" data-close-setup></div>
       <section class="setup-panel website-setup-panel">
-        <button class="modal-close setup-close" type="button" aria-label="Save setup progress and exit" data-close-setup>Save &amp; Exit</button>
+        <button class="modal-close setup-close" type="button" aria-label="Skip this setup step" data-setup-skip hidden>Skip</button>
         <div class="setup-shell-heading">BeyondEight website setup</div>
         <form class="setup-form">
           <fieldset class="setup-step is-active" data-setup-step="0">
@@ -583,7 +583,16 @@
             <div class="setup-two-column setup-presence-grid">
               <div class="setup-presence-card">
                 <span class="setup-label">Upload Logo</span>
-                <label class="setup-logo-upload"><span data-live-logo>BEYOND<br>MOVEMENT</span><button type="button">Choose logo</button></label>
+                <label class="setup-logo-upload"><span data-live-logo>BEYOND<br>MOVEMENT</span><strong>Upload image</strong><input type="file" accept="image/*" data-logo-upload hidden></label>
+                <div class="setup-font-options" aria-label="Choose wordmark font style">
+                  <span class="setup-label">Choose Font Style</span>
+                  <label><input type="radio" name="logoFont" value="serif" checked><span>Classic Serif</span></label>
+                  <label><input type="radio" name="logoFont" value="modern"><span>Modern Sans</span></label>
+                  <label><input type="radio" name="logoFont" value="editorial"><span>Editorial</span></label>
+                  <label><input type="radio" name="logoFont" value="script"><span>Soft Script</span></label>
+                  <label><input type="radio" name="logoFont" value="bold"><span>Bold</span></label>
+                  <label><input type="radio" name="logoFont" value="minimal"><span>Minimal</span></label>
+                </div>
                 <p>If you skip this, we will create a clean wordmark from your brand name.</p>
               </div>
               <div class="setup-stack">
