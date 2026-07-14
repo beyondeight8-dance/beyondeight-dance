@@ -58,16 +58,23 @@
     if (!client || !user) return null;
     const metadata = user.user_metadata || {};
     const email = user.email || "";
-    const profile = {
+    const profileBase = {
       id: user.id,
       email,
       full_name: metadata.full_name || metadata.name || email.split("@")[0] || "BeyondEight user",
-      avatar_url: metadata.avatar_url || metadata.picture || null,
       updated_at: new Date().toISOString()
     };
-    const { data, error } = await client.from("profiles").upsert(profile, { onConflict: "id" }).select("*").single();
-    if (error) throw error;
-    return data;
+    const profile = {
+      ...profileBase,
+      avatar_url: metadata.avatar_url || metadata.picture || null
+    };
+    let response = await client.from("profiles").upsert(profile, { onConflict: "id" }).select("*").single();
+    if (response.error && /avatar_url/i.test(response.error.message || "")) {
+      console.warn("profiles.avatar_url is missing. Run supabase-schema.sql to repair the schema.");
+      response = await client.from("profiles").upsert(profileBase, { onConflict: "id" }).select("*").single();
+    }
+    if (response.error) throw response.error;
+    return response.data;
   };
 
   const listAccessibleBusinesses = async (userId) => {

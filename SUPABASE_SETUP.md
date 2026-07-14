@@ -10,6 +10,8 @@ This app uses Supabase Auth for identity and Supabase Postgres for persistent on
 
 The migration creates the application tables, indexes, update triggers, Row Level Security policies, and public read policies for published websites.
 
+You can safely run `supabase-schema.sql` again if Supabase reports a missing column such as `profiles.avatar_url`. The file includes `alter table ... add column if not exists` repair statements for databases that were created before the latest schema.
+
 ## 2. Configure Auth URLs
 
 In **Authentication > URL Configuration**:

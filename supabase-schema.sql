@@ -24,6 +24,13 @@ create table if not exists public.profiles (
   updated_at timestamptz not null default now()
 );
 
+alter table public.profiles add column if not exists email text;
+alter table public.profiles add column if not exists full_name text;
+alter table public.profiles add column if not exists avatar_url text;
+alter table public.profiles add column if not exists onboarding_completed boolean not null default false;
+alter table public.profiles add column if not exists created_at timestamptz not null default now();
+alter table public.profiles add column if not exists updated_at timestamptz not null default now();
+
 create table if not exists public.businesses (
   id uuid primary key default gen_random_uuid(),
   owner_user_id uuid not null references public.profiles(id) on delete cascade,
@@ -44,6 +51,23 @@ create table if not exists public.businesses (
   updated_at timestamptz not null default now()
 );
 
+alter table public.businesses add column if not exists owner_user_id uuid references public.profiles(id) on delete cascade;
+alter table public.businesses add column if not exists business_name text;
+alter table public.businesses add column if not exists slug text;
+alter table public.businesses add column if not exists business_type text;
+alter table public.businesses add column if not exists tagline text;
+alter table public.businesses add column if not exists description text;
+alter table public.businesses add column if not exists mission text;
+alter table public.businesses add column if not exists why_join text;
+alter table public.businesses add column if not exists brand_vibe text;
+alter table public.businesses add column if not exists theme text not null default 'Default Elegant';
+alter table public.businesses add column if not exists logo_url text;
+alter table public.businesses add column if not exists status text not null default 'draft';
+alter table public.businesses add column if not exists current_onboarding_step integer not null default 0;
+alter table public.businesses add column if not exists onboarding_completed boolean not null default false;
+alter table public.businesses add column if not exists created_at timestamptz not null default now();
+alter table public.businesses add column if not exists updated_at timestamptz not null default now();
+
 create table if not exists public.business_members (
   id uuid primary key default gen_random_uuid(),
   business_id uuid not null references public.businesses(id) on delete cascade,
@@ -52,6 +76,11 @@ create table if not exists public.business_members (
   created_at timestamptz not null default now(),
   unique (business_id, user_id)
 );
+
+alter table public.business_members add column if not exists business_id uuid references public.businesses(id) on delete cascade;
+alter table public.business_members add column if not exists user_id uuid references public.profiles(id) on delete cascade;
+alter table public.business_members add column if not exists role text not null default 'member';
+alter table public.business_members add column if not exists created_at timestamptz not null default now();
 
 create table if not exists public.websites (
   id uuid primary key default gen_random_uuid(),
@@ -63,6 +92,14 @@ create table if not exists public.websites (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.websites add column if not exists business_id uuid references public.businesses(id) on delete cascade;
+alter table public.websites add column if not exists theme text not null default 'Default Elegant';
+alter table public.websites add column if not exists published boolean not null default false;
+alter table public.websites add column if not exists published_at timestamptz;
+alter table public.websites add column if not exists custom_domain text;
+alter table public.websites add column if not exists created_at timestamptz not null default now();
+alter table public.websites add column if not exists updated_at timestamptz not null default now();
 
 create table if not exists public.website_pages (
   id uuid primary key default gen_random_uuid(),
@@ -77,6 +114,15 @@ create table if not exists public.website_pages (
   unique (website_id, page_type)
 );
 
+alter table public.website_pages add column if not exists website_id uuid references public.websites(id) on delete cascade;
+alter table public.website_pages add column if not exists page_type text;
+alter table public.website_pages add column if not exists title text;
+alter table public.website_pages add column if not exists content jsonb not null default '{}'::jsonb;
+alter table public.website_pages add column if not exists enabled boolean not null default true;
+alter table public.website_pages add column if not exists display_order integer not null default 0;
+alter table public.website_pages add column if not exists created_at timestamptz not null default now();
+alter table public.website_pages add column if not exists updated_at timestamptz not null default now();
+
 create table if not exists public.business_settings (
   id uuid primary key default gen_random_uuid(),
   business_id uuid not null unique references public.businesses(id) on delete cascade,
@@ -90,6 +136,16 @@ create table if not exists public.business_settings (
   updated_at timestamptz not null default now()
 );
 
+alter table public.business_settings add column if not exists business_id uuid references public.businesses(id) on delete cascade;
+alter table public.business_settings add column if not exists dance_styles jsonb not null default '[]'::jsonb;
+alter table public.business_settings add column if not exists selected_tools jsonb not null default '[]'::jsonb;
+alter table public.business_settings add column if not exists selected_pages jsonb not null default '[]'::jsonb;
+alter table public.business_settings add column if not exists social_links jsonb not null default '{}'::jsonb;
+alter table public.business_settings add column if not exists brand_colors jsonb not null default '[]'::jsonb;
+alter table public.business_settings add column if not exists generated_content jsonb not null default '{}'::jsonb;
+alter table public.business_settings add column if not exists created_at timestamptz not null default now();
+alter table public.business_settings add column if not exists updated_at timestamptz not null default now();
+
 create table if not exists public.media (
   id uuid primary key default gen_random_uuid(),
   business_id uuid not null references public.businesses(id) on delete cascade,
@@ -100,13 +156,25 @@ create table if not exists public.media (
   created_at timestamptz not null default now()
 );
 
+alter table public.media add column if not exists business_id uuid references public.businesses(id) on delete cascade;
+alter table public.media add column if not exists storage_path text;
+alter table public.media add column if not exists public_url text;
+alter table public.media add column if not exists file_type text;
+alter table public.media add column if not exists alt_text text;
+alter table public.media add column if not exists created_at timestamptz not null default now();
+
 create index if not exists businesses_owner_user_id_idx on public.businesses(owner_user_id);
 create index if not exists businesses_slug_idx on public.businesses(slug);
+create unique index if not exists businesses_slug_unique_idx on public.businesses(slug);
 create index if not exists business_members_user_id_idx on public.business_members(user_id);
 create index if not exists business_members_business_id_idx on public.business_members(business_id);
+create unique index if not exists business_members_business_user_unique_idx on public.business_members(business_id, user_id);
 create index if not exists websites_business_id_idx on public.websites(business_id);
+create unique index if not exists websites_business_id_unique_idx on public.websites(business_id);
 create index if not exists website_pages_website_id_idx on public.website_pages(website_id);
+create unique index if not exists website_pages_website_page_type_unique_idx on public.website_pages(website_id, page_type);
 create index if not exists business_settings_business_id_idx on public.business_settings(business_id);
+create unique index if not exists business_settings_business_id_unique_idx on public.business_settings(business_id);
 create index if not exists media_business_id_idx on public.media(business_id);
 
 drop trigger if exists set_profiles_updated_at on public.profiles;
