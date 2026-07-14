@@ -59,6 +59,7 @@ const revealItems = document.querySelectorAll(
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const defaultSetupPages = ["Home", "About", "Classes & Workshops", "Gallery", "Contact", "Register"];
+const defaultSpecialties = ["Heels", "Hip Hop", "Contemporary"];
 const specialtyOptions = [
   "Heels",
   "Hip Hop",
@@ -105,7 +106,7 @@ const specialtyAliases = {
   "Private Coaching": "private lesson private lessons one on one",
   "Audition Preparation": "audition prep tryout"
 };
-let selectedSpecialties = ["Heels", "Hip Hop", "Contemporary"];
+let selectedSpecialties = [...defaultSpecialties];
 
 const heroViews = [
   {
@@ -563,6 +564,20 @@ const clearGuestSetupDraft = () => {
   window.localStorage.removeItem(PENDING_OWNER_ACTION_KEY);
 };
 
+const resetGuestSetup = () => {
+  clearGuestSetupDraft();
+  setupForm?.reset();
+  selectedSpecialties = [...defaultSpecialties];
+  setupIndex = 0;
+  setupLaunched = false;
+  currentBusinessId = null;
+  slugManuallyEdited = false;
+  renderSpecialties();
+  setSlugStatus("Available format.", "neutral");
+  updateSetupPreview();
+  updateSetupStep();
+};
+
 const localPublicNavigationUrl = (slug) => {
   const isLocalStaticServer = ["localhost", "127.0.0.1"].includes(window.location.hostname);
   return isLocalStaticServer ? `/404.html?slug=${encodeURIComponent(slug)}` : `/${slug}`;
@@ -1000,7 +1015,7 @@ const openSetup = async (event) => {
     authReady = true;
   }
   if (!isAuthenticated()) {
-    restoreGuestSetupDraft();
+    resetGuestSetup();
     openSetupDirect(event);
     return;
   }
