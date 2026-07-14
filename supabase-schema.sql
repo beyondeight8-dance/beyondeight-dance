@@ -368,3 +368,5 @@ create policy "media manage owner admin editor" on public.media for all using (
       and (b.owner_user_id = auth.uid() or public.has_business_role(b.id, array['owner','admin','editor']))
   )
 );
+
+notify pgrst, 'reload schema';
