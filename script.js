@@ -45,6 +45,9 @@ const loggedInAccount = document.querySelector('[data-auth-state="logged-in"]');
 const userAvatar = document.querySelector("[data-user-avatar]");
 const dashboardLinks = document.querySelectorAll("[data-dashboard-link]");
 const slugStatus = document.querySelector("[data-slug-status]");
+const specialtyInput = document.querySelector("[data-specialty-input]");
+const specialtyTags = document.querySelector("[data-specialty-tags]");
+const specialtySuggestions = document.querySelector("[data-specialty-suggestions]");
 const heroMockup = document.querySelector(".dashboard-mockup");
 const heroView = document.querySelector("[data-hero-view]");
 const heroNavItems = document.querySelectorAll("[data-hero-nav]");
@@ -55,6 +58,39 @@ const revealItems = document.querySelectorAll(
 );
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const defaultSetupPages = ["Home", "About", "Classes & Workshops", "Gallery", "Contact", "Register"];
+const specialtyOptions = [
+  "Heels",
+  "Hip Hop",
+  "Contemporary",
+  "Jazz",
+  "Ballet",
+  "Commercial",
+  "K-Pop",
+  "Open Style",
+  "Bollywood",
+  "Bollyhop",
+  "Bharatanatyam",
+  "Kathak",
+  "Garba",
+  "Bhangra",
+  "Afro",
+  "Afro Fusion",
+  "Dancehall",
+  "Latin",
+  "Salsa",
+  "Bachata",
+  "Waacking",
+  "Vogue",
+  "House",
+  "Popping",
+  "Locking",
+  "Breaking",
+  "Wedding Choreography",
+  "Private Coaching",
+  "Audition Preparation"
+];
+let selectedSpecialties = ["Heels", "Hip Hop", "Contemporary"];
 
 const heroViews = [
   {
@@ -307,6 +343,7 @@ let currentUser = null;
 let currentBusinessId = null;
 let authReady = false;
 let saveTimer;
+let slugCheckTimer;
 let slugManuallyEdited = false;
 let pendingOwnerAction = "";
 
@@ -421,44 +458,41 @@ const validateAuthForm = () => {
 
 const titleCaseDomain = (value) => {
   const slug = beyondEight.slugify?.(value || "Beyond Movement") || "beyondmovement";
-  return `${window.location.origin}/${slug}`;
+  return `https://beyond8dance.com/${slug}`;
 };
 
 const getSetupState = () => {
   const form = setupForm;
   const field = (name, fallback = "") => form?.elements?.[name]?.value?.trim() || fallback;
   const businessName = field("businessName", "Beyond Movement");
-  const websiteName = field("websiteName", businessName);
-  const fallbackSlug = beyondEight.slugify?.(websiteName || businessName) || "beyond-movement";
+  const fallbackSlug = beyondEight.slugify?.(businessName) || "beyond-movement";
   const slug = field("businessSlug", fallbackSlug);
   const tagline = field("tagline", "Where confidence meets choreography.");
   const whatYouDo = field("whatYouDo", "We create empowering dance experiences for adults, blending technique, confidence, and community.");
   const mission = field("mission", "To empower dancers to express themselves, build confidence, and chase their dreams.");
   const whyJoin = field("whyJoin", "Our classes are welcoming, challenging, and designed to help dancers grow while feeling supported.");
-  const businessType = field("businessType", "Independent Choreographer");
   const brandVibe = form?.querySelector('input[name="brandVibe"]:checked')?.value || "Elegant";
   const theme = form?.querySelector('input[name="setupTheme"]:checked')?.value || "Default Elegant";
   const pages = Array.from(form?.querySelectorAll('input[name="pages"]:checked') || []).map((item) => item.value);
-  const styles = Array.from(form?.querySelectorAll('input[name="styles"]:checked') || []).map((item) => item.value);
+  const styles = [...selectedSpecialties];
   const logoText = businessName.split(/\s+/).slice(0, 2).join("<br>").toUpperCase();
   return {
     businessName,
-    websiteName,
     slug,
     tagline,
-    businessType,
+    businessType: "Independent Choreographer",
     brandVibe,
     whatYouDo,
     mission,
     whyJoin,
     theme,
-    pages,
+    pages: pages.length ? pages : defaultSetupPages,
     styles,
     instagram: field("instagram", ""),
     tiktok: field("tiktok", ""),
     youtube: field("youtube", ""),
     website: field("website", ""),
-    domain: `${window.location.origin}/${slug || fallbackSlug}`,
+    domain: `https://beyond8dance.com/${slug || fallbackSlug}`,
     headline: tagline || "Move with purpose. Dance with passion.",
     logoText
   };
@@ -519,6 +553,54 @@ const localPublicNavigationUrl = (slug) => {
   return isLocalStaticServer ? `/404.html?slug=${encodeURIComponent(slug)}` : `/${slug}`;
 };
 
+const normalizeSpecialty = (value = "") =>
+  value
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/[<>]/g, "")
+    .slice(0, 42);
+
+const specialtyExists = (value) => selectedSpecialties.some((item) => item.toLowerCase() === value.toLowerCase());
+
+const renderSpecialties = () => {
+  if (!specialtyTags || !specialtySuggestions) return;
+  specialtyTags.innerHTML = selectedSpecialties
+    .map(
+      (style) =>
+        `<button class="specialty-tag" type="button" data-remove-specialty="${style.replace(/"/g, "&quot;")}"><span>${style}</span><strong aria-hidden="true">×</strong></button>`
+    )
+    .join("");
+
+  const query = specialtyInput?.value.trim().toLowerCase() || "";
+  const matches = specialtyOptions
+    .filter((option) => !specialtyExists(option))
+    .filter((option) => !query || option.toLowerCase().includes(query))
+    .slice(0, 8);
+  const customValue = normalizeSpecialty(specialtyInput?.value || "");
+  const customButton =
+    customValue && !specialtyExists(customValue) && !matches.some((option) => option.toLowerCase() === customValue.toLowerCase())
+      ? `<button type="button" data-add-specialty="${customValue.replace(/"/g, "&quot;")}">Add "${customValue}"</button>`
+      : "";
+  specialtySuggestions.innerHTML = `${matches.map((option) => `<button type="button" data-add-specialty="${option}">${option}</button>`).join("")}${customButton}`;
+};
+
+const addSpecialty = (value) => {
+  const specialty = normalizeSpecialty(value);
+  if (!specialty || specialtyExists(specialty)) return;
+  selectedSpecialties.push(specialty);
+  if (specialtyInput) specialtyInput.value = "";
+  renderSpecialties();
+  updateSetupPreview();
+  queueOnboardingSave();
+};
+
+const removeSpecialty = (value) => {
+  selectedSpecialties = selectedSpecialties.filter((item) => item.toLowerCase() !== value.toLowerCase());
+  renderSpecialties();
+  updateSetupPreview();
+  queueOnboardingSave();
+};
+
 const setFormValue = (name, value) => {
   const field = setupForm?.elements?.[name];
   if (!field || value == null) return;
@@ -541,10 +623,8 @@ const setRadioValue = (name, value) => {
 const applySetupState = (state = {}) => {
   if (!setupForm || !state) return;
   setFormValue("businessName", state.businessName);
-  setFormValue("websiteName", state.websiteName || state.businessName);
   setFormValue("businessSlug", state.slug);
   setFormValue("tagline", state.tagline);
-  setFormValue("businessType", state.businessType);
   setFormValue("whatYouDo", state.whatYouDo);
   setFormValue("mission", state.mission);
   setFormValue("whyJoin", state.whyJoin);
@@ -552,7 +632,8 @@ const applySetupState = (state = {}) => {
   setFormValue("tiktok", state.tiktok);
   setFormValue("youtube", state.youtube);
   setFormValue("website", state.website);
-  setCheckedValues("styles", state.styles);
+  selectedSpecialties = Array.isArray(state.styles) ? [...new Set(state.styles.map(normalizeSpecialty).filter(Boolean))] : [];
+  renderSpecialties();
   setCheckedValues("pages", state.pages);
   setRadioValue("brandVibe", state.brandVibe);
   setRadioValue("setupTheme", state.theme);
@@ -588,6 +669,12 @@ const validateCurrentSlug = async () => {
   }
 };
 
+const scheduleSlugValidation = () => {
+  window.clearTimeout(slugCheckTimer);
+  setSlugStatus("Checking...", "neutral");
+  slugCheckTimer = window.setTimeout(() => validateCurrentSlug(), 420);
+};
+
 const setText = (selector, value) => {
   document.querySelectorAll(selector).forEach((node) => {
     node.textContent = value;
@@ -603,14 +690,18 @@ const setHTML = (selector, value) => {
 const updateSetupPreview = () => {
   if (!setupForm) return;
   const state = getSetupState();
-  const stylesText = state.styles.slice(0, 3).join(", ") || "movement";
-  const aboutText = `${state.businessName} helps dancers grow through ${stylesText} experiences. ${state.whatYouDo} ${state.mission} ${state.whyJoin}`;
+  const stylesText = state.styles.slice(0, 3).join(", ");
+  const aboutText = `${state.businessName} helps students grow through ${stylesText ? `${stylesText} ` : ""}classes and creative work. ${state.whatYouDo} ${state.mission} ${state.whyJoin}`;
   setText("[data-live-brand]", state.businessName);
   setText("[data-live-quote]", state.mission);
   setHTML("[data-live-logo]", state.logoText);
   setHTML("[data-live-logo-small]", state.logoText);
   setText("[data-live-headline]", state.headline);
   setText("[data-live-about]", aboutText);
+  document.querySelectorAll("[data-live-specialties]").forEach((node) => {
+    node.textContent = stylesText ? state.styles.slice(0, 3).join(" • ") : "";
+    node.hidden = !stylesText;
+  });
   setText("[data-live-theme]", state.theme);
   setText("[data-live-pages]", `${state.pages.length} Pages Selected`);
   setText("[data-live-domain]", state.domain);
@@ -712,7 +803,7 @@ const themeClassFor = (theme) => {
 const generatedSiteHTML = (state) => {
   const dancerImage = new URL("assets/dancer-hero.png", window.location.href).href;
   const pages = state.pages.slice(0, 6).map((page) => `<a href="#${page.toLowerCase().replace(/\s+/g, "-")}">${page}</a>`).join("");
-  const classTags = state.styles.slice(0, 3).map((style) => `<span>${style}</span>`).join("") || "<span>Heels</span><span>Contemporary</span><span>Workshops</span>";
+  const classTags = state.styles.slice(0, 3).map((style) => `<span>${style}</span>`).join("");
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -763,7 +854,6 @@ const ensureAccountForPublishing = async () => {
   const { email, password } = getSetupCredentials();
   const metadata = {
     business_name: state.businessName,
-    website_name: state.websiteName,
     launch_source: "setup_wizard"
   };
 
@@ -846,11 +936,14 @@ const updateSetupStep = () => {
   renderSetupDots();
 };
 
-const stepIsValid = () => {
+const stepIsValid = async () => {
   const currentStep = setupSteps[setupIndex];
   if (!currentStep) return true;
   const requiredFields = currentStep.querySelectorAll("[required]");
-  return Array.from(requiredFields).every((field) => field.reportValidity());
+  const validFields = Array.from(requiredFields).every((field) => field.reportValidity());
+  if (!validFields) return false;
+  if (setupIndex === 0) return validateCurrentSlug();
+  return true;
 };
 
 const openSetupDirect = (event) => {
@@ -1102,7 +1195,7 @@ setupPrevButton?.addEventListener("click", () => {
   queueOnboardingSave();
 });
 setupNextButton?.addEventListener("click", async () => {
-  if (!stepIsValid()) return;
+  if (!(await stepIsValid())) return;
   await saveOnboardingProgress();
   setupIndex = Math.min(setupSteps.length - 1, setupIndex + 1);
   updateSetupStep();
@@ -1146,12 +1239,12 @@ const publishCurrentSetup = async () => {
 
 setupForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (!stepIsValid()) return;
+  if (!(await stepIsValid())) return;
   await showGeneratedPreview();
 });
 setupSubmitButton?.addEventListener("click", async (event) => {
   event.preventDefault();
-  if (!stepIsValid()) return;
+  if (!(await stepIsValid())) return;
   await showGeneratedPreview();
 });
 readyPublishButton?.addEventListener("click", publishCurrentSetup);
@@ -1164,16 +1257,36 @@ viewGeneratedSiteButton?.addEventListener("click", () => {
     viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
   }
 });
+specialtyInput?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+  event.preventDefault();
+  addSpecialty(specialtyInput.value);
+});
+specialtySuggestions?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-add-specialty]");
+  if (!button) return;
+  addSpecialty(button.dataset.addSpecialty);
+});
+specialtyTags?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-remove-specialty]");
+  if (!button) return;
+  removeSpecialty(button.dataset.removeSpecialty);
+});
 setupForm?.addEventListener("input", () => {
   const businessNameField = setupForm?.elements.businessName;
-  const websiteNameField = setupForm?.elements.websiteName;
   const slugField = setupForm?.elements.businessSlug;
-  if (document.activeElement === slugField) slugManuallyEdited = true;
-  if (document.activeElement === businessNameField && websiteNameField && !websiteNameField.value.trim()) {
-    websiteNameField.value = businessNameField.value;
+  if (document.activeElement === specialtyInput) {
+    renderSpecialties();
+    return;
   }
-  if ((document.activeElement === businessNameField || document.activeElement === websiteNameField) && slugField && !slugManuallyEdited) {
-    slugField.value = beyondEight.slugify?.(websiteNameField?.value || businessNameField?.value) || "";
+  if (document.activeElement === slugField) {
+    slugManuallyEdited = true;
+    slugField.value = beyondEight.slugify?.(slugField.value) || "";
+    scheduleSlugValidation();
+  }
+  if (document.activeElement === businessNameField && slugField && !slugManuallyEdited) {
+    slugField.value = beyondEight.slugify?.(businessNameField?.value) || "";
+    scheduleSlugValidation();
   }
   updateSetupPreview();
   queueOnboardingSave();
@@ -1186,6 +1299,7 @@ setupForm?.addEventListener("change", () => {
 initSupabaseAuth();
 updateSetupStep();
 updateSetupPreview();
+renderSpecialties();
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && comparisonModal?.classList.contains("is-open")) {

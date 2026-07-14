@@ -119,7 +119,7 @@
     owner_user_id: userId,
     business_name: state.businessName,
     slug: state.slug,
-    business_type: state.businessType,
+    business_type: "Independent Choreographer",
     tagline: state.tagline,
     description: state.whatYouDo,
     mission: state.mission,
@@ -279,7 +279,7 @@
     if (websiteResponse.error) throw websiteResponse.error;
     const website = websiteResponse.data;
 
-    const pages = (state.pages || ["Home", "About", "Classes", "Register", "Contact"]).map((title, index) => ({
+    const pages = (state.pages?.length ? state.pages : ["Home", "About", "Classes & Workshops", "Gallery", "Contact", "Register"]).map((title, index) => ({
       website_id: website.id,
       page_type: pageSlug(title),
       title,

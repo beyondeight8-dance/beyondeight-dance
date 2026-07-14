@@ -536,33 +536,36 @@
           <fieldset class="setup-step is-active" data-setup-step="0">
             <div class="setup-step-header">
               <span class="setup-number">1</span>
-              <div><h2 id="setup-title">About Your Brand</h2><p>Let's start with the basics.</p></div>
+              <div><h2 id="setup-title">About Your Brand</h2><p>Set up the website for your choreography brand.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column">
               <div class="setup-fields setup-stack">
-                <label>Business Name<input type="text" name="businessName" value="Beyond Movement" required></label>
-                <label>Website Name<input type="text" name="websiteName" value="Beyond Movement" required></label>
-                <label>Public Website URL<input type="text" name="businessSlug" value="beyond-movement" maxlength="50" required><small class="slug-status" data-slug-status>Available format.</small></label>
+                <label>Your Brand Name<input type="text" name="businessName" value="Beyond Movement" required><small>Use your name, stage name, or choreography brand.</small></label>
+                <label class="setup-slug-field">Choose Your Website Address
+                  <span class="slug-builder"><span>beyond8dance.com/</span><input type="text" name="businessSlug" value="beyond-movement" maxlength="50" required></span>
+                  <small>This is the link you can share in your Instagram bio and with your students.</small>
+                  <small class="slug-status" data-slug-status>Available format.</small>
+                </label>
                 <label>Tagline (optional)<input type="text" name="tagline" value="Where confidence meets choreography."></label>
-                <label>Business Type<select name="businessType"><option>Independent Choreographer</option><option>Studio</option><option>Dance Team</option><option>Event Organizer</option></select></label>
-                <div>
-                  <span class="setup-label">Primary Dance Styles</span>
-                  <div class="setup-chip-grid">
-                    <label><input type="checkbox" name="styles" value="Heels" checked><span>Heels</span></label>
-                    <label><input type="checkbox" name="styles" value="Hip Hop" checked><span>Hip Hop</span></label>
-                    <label><input type="checkbox" name="styles" value="Contemporary" checked><span>Contemporary</span></label>
-                    <label><input type="checkbox" name="styles" value="Jazz"><span>Jazz</span></label>
-                    <label><input type="checkbox" name="styles" value="Ballet"><span>Ballet</span></label>
-                    <label><input type="checkbox" name="styles" value="Commercial"><span>Commercial</span></label>
-                    <label><input type="checkbox" name="styles" value="K-Pop"><span>K-Pop</span></label>
-                    <label><input type="checkbox" name="styles" value="Open Style"><span>Open Style</span></label>
+                <div class="specialty-field">
+                  <span class="setup-label">What should students find you for?</span>
+                  <small>Choose the styles or services that best describe your work. You can add your own.</small>
+                  <div class="specialty-control" data-specialty-control>
+                    <div class="specialty-tags" data-specialty-tags></div>
+                    <input type="text" name="specialtySearch" data-specialty-input placeholder="Search or add a specialty">
                   </div>
+                  <div class="specialty-suggestions" data-specialty-suggestions></div>
                 </div>
               </div>
-              <aside class="setup-brand-preview">
+              <aside class="setup-brand-preview setup-home-preview">
+                <div class="preview-nav"><strong data-live-brand>Beyond Movement</strong><span data-live-domain>beyond8dance.com/beyond-movement</span></div>
                 <img src="assets/dancer-hero.png" alt="">
-                <blockquote><span data-live-quote>We help dancers move with purpose and confidence.</span><span data-live-brand>Beyond Movement</span></blockquote>
+                <blockquote>
+                  <span data-live-headline>Where confidence meets choreography.</span>
+                  <small data-live-specialties>Heels • Hip Hop • Contemporary</small>
+                  <button type="button">View Classes</button>
+                </blockquote>
               </aside>
             </div>
           </fieldset>
@@ -604,12 +607,12 @@
           <fieldset class="setup-step" data-setup-step="2">
             <div class="setup-step-header">
               <span class="setup-number">3</span>
-              <div><h2>Tell Us About Your Business</h2><p>This helps us build content that sounds like you.</p></div>
+              <div><h2>Tell Us About Your Work</h2><p>This helps us build content that sounds like you.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column">
               <div class="setup-fields setup-stack">
-                <label>What do you do?<textarea name="whatYouDo" maxlength="400">We create empowering heels and contemporary choreography for adults. Our classes are all about building confidence, technique, and community.</textarea></label>
+                <label>What do you offer?<textarea name="whatYouDo" maxlength="400">I create empowering choreography classes and workshops for adults. My work is all about building confidence, technique, and community.</textarea></label>
                 <label>Your Mission<textarea name="mission" maxlength="200">To empower dancers to express themselves, build confidence, and chase their dreams.</textarea></label>
                 <label>Why should dancers join?<textarea name="whyJoin" maxlength="200">Our classes are welcoming, challenging, and designed to help you grow while feeling supported every step of the way.</textarea></label>
               </div>
@@ -627,34 +630,31 @@
           <fieldset class="setup-step" data-setup-step="3">
             <div class="setup-step-header">
               <span class="setup-number">4</span>
-              <div><h2>Choose Your Pages</h2><p>Select the pages you want on your website.</p></div>
+              <div><h2>Review Your Pages</h2><p>We preselected the pages most independent choreographers need. You can adjust these later.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column setup-pages-layout">
               <div class="setup-pages">
                 <div>
-                  <span class="setup-label">Essential Pages</span>
+                  <span class="setup-label">Recommended Pages</span>
                   <label><input type="checkbox" name="pages" value="Home" checked>Home</label>
                   <label><input type="checkbox" name="pages" value="About" checked>About</label>
-                  <label><input type="checkbox" name="pages" value="Classes" checked>Classes</label>
-                  <label><input type="checkbox" name="pages" value="Events" checked>Events</label>
+                  <label><input type="checkbox" name="pages" value="Classes & Workshops" checked>Classes & Workshops</label>
+                  <label><input type="checkbox" name="pages" value="Gallery" checked>Gallery</label>
                   <label><input type="checkbox" name="pages" value="Register" checked>Register</label>
                   <label><input type="checkbox" name="pages" value="Contact" checked>Contact</label>
                 </div>
                 <div>
-                  <span class="setup-label">Optional Pages</span>
-                  <label><input type="checkbox" name="pages" value="Gallery" checked>Gallery</label>
+                  <span class="setup-label">Optional Add-ons</span>
                   <label><input type="checkbox" name="pages" value="Testimonials">Testimonials</label>
-                  <label><input type="checkbox" name="pages" value="Team" checked>Team</label>
                   <label><input type="checkbox" name="pages" value="FAQ" checked>FAQ</label>
                   <label><input type="checkbox" name="pages" value="Blog">Blog</label>
                   <label><input type="checkbox" name="pages" value="Videos">Videos</label>
-                  <label><input type="checkbox" name="pages" value="Private Members Area" checked>Private Members Area</label>
                 </div>
               </div>
               <aside class="setup-site-map">
                 <strong data-live-logo-small>BEYOND<br>MOVEMENT</strong>
-                <span>Home</span><span>About</span><span>Classes</span><span>Events</span><span>Register</span><span>Gallery</span><span>Team</span><span>FAQ</span><span>Contact</span>
+                <span>Home</span><span>About</span><span>Classes & Workshops</span><span>Gallery</span><span>Register</span><span>Contact</span>
               </aside>
             </div>
           </fieldset>
@@ -662,7 +662,7 @@
           <fieldset class="setup-step" data-setup-step="4">
             <div class="setup-step-header">
               <span class="setup-number">5</span>
-              <div><h2>Business & Registration</h2><p>Choose the tools you need.</p></div>
+              <div><h2>Classes & Registration</h2><p>Choose the tools you need for your classes, workshops, and students.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-toggle-grid">
