@@ -90,6 +90,21 @@ const specialtyOptions = [
   "Private Coaching",
   "Audition Preparation"
 ];
+const specialtyAliases = {
+  Bollywood: "bolly bolly dance indian filmi hindi",
+  Bollyhop: "bolly bolly hop bollyhiphop indian hip hop",
+  Bharatanatyam: "bharat natyam classical indian",
+  Kathak: "classical indian",
+  Garba: "garbha dandiya indian folk",
+  Bhangra: "punjabi indian folk",
+  "Hip Hop": "hiphop hip-hop urban street",
+  "K-Pop": "kpop korean pop",
+  "Afro Fusion": "afrofusion afrobeat afrobeats",
+  Waacking: "whacking punking",
+  "Wedding Choreography": "wedding sangeet bridal first dance",
+  "Private Coaching": "private lesson private lessons one on one",
+  "Audition Preparation": "audition prep tryout"
+};
 let selectedSpecialties = ["Heels", "Hip Hop", "Contemporary"];
 
 const heroViews = [
@@ -562,6 +577,8 @@ const normalizeSpecialty = (value = "") =>
 
 const specialtyExists = (value) => selectedSpecialties.some((item) => item.toLowerCase() === value.toLowerCase());
 
+const searchableSpecialtyText = (option) => `${option} ${specialtyAliases[option] || ""}`.toLowerCase();
+
 const renderSpecialties = () => {
   if (!specialtyTags || !specialtySuggestions) return;
   specialtyTags.innerHTML = selectedSpecialties
@@ -572,9 +589,10 @@ const renderSpecialties = () => {
     .join("");
 
   const query = specialtyInput?.value.trim().toLowerCase() || "";
+  const queryParts = query.split(/\s+/).filter(Boolean);
   const matches = specialtyOptions
     .filter((option) => !specialtyExists(option))
-    .filter((option) => !query || option.toLowerCase().includes(query))
+    .filter((option) => !queryParts.length || queryParts.every((part) => searchableSpecialtyText(option).includes(part)))
     .slice(0, 8);
   const customValue = normalizeSpecialty(specialtyInput?.value || "");
   const customButton =
@@ -582,6 +600,7 @@ const renderSpecialties = () => {
       ? `<button type="button" data-add-specialty="${customValue.replace(/"/g, "&quot;")}">Add "${customValue}"</button>`
       : "";
   specialtySuggestions.innerHTML = `${matches.map((option) => `<button type="button" data-add-specialty="${option}">${option}</button>`).join("")}${customButton}`;
+  specialtySuggestions.hidden = !matches.length && !customButton;
 };
 
 const addSpecialty = (value) => {
