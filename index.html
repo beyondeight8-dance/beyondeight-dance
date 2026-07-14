@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260713-authflow-builder">
+  <link rel="stylesheet" href="styles.css?v=20260713-setupaccount">
 </head>
 <body>
   <header class="site-header">
@@ -541,7 +541,15 @@
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column">
               <div class="setup-fields setup-stack">
-                <label>Website or Business Name<input type="text" name="businessName" value="Beyond Movement" required></label>
+                <div>
+                  <span class="setup-label">Account Details</span>
+                  <div class="setup-account-grid">
+                    <label>Email<input type="email" name="setupEmail" placeholder="you@example.com" autocomplete="email" required></label>
+                    <label>Password<input type="password" name="setupPassword" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required></label>
+                  </div>
+                </div>
+                <label>Business Name<input type="text" name="businessName" value="Beyond Movement" required></label>
+                <label>Website Name<input type="text" name="websiteName" value="Beyond Movement" required></label>
                 <label>Public Website URL<input type="text" name="businessSlug" value="beyond-movement" maxlength="50" required><small class="slug-status" data-slug-status>Available format.</small></label>
                 <label>Tagline (optional)<input type="text" name="tagline" value="Where confidence meets choreography."></label>
                 <label>Business Type<select name="businessType"><option>Independent Choreographer</option><option>Studio</option><option>Dance Team</option><option>Event Organizer</option></select></label>
@@ -871,9 +879,9 @@
     <p>Beyond the 8 counts. Beyond the limits.</p>
   </footer>
 
-  <script src="assets/supabase.min.js?v=20260713-authflow"></script>
-  <script src="app-config.js?v=20260713-authflow"></script>
-  <script src="app-services.js?v=20260713-authflow"></script>
-  <script src="script.js?v=20260713-authflow"></script>
+  <script src="assets/supabase.min.js?v=20260713-setupaccount"></script>
+  <script src="app-config.js?v=20260713-setupaccount"></script>
+  <script src="app-services.js?v=20260713-setupaccount"></script>
+  <script src="script.js?v=20260713-setupaccount"></script>
 </body>
 </html>

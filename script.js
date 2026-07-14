@@ -426,7 +426,9 @@ const getSetupState = () => {
   const form = setupForm;
   const field = (name, fallback = "") => form?.elements?.[name]?.value?.trim() || fallback;
   const businessName = field("businessName", "Beyond Movement");
-  const fallbackSlug = beyondEight.slugify?.(businessName) || "beyond-movement";
+  const websiteName = field("websiteName", businessName);
+  const setupEmail = field("setupEmail", "");
+  const fallbackSlug = beyondEight.slugify?.(websiteName || businessName) || "beyond-movement";
   const slug = field("businessSlug", fallbackSlug);
   const tagline = field("tagline", "Where confidence meets choreography.");
   const whatYouDo = field("whatYouDo", "We create empowering dance experiences for adults, blending technique, confidence, and community.");
@@ -440,6 +442,8 @@ const getSetupState = () => {
   const logoText = businessName.split(/\s+/).slice(0, 2).join("<br>").toUpperCase();
   return {
     businessName,
+    websiteName,
+    setupEmail,
     slug,
     tagline,
     businessType,
@@ -458,6 +462,22 @@ const getSetupState = () => {
     headline: tagline || "Move with purpose. Dance with passion.",
     logoText
   };
+};
+
+const getSetupCredentials = () => ({
+  email: setupForm?.elements?.setupEmail?.value?.trim() || "",
+  password: setupForm?.elements?.setupPassword?.value || ""
+});
+
+const validateSetupCredentials = () => {
+  if (currentUser) return "";
+  const { email, password } = getSetupCredentials();
+  const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!email) return "Enter your email address on step 1.";
+  if (!emailIsValid) return "Enter a valid email address on step 1.";
+  if (!password) return "Enter a password on step 1.";
+  if (password.length < 8) return "Use at least 8 characters for your password.";
+  return "";
 };
 
 const saveGuestSetupDraft = () => {
@@ -520,7 +540,9 @@ const setRadioValue = (name, value) => {
 
 const applySetupState = (state = {}) => {
   if (!setupForm || !state) return;
+  setFormValue("setupEmail", state.setupEmail);
   setFormValue("businessName", state.businessName);
+  setFormValue("websiteName", state.websiteName || state.businessName);
   setFormValue("businessSlug", state.slug);
   setFormValue("tagline", state.tagline);
   setFormValue("businessType", state.businessType);
@@ -732,13 +754,53 @@ const generatedSiteHTML = (state) => {
 </html>`;
 };
 
+const ensureSetupAccountForLaunch = async () => {
+  if (currentUser) return currentUser;
+  if (!supabaseClient) throw new Error("Supabase could not load. Check your connection and refresh.");
+  const validationMessage = validateSetupCredentials();
+  if (validationMessage) throw new Error(validationMessage);
+
+  const state = getSetupState();
+  const { email, password } = getSetupCredentials();
+  const metadata = {
+    business_name: state.businessName,
+    website_name: state.websiteName,
+    launch_source: "setup_wizard"
+  };
+
+  let authResponse = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      data: metadata,
+      emailRedirectTo: getAuthRedirectUrl()
+    }
+  });
+
+  if (authResponse.error || !authResponse.data.session) {
+    const loginResponse = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (loginResponse.error) {
+      if (!authResponse.error && !authResponse.data.session) {
+        throw new Error("Account created. Please confirm your email, then log in to publish your website.");
+      }
+      throw new Error("We could not create or log in to that account. If this email already exists, use the correct password.");
+    }
+    authResponse = loginResponse;
+  }
+
+  currentUser = authResponse.data.session?.user || null;
+  if (!currentUser) throw new Error("We could not start your signed-in session. Please try again.");
+  authReady = true;
+  await ensureProfile();
+  await updateHeaderForAuth();
+  return currentUser;
+};
+
 const launchGeneratedWebsite = async () => {
   const state = getSetupState();
-  if (!currentUser || !supabaseClient) {
-    throw new Error("Create your free account to publish and manage this website.");
-  }
+  const launchUser = await ensureSetupAccountForLaunch();
   const result = await beyondEight.publishWebsite?.({
-    user: currentUser,
+    user: launchUser,
     state,
     stepIndex: setupSteps.length - 1,
     businessId: currentBusinessId
@@ -779,7 +841,10 @@ const stepIsValid = () => {
   const currentStep = setupSteps[setupIndex];
   if (!currentStep) return true;
   const requiredFields = currentStep.querySelectorAll("[required]");
-  return Array.from(requiredFields).every((field) => field.reportValidity());
+  return Array.from(requiredFields).every((field) => {
+    if (currentUser && (field.name === "setupEmail" || field.name === "setupPassword")) return true;
+    return field.reportValidity();
+  });
 };
 
 const openSetupDirect = (event) => {
@@ -800,8 +865,8 @@ const openSetup = async (event) => {
     authReady = true;
   }
   if (!isAuthenticated()) {
-    prepareAuthForOwnerAction("start");
-    openAuth("signup");
+    restoreGuestSetupDraft();
+    openSetupDirect(event);
     return;
   }
   const route = await beyondEight.routeForUser?.(currentUser).catch(() => null);
@@ -1040,12 +1105,6 @@ const publishCurrentSetup = async () => {
 setupForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!stepIsValid()) return;
-  if (!isAuthenticated()) {
-    saveGuestSetupDraft();
-    prepareAuthForOwnerAction("publish");
-    openAuth("signup");
-    return;
-  }
   await publishCurrentSetup();
 });
 viewGeneratedSiteButton?.addEventListener("click", () => {
@@ -1059,10 +1118,14 @@ viewGeneratedSiteButton?.addEventListener("click", () => {
 });
 setupForm?.addEventListener("input", () => {
   const businessNameField = setupForm?.elements.businessName;
+  const websiteNameField = setupForm?.elements.websiteName;
   const slugField = setupForm?.elements.businessSlug;
   if (document.activeElement === slugField) slugManuallyEdited = true;
-  if (document.activeElement === businessNameField && slugField && !slugManuallyEdited) {
-    slugField.value = beyondEight.slugify?.(businessNameField.value) || "";
+  if (document.activeElement === businessNameField && websiteNameField && !websiteNameField.value.trim()) {
+    websiteNameField.value = businessNameField.value;
+  }
+  if ((document.activeElement === businessNameField || document.activeElement === websiteNameField) && slugField && !slugManuallyEdited) {
+    slugField.value = beyondEight.slugify?.(websiteNameField?.value || businessNameField?.value) || "";
   }
   updateSetupPreview();
   queueOnboardingSave();
