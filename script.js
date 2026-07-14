@@ -362,18 +362,18 @@ const updateHeaderForAuth = async () => {
 const setAuthMode = (mode) => {
   authMode = mode;
   const isLogin = mode === "login";
-  if (authTitle) authTitle.textContent = isLogin ? "Log in to BeyondEight" : "Create your BeyondEight account";
+  if (authTitle) authTitle.textContent = isLogin ? "Welcome back" : "Let's build your BeyondEight workspace";
   if (authCopy) {
     authCopy.textContent = isLogin
-      ? "Pick up where you left off and continue building your dance business."
-      : "Save your setup, preview your website, and come back to keep building your dance business.";
+      ? "Continue with Google or log in with email to manage your website."
+      : "Create your free account to save your website, continue editing anytime, and publish when you're ready.";
   }
-  if (authSubmit) authSubmit.textContent = isLogin ? "Log in" : "Create account";
-  authConfirmGroup?.toggleAttribute("hidden", isLogin);
-  authTermsGroup?.toggleAttribute("hidden", isLogin);
+  if (authSubmit) authSubmit.textContent = isLogin ? "Log In" : "Build My Website";
+  authConfirmGroup?.setAttribute("hidden", "");
+  authTermsGroup?.setAttribute("hidden", "");
   authForgot?.toggleAttribute("hidden", !isLogin);
-  if (authToggleText) authToggleText.textContent = isLogin ? "New to BeyondEight?" : "Already have an account?";
-  if (authToggle) authToggle.textContent = isLogin ? "Create an account" : "Log in";
+  if (authToggleText) authToggleText.textContent = isLogin ? "Don't have an account?" : "Already have an account?";
+  if (authToggle) authToggle.textContent = isLogin ? "Build your website" : "Log In";
   if (authError) authError.textContent = "";
 };
 
@@ -405,8 +405,6 @@ const validateAuthForm = () => {
   if (!authForm) return false;
   const email = authForm.elements.authEmail?.value.trim() || "";
   const password = authForm.elements.authPassword?.value || "";
-  const confirmPassword = authForm.elements.authConfirmPassword?.value || "";
-  const termsAccepted = Boolean(authForm.elements.authTerms?.checked);
   const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   if (!email) return "Enter your email address.";
@@ -415,9 +413,6 @@ const validateAuthForm = () => {
   if (authMode !== "login" && password.length < 8) return "Use at least 8 characters for your password.";
   if (authMode === "signup") {
     if (password.length < 8) return "Use at least 8 characters for your password.";
-    if (!confirmPassword) return "Confirm your password.";
-    if (password !== confirmPassword) return "Passwords do not match.";
-    if (!termsAccepted) return "Agree to the Terms and Privacy Policy to continue.";
   }
   return "";
 };
@@ -740,38 +735,7 @@ const generatedSiteHTML = (state) => {
 const launchGeneratedWebsite = async () => {
   const state = getSetupState();
   if (!currentUser || !supabaseClient) {
-    const slugCheck = beyondEight.validSlug?.(state.slug || state.businessName) || { valid: true, slug: state.slug };
-    if (!slugCheck.valid) throw new Error(slugCheck.message || "Choose a different website URL.");
-    const slug = slugCheck.slug || state.slug;
-    const existing = JSON.parse(window.localStorage.getItem(LOCAL_PUBLISHED_SITES_KEY) || "{}");
-    existing[slug] = {
-      business: {
-        business_name: state.businessName,
-        slug,
-        tagline: state.tagline,
-        description: state.whatYouDo,
-        mission: state.mission,
-        why_join: state.whyJoin,
-        theme: state.theme,
-        status: "published"
-      },
-      settings: {
-        dance_styles: state.styles,
-        selected_pages: state.pages,
-        generated_content: state
-      },
-      pages: state.pages.map((page, index) => ({
-        title: page,
-        page_type: beyondEight.slugify?.(page) || page.toLowerCase(),
-        enabled: true,
-        display_order: index
-      })),
-      publishedAt: new Date().toISOString()
-    };
-    window.localStorage.setItem(LOCAL_PUBLISHED_SITES_KEY, JSON.stringify(existing));
-    generatedSiteUrl = `/${slug}`;
-    viewGeneratedSiteButton?.setAttribute("href", localPublicNavigationUrl(slug));
-    return { business: existing[slug].business, local: true };
+    throw new Error("Create your free account to publish and manage this website.");
   }
   const result = await beyondEight.publishWebsite?.({
     user: currentUser,
@@ -836,8 +800,8 @@ const openSetup = async (event) => {
     authReady = true;
   }
   if (!isAuthenticated()) {
-    restoreGuestSetupDraft();
-    openSetupDirect(event);
+    prepareAuthForOwnerAction("start");
+    openAuth("signup");
     return;
   }
   const route = await beyondEight.routeForUser?.(currentUser).catch(() => null);
@@ -1063,10 +1027,8 @@ const publishCurrentSetup = async () => {
     setupLaunched = true;
     updateSetupStep();
     setupMessage.textContent = `Your website is live at ${window.location.origin}${generatedSiteUrl}`;
-    window.setTimeout(() => {
-      const slug = result?.business?.slug || getSetupState().slug;
-      window.location.href = localPublicNavigationUrl(slug);
-    }, 850);
+    const slug = result?.business?.slug || getSetupState().slug;
+    viewGeneratedSiteButton?.setAttribute("href", localPublicNavigationUrl(slug));
   } catch (error) {
     console.warn("Website publish failed:", error);
     setupMessage.textContent = error.message || "We could not publish yet. Please check your setup and try again.";
@@ -1078,7 +1040,12 @@ const publishCurrentSetup = async () => {
 setupForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!stepIsValid()) return;
-  saveGuestSetupDraft();
+  if (!isAuthenticated()) {
+    saveGuestSetupDraft();
+    prepareAuthForOwnerAction("publish");
+    openAuth("signup");
+    return;
+  }
   await publishCurrentSetup();
 });
 viewGeneratedSiteButton?.addEventListener("click", () => {

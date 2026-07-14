@@ -34,11 +34,24 @@
     }
 
     const { business, settings, pages } = bundle;
+    const currentUser = await app.getSessionUser?.().catch(() => null);
+    const isOwner = Boolean(currentUser && business.owner_user_id && currentUser.id === business.owner_user_id);
     const selectedPages = new Set((pages || []).map((page) => page.title));
     const styles = settings?.dance_styles || [];
     document.body.classList.add(themeClass(business.theme));
     document.title = `${business.business_name} | BeyondEight`;
     root.innerHTML = `
+      ${
+        isOwner
+          ? `<div class="owner-toolbar" data-owner-toolbar>
+              <strong>BeyondEight</strong>
+              <span>Viewing as Owner</span>
+              <a href="/dashboard/website/?business=${esc(business.id)}">Edit Website</a>
+              <a href="/dashboard/">Dashboard</a>
+              <button type="button" data-owner-visitor>View as Visitor</button>
+            </div>`
+          : ""
+      }
       <div class="published-site">
         <header class="published-header">
           <strong>${esc(business.business_name)}</strong>
@@ -59,6 +72,9 @@
         <section id="register" class="published-section"><h2>Ready to dance with us?</h2><p>${esc(business.why_join || "Join our next class or workshop.")}</p><a class="primary-button" href="mailto:hello@example.com">Contact us</a></section>
         <footer class="published-footer">${esc(business.business_name)} · Built with BeyondEight</footer>
       </div>`;
+    root.querySelector("[data-owner-visitor]")?.addEventListener("click", () => {
+      root.querySelector("[data-owner-toolbar]")?.remove();
+    });
   } catch (error) {
     console.warn("Public site failed:", error);
     root.innerHTML = `<section class="route-loading"><h1>We could not load this website.</h1><p>Please try again soon.</p><a class="primary-button" href="/">Go home</a></section>`;

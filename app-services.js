@@ -276,8 +276,8 @@
     await ensureProfile(user);
     const { business, businesses } = await getPrimaryBusiness(user.id);
     if (businesses.length > 1) return "/dashboard/?select=1";
-    if (!business) return "/dashboard/?onboarding=1";
-    if (!business.onboarding_completed) return `/dashboard/?onboarding=1&business=${business.id}&step=${business.current_onboarding_step || 0}`;
+    if (!business) return "/?onboarding=1";
+    if (!business.onboarding_completed) return `/?onboarding=1&business=${business.id}&step=${business.current_onboarding_step || 0}`;
     return "/dashboard/";
   };
 
