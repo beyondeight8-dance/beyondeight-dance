@@ -63,11 +63,9 @@ const defaultSpecialties = ["Heels", "Hip Hop", "Contemporary"];
 const specialtyOptions = [
   "Heels",
   "Hip Hop",
+  "Commercial",
   "Contemporary",
   "Jazz",
-  "Ballet",
-  "Commercial",
-  "K-Pop",
   "Open Style",
   "Bollywood",
   "Bollyhop",
@@ -76,20 +74,20 @@ const specialtyOptions = [
   "Garba",
   "Bhangra",
   "Afro",
-  "Afro Fusion",
   "Dancehall",
-  "Latin",
-  "Salsa",
-  "Bachata",
+  "House",
   "Waacking",
   "Vogue",
-  "House",
+  "Breaking",
   "Popping",
   "Locking",
-  "Breaking",
+  "Salsa",
+  "Bachata",
+  "Latin",
+  "Ballroom",
+  "Kids Dance",
   "Wedding Choreography",
-  "Private Coaching",
-  "Audition Preparation"
+  "Fitness Dance"
 ];
 const specialtyAliases = {
   Bollywood: "bolly bolly dance indian filmi hindi",
@@ -99,14 +97,14 @@ const specialtyAliases = {
   Garba: "garbha dandiya indian folk",
   Bhangra: "punjabi indian folk",
   "Hip Hop": "hiphop hip-hop urban street",
-  "K-Pop": "kpop korean pop",
-  "Afro Fusion": "afrofusion afrobeat afrobeats",
+  Afro: "afrobeat afrobeats afro fusion afrofusion",
   Waacking: "whacking punking",
+  "Kids Dance": "children child youth kids classes",
   "Wedding Choreography": "wedding sangeet bridal first dance",
-  "Private Coaching": "private lesson private lessons one on one",
-  "Audition Preparation": "audition prep tryout"
+  "Fitness Dance": "dance fitness cardio workout"
 };
 let selectedSpecialties = [...defaultSpecialties];
+let activeSpecialtyIndex = -1;
 
 const heroViews = [
   {
@@ -530,23 +528,31 @@ const validateSetupCredentials = () => {
   return "";
 };
 
-const saveGuestSetupDraft = () => {
+const saveGuestSetupDraft = ({ explicit = false } = {}) => {
   if (!setupForm) return;
+  let previousDraft = {};
+  try {
+    previousDraft = JSON.parse(window.localStorage.getItem(GUEST_SETUP_KEY) || "{}");
+  } catch {
+    previousDraft = {};
+  }
   window.localStorage.setItem(
     GUEST_SETUP_KEY,
     JSON.stringify({
       state: getSetupState(),
       stepIndex: setupIndex,
+      explicit: explicit || Boolean(previousDraft.explicit),
       savedAt: new Date().toISOString()
     })
   );
 };
 
-const restoreGuestSetupDraft = () => {
+const restoreGuestSetupDraft = ({ requireExplicit = false } = {}) => {
   try {
     const raw = window.localStorage.getItem(GUEST_SETUP_KEY);
     if (!raw) return false;
     const draft = JSON.parse(raw);
+    if (requireExplicit && !draft?.explicit) return false;
     if (draft?.state) applySetupState(draft.state);
     if (Number.isFinite(Number(draft?.stepIndex))) {
       setupIndex = Math.min(Math.max(Number(draft.stepIndex), 0), setupSteps.length - 1);
@@ -573,7 +579,7 @@ const resetGuestSetup = () => {
   currentBusinessId = null;
   slugManuallyEdited = false;
   renderSpecialties();
-  setSlugStatus("Available format.", "neutral");
+  setSlugStatus("Start with your brand name and we will check this link.", "neutral");
   updateSetupPreview();
   updateSetupStep();
 };
@@ -612,10 +618,14 @@ const renderSpecialties = () => {
   const customValue = normalizeSpecialty(specialtyInput?.value || "");
   const customButton =
     customValue && !specialtyExists(customValue) && !matches.some((option) => option.toLowerCase() === customValue.toLowerCase())
-      ? `<button type="button" data-add-specialty="${customValue.replace(/"/g, "&quot;")}">Add "${customValue}"</button>`
+      ? `<button type="button" data-add-specialty="${customValue.replace(/"/g, "&quot;")}">+ Create "${customValue}"</button>`
       : "";
-  specialtySuggestions.innerHTML = `${matches.map((option) => `<button type="button" data-add-specialty="${option}">${option}</button>`).join("")}${customButton}`;
+  specialtySuggestions.innerHTML = `${matches.map((option) => `<button type="button" role="option" data-add-specialty="${option}">${option}</button>`).join("")}${customButton}`;
   specialtySuggestions.hidden = !matches.length && !customButton;
+  const suggestionButtons = specialtySuggestions.querySelectorAll("[data-add-specialty]");
+  activeSpecialtyIndex = suggestionButtons.length ? Math.min(Math.max(activeSpecialtyIndex, -1), suggestionButtons.length - 1) : -1;
+  suggestionButtons.forEach((button, index) => button.classList.toggle("is-active", index === activeSpecialtyIndex));
+  specialtyInput?.setAttribute("aria-expanded", String(!specialtySuggestions.hidden));
 };
 
 const addSpecialty = (value) => {
@@ -690,11 +700,11 @@ const validateCurrentSlug = async () => {
   try {
     const availability = await beyondEight.checkSlugAvailability?.(localCheck.slug, currentBusinessId);
     if (availability && !availability.valid) {
-      setSlugStatus(availability.message, "error");
+      setSlugStatus("x Already taken. Try a slightly different website address.", "error");
       return false;
     }
     if (setupForm?.elements.businessSlug) setupForm.elements.businessSlug.value = localCheck.slug;
-    setSlugStatus(availability?.message || "Available.", "success");
+    setSlugStatus("✓ Available. Great choice! Your students will use this link to register.", "success");
     return true;
   } catch (error) {
     console.info("Slug availability will be rechecked before authenticated publishing.", error);
@@ -705,8 +715,8 @@ const validateCurrentSlug = async () => {
 
 const scheduleSlugValidation = () => {
   window.clearTimeout(slugCheckTimer);
-  setSlugStatus("Checking...", "neutral");
-  slugCheckTimer = window.setTimeout(() => validateCurrentSlug(), 420);
+  setSlugStatus("Checking availability...", "neutral");
+  slugCheckTimer = window.setTimeout(() => validateCurrentSlug(), 220);
 };
 
 const setText = (selector, value) => {
@@ -721,6 +731,9 @@ const setHTML = (selector, value) => {
   });
 };
 
+const escapeHTML = (value = "") =>
+  String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+
 const updateSetupPreview = () => {
   if (!setupForm) return;
   const state = getSetupState();
@@ -734,6 +747,10 @@ const updateSetupPreview = () => {
   setText("[data-live-about]", aboutText);
   document.querySelectorAll("[data-live-specialties]").forEach((node) => {
     node.textContent = stylesText ? state.styles.slice(0, 3).join(" • ") : "";
+    node.hidden = !stylesText;
+  });
+  document.querySelectorAll(".setup-home-preview [data-live-specialties]").forEach((node) => {
+    node.innerHTML = stylesText ? state.styles.slice(0, 4).map((style) => `<span>${escapeHTML(style)}</span>`).join("") : "";
     node.hidden = !stylesText;
   });
   setText("[data-live-theme]", state.theme);
@@ -1015,7 +1032,7 @@ const openSetup = async (event) => {
     authReady = true;
   }
   if (!isAuthenticated()) {
-    resetGuestSetup();
+    if (!restoreGuestSetupDraft({ requireExplicit: true })) resetGuestSetup();
     openSetupDirect(event);
     return;
   }
@@ -1029,6 +1046,9 @@ const openSetup = async (event) => {
 };
 
 const closeSetup = () => {
+  if (setupModal?.classList.contains("is-open") && !currentUser && !setupLaunched) {
+    saveGuestSetupDraft({ explicit: true });
+  }
   setupModal.classList.remove("is-open");
   setupModal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
@@ -1309,9 +1329,25 @@ viewGeneratedSiteButton?.addEventListener("click", () => {
   }
 });
 specialtyInput?.addEventListener("keydown", (event) => {
+  const suggestionButtons = Array.from(specialtySuggestions?.querySelectorAll("[data-add-specialty]") || []);
+  if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+    event.preventDefault();
+    if (!suggestionButtons.length) return;
+    const direction = event.key === "ArrowDown" ? 1 : -1;
+    activeSpecialtyIndex = (activeSpecialtyIndex + direction + suggestionButtons.length) % suggestionButtons.length;
+    renderSpecialties();
+    return;
+  }
+  if (event.key === "Escape") {
+    activeSpecialtyIndex = -1;
+    if (specialtySuggestions) specialtySuggestions.hidden = true;
+    specialtyInput.setAttribute("aria-expanded", "false");
+    return;
+  }
   if (event.key !== "Enter") return;
   event.preventDefault();
-  addSpecialty(specialtyInput.value);
+  const activeButton = activeSpecialtyIndex >= 0 ? suggestionButtons[activeSpecialtyIndex] : suggestionButtons[0];
+  addSpecialty(activeButton?.dataset.addSpecialty || specialtyInput.value);
 });
 specialtySuggestions?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-add-specialty]");
@@ -1327,7 +1363,9 @@ setupForm?.addEventListener("input", () => {
   const businessNameField = setupForm?.elements.businessName;
   const slugField = setupForm?.elements.businessSlug;
   if (document.activeElement === specialtyInput) {
+    activeSpecialtyIndex = -1;
     renderSpecialties();
+    updateSetupPreview();
     return;
   }
   if (document.activeElement === slugField) {

@@ -530,7 +530,7 @@
     <div class="setup-modal" id="setup" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="setup-title">
       <div class="setup-backdrop" data-close-setup></div>
       <section class="setup-panel website-setup-panel">
-        <button class="modal-close setup-close" type="button" aria-label="Close setup" data-close-setup>Close</button>
+        <button class="modal-close setup-close" type="button" aria-label="Save setup progress and exit" data-close-setup>Save &amp; Exit</button>
         <div class="setup-shell-heading">BeyondEight website setup</div>
         <form class="setup-form">
           <fieldset class="setup-step is-active" data-setup-step="0">
@@ -549,17 +549,17 @@
                 </label>
                 <label>Tagline (optional)<input type="text" name="tagline" value="Where confidence meets choreography."></label>
                 <div class="specialty-field">
-                  <span class="setup-label">What should students find you for?</span>
-                  <small>Choose the styles or services that best describe your work. You can add your own.</small>
+                  <span class="setup-label">What styles do you teach?</span>
+                  <small>Select every style you teach. Students will be able to discover you using these.</small>
                   <div class="specialty-control" data-specialty-control>
                     <div class="specialty-tags" data-specialty-tags></div>
-                    <input type="text" name="specialtySearch" data-specialty-input placeholder="Search or add a specialty">
+                    <input type="text" name="specialtySearch" data-specialty-input placeholder="Search styles or create your own" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="specialty-suggestions">
                   </div>
-                  <div class="specialty-suggestions" data-specialty-suggestions></div>
+                  <div class="specialty-suggestions" id="specialty-suggestions" role="listbox" data-specialty-suggestions></div>
                 </div>
               </div>
               <aside class="setup-brand-preview setup-home-preview">
-                <div class="preview-nav"><strong data-live-brand>Beyond Movement</strong><span data-live-domain>beyond8dance.com/beyond-movement</span></div>
+                <div class="preview-nav"><strong data-live-brand>Beyond Movement</strong><span>Home &middot; Classes &middot; About</span></div>
                 <img src="assets/dancer-hero.png" alt="">
                 <blockquote>
                   <span data-live-headline>Where confidence meets choreography.</span>
