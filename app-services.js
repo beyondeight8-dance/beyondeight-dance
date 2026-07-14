@@ -157,6 +157,10 @@
       response = await client.from("businesses").update(payload).eq("id", targetBusinessId).select("*").single();
     } else {
       response = await client.from("businesses").insert(payload).select("*").single();
+      if (response.error && /owner_id/i.test(response.error.message || "")) {
+        console.warn("businesses.owner_id is a legacy required column. Run supabase-repair-legacy-owner-id.sql.");
+        response = await client.from("businesses").insert({ ...payload, owner_id: user.id }).select("*").single();
+      }
     }
     if (response.error) throw response.error;
     const business = response.data;

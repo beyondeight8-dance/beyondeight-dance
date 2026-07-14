@@ -37,6 +37,24 @@ alter table public.businesses add column if not exists updated_at timestamptz no
 
 do $$
 begin
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'businesses'
+      and column_name = 'owner_id'
+  ) then
+    alter table public.businesses alter column owner_id drop not null;
+
+    update public.businesses
+    set owner_user_id = coalesce(owner_user_id, owner_id)
+    where owner_user_id is null
+      and owner_id is not null;
+  end if;
+end $$;
+
+do $$
+begin
   if not exists (
     select 1
     from pg_constraint
