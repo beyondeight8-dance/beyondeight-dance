@@ -1,5 +1,6 @@
 -- BeyondEight targeted RLS repair.
--- Run this if Supabase reports: new row violates row-level security policy for table "businesses".
+-- Run this if Supabase reports row-level security errors while creating a
+-- business, saving onboarding settings, or publishing a website.
 
 create or replace function public.is_business_member(target_business_id uuid)
 returns boolean
@@ -89,5 +90,163 @@ create policy "members update owner admin" on public.business_members
 for update
 using (public.has_business_role(business_id, array['owner','admin']))
 with check (public.has_business_role(business_id, array['owner','admin']));
+
+drop policy if exists "websites read permitted or published" on public.websites;
+create policy "websites read permitted or published" on public.websites
+for select
+using (
+  published = true
+  or exists (
+    select 1
+    from public.businesses b
+    where b.id = websites.business_id
+      and (b.owner_user_id = auth.uid() or public.is_business_member(b.id))
+  )
+);
+
+drop policy if exists "websites insert owner admin" on public.websites;
+create policy "websites insert owner admin" on public.websites
+for insert
+with check (
+  exists (
+    select 1
+    from public.businesses b
+    where b.id = websites.business_id
+      and (b.owner_user_id = auth.uid() or public.has_business_role(b.id, array['owner','admin']))
+  )
+);
+
+drop policy if exists "websites update owner admin" on public.websites;
+create policy "websites update owner admin" on public.websites
+for update
+using (
+  exists (
+    select 1
+    from public.businesses b
+    where b.id = websites.business_id
+      and (b.owner_user_id = auth.uid() or public.has_business_role(b.id, array['owner','admin']))
+  )
+)
+with check (
+  exists (
+    select 1
+    from public.businesses b
+    where b.id = websites.business_id
+      and (b.owner_user_id = auth.uid() or public.has_business_role(b.id, array['owner','admin']))
+  )
+);
+
+drop policy if exists "pages read permitted or public" on public.website_pages;
+create policy "pages read permitted or public" on public.website_pages
+for select
+using (
+  exists (
+    select 1
+    from public.websites w
+    join public.businesses b on b.id = w.business_id
+    where w.id = website_pages.website_id
+      and (
+        (w.published = true and website_pages.enabled = true and b.status = 'published')
+        or b.owner_user_id = auth.uid()
+        or public.is_business_member(b.id)
+      )
+  )
+);
+
+drop policy if exists "pages manage owner admin editor" on public.website_pages;
+create policy "pages manage owner admin editor" on public.website_pages
+for all
+using (
+  exists (
+    select 1
+    from public.websites w
+    join public.businesses b on b.id = w.business_id
+    where w.id = website_pages.website_id
+      and (b.owner_user_id = auth.uid() or public.has_business_role(b.id, array['owner','admin','editor']))
+  )
+)
+with check (
+  exists (
+    select 1
+    from public.websites w
+    join public.businesses b on b.id = w.business_id
+    where w.id = website_pages.website_id
+      and (b.owner_user_id = auth.uid() or public.has_business_role(b.id, array['owner','admin','editor']))
+  )
+);
+
+drop policy if exists "settings read permitted or public" on public.business_settings;
+create policy "settings read permitted or public" on public.business_settings
+for select
+using (
+  exists (
+    select 1
+    from public.businesses b
+    left join public.websites w on w.business_id = b.id
+    where b.id = business_settings.business_id
+      and (
+        b.owner_user_id = auth.uid()
+        or public.is_business_member(b.id)
+        or (b.status = 'published' and w.published = true)
+      )
+  )
+);
+
+drop policy if exists "settings manage owner admin" on public.business_settings;
+create policy "settings manage owner admin" on public.business_settings
+for all
+using (
+  exists (
+    select 1
+    from public.businesses b
+    where b.id = business_settings.business_id
+      and (b.owner_user_id = auth.uid() or public.has_business_role(b.id, array['owner','admin']))
+  )
+)
+with check (
+  exists (
+    select 1
+    from public.businesses b
+    where b.id = business_settings.business_id
+      and (b.owner_user_id = auth.uid() or public.has_business_role(b.id, array['owner','admin']))
+  )
+);
+
+drop policy if exists "media read permitted or public" on public.media;
+create policy "media read permitted or public" on public.media
+for select
+using (
+  exists (
+    select 1
+    from public.businesses b
+    left join public.websites w on w.business_id = b.id
+    where b.id = media.business_id
+      and (
+        b.owner_user_id = auth.uid()
+        or public.is_business_member(b.id)
+        or (b.status = 'published' and w.published = true)
+      )
+  )
+);
+
+drop policy if exists "media manage owner admin editor" on public.media;
+create policy "media manage owner admin editor" on public.media
+for all
+using (
+  exists (
+    select 1
+    from public.businesses b
+    where b.id = media.business_id
+      and (b.owner_user_id = auth.uid() or public.has_business_role(b.id, array['owner','admin','editor']))
+  )
+)
+with check (
+  exists (
+    select 1
+    from public.businesses b
+    where b.id = media.business_id
+      and (b.owner_user_id = auth.uid() or public.has_business_role(b.id, array['owner','admin','editor']))
+  )
+);
 
 notify pgrst, 'reload schema';
