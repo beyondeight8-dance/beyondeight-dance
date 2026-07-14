@@ -47,6 +47,27 @@
 
   const pageSlug = (page = "") => slugify(page) || "page";
 
+  const dataUrlToFile = (dataUrl) => {
+    if (!dataUrl || !dataUrl.startsWith("data:")) return null;
+    const [header, payload = ""] = dataUrl.split(",");
+    const mime = header.match(/^data:([^;]+)/)?.[1] || "image/png";
+    const binary = atob(payload);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) {
+      bytes[index] = binary.charCodeAt(index);
+    }
+    return { blob: new Blob([bytes], { type: mime }), mime };
+  };
+
+  const extensionForMime = (mime = "") =>
+    ({
+      "image/gif": "gif",
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/svg+xml": "svg",
+      "image/webp": "webp"
+    })[mime] || "png";
+
   const getSessionUser = async () => {
     if (!client) return null;
     const { data, error } = await client.auth.getSession();
@@ -126,6 +147,7 @@
     why_join: state.whyJoin,
     brand_vibe: state.brandVibe,
     theme: state.theme,
+    logo_url: state.logoUrl || (state.logoImage && !state.logoImage.startsWith("data:") ? state.logoImage : null),
     status: launched ? "published" : "draft",
     current_onboarding_step: stepIndex,
     onboarding_completed: launched,
@@ -137,6 +159,19 @@
     await ensureProfile(user);
     let targetBusinessId = currentBusinessId;
     if (!targetBusinessId) {
+      const preferredSlug = validSlug(state.slug || state.businessName).slug;
+      if (preferredSlug) {
+        const { data: matchingSlug, error: matchingSlugError } = await client
+          .from("businesses")
+          .select("id")
+          .eq("owner_user_id", user.id)
+          .eq("slug", preferredSlug)
+          .maybeSingle();
+        if (matchingSlugError) throw matchingSlugError;
+        targetBusinessId = matchingSlug?.id || null;
+      }
+    }
+    if (!targetBusinessId && !launched) {
       const { data: existing, error: existingError } = await client
         .from("businesses")
         .select("id")
@@ -203,6 +238,47 @@
     return data;
   };
 
+  const uploadBusinessLogo = async (business, state) => {
+    if (!business?.id || !state?.logoImage) return state?.logoUrl || "";
+    if (!state.logoImage.startsWith("data:")) return state.logoUrl || state.logoImage;
+    const file = dataUrlToFile(state.logoImage);
+    if (!file) return "";
+
+    const extension = extensionForMime(file.mime);
+    const storagePath = `${business.id}/logo-${Date.now()}.${extension}`;
+    const { error: uploadError } = await client.storage.from("business-media").upload(storagePath, file.blob, {
+      contentType: file.mime,
+      upsert: true
+    });
+    if (uploadError) {
+      console.warn("Logo upload failed:", uploadError);
+      throw new Error("Logo storage is not ready yet. Run supabase-logo-storage.sql in Supabase, then publish again.");
+    }
+
+    const { data: publicData } = client.storage.from("business-media").getPublicUrl(storagePath);
+    const publicUrl = publicData?.publicUrl || "";
+    if (!publicUrl) return "";
+
+    const updateResponse = await client
+      .from("businesses")
+      .update({ logo_url: publicUrl, updated_at: new Date().toISOString() })
+      .eq("id", business.id)
+      .select("*")
+      .single();
+    if (updateResponse.error && !/logo_url/i.test(updateResponse.error.message || "")) throw updateResponse.error;
+
+    const mediaResponse = await client.from("media").insert({
+      business_id: business.id,
+      storage_path: storagePath,
+      public_url: publicUrl,
+      file_type: file.mime,
+      alt_text: `${business.business_name || "Business"} logo`
+    });
+    if (mediaResponse.error) console.warn("Logo media metadata was not saved:", mediaResponse.error);
+
+    return publicUrl;
+  };
+
   const saveOnboarding = async ({ user, state, stepIndex, businessId, launched = false }) => {
     const business = await ensureBusiness(user, state, stepIndex, businessId, launched);
     await saveSettings(business.id, { ...state, slug: business.slug });
@@ -243,13 +319,22 @@
   };
 
   const publishWebsite = async ({ user, state, stepIndex, businessId }) => {
-    const business = await saveOnboarding({ user, state, stepIndex, businessId, launched: true });
+    let business = await ensureBusiness(user, state, stepIndex, businessId, false);
+    let publishedState = { ...state, slug: business.slug };
+    await saveSettings(business.id, publishedState);
+    const logoUrl = await uploadBusinessLogo(business, publishedState);
+    if (logoUrl) {
+      publishedState = { ...publishedState, logoImage: logoUrl, logoUrl };
+      await saveSettings(business.id, publishedState);
+    }
+    business = await ensureBusiness(user, publishedState, stepIndex, business.id, true);
+    await saveSettings(business.id, publishedState);
     let websiteResponse = await client
       .from("websites")
       .upsert(
         {
           business_id: business.id,
-          theme: state.theme,
+          theme: publishedState.theme,
           published: true,
           published_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -266,7 +351,7 @@
           {
             business_id: business.id,
             owner_id: user.id,
-            theme: state.theme,
+            theme: publishedState.theme,
             published: true,
             published_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
@@ -279,17 +364,18 @@
     if (websiteResponse.error) throw websiteResponse.error;
     const website = websiteResponse.data;
 
-    const pages = (state.pages?.length ? state.pages : ["Home", "About", "Classes & Workshops", "Gallery", "Contact", "Register"]).map((title, index) => ({
+    const pages = (publishedState.pages?.length ? publishedState.pages : ["Home", "About", "Classes & Workshops", "Gallery", "Contact", "Register"]).map((title, index) => ({
       website_id: website.id,
       page_type: pageSlug(title),
       title,
       content: {
-        businessName: state.businessName,
-        tagline: state.tagline,
-        description: state.whatYouDo,
-        mission: state.mission,
-        whyJoin: state.whyJoin,
-        styles: state.styles || []
+        businessName: publishedState.businessName,
+        tagline: publishedState.tagline,
+        description: publishedState.whatYouDo,
+        mission: publishedState.mission,
+        whyJoin: publishedState.whyJoin,
+        styles: publishedState.styles || [],
+        logoUrl: publishedState.logoUrl || ""
       },
       enabled: true,
       display_order: index

@@ -12,6 +12,12 @@ The migration creates the application tables, indexes, update triggers, Row Leve
 
 You can safely run `supabase-schema.sql` again if Supabase reports a missing column such as `profiles.avatar_url`. The file includes `alter table ... add column if not exists` repair statements for databases that were created before the latest schema.
 
+## 1a. Enable logo and image storage
+
+To persist uploaded logos and show them on the published website, also run the full contents of `supabase-logo-storage.sql` in **SQL Editor**.
+
+That file creates the `business-media` Storage bucket, adds/repairs the `businesses.logo_url` column, repairs the `media` table if needed, and adds Row Level Security policies so owners can upload their own business assets while published assets remain publicly readable.
+
 ## 2. Configure Auth URLs
 
 In **Authentication > URL Configuration**:

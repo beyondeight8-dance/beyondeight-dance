@@ -6552,6 +6552,27 @@ body {
   font-weight: 800;
 }
 
+.published-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: inherit;
+}
+
+.published-logo img {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  object-fit: contain;
+}
+
+.published-logo span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .published-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 0.78fr);

@@ -38,6 +38,8 @@
     const isOwner = Boolean(currentUser && business.owner_user_id && currentUser.id === business.owner_user_id);
     const selectedPages = new Set((pages || []).map((page) => page.title));
     const styles = settings?.dance_styles || [];
+    const generatedContent = settings?.generated_content || {};
+    const logoUrl = business.logo_url || generatedContent.logoUrl || generatedContent.logoImage || "";
     document.body.classList.add(themeClass(business.theme));
     document.title = `${business.business_name} | BeyondEight`;
     root.innerHTML = `
@@ -54,7 +56,7 @@
       }
       <div class="published-site">
         <header class="published-header">
-          <strong>${esc(business.business_name)}</strong>
+          <strong class="published-logo">${logoUrl ? `<img src="${esc(logoUrl)}" alt="">` : ""}<span>${esc(business.business_name)}</span></strong>
           <nav>${[...selectedPages].slice(0, 6).map((page) => `<a href="#${app.slugify(page)}">${esc(page)}</a>`).join("")}</nav>
         </header>
         <section class="published-hero">
