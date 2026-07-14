@@ -1,5 +1,5 @@
 -- BeyondEight repair for old schemas with legacy required columns.
--- Run this if Supabase reports null values in legacy owner_id/business_id columns.
+-- Run this if Supabase reports null values in legacy owner_id/business_id/slug columns.
 
 do $$
 declare
@@ -51,6 +51,20 @@ begin
     from public.websites w
     where wp.website_id = w.id
       and wp.business_id is null;
+  end if;
+
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'website_pages'
+      and column_name = 'slug'
+  ) then
+    alter table public.website_pages alter column slug drop not null;
+
+    update public.website_pages
+    set slug = coalesce(slug, page_type)
+    where slug is null;
   end if;
 end $$;
 
