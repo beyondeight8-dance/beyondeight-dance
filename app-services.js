@@ -68,6 +68,11 @@
       "image/webp": "webp"
     })[mime] || "png";
 
+  const persistentLogoUrl = (state = {}) => {
+    const candidate = state.logoUrl || state.logoImage || "";
+    return candidate && !candidate.startsWith("data:") ? candidate : null;
+  };
+
   const getSessionUser = async () => {
     if (!client) return null;
     const { data, error } = await client.auth.getSession();
@@ -147,7 +152,7 @@
     why_join: state.whyJoin,
     brand_vibe: state.brandVibe,
     theme: state.theme,
-    logo_url: state.logoUrl || (state.logoImage && !state.logoImage.startsWith("data:") ? state.logoImage : null),
+    logo_url: persistentLogoUrl(state),
     status: launched ? "published" : "draft",
     current_onboarding_step: stepIndex,
     onboarding_completed: launched,
@@ -239,10 +244,13 @@
   };
 
   const uploadBusinessLogo = async (business, state) => {
-    if (!business?.id || !state?.logoImage) return state?.logoUrl || "";
-    if (!state.logoImage.startsWith("data:")) return state.logoUrl || state.logoImage;
+    if (!business?.id || !state?.logoImage) return { logoImage: state?.logoImage || "", logoUrl: state?.logoUrl || "" };
+    if (!state.logoImage.startsWith("data:")) {
+      const logoUrl = state.logoUrl || state.logoImage;
+      return { logoImage: logoUrl, logoUrl };
+    }
     const file = dataUrlToFile(state.logoImage);
-    if (!file) return "";
+    if (!file) return { logoImage: state.logoImage, logoUrl: "" };
 
     const extension = extensionForMime(file.mime);
     const storagePath = `${business.id}/logo-${Date.now()}.${extension}`;
@@ -252,12 +260,12 @@
     });
     if (uploadError) {
       console.warn("Logo upload failed:", uploadError);
-      throw new Error("Logo storage is not ready yet. Run supabase-logo-storage.sql in Supabase, then publish again.");
+      return { logoImage: state.logoImage, logoUrl: "", storageError: uploadError.message || "Storage upload failed." };
     }
 
     const { data: publicData } = client.storage.from("business-media").getPublicUrl(storagePath);
     const publicUrl = publicData?.publicUrl || "";
-    if (!publicUrl) return "";
+    if (!publicUrl) return { logoImage: state.logoImage, logoUrl: "" };
 
     const updateResponse = await client
       .from("businesses")
@@ -276,7 +284,7 @@
     });
     if (mediaResponse.error) console.warn("Logo media metadata was not saved:", mediaResponse.error);
 
-    return publicUrl;
+    return { logoImage: publicUrl, logoUrl: publicUrl };
   };
 
   const saveOnboarding = async ({ user, state, stepIndex, businessId, launched = false }) => {
@@ -322,9 +330,9 @@
     let business = await ensureBusiness(user, state, stepIndex, businessId, false);
     let publishedState = { ...state, slug: business.slug };
     await saveSettings(business.id, publishedState);
-    const logoUrl = await uploadBusinessLogo(business, publishedState);
-    if (logoUrl) {
-      publishedState = { ...publishedState, logoImage: logoUrl, logoUrl };
+    const logoResult = await uploadBusinessLogo(business, publishedState);
+    if (logoResult?.logoImage) {
+      publishedState = { ...publishedState, logoImage: logoResult.logoImage, logoUrl: logoResult.logoUrl || "" };
       await saveSettings(business.id, publishedState);
     }
     business = await ensureBusiness(user, publishedState, stepIndex, business.id, true);
