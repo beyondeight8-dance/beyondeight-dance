@@ -487,9 +487,9 @@ const getSetupState = () => {
   const fallbackSlug = beyondEight.slugify?.(businessName) || "beyond-movement";
   const slug = field("businessSlug", fallbackSlug);
   const tagline = field("tagline", "Where confidence meets choreography.");
-  const whatYouDo = field("whatYouDo", "We create empowering dance experiences for adults, blending technique, confidence, and community.");
-  const mission = field("mission", "To empower dancers to express themselves, build confidence, and chase their dreams.");
-  const whyJoin = field("whyJoin", "Our classes are welcoming, challenging, and designed to help dancers grow while feeling supported.");
+  const whatYouDo = field("whatYouDo", "");
+  const mission = field("mission", "");
+  const whyJoin = field("whyJoin", "");
   const brandVibe = form?.querySelector('input[name="brandVibe"]:checked')?.value || "Elegant";
   const theme = form?.querySelector('input[name="setupTheme"]:checked')?.value || "Editorial Elegant";
   const pages = Array.from(form?.querySelectorAll('input[name="pages"]:checked') || []).map((item) => item.value);
@@ -814,7 +814,7 @@ const updateSetupPreview = () => {
   if (!setupForm) return;
   const state = getSetupState();
   const stylesText = state.styles.slice(0, 3).join(", ");
-  const aboutText = `${state.businessName} helps students grow through ${stylesText ? `${stylesText} ` : ""}classes and creative work. ${state.whatYouDo} ${state.mission} ${state.whyJoin}`;
+  const aboutText = [state.whatYouDo, state.mission, state.whyJoin].filter(Boolean).join(" ");
   setText("[data-live-brand]", state.businessName);
   setText("[data-live-quote]", state.mission);
   setHTML("[data-live-logo]", logoHTMLFor(state));
@@ -822,6 +822,9 @@ const updateSetupPreview = () => {
   updateLogoUploadState();
   setText("[data-live-headline]", state.headline);
   setText("[data-live-about]", aboutText);
+  document.querySelectorAll("[data-live-quote], [data-live-about]").forEach((node) => {
+    node.classList.toggle("is-empty", !node.textContent.trim());
+  });
   document.querySelectorAll("[data-live-specialties]").forEach((node) => {
     node.textContent = stylesText ? state.styles.slice(0, 3).join(" • ") : "";
     node.hidden = !stylesText;

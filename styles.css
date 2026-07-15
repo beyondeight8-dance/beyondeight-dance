@@ -6963,46 +6963,51 @@ body.generated-minimal .published-cards article {
   grid-template-columns: minmax(190px, 0.42fr) minmax(280px, 0.58fr);
   gap: 8px 20px;
   align-items: start;
-  min-height: 136px;
-  padding: 16px 18px !important;
+  min-height: 132px;
+  padding: 15px 18px !important;
   border: 1px solid rgba(34, 16, 47, 0.075) !important;
   border-radius: 20px !important;
   background:
     radial-gradient(circle at 0% 0%, rgba(208, 24, 92, 0.045), transparent 34%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 247, 0.84)) !important;
-  box-shadow: 0 16px 36px rgba(34, 16, 47, 0.04) !important;
+  box-shadow: 0 14px 32px rgba(34, 16, 47, 0.038) !important;
 }
 
 .setup-content-fields label > span {
   grid-area: title;
   color: var(--ink);
-  font-size: 1.12rem;
+  font-size: 1.08rem;
   font-weight: 950;
-  line-height: 1.08;
+  line-height: 1.12;
 }
 
 .setup-content-fields label > small {
   grid-area: help;
   max-width: 15rem;
   color: var(--muted);
-  font-size: 0.86rem;
-  font-weight: 800;
+  font-size: 0.82rem;
+  font-weight: 650;
   line-height: 1.38;
 }
 
 .setup-content-fields textarea {
   grid-area: input;
-  min-height: 104px;
+  min-height: 100px;
   margin-top: 0 !important;
   border-color: rgba(34, 16, 47, 0.1) !important;
   border-radius: 18px !important;
   background: rgba(255, 255, 255, 0.96) !important;
   color: var(--ink);
-  font-size: 1.02rem;
-  font-weight: 750;
-  line-height: 1.42;
+  font-size: 0.96rem;
+  font-weight: 500;
+  line-height: 1.45;
   resize: none;
   transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.setup-content-fields textarea::placeholder {
+  color: rgba(43, 18, 61, 0.34);
+  font-weight: 500;
 }
 
 .setup-content-fields textarea:focus {
@@ -7114,6 +7119,11 @@ body.generated-minimal .published-cards article {
   font-size: 0.95rem;
   font-weight: 650;
   line-height: 1.52;
+}
+
+.setup-story-preview [data-live-quote].is-empty,
+.setup-story-preview [data-live-about].is-empty {
+  min-height: 1.4em;
 }
 
 .story-preview-about {
