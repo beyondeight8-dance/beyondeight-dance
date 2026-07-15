@@ -8854,6 +8854,8 @@ body.generated-minimal .published-cards article {
 .hero {
   grid-template-columns: minmax(420px, 720px) minmax(560px, 1fr) !important;
   align-items: center !important;
+  justify-content: center !important;
+  contain: layout paint;
 }
 
 .hero-copy {
@@ -8861,12 +8863,17 @@ body.generated-minimal .published-cards article {
   z-index: 3;
   width: min(100%, 720px);
   max-width: 720px !important;
-  contain: layout;
+  min-height: 440px;
+  align-self: center;
+  contain: layout paint;
+  transform: none !important;
 }
 
 .hero-visual {
   width: min(100%, 860px);
   justify-self: center;
+  align-self: center;
+  contain: layout paint;
 }
 
 .dashboard-mockup {
@@ -8892,47 +8899,39 @@ body.generated-minimal .published-cards article {
   min-height: 108px;
 }
 
-/* Footer fix: replace the dark PNG mark with a light footer-only mark. */
+/* Footer fix: use the real footer-specific logo artwork on the dark plum footer. */
 .site-footer .brand {
   gap: 12px;
 }
 
 .site-footer .brand-mark {
-  width: 42px !important;
-  height: 42px !important;
+  width: 54px !important;
+  height: 54px !important;
   border: 0 !important;
+  border-radius: 16px !important;
   background: transparent !important;
-  box-shadow: none !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18) !important;
+  overflow: hidden;
 }
 
 .site-footer .brand-mark img {
-  display: none !important;
-}
-
-.site-footer .brand-mark::before {
-  content: "8";
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fffaf6;
-  font-family: var(--brand);
-  font-size: 2.2rem;
-  font-weight: 800;
-  line-height: 1;
-  text-shadow: 0 0 18px rgba(255, 255, 255, 0.28);
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  opacity: 1 !important;
+  filter: none !important;
 }
 
 @media (max-width: 1120px) {
   .hero {
     grid-template-columns: 1fr !important;
+    contain: none;
   }
 
   .hero-copy {
     contain: none;
+    min-height: auto;
   }
 
   .dashboard-mockup {
