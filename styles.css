@@ -8827,3 +8827,24 @@ body.generated-minimal .published-cards article {
     min-height: auto;
   }
 }
+
+/* Keep hero copy stable while the animated dashboard preview rotates. */
+.hero-copy,
+.hero-copy.reveal,
+.hero-copy.reveal.is-visible {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  will-change: auto !important;
+}
+
+/* Make the footer logo mark readable on the dark plum footer. */
+.site-footer .brand-mark {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
+.site-footer .brand-mark img {
+  opacity: 1;
+  filter: none;
+}
