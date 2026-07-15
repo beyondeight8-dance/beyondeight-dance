@@ -5,6 +5,12 @@ const formMessage = document.querySelector(".form-message");
 const comparisonModal = document.querySelector(".comparison-modal");
 const openComparisonButton = document.querySelector("[data-open-comparison]");
 const closeComparisonButtons = document.querySelectorAll("[data-close-comparison]");
+const planDemoModal = document.querySelector(".plan-demo-modal");
+const planDemoForm = document.querySelector(".plan-demo-form");
+const planDemoName = document.querySelector("[data-plan-demo-name]");
+const planDemoMessage = document.querySelector(".plan-demo-message");
+const planDemoButtons = document.querySelectorAll("[data-request-demo-plan]");
+const closePlanDemoButtons = document.querySelectorAll("[data-close-plan-demo]");
 const setupModal = document.querySelector(".setup-modal");
 const openSetupButtons = document.querySelectorAll("[data-open-setup]");
 const closeSetupButtons = document.querySelectorAll("[data-close-setup]");
@@ -52,6 +58,8 @@ const specialtySuggestions = document.querySelector("[data-specialty-suggestions
 const logoUploadInput = document.querySelector("[data-logo-upload]");
 const logoUploadStatus = document.querySelector("[data-logo-upload-status]");
 const logoUploadLabel = document.querySelector(".setup-logo-upload");
+const logoUploadTrigger = document.querySelector("[data-logo-upload-trigger]");
+const logoUploadFileName = document.querySelector("[data-logo-file-name]");
 const heroMockup = document.querySelector(".dashboard-mockup");
 const heroView = document.querySelector("[data-hero-view]");
 const heroNavItems = document.querySelectorAll("[data-hero-nav]");
@@ -324,6 +332,37 @@ const closeComparison = () => {
 openComparisonButton?.addEventListener("click", openComparison);
 closeComparisonButtons.forEach((button) => button.addEventListener("click", closeComparison));
 
+const openPlanDemo = (plan = "Growth") => {
+  if (!planDemoModal) return;
+  if (planDemoName) planDemoName.textContent = plan;
+  if (planDemoMessage) planDemoMessage.textContent = "";
+  planDemoModal.classList.add("is-open");
+  planDemoModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  planDemoForm?.querySelector("input")?.focus();
+};
+
+const closePlanDemo = () => {
+  if (!planDemoModal) return;
+  planDemoModal.classList.remove("is-open");
+  planDemoModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+};
+
+planDemoButtons.forEach((button) => {
+  button.addEventListener("click", () => openPlanDemo(button.dataset.requestDemoPlan || "Growth"));
+});
+closePlanDemoButtons.forEach((button) => button.addEventListener("click", closePlanDemo));
+planDemoForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const emailField = planDemoForm.elements.planDemoEmail;
+  if (!emailField?.reportValidity()) return;
+  if (planDemoMessage) {
+    planDemoMessage.textContent = "Thank you for your interest. Our team will reach out soon with the demo and any updates.";
+  }
+  planDemoForm.reset();
+});
+
 const openThemePreview = (button) => {
   if (!themeModal || !themeModalTitle || !themeModalPreview) return;
   const card = button.closest(".theme-card");
@@ -365,6 +404,7 @@ let slugCheckTimer;
 let slugManuallyEdited = false;
 let pendingOwnerAction = "";
 let logoImageDataUrl = "";
+let logoImageFileName = "";
 
 const GUEST_SETUP_KEY = "beyondeight.guestWebsiteDraft";
 const GUEST_SETUP_VERSION = 2;
@@ -518,7 +558,8 @@ const getSetupState = () => {
     headline: tagline || "",
     logoText,
     logoFont,
-    logoImage: logoImageDataUrl
+    logoImage: logoImageDataUrl,
+    logoFileName: logoImageFileName
   };
 };
 
@@ -648,6 +689,7 @@ const resetGuestSetup = () => {
   currentBusinessId = null;
   slugManuallyEdited = false;
   logoImageDataUrl = "";
+  logoImageFileName = "";
   if (logoUploadInput) logoUploadInput.value = "";
   renderSpecialties();
   setSlugStatus("Start with your brand name and we will check this link.", "neutral");
@@ -802,6 +844,7 @@ const applySetupState = (state = {}) => {
   setFormValue("website", state.website);
   selectedSpecialties = Array.isArray(state.styles) ? [...new Set(state.styles.map(normalizeSpecialty).filter(Boolean))] : [];
   logoImageDataUrl = state.logoImage || "";
+  logoImageFileName = state.logoFileName || (logoImageDataUrl ? "Logo image" : "");
   renderSpecialties();
   setCheckedValues("pages", state.pages);
   setRadioValue("brandVibe", state.brandVibe);
@@ -867,11 +910,12 @@ const logoHTMLFor = (state) => {
 
 const updateLogoUploadState = (fileName = "") => {
   logoUploadLabel?.classList.toggle("is-uploaded", Boolean(logoImageDataUrl));
-  const uploadAction = logoUploadLabel?.querySelector("strong");
-  if (uploadAction) uploadAction.textContent = logoImageDataUrl ? "Change image" : "Upload image";
+  const displayName = fileName || logoImageFileName || "";
+  if (logoUploadTrigger) logoUploadTrigger.textContent = logoImageDataUrl ? "Change image" : "Choose image";
+  if (logoUploadFileName) logoUploadFileName.textContent = displayName || "No file selected";
   if (logoUploadStatus) {
     logoUploadStatus.textContent = logoImageDataUrl
-      ? `${fileName || "Logo image"} selected. It will appear beside your wordmark.`
+      ? `${displayName || "Logo image"} selected. It will appear beside your wordmark.`
       : "Optional. Choose a logo image from your computer.";
   }
 };
@@ -1509,13 +1553,14 @@ specialtyTags?.addEventListener("click", (event) => {
   if (!button) return;
   removeSpecialty(button.dataset.removeSpecialty);
 });
-logoUploadInput?.addEventListener("change", () => {
-  const selectedFileName = logoUploadInput.files?.[0]?.name || "";
-  if (setupMessage) setupMessage.textContent = selectedFileName ? `Preparing ${selectedFileName}...` : "";
+logoUploadTrigger?.addEventListener("click", () => {
+  logoUploadInput?.click();
 });
 logoUploadInput?.addEventListener("change", async () => {
   const file = logoUploadInput.files?.[0];
   if (!file) return;
+  logoImageFileName = file.name;
+  if (setupMessage) setupMessage.textContent = `Preparing ${file.name}...`;
   if (!file.type.startsWith("image/")) {
     if (setupMessage) setupMessage.textContent = "Please choose an image file for your logo.";
     return;
@@ -1523,13 +1568,14 @@ logoUploadInput?.addEventListener("change", async () => {
   try {
     logoImageDataUrl = await resizeLogoImage(file);
     updateSetupPreview();
-    updateLogoUploadState(file.name);
+    updateLogoUploadState();
     saveGuestSetupDraft();
     queueOnboardingSave();
     if (setupMessage) setupMessage.textContent = "Logo image added to your website preview.";
   } catch (error) {
     console.warn("Logo preview failed:", error);
     logoImageDataUrl = "";
+    logoImageFileName = "";
     updateSetupPreview();
     if (setupMessage) setupMessage.textContent = error.message || "We could not use that logo image. Please try another file.";
   }

@@ -260,12 +260,12 @@
     });
     if (uploadError) {
       console.warn("Logo upload failed:", uploadError);
-      return { logoImage: state.logoImage, logoUrl: "", storageError: uploadError.message || "Storage upload failed." };
+      return { logoImage: state.logoImage, logoUrl: state.logoImage, storageError: uploadError.message || "Storage upload failed." };
     }
 
     const { data: publicData } = client.storage.from("business-media").getPublicUrl(storagePath);
     const publicUrl = publicData?.publicUrl || "";
-    if (!publicUrl) return { logoImage: state.logoImage, logoUrl: "" };
+    if (!publicUrl) return { logoImage: state.logoImage, logoUrl: state.logoImage };
 
     const updateResponse = await client
       .from("businesses")
