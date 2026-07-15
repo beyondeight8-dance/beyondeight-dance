@@ -536,6 +536,40 @@ const validateSetupCredentials = () => {
   return "";
 };
 
+const fileToDataUrl = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(String(reader.result || "")));
+    reader.addEventListener("error", () => reject(reader.error || new Error("We could not read that image.")));
+    reader.readAsDataURL(file);
+  });
+
+const resizeLogoImage = async (file) => {
+  const originalDataUrl = await fileToDataUrl(file);
+  if (!file.type.startsWith("image/") || file.type === "image/svg+xml") return originalDataUrl;
+
+  const image = new Image();
+  image.decoding = "async";
+  image.src = originalDataUrl;
+  await new Promise((resolve, reject) => {
+    image.addEventListener("load", resolve, { once: true });
+    image.addEventListener("error", () => reject(new Error("We could not preview that logo image.")), { once: true });
+  });
+
+  const longestSide = Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height);
+  if (!longestSide) return originalDataUrl;
+  const maxSide = 640;
+  const scale = Math.min(1, maxSide / longestSide);
+  const width = Math.max(1, Math.round((image.naturalWidth || image.width) * scale));
+  const height = Math.max(1, Math.round((image.naturalHeight || image.height) * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  context.drawImage(image, 0, 0, width, height);
+  return canvas.toDataURL(file.type === "image/png" ? "image/png" : "image/jpeg", 0.86);
+};
+
 const saveGuestSetupDraft = ({ explicit = false } = {}) => {
   if (!setupForm) return;
   let previousDraft = {};
@@ -544,15 +578,29 @@ const saveGuestSetupDraft = ({ explicit = false } = {}) => {
   } catch {
     previousDraft = {};
   }
-  window.localStorage.setItem(
-    GUEST_SETUP_KEY,
-    JSON.stringify({
-      state: getSetupState(),
-      stepIndex: setupIndex,
-      explicit: explicit || Boolean(previousDraft.explicit),
-      savedAt: new Date().toISOString()
-    })
-  );
+  try {
+    window.localStorage.setItem(
+      GUEST_SETUP_KEY,
+      JSON.stringify({
+        state: getSetupState(),
+        stepIndex: setupIndex,
+        explicit: explicit || Boolean(previousDraft.explicit),
+        savedAt: new Date().toISOString()
+      })
+    );
+  } catch (error) {
+    console.warn("Could not save local website draft:", error);
+    const state = getSetupState();
+    window.localStorage.setItem(
+      GUEST_SETUP_KEY,
+      JSON.stringify({
+        state: { ...state, logoImage: "", logoUrl: "" },
+        stepIndex: setupIndex,
+        explicit: explicit || Boolean(previousDraft.explicit),
+        savedAt: new Date().toISOString()
+      })
+    );
+  }
 };
 
 const restoreGuestSetupDraft = ({ requireExplicit = false } = {}) => {
@@ -1062,7 +1110,7 @@ const openSetup = async (event) => {
     authReady = true;
   }
   if (!isAuthenticated()) {
-    if (!restoreGuestSetupDraft({ requireExplicit: true })) resetGuestSetup();
+    resetGuestSetup();
     openSetupDirect(event);
     return;
   }
@@ -1398,21 +1446,32 @@ specialtyTags?.addEventListener("click", (event) => {
   removeSpecialty(button.dataset.removeSpecialty);
 });
 logoUploadInput?.addEventListener("change", () => {
+  const selectedFileName = logoUploadInput.files?.[0]?.name || "";
+  if (setupMessage) setupMessage.textContent = selectedFileName ? `Preparing ${selectedFileName}...` : "";
+});
+logoUploadInput?.addEventListener("change", async () => {
   const file = logoUploadInput.files?.[0];
   if (!file) return;
   if (!file.type.startsWith("image/")) {
     if (setupMessage) setupMessage.textContent = "Please choose an image file for your logo.";
     return;
   }
-  const reader = new FileReader();
-  reader.addEventListener("load", () => {
-    logoImageDataUrl = String(reader.result || "");
+  try {
+    logoImageDataUrl = await resizeLogoImage(file);
     updateSetupPreview();
     updateLogoUploadState(file.name);
     saveGuestSetupDraft();
     queueOnboardingSave();
-  });
-  reader.readAsDataURL(file);
+    if (setupMessage) setupMessage.textContent = "Logo image added to your website preview.";
+  } catch (error) {
+    console.warn("Logo preview failed:", error);
+    logoImageDataUrl = "";
+    updateSetupPreview();
+    if (setupMessage) setupMessage.textContent = error.message || "We could not use that logo image. Please try another file.";
+  }
+});
+logoUploadInput?.addEventListener("click", () => {
+  logoUploadInput.value = "";
 });
 setupForm?.addEventListener("input", () => {
   const businessNameField = setupForm?.elements.businessName;
