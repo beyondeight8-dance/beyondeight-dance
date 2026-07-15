@@ -367,6 +367,7 @@ let pendingOwnerAction = "";
 let logoImageDataUrl = "";
 
 const GUEST_SETUP_KEY = "beyondeight.guestWebsiteDraft";
+const GUEST_SETUP_VERSION = 2;
 const PENDING_OWNER_ACTION_KEY = "beyondeight.pendingOwnerAction";
 const LOCAL_PUBLISHED_SITES_KEY = "beyondeight.localPublishedSites";
 
@@ -483,10 +484,11 @@ const titleCaseDomain = (value) => {
 const getSetupState = () => {
   const form = setupForm;
   const field = (name, fallback = "") => form?.elements?.[name]?.value?.trim() || fallback;
-  const businessName = field("businessName", "Beyond Movement");
+  const enteredBusinessName = field("businessName", "");
+  const businessName = enteredBusinessName || "Beyond Movement";
   const fallbackSlug = beyondEight.slugify?.(businessName) || "beyond-movement";
   const slug = field("businessSlug", fallbackSlug);
-  const tagline = field("tagline", "Where confidence meets choreography.");
+  const tagline = field("tagline", "");
   const whatYouDo = field("whatYouDo", "");
   const mission = field("mission", "");
   const whyJoin = field("whyJoin", "");
@@ -513,7 +515,7 @@ const getSetupState = () => {
     youtube: field("youtube", ""),
     website: field("website", ""),
     domain: `https://beyond8dance.com/${slug || fallbackSlug}`,
-    headline: tagline || "Move with purpose. Dance with passion.",
+    headline: tagline || "",
     logoText,
     logoFont,
     logoImage: logoImageDataUrl
@@ -582,6 +584,7 @@ const saveGuestSetupDraft = ({ explicit = false } = {}) => {
     window.localStorage.setItem(
       GUEST_SETUP_KEY,
       JSON.stringify({
+        version: GUEST_SETUP_VERSION,
         state: getSetupState(),
         stepIndex: setupIndex,
         explicit: explicit || Boolean(previousDraft.explicit),
@@ -594,6 +597,7 @@ const saveGuestSetupDraft = ({ explicit = false } = {}) => {
     window.localStorage.setItem(
       GUEST_SETUP_KEY,
       JSON.stringify({
+        version: GUEST_SETUP_VERSION,
         state: { ...state, logoImage: "", logoUrl: "" },
         stepIndex: setupIndex,
         explicit: explicit || Boolean(previousDraft.explicit),
@@ -603,13 +607,22 @@ const saveGuestSetupDraft = ({ explicit = false } = {}) => {
   }
 };
 
+const sanitizeRestoredSetupState = (draft = {}) => {
+  const state = { ...(draft.state || {}) };
+  if (Number(draft.version || 0) >= GUEST_SETUP_VERSION) return state;
+  if (state.businessName === "Beyond Movement") state.businessName = "";
+  if (state.slug === "beyond-movement") state.slug = "";
+  if (state.tagline === "Where confidence meets choreography.") state.tagline = "";
+  return state;
+};
+
 const restoreGuestSetupDraft = ({ requireExplicit = false } = {}) => {
   try {
     const raw = window.localStorage.getItem(GUEST_SETUP_KEY);
     if (!raw) return false;
     const draft = JSON.parse(raw);
     if (requireExplicit && !draft?.explicit) return false;
-    if (draft?.state) applySetupState(draft.state);
+    if (draft?.state) applySetupState(sanitizeRestoredSetupState(draft));
     if (Number.isFinite(Number(draft?.stepIndex))) {
       setupIndex = Math.min(Math.max(Number(draft.stepIndex), 0), setupSteps.length - 1);
     }
@@ -645,6 +658,59 @@ const resetGuestSetup = () => {
 const localPublicNavigationUrl = (slug) => {
   const isLocalStaticServer = ["localhost", "127.0.0.1"].includes(window.location.hostname);
   return isLocalStaticServer ? `/404.html?slug=${encodeURIComponent(slug)}` : `/${slug}`;
+};
+
+const buildLocalPublishedBundle = (state) => {
+  const pages = (state.pages?.length ? state.pages : defaultSetupPages).map((title, index) => ({
+    id: `local-${index}`,
+    title,
+    page_type: beyondEight.slugify?.(title) || title.toLowerCase().replace(/\s+/g, "-"),
+    enabled: true,
+    display_order: index,
+    content: {
+      businessName: state.businessName,
+      tagline: state.tagline,
+      description: state.whatYouDo,
+      mission: state.mission,
+      whyJoin: state.whyJoin,
+      styles: state.styles || [],
+      logoUrl: state.logoUrl || ""
+    }
+  }));
+  return {
+    business: {
+      id: `local-${state.slug}`,
+      business_name: state.businessName,
+      slug: state.slug,
+      tagline: state.headline || state.tagline,
+      description: state.whatYouDo,
+      mission: state.mission,
+      why_join: state.whyJoin,
+      theme: state.theme,
+      logo_url: state.logoUrl || "",
+      status: "published"
+    },
+    settings: {
+      dance_styles: state.styles || [],
+      selected_pages: state.pages || defaultSetupPages,
+      generated_content: state
+    },
+    website: {
+      id: `local-website-${state.slug}`,
+      published: true,
+      theme: state.theme
+    },
+    pages
+  };
+};
+
+const saveLocalPublishedPreview = (state) => {
+  const slug = beyondEight.slugify?.(state.slug || state.businessName) || "beyond-movement";
+  const siteState = { ...state, slug };
+  const localSites = JSON.parse(window.localStorage.getItem(LOCAL_PUBLISHED_SITES_KEY) || "{}");
+  localSites[slug] = buildLocalPublishedBundle(siteState);
+  window.localStorage.setItem(LOCAL_PUBLISHED_SITES_KEY, JSON.stringify(localSites));
+  return localPublicNavigationUrl(slug);
 };
 
 const normalizeSpecialty = (value = "") =>
@@ -1036,7 +1102,7 @@ const ensureAccountForPublishing = async () => {
 const generateWebsitePreview = () => {
   const state = getSetupState();
   if (generatedSiteUrl?.startsWith("blob:")) URL.revokeObjectURL(generatedSiteUrl);
-  generatedSiteUrl = URL.createObjectURL(new Blob([generatedSiteHTML(state)], { type: "text/html" }));
+  generatedSiteUrl = saveLocalPublishedPreview(state);
   viewGeneratedSiteButton?.setAttribute("href", generatedSiteUrl);
   saveGuestSetupDraft();
   return { state, previewUrl: generatedSiteUrl };
@@ -1053,8 +1119,8 @@ const finalizeWebsitePublish = async () => {
     businessId: currentBusinessId
   });
   currentBusinessId = result?.business?.id || currentBusinessId;
-  generatedSiteUrl = `/${result?.business?.slug || state.slug}`;
-  viewGeneratedSiteButton?.setAttribute("href", localPublicNavigationUrl(result?.business?.slug || state.slug));
+  generatedSiteUrl = localPublicNavigationUrl(result?.business?.slug || state.slug);
+  viewGeneratedSiteButton?.setAttribute("href", generatedSiteUrl);
   return result;
 };
 
@@ -1409,13 +1475,8 @@ setupSubmitButton?.addEventListener("click", async (event) => {
 });
 readyPublishButton?.addEventListener("click", publishCurrentSetup);
 viewGeneratedSiteButton?.addEventListener("click", () => {
-  if (generatedSiteUrl) {
-    viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
-  } else {
-    const blob = new Blob([generatedSiteHTML(getSetupState())], { type: "text/html" });
-    generatedSiteUrl = URL.createObjectURL(blob);
-    viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
-  }
+  generatedSiteUrl = saveLocalPublishedPreview(getSetupState());
+  viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
 });
 specialtyInput?.addEventListener("keydown", (event) => {
   const suggestionButtons = Array.from(specialtySuggestions?.querySelectorAll("[data-add-specialty]") || []);
