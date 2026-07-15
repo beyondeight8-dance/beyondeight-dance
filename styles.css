@@ -8547,6 +8547,7 @@ body.generated-minimal .published-cards article {
 .strip-grid .analytics-icon {
   grid-template-columns: repeat(3, 6px) !important;
   grid-template-rows: 30px;
+  align-content: center;
   align-items: end;
   justify-content: center;
   gap: 4px !important;
@@ -8564,6 +8565,7 @@ body.generated-minimal .published-cards article {
   width: 6px !important;
   border-radius: 999px !important;
   background: linear-gradient(180deg, var(--accent), var(--coral)) !important;
+  transform: translateY(-17px);
 }
 
 .strip-grid .analytics-icon span:nth-child(1) { height: 14px !important; }
@@ -8577,33 +8579,36 @@ body.generated-minimal .published-cards article {
 .dance-visual {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 210, 220, 0.38);
+  border: 0;
   background:
-    radial-gradient(circle at 18% 72%, rgba(255, 255, 255, 0.86), transparent 34%),
-    radial-gradient(circle at 82% 18%, rgba(255, 112, 77, 0.18), transparent 38%),
-    linear-gradient(135deg, rgba(255, 251, 246, 0.94), rgba(255, 235, 231, 0.62));
-  box-shadow: 0 34px 92px rgba(46, 21, 57, 0.08);
+    radial-gradient(circle at 22% 78%, rgba(255, 255, 255, 0.92), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(255, 112, 77, 0.14), transparent 40%),
+    linear-gradient(135deg, rgba(255, 251, 246, 0.82), rgba(255, 238, 234, 0.48));
+  box-shadow: none;
   isolation: isolate;
 }
 
 .dance-visual::before {
   position: absolute;
-  inset: 0;
-  z-index: 1;
+  inset: -2px auto -2px -2px;
+  z-index: 2;
+  width: 48%;
   content: "";
   background:
-    linear-gradient(90deg, rgba(255, 251, 246, 0.96) 0%, rgba(255, 251, 246, 0.38) 22%, transparent 48%),
-    linear-gradient(180deg, transparent 62%, rgba(255, 251, 246, 0.82) 100%);
+    radial-gradient(circle at 42% 46%, rgba(255, 251, 246, 0.94) 0 28%, rgba(255, 248, 243, 0.72) 43%, transparent 69%),
+    linear-gradient(90deg, rgba(255, 251, 246, 0.98), rgba(255, 251, 246, 0.52) 54%, transparent 100%);
   pointer-events: none;
 }
 
 .dance-visual::after {
   position: absolute;
-  inset: auto 0 0 0;
-  z-index: 1;
-  height: 36%;
+  inset: -1px;
+  z-index: 2;
+  height: auto;
   content: "";
-  background: linear-gradient(180deg, transparent, rgba(255, 251, 246, 0.92));
+  background:
+    linear-gradient(90deg, rgba(255, 251, 246, 0.84) 0%, transparent 17%, transparent 82%, rgba(255, 251, 246, 0.62) 100%),
+    linear-gradient(180deg, rgba(255, 251, 246, 0.62) 0%, transparent 20%, transparent 76%, rgba(255, 251, 246, 0.92) 100%);
   pointer-events: none;
 }
 
@@ -8613,13 +8618,16 @@ body.generated-minimal .published-cards article {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  opacity: 0.9;
-  filter: saturate(0.94) contrast(0.98);
+  object-position: 58% center;
+  opacity: 0.82;
+  filter: saturate(0.88) contrast(0.96);
+  transform: scale(1.035);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
 }
 
 .dance-card {
-  z-index: 2;
+  z-index: 3;
   border-color: rgba(255, 210, 220, 0.62);
   background: rgba(255, 251, 246, 0.82);
   backdrop-filter: blur(16px);
