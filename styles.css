@@ -8905,12 +8905,12 @@ body.generated-minimal .published-cards article {
 }
 
 .site-footer .brand-mark {
-  width: 54px !important;
-  height: 54px !important;
+  width: 46px !important;
+  height: 46px !important;
   border: 0 !important;
-  border-radius: 16px !important;
+  border-radius: 14px !important;
   background: transparent !important;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18) !important;
+  box-shadow: 0 14px 34px rgba(255, 214, 220, 0.14) !important;
   overflow: hidden;
 }
 
