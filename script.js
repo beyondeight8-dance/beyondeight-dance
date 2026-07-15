@@ -66,7 +66,7 @@ const heroNavItems = document.querySelectorAll("[data-hero-nav]");
 const productTabs = document.querySelectorAll("[data-product-tab]");
 const productPanels = document.querySelectorAll("[data-product-panel]");
 const revealItems = document.querySelectorAll(
-  ".section-heading, .hero-copy, .hero-proof span, .dashboard-mockup, .workflow-card, .steps-grid article, .dance-visual, .product-tabs, .product-platform, .price-card, .theme-card, .launch-cta, .demo-copy, .demo-form"
+  ".section-heading, .dashboard-mockup, .workflow-card, .steps-grid article, .dance-visual, .product-tabs, .product-platform, .price-card, .theme-card, .launch-cta, .demo-copy, .demo-form"
 );
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");

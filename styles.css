@@ -8840,11 +8840,12 @@ body.generated-minimal .published-cards article {
 
 /* Make the footer logo mark readable on the dark plum footer. */
 .site-footer .brand-mark {
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: none;
 }
 
 .site-footer .brand-mark img {
-  opacity: 1;
-  filter: none;
+  opacity: 0.95;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(255, 255, 255, 0.18));
 }
