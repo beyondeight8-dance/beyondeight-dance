@@ -8849,3 +8849,93 @@ body.generated-minimal .published-cards article {
   opacity: 0.95;
   filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(255, 255, 255, 0.18));
 }
+
+/* Stability fix: the hero text must not shift when the dashboard preview rotates. */
+.hero {
+  grid-template-columns: minmax(420px, 720px) minmax(560px, 1fr) !important;
+  align-items: center !important;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 720px);
+  max-width: 720px !important;
+  contain: layout;
+}
+
+.hero-visual {
+  width: min(100%, 860px);
+  justify-self: center;
+}
+
+.dashboard-mockup {
+  width: min(100%, 820px) !important;
+  height: 560px;
+  min-height: 560px !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+.mockup-main {
+  grid-template-rows: 76px 122px minmax(0, 1fr) !important;
+  transform: none !important;
+  transition: opacity 180ms ease !important;
+}
+
+.mockup-main.is-changing {
+  opacity: 0.52 !important;
+  transform: none !important;
+}
+
+.metric-row div {
+  min-height: 108px;
+}
+
+/* Footer fix: replace the dark PNG mark with a light footer-only mark. */
+.site-footer .brand {
+  gap: 12px;
+}
+
+.site-footer .brand-mark {
+  width: 42px !important;
+  height: 42px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.site-footer .brand-mark img {
+  display: none !important;
+}
+
+.site-footer .brand-mark::before {
+  content: "8";
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fffaf6;
+  font-family: var(--brand);
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.28);
+}
+
+@media (max-width: 1120px) {
+  .hero {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hero-copy {
+    contain: none;
+  }
+
+  .dashboard-mockup {
+    height: auto;
+  }
+}
