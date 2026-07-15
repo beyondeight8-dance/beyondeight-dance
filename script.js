@@ -908,6 +908,26 @@ const logoHTMLFor = (state) => {
   return `<span class="logo-lockup logo-font-${state.logoFont || "serif"}">${image}<span>${state.logoText}</span></span>`;
 };
 
+const themeKeyFor = (theme = "") => {
+  const normalized = String(theme).toLowerCase();
+  if (normalized.includes("bold")) return "bold";
+  if (normalized.includes("soft")) return "soft";
+  if (normalized.includes("vibrant")) return "vibrant";
+  if (normalized.includes("classical")) return "classical";
+  if (normalized.includes("urban")) return "urban";
+  if (normalized.includes("minimal")) return "minimal";
+  return "elegant";
+};
+
+const applySetupPreviewTheme = (theme) => {
+  const key = themeKeyFor(theme);
+  document
+    .querySelectorAll(".setup-home-preview, .setup-story-preview, .setup-preview-site, .ready-phone")
+    .forEach((node) => {
+      node.dataset.themeKey = key;
+    });
+};
+
 const updateLogoUploadState = (fileName = "") => {
   logoUploadLabel?.classList.toggle("is-uploaded", Boolean(logoImageDataUrl));
   const displayName = fileName || logoImageFileName || "";
@@ -925,6 +945,7 @@ const updateSetupPreview = () => {
   const state = getSetupState();
   const stylesText = state.styles.slice(0, 3).join(", ");
   const aboutText = [state.whatYouDo, state.mission, state.whyJoin].filter(Boolean).join(" ");
+  applySetupPreviewTheme(state.theme);
   setText("[data-live-brand]", state.businessName);
   setText("[data-live-quote]", state.mission);
   setHTML("[data-live-logo]", logoHTMLFor(state));
