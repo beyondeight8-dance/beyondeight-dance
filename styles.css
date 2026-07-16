@@ -8901,11 +8901,14 @@ body.generated-minimal .published-cards article {
 
 /* Footer fix: use a blended mark from Logo Dark beside the text wordmark. */
 .site-footer .brand {
+  display: inline-flex;
+  align-items: center;
   gap: 12px;
 }
 
 .site-footer .brand-mark {
-  width: 34px !important;
+  flex: 0 0 auto;
+  width: 38px !important;
   height: 58px !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -8920,11 +8923,12 @@ body.generated-minimal .published-cards article {
   height: 100% !important;
   object-fit: contain;
   opacity: 1 !important;
-  filter: drop-shadow(0 0 10px rgba(255, 105, 115, 0.18)) !important;
+  filter: brightness(1.22) saturate(1.16) drop-shadow(0 0 12px rgba(255, 113, 123, 0.2)) !important;
 }
 
 .site-footer .brand-name {
   display: inline-block !important;
+  line-height: 1;
 }
 
 @media (max-width: 1120px) {
