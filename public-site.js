@@ -45,16 +45,18 @@
       return;
     }
 
-    const { business, settings, pages } = bundle;
+    const { business, settings, website, pages } = bundle;
     const currentUser = await app.getSessionUser?.().catch(() => null);
     const isOwner = Boolean(currentUser && business.owner_user_id && currentUser.id === business.owner_user_id);
     const selectedPages = new Set((pages || []).map((page) => page.title));
     const styles = settings?.dance_styles || [];
     const generatedContent = settings?.generated_content || {};
     const logoUrl = business.logo_url || generatedContent.logoUrl || generatedContent.logoImage || "";
-    const themeName = canonicalThemeName(business.theme || generatedContent.theme);
+    const themeName = canonicalThemeName(business.theme || website?.theme || generatedContent.theme);
     document.body.classList.add(themeClass(themeName));
     document.title = `${business.business_name} | BeyondEight`;
+    const pageLinks = [...selectedPages].slice(0, 6).map((page) => `<a href="#${app.slugify(page)}">${esc(page)}</a>`).join("");
+    const specialtyTags = styles.slice(0, 5).map((style) => `<span>${esc(style)}</span>`).join("");
     root.innerHTML = `
       ${
         isOwner
@@ -70,17 +72,20 @@
       <div class="published-site">
         <header class="published-header">
           <strong class="published-logo">${logoUrl ? `<img src="${esc(logoUrl)}" alt="">` : ""}<span>${esc(business.business_name)}</span></strong>
-          <nav>${[...selectedPages].slice(0, 6).map((page) => `<a href="#${app.slugify(page)}">${esc(page)}</a>`).join("")}</nav>
+          <nav>${pageLinks}</nav>
         </header>
         <section class="published-hero">
           <div>
             <p class="eyebrow">${esc(themeName)}</p>
             <h1>${esc(business.tagline || business.business_name)}</h1>
             <p>${esc(business.description || "A dance business powered by BeyondEight.")}</p>
-            <div class="published-tags">${styles.map((style) => `<span>${esc(style)}</span>`).join("")}</div>
+            <div class="published-tags">${specialtyTags}</div>
             ${selectedPages.has("Register") ? `<a class="primary-button" href="#register">Register now</a>` : ""}
           </div>
-          <img src="/assets/dancer-hero.png" alt="">
+          <figure class="published-hero-card">
+            <img src="/assets/dancer-hero.png" alt="">
+            <figcaption><strong>Now enrolling</strong><span>${esc(styles[0] || "Signature class")}</span></figcaption>
+          </figure>
         </section>
         ${selectedPages.has("About") ? `<section id="about" class="published-section"><h2>About ${esc(business.business_name)}</h2><p>${esc(business.mission || "")}</p></section>` : ""}
         ${selectedPages.has("Classes") || selectedPages.has("Events") ? `<section id="classes" class="published-cards"><article><h3>Signature Series</h3><p>Technique, confidence, and choreography in a polished class experience.</p></article><article><h3>Workshop Launch</h3><p>Book upcoming workshops and intensives through a focused registration flow.</p></article></section>` : ""}
