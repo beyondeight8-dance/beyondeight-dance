@@ -8899,14 +8899,14 @@ body.generated-minimal .published-cards article {
   min-height: 108px;
 }
 
-/* Footer fix: use the Logo Dark artwork as one integrated wordmark. */
+/* Footer fix: use a blended mark from Logo Dark beside the text wordmark. */
 .site-footer .brand {
-  gap: 0;
+  gap: 12px;
 }
 
 .site-footer .brand-mark {
-  width: clamp(168px, 18vw, 230px) !important;
-  height: auto !important;
+  width: 34px !important;
+  height: 58px !important;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
@@ -8917,14 +8917,14 @@ body.generated-minimal .published-cards article {
 .site-footer .brand-mark img {
   display: block !important;
   width: 100% !important;
-  height: auto !important;
+  height: 100% !important;
   object-fit: contain;
   opacity: 1 !important;
-  filter: none !important;
+  filter: drop-shadow(0 0 10px rgba(255, 105, 115, 0.18)) !important;
 }
 
 .site-footer .brand-name {
-  display: none !important;
+  display: inline-block !important;
 }
 
 @media (max-width: 1120px) {
