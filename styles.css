@@ -8905,22 +8905,22 @@ body.generated-minimal .published-cards article {
 }
 
 .site-footer .brand-mark {
-  width: 46px !important;
-  height: 46px !important;
+  width: 34px !important;
+  height: 50px !important;
   border: 0 !important;
-  border-radius: 14px !important;
+  border-radius: 0 !important;
   background: transparent !important;
-  box-shadow: 0 14px 34px rgba(255, 214, 220, 0.14) !important;
-  overflow: hidden;
+  box-shadow: none !important;
+  overflow: visible;
 }
 
 .site-footer .brand-mark img {
   display: block !important;
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover;
+  object-fit: contain;
   opacity: 1 !important;
-  filter: none !important;
+  filter: drop-shadow(0 0 12px rgba(255, 112, 124, 0.2)) drop-shadow(0 2px 8px rgba(255, 255, 255, 0.12)) !important;
 }
 
 @media (max-width: 1120px) {
