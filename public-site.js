@@ -8,13 +8,25 @@
   const slug = querySlug || window.location.pathname.split("/").filter(Boolean)[0];
   const LOCAL_PUBLISHED_SITES_KEY = "beyondeight.localPublishedSites";
 
-  const themeClass = (theme = "") =>
-    ({
+  const canonicalThemeName = (theme = "") => {
+    const normalized = String(theme).toLowerCase();
+    if (normalized.includes("bold") || normalized.includes("urban")) return "Bold & Edgy";
+    if (normalized.includes("soft") || normalized.includes("classical")) return "Soft & Graceful";
+    if (normalized.includes("vibrant")) return "Vibrant & Playful";
+    if (normalized.includes("minimal")) return "Minimal Black";
+    return "Default Elegant";
+  };
+
+  const themeClass = (theme = "") => {
+    const map = {
+      "Default Elegant": "generated-elegant",
       "Bold & Edgy": "generated-bold",
       "Soft & Graceful": "generated-soft",
       "Vibrant & Playful": "generated-vibrant",
       "Minimal Black": "generated-minimal"
-    })[theme] || "generated-elegant";
+    };
+    return map[canonicalThemeName(theme)] || "generated-elegant";
+  };
 
   try {
     if (!slug || app.reservedSlugs?.has(slug)) {
@@ -40,7 +52,8 @@
     const styles = settings?.dance_styles || [];
     const generatedContent = settings?.generated_content || {};
     const logoUrl = business.logo_url || generatedContent.logoUrl || generatedContent.logoImage || "";
-    document.body.classList.add(themeClass(business.theme));
+    const themeName = canonicalThemeName(business.theme || generatedContent.theme);
+    document.body.classList.add(themeClass(themeName));
     document.title = `${business.business_name} | BeyondEight`;
     root.innerHTML = `
       ${
@@ -61,7 +74,7 @@
         </header>
         <section class="published-hero">
           <div>
-            <p class="eyebrow">${esc(business.theme || "BeyondEight")}</p>
+            <p class="eyebrow">${esc(themeName)}</p>
             <h1>${esc(business.tagline || business.business_name)}</h1>
             <p>${esc(business.description || "A dance business powered by BeyondEight.")}</p>
             <div class="published-tags">${styles.map((style) => `<span>${esc(style)}</span>`).join("")}</div>

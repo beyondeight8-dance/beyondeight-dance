@@ -521,6 +521,15 @@ const titleCaseDomain = (value) => {
   return `https://beyond8dance.com/${slug}`;
 };
 
+const canonicalThemeName = (theme = "") => {
+  const normalized = String(theme).toLowerCase();
+  if (normalized.includes("bold") || normalized.includes("urban")) return "Bold & Edgy";
+  if (normalized.includes("soft") || normalized.includes("classical")) return "Soft & Graceful";
+  if (normalized.includes("vibrant")) return "Vibrant & Playful";
+  if (normalized.includes("minimal")) return "Minimal Black";
+  return "Default Elegant";
+};
+
 const getSetupState = () => {
   const form = setupForm;
   const field = (name, fallback = "") => form?.elements?.[name]?.value?.trim() || fallback;
@@ -533,7 +542,7 @@ const getSetupState = () => {
   const mission = field("mission", "");
   const whyJoin = field("whyJoin", "");
   const brandVibe = form?.querySelector('input[name="brandVibe"]:checked')?.value || "Elegant";
-  const theme = form?.querySelector('input[name="setupTheme"]:checked')?.value || "Editorial Elegant";
+  const theme = canonicalThemeName(form?.querySelector('input[name="setupTheme"]:checked')?.value || "Default Elegant");
   const pages = Array.from(form?.querySelectorAll('input[name="pages"]:checked') || []).map((item) => item.value);
   const styles = [...selectedSpecialties];
   const logoText = businessName.split(/\s+/).slice(0, 2).join("<br>").toUpperCase();
@@ -832,6 +841,7 @@ const setRadioValue = (name, value) => {
 
 const applySetupState = (state = {}) => {
   if (!setupForm || !state) return;
+  const theme = canonicalThemeName(state.theme || "Default Elegant");
   setFormValue("businessName", state.businessName);
   setFormValue("businessSlug", state.slug);
   setFormValue("tagline", state.tagline);
@@ -848,7 +858,7 @@ const applySetupState = (state = {}) => {
   renderSpecialties();
   setCheckedValues("pages", state.pages);
   setRadioValue("brandVibe", state.brandVibe);
-  setRadioValue("setupTheme", state.theme);
+  setRadioValue("setupTheme", theme);
   setRadioValue("logoFont", state.logoFont);
   updateSetupPreview();
 };
@@ -909,12 +919,10 @@ const logoHTMLFor = (state) => {
 };
 
 const themeKeyFor = (theme = "") => {
-  const normalized = String(theme).toLowerCase();
+  const normalized = canonicalThemeName(theme).toLowerCase();
   if (normalized.includes("bold")) return "bold";
   if (normalized.includes("soft")) return "soft";
   if (normalized.includes("vibrant")) return "vibrant";
-  if (normalized.includes("classical")) return "classical";
-  if (normalized.includes("urban")) return "urban";
   if (normalized.includes("minimal")) return "minimal";
   return "elegant";
 };
@@ -964,7 +972,7 @@ const updateSetupPreview = () => {
     node.innerHTML = stylesText ? state.styles.slice(0, 4).map((style) => `<span>${escapeHTML(style)}</span>`).join("") : "";
     node.hidden = !stylesText;
   });
-  setText("[data-live-theme]", state.theme);
+  setText("[data-live-theme]", canonicalThemeName(state.theme));
   setText("[data-live-pages]", `${state.pages.length} Pages Selected`);
   setText("[data-live-domain]", state.domain);
   setText(
@@ -1068,15 +1076,9 @@ const themeClassFor = (theme) => {
     "Bold & Edgy": "generated-bold",
     "Soft & Graceful": "generated-soft",
     "Vibrant & Playful": "generated-vibrant",
-    "Editorial Elegant": "generated-elegant",
-    "Bold Performance": "generated-bold",
-    "Soft Contemporary": "generated-soft",
-    "Vibrant Bollywood": "generated-vibrant",
-    "Classical Heritage": "generated-soft",
-    "Urban Commercial": "generated-bold",
     "Minimal Black": "generated-minimal"
   };
-  return map[theme] || "generated-elegant";
+  return map[canonicalThemeName(theme)] || "generated-elegant";
 };
 
 const generatedSiteHTML = (state) => {

@@ -7528,9 +7528,12 @@ body.generated-minimal .published-cards article {
 }
 
 .setup-theme-picker label {
+  display: grid;
+  align-content: start;
   min-height: 310px;
   padding: 12px;
   border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
@@ -7543,7 +7546,8 @@ body.generated-minimal .published-cards article {
   font-size: 0.98rem;
 }
 
-.setup-theme-picker .theme-preview.theme-mini-site {
+.setup-theme-picker .theme-preview.theme-mini-site,
+.setup-theme-picker .theme-preview.marketplace-preview {
   position: relative;
   display: grid;
   align-content: start;
@@ -7554,8 +7558,37 @@ body.generated-minimal .published-cards article {
 }
 
 .setup-theme-picker .theme-preview.theme-mini-site::before,
-.setup-theme-picker .theme-preview.theme-mini-site::after {
+.setup-theme-picker .theme-preview.theme-mini-site::after,
+.setup-theme-picker .theme-preview.marketplace-preview::before,
+.setup-theme-picker .theme-preview.marketplace-preview::after {
   content: none;
+}
+
+.setup-theme-picker .theme-preview.marketplace-preview {
+  width: 100%;
+  min-height: 158px !important;
+  padding: 0;
+  pointer-events: none;
+}
+
+.setup-theme-picker .marketplace-preview .mini-nav b {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--mini-ink, #271034);
+  font-family: var(--display);
+  font-size: 0.5rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.setup-theme-picker .marketplace-preview .mini-hero strong {
+  font-size: clamp(0.76rem, 1vw, 0.94rem);
+}
+
+.setup-theme-picker .marketplace-preview .theme-dancer {
+  height: 86px;
+  min-height: 86px;
 }
 
 .theme-mini-site b {
