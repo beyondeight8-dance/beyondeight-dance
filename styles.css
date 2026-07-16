@@ -8899,28 +8899,28 @@ body.generated-minimal .published-cards article {
   min-height: 108px;
 }
 
-/* Footer fix: use the real footer-specific logo artwork on the dark plum footer. */
+/* Footer fix: use the Logo Dark artwork cropped to a footer mark. */
 .site-footer .brand {
   gap: 12px;
 }
 
 .site-footer .brand-mark {
-  width: 34px !important;
-  height: 50px !important;
+  width: 38px !important;
+  height: 62px !important;
   border: 0 !important;
-  border-radius: 0 !important;
+  border-radius: 12px !important;
   background: transparent !important;
   box-shadow: none !important;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .site-footer .brand-mark img {
   display: block !important;
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain;
+  object-fit: cover;
   opacity: 1 !important;
-  filter: drop-shadow(0 0 12px rgba(255, 112, 124, 0.2)) drop-shadow(0 2px 8px rgba(255, 255, 255, 0.12)) !important;
+  filter: none !important;
 }
 
 @media (max-width: 1120px) {
