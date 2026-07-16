@@ -8908,8 +8908,8 @@ body.generated-minimal .published-cards article {
 
 .site-footer .brand-mark {
   flex: 0 0 auto;
-  width: 38px !important;
-  height: 58px !important;
+  width: 30px !important;
+  height: 54px !important;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
@@ -8923,7 +8923,8 @@ body.generated-minimal .published-cards article {
   height: 100% !important;
   object-fit: contain;
   opacity: 1 !important;
-  filter: brightness(1.22) saturate(1.16) drop-shadow(0 0 12px rgba(255, 113, 123, 0.2)) !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
 }
 
 .site-footer .brand-name {
