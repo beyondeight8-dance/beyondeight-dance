@@ -948,35 +948,117 @@ const updateLogoUploadState = (fileName = "") => {
   }
 };
 
+const themeProfileFor = (theme = "") => {
+  const name = canonicalThemeName(theme);
+  const key = themeKeyFor(name);
+  const profiles = {
+    elegant: { eyebrow: "Now enrolling", cta: "Join a class", voice: "bright editorial" },
+    bold: { eyebrow: "Limited drop", cta: "Claim spot", voice: "high contrast" },
+    soft: { eyebrow: "Contemporary studio", cta: "Explore classes", voice: "soft and graceful" },
+    vibrant: { eyebrow: "Fresh workshops", cta: "Book a spot", voice: "vibrant and playful" },
+    minimal: { eyebrow: "Private training", cta: "Apply now", voice: "minimal black" }
+  };
+  return { name, key, ...(profiles[key] || profiles.elegant) };
+};
+
+const smartWebsiteContent = (state) => {
+  const theme = themeProfileFor(state.theme);
+  const styles = state.styles.length ? state.styles : ["Heels", "Hip Hop", "Contemporary", "Bollywood", "Jazz"];
+  const brandName = state.businessName || "Beyond Movement";
+  const headline = state.tagline || state.headline || "Move with purpose. Dance with passion.";
+  const whatYouDo =
+    state.whatYouDo ||
+    "A polished home for choreography classes, workshops, intensives, and dancer experiences that feel easy to discover and book.";
+  const mission =
+    state.mission ||
+    "We blend strong technique, expressive performance, and a supportive room where dancers can grow with confidence.";
+  const whyJoin =
+    state.whyJoin ||
+    "Students leave feeling challenged, seen, and excited to keep building their artistry through movement.";
+  const instructorName = state.instructorName || `${brandName} Instructor`;
+  const classes = styles.slice(0, 5).map((style, index) => {
+    const classTypes = ["Foundations", "Intensive", "Workshop", "Lab", "Training"];
+    const days = ["Thu", "Sat", "Sun", "Wed", "Fri"];
+    const times = ["7:00 PM", "11:00 AM", "5:30 PM", "6:45 PM", "8:00 PM"];
+    return {
+      title: `${style} ${classTypes[index % classTypes.length]}`,
+      date: `${days[index % days.length]} ${index + 12}`,
+      time: times[index % times.length],
+      instructor: instructorName,
+      style
+    };
+  });
+  return {
+    theme,
+    brandName,
+    headline,
+    whatYouDo,
+    mission,
+    whyJoin,
+    styles,
+    classes,
+    instructorName,
+    instructorBio: `${brandName} helps dancers grow through ${styles.slice(0, 3).join(", ")} with clear coaching, intentional choreography, and a welcoming class experience.`,
+    testimonials: [
+      "Amazing energy from the first count.",
+      "The registration was easy and the class felt so organized.",
+      "I left feeling confident and excited to come back."
+    ],
+    faqs: [
+      ["Do I need experience?", "All levels are welcome unless a class is marked advanced."],
+      ["How do I register?", "Choose a class, reserve your spot, and complete your details online."],
+      ["Can I join workshops?", "Yes. Workshops and intensives appear as soon as registration opens."]
+    ],
+    contact: [state.instagram || "Instagram coming soon", state.website || state.domain, "hello@beyond8dance.com"].filter(Boolean)
+  };
+};
+
 const updateSetupPreview = () => {
   if (!setupForm) return;
   const state = getSetupState();
-  const stylesText = state.styles.slice(0, 3).join(", ");
-  const aboutText = [state.whatYouDo, state.mission, state.whyJoin].filter(Boolean).join(" ");
+  const content = smartWebsiteContent(state);
+  const stylesText = content.styles.slice(0, 3).join(", ");
+  const aboutText = [state.whatYouDo, state.mission, state.whyJoin].filter(Boolean).join(" ") || content.whatYouDo;
   applySetupPreviewTheme(state.theme);
   setText("[data-live-brand]", state.businessName);
-  setText("[data-live-quote]", state.mission);
+  setText("[data-live-quote]", state.mission || content.mission);
   setHTML("[data-live-logo]", logoHTMLFor(state));
   setHTML("[data-live-logo-small]", logoHTMLFor(state));
   updateLogoUploadState();
-  setText("[data-live-headline]", state.headline);
+  setText("[data-live-headline]", content.headline);
   setText("[data-live-about]", aboutText);
+  setText("[data-live-instructor-name]", content.instructorName);
+  setText("[data-live-instructor-bio]", content.instructorBio);
+  setText("[data-live-class-one]", content.classes[0]?.title || "Signature Class");
+  setText("[data-live-class-two]", content.classes[1]?.title || "Workshop");
+  setHTML(
+    "[data-live-class-list]",
+    content.classes
+      .slice(0, 4)
+      .map(
+        (item) =>
+          `<article><strong>${escapeHTML(item.title)}</strong><span>${escapeHTML(item.date)} • ${escapeHTML(item.time)}</span><small>${escapeHTML(item.instructor)}</small></article>`
+      )
+      .join("")
+  );
+  setHTML("[data-live-testimonials]", content.testimonials.slice(0, 2).map((quote) => `<blockquote>${escapeHTML(quote)}</blockquote>`).join(""));
+  setText("[data-live-contact]", content.contact.join(" • "));
   document.querySelectorAll("[data-live-quote], [data-live-about]").forEach((node) => {
     node.classList.toggle("is-empty", !node.textContent.trim());
   });
   document.querySelectorAll("[data-live-specialties]").forEach((node) => {
-    node.textContent = stylesText ? state.styles.slice(0, 3).join(" • ") : "";
+    node.textContent = stylesText ? content.styles.slice(0, 3).join(" • ") : "";
     node.hidden = !stylesText;
   });
   document.querySelectorAll(".setup-home-preview [data-live-specialties]").forEach((node) => {
-    node.innerHTML = stylesText ? state.styles.slice(0, 4).map((style) => `<span>${escapeHTML(style)}</span>`).join("") : "";
+    node.innerHTML = stylesText ? content.styles.slice(0, 4).map((style) => `<span>${escapeHTML(style)}</span>`).join("") : "";
     node.hidden = !stylesText;
   });
   document.querySelectorAll(".setup-preview-tags[data-live-specialties]").forEach((node) => {
-    node.innerHTML = stylesText ? state.styles.slice(0, 4).map((style) => `<span>${escapeHTML(style)}</span>`).join("") : "";
+    node.innerHTML = stylesText ? content.styles.slice(0, 4).map((style) => `<span>${escapeHTML(style)}</span>`).join("") : "";
     node.hidden = !stylesText;
   });
-  setText("[data-live-theme]", canonicalThemeName(state.theme));
+  setText("[data-live-theme]", content.theme.name);
   setText("[data-live-pages]", `${state.pages.length} Pages Selected`);
   setText("[data-live-domain]", state.domain);
   setText(
@@ -1086,50 +1168,54 @@ const themeClassFor = (theme) => {
 };
 
 const generatedSiteHTML = (state) => {
-  const themeName = canonicalThemeName(state.theme);
+  const content = smartWebsiteContent(state);
+  const themeName = content.theme.name;
   const dancerImage = new URL("assets/dancer-hero.png", window.location.href).href;
-  const pages = state.pages.slice(0, 6).map((page) => `<a href="#${page.toLowerCase().replace(/\s+/g, "-")}">${page}</a>`).join("");
-  const classTags = state.styles.slice(0, 3).map((style) => `<span>${style}</span>`).join("");
+  const galleryImage = new URL("assets/dancer-ethereal.jpg", window.location.href).href;
+  const pages = (state.pages?.length ? state.pages : defaultSetupPages)
+    .slice(0, 6)
+    .map((page) => `<a href="#${escapeHTML((beyondEight.slugify?.(page) || page.toLowerCase().replace(/\s+/g, "-")))}">${escapeHTML(page)}</a>`)
+    .join("");
+  const classCards = content.classes
+    .map(
+      (item) =>
+        `<article class="class-card"><small>${escapeHTML(item.date)} • ${escapeHTML(item.time)}</small><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.instructor)}</p><button>Register</button></article>`
+    )
+    .join("");
+  const tags = content.styles.map((style) => `<span>${escapeHTML(style)}</span>`).join("");
+  const testimonials = content.testimonials.map((quote) => `<blockquote>"${escapeHTML(quote)}"</blockquote>`).join("");
+  const faqs = content.faqs.map(([question, answer]) => `<details><summary>${escapeHTML(question)}</summary><p>${escapeHTML(answer)}</p></details>`).join("");
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${state.businessName} | Generated by BeyondEight</title>
+  <title>${escapeHTML(content.brandName)} | Generated by BeyondEight</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&display=swap" rel="stylesheet">
   <style>
-    :root { --ink:#241230; --muted:#6b6072; --accent:#d0185c; --coral:#ff714d; --cream:#fffaf5; --panel:#fff; --hero-grad:linear-gradient(135deg,#fffaf6,#fff0f0 58%,#ffe8df); --card-border:rgba(34,16,47,.1); font-family:Inter,Arial,sans-serif; }
-    *{box-sizing:border-box} body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,Arial,sans-serif} a{text-decoration:none;color:inherit} .site{min-height:100vh}
-    .generated-bold{--ink:#f9f4ef;--muted:#c9beca;--accent:#ff3c68;--coral:#ffb05f;--cream:#101014;--panel:#18171d;--hero-grad:radial-gradient(circle at 74% 22%,rgba(255,112,77,.24),transparent 22rem),linear-gradient(135deg,#151116,#28131f 58%,#44201f);--card-border:rgba(255,255,255,.14)}
-    .generated-soft{--ink:#4a2331;--muted:#866d73;--accent:#c4828e;--coral:#ddb5a4;--cream:#fff7f3;--panel:#fffdf9;--hero-grad:linear-gradient(135deg,#fffdf8,#f8e7df 55%,#e8c4b8);--card-border:rgba(196,130,142,.22)}
-    .generated-vibrant{--ink:#2b1135;--muted:#6b526d;--accent:#e00061;--coral:#ff8a32;--cream:#fff8ef;--panel:#fff;--hero-grad:radial-gradient(circle at 82% 18%,rgba(255,138,50,.34),transparent 18rem),linear-gradient(135deg,#fff6ec,#ffd3dc 48%,#ff704d);--card-border:rgba(224,0,97,.18)}
-    .generated-minimal{--ink:#f7f5ef;--muted:#bdb6c2;--accent:#ffffff;--coral:#8e8a96;--cream:#09080b;--panel:#15131a;--hero-grad:radial-gradient(circle at 80% 24%,rgba(255,255,255,.1),transparent 20rem),linear-gradient(135deg,#111015,#1d1227);--card-border:rgba(255,255,255,.16)}
-    header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 6vw;border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent);background:color-mix(in srgb,var(--cream) 92%,transparent)}
-    .brand{font-family:"Source Serif 4",Georgia,serif;font-size:1.7rem;font-weight:800}.nav{display:flex;gap:20px;color:var(--muted);font-weight:700}.actions{display:flex;gap:12px}.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:13px 18px;background:linear-gradient(135deg,var(--accent),var(--coral));color:white;font-weight:800}.btn.secondary{background:var(--panel);color:var(--ink);border:1px solid color-mix(in srgb,var(--ink) 12%,transparent)}
-    .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,.8fr);gap:48px;align-items:center;margin:32px 6vw 0;padding:clamp(42px,7vw,86px);border:1px solid var(--card-border);border-radius:34px;background:var(--hero-grad);overflow:hidden}.eyebrow{text-transform:uppercase;letter-spacing:.14em;color:var(--accent);font-weight:900;font-size:.75rem}h1,h2{font-family:"Source Serif 4",Georgia,serif;letter-spacing:-.035em;line-height:1}h1{max-width:720px;font-size:clamp(3rem,6vw,6rem);margin:.2em 0}.lead{max-width:650px;color:var(--muted);font-size:1.12rem;line-height:1.75}.hero-card{padding:18px;border:1px solid var(--card-border);border-radius:28px;background:color-mix(in srgb,var(--panel) 82%,transparent);box-shadow:0 28px 80px color-mix(in srgb,var(--ink) 14%,transparent)}.hero-card img{width:100%;height:min(430px,45vw);object-fit:cover;object-position:60% 18%;border-radius:22px}.generated-bold .hero-card img,.generated-minimal .hero-card img{filter:contrast(1.12) saturate(.9) brightness(.78)}.generated-soft .hero-card img{filter:saturate(.75) brightness(1.08)}.generated-vibrant .hero-card img{filter:saturate(1.25) contrast(1.05)}.tags{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}.tags span{border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,transparent);padding:9px 13px;color:var(--accent);font-weight:800}
-    section{padding:64px 6vw}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.card{padding:24px;border:1px solid var(--card-border);border-radius:20px;background:color-mix(in srgb,var(--panel) 88%,transparent);box-shadow:0 18px 50px color-mix(in srgb,var(--ink) 8%,transparent)}.card h3{margin:0 0 8px}.portal{display:grid;grid-template-columns:1fr 1fr;gap:20px}.dashboard{display:grid;gap:12px}.metric{display:flex;justify-content:space-between;border-radius:14px;background:color-mix(in srgb,var(--accent) 8%,var(--panel));padding:15px}.footer{display:flex;align-items:center;justify-content:space-between;padding:32px 6vw;background:color-mix(in srgb,var(--ink) 5%,var(--cream))}
-    @media(max-width:850px){.hero,.portal{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.nav{display:none}header{align-items:flex-start;flex-direction:column}}
+    :root{--display:"Source Serif 4",Georgia,serif;--sans:Inter,Arial,sans-serif;--ink:#241230;--muted:#6b6072;--accent:#d0185c;--coral:#ff714d;--cream:#fffaf5;--panel:#fff;--hero-grad:linear-gradient(135deg,#fffaf6,#fff0f0 58%,#ffe8df);--card-border:rgba(34,16,47,.1)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans)} a{text-decoration:none;color:inherit} img{max-width:100%;display:block}.generated-bold{--ink:#f9f4ef;--muted:#c9beca;--accent:#ff3c68;--coral:#ffb05f;--cream:#101014;--panel:#18171d;--hero-grad:radial-gradient(circle at 74% 22%,rgba(255,112,77,.24),transparent 22rem),linear-gradient(135deg,#151116,#28131f 58%,#44201f);--card-border:rgba(255,255,255,.14)}.generated-soft{--ink:#4a2331;--muted:#866d73;--accent:#c4828e;--coral:#ddb5a4;--cream:#fff7f3;--panel:#fffdf9;--hero-grad:linear-gradient(135deg,#fffdf8,#f8e7df 55%,#e8c4b8);--card-border:rgba(196,130,142,.22)}.generated-vibrant{--ink:#2b1135;--muted:#6b526d;--accent:#e00061;--coral:#ff8a32;--cream:#fff8ef;--panel:#fff;--hero-grad:radial-gradient(circle at 82% 18%,rgba(255,138,50,.34),transparent 18rem),linear-gradient(135deg,#fff6ec,#ffd3dc 48%,#ff704d);--card-border:rgba(224,0,97,.18)}.generated-minimal{--ink:#f7f5ef;--muted:#bdb6c2;--accent:#fff;--coral:#8e8a96;--cream:#09080b;--panel:#15131a;--hero-grad:radial-gradient(circle at 80% 24%,rgba(255,255,255,.1),transparent 20rem),linear-gradient(135deg,#111015,#1d1227);--card-border:rgba(255,255,255,.16)}
+    .site{min-height:100vh;padding-bottom:56px}.container{width:min(1180px,calc(100% - 40px));margin:auto}.site-header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px max(20px,5vw);border-bottom:1px solid var(--card-border);background:color-mix(in srgb,var(--cream) 90%,transparent);backdrop-filter:blur(18px)}.brand{font-family:var(--display);font-size:1.75rem;font-weight:900}.nav{display:flex;gap:18px;color:var(--muted);font-weight:800}.owner-actions{display:flex;gap:10px}.btn,.class-card button{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:13px 18px;background:linear-gradient(135deg,var(--accent),var(--coral));color:white;font-weight:900;box-shadow:0 16px 36px color-mix(in srgb,var(--accent) 18%,transparent)}.btn.secondary{background:var(--panel);color:var(--ink);border:1px solid var(--card-border);box-shadow:none}.eyebrow{color:var(--accent);font-size:.72rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase}h1,h2{font-family:var(--display);line-height:1;letter-spacing:-.045em}h1{margin:.2em 0;font-size:clamp(3.3rem,7vw,7rem)}h2{font-size:clamp(2.3rem,4vw,4.6rem);margin:0 0 18px}.lead{max-width:680px;color:var(--muted);font-size:1.12rem;line-height:1.75}.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(330px,.82fr);gap:48px;align-items:center;margin:36px auto 0;padding:clamp(40px,7vw,92px);border:1px solid var(--card-border);border-radius:36px;background:var(--hero-grad);overflow:hidden}.hero-card{position:relative;padding:18px;border:1px solid var(--card-border);border-radius:30px;background:color-mix(in srgb,var(--panel) 84%,transparent);box-shadow:0 30px 80px color-mix(in srgb,var(--ink) 14%,transparent)}.hero-card img{height:min(430px,44vw);min-height:280px;width:100%;object-fit:cover;object-position:58% 18%;border-radius:24px}.hero-note{position:absolute;left:34px;bottom:34px;max-width:260px;border:1px solid var(--card-border);border-radius:20px;background:color-mix(in srgb,var(--panel) 88%,transparent);padding:16px 18px}.tags{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}.tags span{border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);padding:9px 13px;font-weight:900}.section{padding:72px 0}.class-grid,.gallery,.testimonial-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.class-card,.info-card,.testimonial-grid blockquote,details{border:1px solid var(--card-border);border-radius:22px;background:color-mix(in srgb,var(--panel) 88%,transparent);padding:24px;box-shadow:0 16px 45px color-mix(in srgb,var(--ink) 7%,transparent);transition:transform 180ms ease,box-shadow 180ms ease}.class-card:hover,.info-card:hover{transform:translateY(-4px);box-shadow:0 26px 70px color-mix(in srgb,var(--ink) 11%,transparent)}.class-card small{color:var(--accent);font-weight:900;letter-spacing:.08em;text-transform:uppercase}.class-card h3{font-size:1.45rem;margin:12px 0 8px}.instructor{display:grid;grid-template-columns:.85fr 1fr;gap:26px;align-items:center}.instructor img,.gallery img{width:100%;height:320px;object-fit:cover;border-radius:28px}.gallery img:nth-child(2){filter:saturate(.85)}.gallery img:nth-child(3){filter:contrast(1.08) saturate(1.12)}.faq-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}summary{cursor:pointer;font-weight:900}.contact-card{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;border-radius:30px;background:var(--hero-grad);padding:34px;border:1px solid var(--card-border)}.footer{display:flex;justify-content:space-between;gap:20px;padding-top:34px;border-top:1px solid var(--card-border);color:var(--muted);font-weight:800}.generated-bold .hero-card img,.generated-minimal .hero-card img{filter:contrast(1.12) saturate(.9) brightness(.78)}.generated-soft .hero-card img{filter:saturate(.75) brightness(1.08)}.generated-vibrant .hero-card img{filter:saturate(1.25) contrast(1.05)}@media(max-width:850px){.site-header,.footer{align-items:flex-start;flex-direction:column}.nav{display:none}.hero,.instructor,.contact-card{grid-template-columns:1fr}.class-grid,.gallery,.testimonial-grid,.faq-grid{grid-template-columns:1fr}.owner-actions{flex-wrap:wrap}h1{font-size:3.2rem}}
   </style>
 </head>
 <body class="${themeClassFor(state.theme)}">
   <div class="site">
-    <header><div class="brand">${state.businessName}</div><nav class="nav">${pages}</nav><div class="actions"><button class="btn secondary">Edit Page</button><button class="btn">Admin Dashboard</button><button class="btn secondary" onclick="this.textContent='Logged out';">Log out</button></div></header>
-    <main>
-      <section class="hero">
-        <div><p class="eyebrow">${themeName}</p><h1>${state.headline}</h1><p class="lead">${state.whatYouDo}</p><div class="tags">${classTags}</div><a class="btn" href="#register">Register now</a></div>
-        <div class="hero-card"><img src="${dancerImage}" alt=""><h3>Upcoming launch</h3><p>${state.whyJoin}</p></div>
-      </section>
-      <section id="about"><h2>About ${state.businessName}</h2><p class="lead">${state.mission}</p></section>
-      <section id="classes"><h2>Classes & Workshops</h2><div class="grid"><article class="card"><h3>Signature Series</h3><p>Weekly training built around confidence, choreography, and community.</p></article><article class="card"><h3>Pop-up Workshop</h3><p>Launch a one-day event with registration, waivers, and payments.</p></article><article class="card"><h3>Private Training</h3><p>Offer focused coaching for dancers ready for personalized growth.</p></article></div></section>
-      <section class="portal"><div><h2>Student Portal Preview</h2><div class="card"><p><strong>Today:</strong> Contemporary Lab at 7:00 PM</p><p><strong>Homework:</strong> Combo video uploaded</p><p><strong>Balance:</strong> $85 remaining</p></div></div><div><h2>Admin Dashboard Preview</h2><div class="dashboard"><div class="metric"><span>Registered</span><strong>48</strong></div><div class="metric"><span>Revenue</span><strong>$12.4k</strong></div><div class="metric"><span>Waitlist</span><strong>6</strong></div></div></div></section>
-      <section id="register"><div class="card"><h2>Ready to move with us?</h2><p>${state.whyJoin}</p><a class="btn" href="mailto:hello@${state.domain}">Start registration</a></div></section>
+    <header class="site-header"><div class="brand">${logoHTMLFor(state)}</div><nav class="nav">${pages}</nav><div class="owner-actions"><button class="btn secondary">Edit Page</button><button class="btn secondary">Admin Dashboard</button></div></header>
+    <main class="container">
+      <section class="hero"><div><p class="eyebrow">${escapeHTML(themeName)}</p><h1>${escapeHTML(content.headline)}</h1><p class="lead">${escapeHTML(content.whatYouDo)}</p><div class="tags">${tags}</div><a class="btn" href="#classes">${escapeHTML(content.theme.cta)}</a></div><figure class="hero-card"><img src="${dancerImage}" alt=""><figcaption class="hero-note"><span class="eyebrow">Upcoming</span><strong>${escapeHTML(content.classes[0]?.title || "Signature Class")}</strong></figcaption></figure></section>
+      <section class="section" id="classes"><p class="eyebrow">Upcoming classes</p><h2>Choose your next class.</h2><div class="class-grid">${classCards}</div></section>
+      <section class="section" id="about"><p class="eyebrow">About</p><h2>${escapeHTML(content.brandName)} helps dancers move with confidence.</h2><p class="lead">${escapeHTML(content.mission)} ${escapeHTML(content.whyJoin)}</p></section>
+      <section class="section instructor"><img src="${galleryImage}" alt=""><div><p class="eyebrow">Meet the instructor</p><h2>${escapeHTML(content.instructorName)}</h2><p class="lead">${escapeHTML(content.instructorBio)}</p><div class="tags">${tags}</div></div></section>
+      <section class="section"><p class="eyebrow">Gallery</p><h2>Moments from the studio.</h2><div class="gallery"><img src="${dancerImage}" alt=""><img src="${galleryImage}" alt=""><img src="${dancerImage}" alt=""></div></section>
+      <section class="section"><p class="eyebrow">Testimonials</p><h2>Dancers feel the difference.</h2><div class="testimonial-grid">${testimonials}</div></section>
+      <section class="section"><p class="eyebrow">FAQ</p><h2>Good to know before class.</h2><div class="faq-grid">${faqs}</div></section>
+      <section class="section" id="register"><div class="contact-card"><div><p class="eyebrow">Contact</p><h2>Ready to dance with us?</h2><p>${escapeHTML(content.contact.join(" • "))}</p></div><a class="btn" href="mailto:hello@beyond8dance.com">Register interest</a></div></section>
     </main>
-    <footer class="footer"><span>${state.businessName}</span><span>${state.domain} / Instagram / TikTok / Contact</span></footer>
+    <footer class="container footer"><span>${escapeHTML(content.brandName)}</span><span>Built with BeyondEight</span></footer>
   </div>
 </body>
 </html>`;
 };
-
 const ensureAccountForPublishing = async () => {
   if (currentUser) return currentUser;
   if (!supabaseClient) throw new Error("Supabase could not load. Check your connection and refresh.");
