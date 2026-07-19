@@ -279,7 +279,11 @@
       </section>`;
   };
 
-  const renderPhonePreview = (content, options = {}) => renderDesktopPreview(content, options);
+  const renderPhonePreview = (content, options = {}) => {
+    const state = options.state || content;
+    const title = `${content.brandName || "Website"} mobile preview`;
+    return `<iframe class="ready-phone-frame" title="${esc(title)}" srcdoc="${esc(generatedSiteHTML(state))}"></iframe>`;
+  };
 
   const pageLinks = (content) =>
     content.pages.slice(0, 6).map((page) => `<a href="#${esc(slugify(page))}">${esc(page)}</a>`).join("");

@@ -9585,61 +9585,45 @@ body.generated-minimal .published-faq details {
     linear-gradient(180deg, transparent 72%, rgba(255, 251, 246, 0.76) 100%) !important;
 }
 
-/* Step 7 renders the approved Step 6 template inside a phone viewport. */
+/* Step 7 renders the selected published website in a real phone viewport. */
 .ready-phone {
+  position: relative;
   align-self: center;
-  display: grid !important;
-  gap: 0 !important;
-  width: min(460px, 100%);
-  min-height: 560px;
+  display: block !important;
+  width: min(390px, 100%);
+  min-height: 0;
+  aspect-ratio: 390 / 844;
+  border: 12px solid color-mix(in srgb, var(--setup-theme-ink) 88%, #050407);
+  border-radius: 44px;
+  background: color-mix(in srgb, var(--setup-theme-ink) 90%, #050407);
+  box-shadow:
+    0 32px 80px rgba(14, 7, 19, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   padding: 0 !important;
   overflow: hidden;
 }
 
-.ready-phone .setup-preview-nav {
-  padding: 16px 18px;
+.ready-phone::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 2;
+  width: 92px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(8, 6, 10, 0.82);
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
-.ready-phone .setup-preview-nav strong {
-  font-size: 0.95rem;
-}
-
-.ready-phone .setup-preview-nav span {
-  font-size: 0.62rem;
-  letter-spacing: 0.08em;
-}
-
-.ready-phone .setup-preview-hero {
-  grid-template-columns: 1fr;
-  gap: 16px;
-  padding: 24px 18px;
-}
-
-.ready-phone .setup-preview-hero h3 {
-  font-size: clamp(2.4rem, 13vw, 3.7rem) !important;
-}
-
-.ready-phone .setup-preview-hero p {
-  font-size: 0.82rem;
-}
-
-.ready-phone .setup-preview-hero img {
-  height: 245px !important;
-  min-height: 245px;
-}
-
-.ready-phone .setup-preview-cards,
-.ready-phone .setup-preview-mini-grid,
-.ready-phone .setup-preview-proof {
-  grid-template-columns: 1fr;
-}
-
-.ready-phone .setup-preview-section,
-.ready-phone .setup-preview-mini-grid,
-.ready-phone .setup-preview-proof,
-.ready-phone .setup-preview-cards {
-  padding-right: 18px;
-  padding-left: 18px;
+.ready-phone-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 30px;
+  background: var(--setup-theme-bg);
 }
 
 /* Complete published-site theme systems. */

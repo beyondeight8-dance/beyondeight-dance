@@ -1093,7 +1093,7 @@ const renderSharedTemplateSurfaces = (state, content) => {
   });
   document.querySelectorAll(".ready-phone").forEach((node) => {
     node.dataset.themeKey = content.theme.key;
-    node.innerHTML = templates.renderPhonePreview(content, { logoHTML: logoHTMLFor(state) });
+    node.innerHTML = templates.renderPhonePreview(content, { logoHTML: logoHTMLFor(state), state });
   });
 };
 
