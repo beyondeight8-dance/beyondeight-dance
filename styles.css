@@ -9427,6 +9427,24 @@ body.generated-minimal .published-faq details {
 }
 
 /* Theme continuity polish: use the homepage website previews inside onboarding. */
+.setup-theme-picker .theme-preview.theme-preview-button {
+  display: block !important;
+  width: 100%;
+  min-height: 0 !important;
+  aspect-ratio: 16 / 10.35;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  background: transparent !important;
+  overflow: visible !important;
+  box-shadow: none !important;
+}
+
+.setup-theme-picker .theme-preview.theme-preview-button > .mini-site-preview.marketplace-preview {
+  width: 100%;
+  height: 100%;
+}
+
 .setup-theme-picker .theme-preview.mini-site-preview.marketplace-preview {
   display: grid !important;
   grid-template-rows: 22px minmax(96px, 1fr) 0 16px !important;
@@ -9441,24 +9459,48 @@ body.generated-minimal .published-faq details {
   pointer-events: none;
 }
 
+.setup-theme-picker .theme-preview.theme-preview-button > .mini-site-preview.marketplace-preview,
+.setup-theme-picker .theme-preview.mini-site-preview.marketplace-preview::before,
+.setup-theme-picker .theme-preview.mini-site-preview.marketplace-preview::after {
+  overflow: hidden;
+}
+
+.setup-theme-picker .theme-preview.theme-preview-button > .mini-site-preview.marketplace-preview::before,
+.setup-theme-picker .theme-preview.theme-preview-button > .mini-site-preview.marketplace-preview::after,
 .setup-theme-picker .theme-preview.mini-site-preview.marketplace-preview::before,
 .setup-theme-picker .theme-preview.mini-site-preview.marketplace-preview::after {
   content: none !important;
   display: none !important;
 }
 
-.setup-theme-picker .theme-preview.mini-site-preview.marketplace-preview > span {
-  display: initial;
+.setup-theme-picker .theme-preview.theme-preview-button > .mini-site-preview.marketplace-preview,
+.setup-theme-picker .theme-preview.theme-preview-button .mini-site-preview.marketplace-preview {
+  display: grid !important;
+  grid-template-rows: 22px minmax(0, 1fr) 0 16px !important;
+  align-content: stretch !important;
+  min-height: 0 !important;
+  border-radius: 14px !important;
+  background: var(--mini-bg) !important;
+  color: var(--mini-ink, #271034) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mini-ink, #271034) 11%, transparent);
 }
 
+.setup-theme-picker .theme-preview.theme-preview-button .mini-nav,
 .setup-theme-picker .theme-preview.mini-site-preview.marketplace-preview > .mini-nav {
   display: flex !important;
+  min-width: 0;
 }
 
+.setup-theme-picker .theme-preview.theme-preview-button .mini-hero,
 .setup-theme-picker .theme-preview.mini-site-preview.marketplace-preview > .mini-hero {
   display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(68px, 0.9fr);
+  min-height: 0 !important;
+  height: 100%;
+  padding: 10px;
 }
 
+.setup-theme-picker .theme-preview.theme-preview-button .mini-palette,
 .setup-theme-picker .theme-preview.mini-site-preview.marketplace-preview > .mini-palette {
   display: flex !important;
 }
@@ -9478,9 +9520,27 @@ body.generated-minimal .published-faq details {
   display: none !important;
 }
 
+.setup-theme-picker .marketplace-preview .mini-hero > div {
+  min-width: 0;
+}
+
+.setup-theme-picker .marketplace-preview .mini-hero strong {
+  display: block;
+  max-width: 9ch;
+  overflow-wrap: normal;
+  color: var(--mini-ink, #271034);
+  font-size: clamp(0.78rem, 0.72vw, 0.94rem) !important;
+  line-height: 0.94;
+}
+
 .setup-theme-picker .marketplace-preview .theme-dancer {
-  height: 92px !important;
-  min-height: 92px !important;
+  align-self: stretch;
+  width: 100%;
+  height: 100% !important;
+  min-height: 0 !important;
+  object-fit: cover;
+  object-position: 58% 18%;
+  border-radius: 11px;
 }
 
 /* Remove the decorative circular overlay from the homepage dancer image. */
