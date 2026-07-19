@@ -288,7 +288,7 @@
   const pageLinks = (content) =>
     content.pages.slice(0, 6).map((page) => `<a href="#${esc(slugify(page))}">${esc(page)}</a>`).join("");
 
-  const renderPublicSite = (content, { ownerToolbar = "", logoUrl = "" } = {}) => {
+  const renderLegacyPublicSite = (content, { ownerToolbar = "", logoUrl = "" } = {}) => {
     const tags = content.styles.map((style) => `<span>${esc(style)}</span>`).join("");
     const classCards = content.classes
       .map((item) => `<article><small>${esc(item.date)} • ${esc(item.time)}</small><h3>${esc(item.title)}</h3><p>${esc(item.instructor)}</p><a href="#register">Register</a></article>`)
@@ -327,6 +327,42 @@
       </div>`;
   };
 
+  const renderSharedPublicSite = (content, { ownerToolbar = "", logoUrl = "" } = {}) => {
+    const publicContent = logoUrl && !content.logoImage ? { ...content, logoImage: logoUrl } : content;
+    const faqs = content.faqs.map(([question, answer]) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("");
+    const galleryImages = [
+      content.images.about,
+      content.images.gallery,
+      content.images.workshop,
+      content.images.performance,
+      content.images.instructor
+    ]
+      .filter(Boolean)
+      .slice(0, 4)
+      .map((src) => `<img src="${esc(assetSrc(src))}" alt="">`)
+      .join("");
+    return `
+      ${ownerToolbar}
+      <div class="published-site setup-preview-site" data-theme-key="${esc(content.theme.key)}">
+        ${renderDesktopPreview(publicContent, { logoHTML: logoHTML(publicContent) })}
+        <section id="gallery" class="setup-preview-section setup-preview-gallery">
+          <small>Gallery</small>
+          <h4>Moments from the studio.</h4>
+          <div class="setup-preview-gallery-grid">${galleryImages}</div>
+        </section>
+        <section class="setup-preview-section setup-preview-faq">
+          <small>FAQ</small>
+          <h4>Good to know before class.</h4>
+          <div>${faqs}</div>
+        </section>
+        <footer class="setup-preview-footer">
+          <strong>${logoHTML(publicContent)}</strong>
+          <nav>${pageLinks(content)}</nav>
+          <span>Built with BeyondEight</span>
+        </footer>
+      </div>`;
+  };
+
   const generatedSiteHTML = (state) => {
     const content = buildWebsiteContent(state);
     const baseUrl = `${window.location.origin}/`;
@@ -340,7 +376,7 @@
   <link rel="stylesheet" href="/styles.css?v=20260719-template-system">
 </head>
 <body class="${themeClassFor(content.theme.name)}">
-  ${renderPublicSite(content)}
+  ${renderSharedPublicSite(content)}
 </body>
 </html>`;
   };
@@ -356,7 +392,7 @@
     renderThemePicker,
     renderDesktopPreview,
     renderPhonePreview,
-    renderPublicSite,
+    renderPublicSite: renderSharedPublicSite,
     generatedSiteHTML
   };
 })();

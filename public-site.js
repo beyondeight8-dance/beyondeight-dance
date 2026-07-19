@@ -149,6 +149,8 @@
       });
       return;
     }
+    root.innerHTML = `<section class="route-loading"><h1>We could not load this website.</h1><p>The shared BeyondEight template system did not load. Please refresh and try again.</p><a class="primary-button" href="/">Go home</a></section>`;
+    return;
     const pageLinks = [...selectedPages].slice(0, 6).map((page) => `<a href="#${app.slugify(page)}">${esc(page)}</a>`).join("");
     const specialtyTags = content.styles.map((style) => `<span>${esc(style)}</span>`).join("");
     const classCards = content.classes
