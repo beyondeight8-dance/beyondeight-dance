@@ -279,28 +279,7 @@
       </section>`;
   };
 
-  const renderPhonePreview = (content, options = {}) => {
-    const tags = content.styles.slice(0, 3).map((style) => `<span>${esc(style)}</span>`).join("");
-    return `
-      <div class="ready-phone-nav">
-        <strong data-live-logo-small>${logoHTML(content, options.logoHTML)}</strong>
-        <span>Home</span><span>Classes</span><span>About</span>
-      </div>
-      <div class="ready-phone-hero">
-        <div>
-          <small data-live-theme>${esc(content.theme.name)}</small>
-          <h3 data-live-headline>${esc(content.headline)}</h3>
-          <p data-live-about>${esc(content.whatYouDo)}</p>
-          <div class="setup-preview-tags" data-live-specialties>${tags}</div>
-          <button type="button">${esc(content.theme.cta)}</button>
-        </div>
-        <img src="${esc(content.images.hero)}" alt="">
-      </div>
-      <div class="ready-phone-cards">
-        <article><strong data-live-class-one>${esc(content.classes[0]?.title || "Signature Class")}</strong><span>Registration open</span></article>
-        <article><strong data-live-class-two>${esc(content.classes[1]?.title || "Workshop")}</strong><span>Limited spots</span></article>
-      </div>`;
-  };
+  const renderPhonePreview = (content, options = {}) => renderDesktopPreview(content, options);
 
   const pageLinks = (content) =>
     content.pages.slice(0, 6).map((page) => `<a href="#${esc(slugify(page))}">${esc(page)}</a>`).join("");

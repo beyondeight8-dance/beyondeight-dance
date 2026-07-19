@@ -9585,7 +9585,7 @@ body.generated-minimal .published-faq details {
     linear-gradient(180deg, transparent 72%, rgba(255, 251, 246, 0.76) 100%) !important;
 }
 
-/* A fuller "website is ready" preview using the selected template variables. */
+/* Step 7 renders the approved Step 6 template inside a phone viewport. */
 .ready-phone {
   align-self: center;
   display: grid !important;
@@ -9596,113 +9596,50 @@ body.generated-minimal .published-faq details {
   overflow: hidden;
 }
 
-.ready-phone-nav {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid var(--setup-theme-border);
-  background: color-mix(in srgb, var(--setup-theme-surface) 90%, transparent);
+.ready-phone .setup-preview-nav {
   padding: 16px 18px;
 }
 
-.ready-phone-nav strong {
-  margin-right: auto;
-  max-width: 42%;
-  font-family: var(--display);
+.ready-phone .setup-preview-nav strong {
   font-size: 0.95rem;
-  line-height: 0.92;
 }
 
-.ready-phone-nav span {
-  color: var(--setup-theme-muted);
+.ready-phone .setup-preview-nav span {
   font-size: 0.62rem;
-  font-weight: 900;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
-.ready-phone-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(130px, 0.72fr);
+.ready-phone .setup-preview-hero {
+  grid-template-columns: 1fr;
   gap: 16px;
-  align-items: center;
   padding: 24px 18px;
 }
 
-.ready-phone-hero small {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--setup-theme-accent);
-  font-size: 0.6rem;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.ready-phone .setup-preview-hero h3 {
+  font-size: clamp(2.4rem, 13vw, 3.7rem) !important;
 }
 
-.ready-phone-hero h3 {
-  margin: 0;
-  max-width: 8.5ch;
-  font-size: clamp(2rem, 3vw, 3.1rem) !important;
-}
-
-.ready-phone-hero p {
-  display: -webkit-box;
-  margin: 12px 0;
-  overflow: hidden;
-  color: var(--setup-theme-muted);
-  font-size: 0.78rem;
-  line-height: 1.55;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-}
-
-.ready-phone-hero img {
-  position: static !important;
-  width: 100% !important;
-  height: 245px !important;
-  min-height: 245px;
-  border-radius: 22px;
-  object-fit: cover;
-  object-position: 58% 16%;
-  box-shadow: 0 18px 48px rgba(34, 16, 47, 0.12);
-}
-
-.ready-phone-hero button {
-  border: 0;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--setup-theme-accent), var(--setup-theme-coral));
-  color: #fff;
-  padding: 10px 14px;
-  font: inherit;
-  font-size: 0.72rem;
-  font-weight: 900;
-}
-
-.ready-phone-cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  border-top: 1px solid var(--setup-theme-border);
-  padding: 16px 18px 20px;
-}
-
-.ready-phone-cards article {
-  border: 1px solid var(--setup-theme-border);
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--setup-theme-surface) 86%, transparent);
-  padding: 13px;
-}
-
-.ready-phone-cards strong {
-  display: block;
-  margin-bottom: 5px;
+.ready-phone .setup-preview-hero p {
   font-size: 0.82rem;
 }
 
-.ready-phone-cards span {
-  color: var(--setup-theme-muted);
-  font-size: 0.7rem;
-  font-weight: 800;
+.ready-phone .setup-preview-hero img {
+  height: 245px !important;
+  min-height: 245px;
+}
+
+.ready-phone .setup-preview-cards,
+.ready-phone .setup-preview-mini-grid,
+.ready-phone .setup-preview-proof {
+  grid-template-columns: 1fr;
+}
+
+.ready-phone .setup-preview-section,
+.ready-phone .setup-preview-mini-grid,
+.ready-phone .setup-preview-proof,
+.ready-phone .setup-preview-cards {
+  padding-right: 18px;
+  padding-left: 18px;
 }
 
 /* Complete published-site theme systems. */
