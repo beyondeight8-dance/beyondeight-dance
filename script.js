@@ -522,6 +522,9 @@ const titleCaseDomain = (value) => {
 };
 
 const canonicalThemeName = (theme = "") => {
+  if (window.BeyondEightWebsiteTemplates?.canonicalThemeName) {
+    return window.BeyondEightWebsiteTemplates.canonicalThemeName(theme);
+  }
   const normalized = String(theme).toLowerCase();
   if (normalized.includes("bold") || normalized.includes("urban")) return "Bold & Edgy";
   if (normalized.includes("soft") || normalized.includes("classical")) return "Soft & Graceful";
@@ -919,6 +922,9 @@ const logoHTMLFor = (state) => {
 };
 
 const themeKeyFor = (theme = "") => {
+  if (window.BeyondEightWebsiteTemplates?.themeKeyFor) {
+    return window.BeyondEightWebsiteTemplates.themeKeyFor(theme);
+  }
   const normalized = canonicalThemeName(theme).toLowerCase();
   if (normalized.includes("bold")) return "bold";
   if (normalized.includes("soft")) return "soft";
@@ -949,6 +955,9 @@ const updateLogoUploadState = (fileName = "") => {
 };
 
 const themeProfileFor = (theme = "") => {
+  if (window.BeyondEightWebsiteTemplates?.themeProfileFor) {
+    return window.BeyondEightWebsiteTemplates.themeProfileFor(theme);
+  }
   const name = canonicalThemeName(theme);
   const key = themeKeyFor(name);
   const profiles = {
@@ -962,6 +971,9 @@ const themeProfileFor = (theme = "") => {
 };
 
 const smartWebsiteContent = (state) => {
+  if (window.BeyondEightWebsiteTemplates?.buildWebsiteContent) {
+    return window.BeyondEightWebsiteTemplates.buildWebsiteContent(state);
+  }
   const theme = themeProfileFor(state.theme);
   const styles = state.styles.length ? state.styles : ["Heels", "Hip Hop", "Contemporary", "Bollywood", "Jazz"];
   const brandName = state.businessName || "Beyond Movement";
@@ -1013,12 +1025,32 @@ const smartWebsiteContent = (state) => {
   };
 };
 
+const renderSharedTemplateSurfaces = (state, content) => {
+  const templates = window.BeyondEightWebsiteTemplates;
+  if (!templates) return;
+  const selectedTheme = templates.canonicalThemeName(state.theme);
+  const themePicker = document.querySelector(".setup-theme-picker");
+  if (themePicker && themePicker.dataset.templateSource !== "shared") {
+    themePicker.innerHTML = templates.renderThemePicker(selectedTheme);
+    themePicker.dataset.templateSource = "shared";
+  }
+  document.querySelectorAll(".setup-preview-site").forEach((node) => {
+    node.dataset.themeKey = content.theme.key;
+    node.innerHTML = templates.renderDesktopPreview(content, { logoHTML: logoHTMLFor(state) });
+  });
+  document.querySelectorAll(".ready-phone").forEach((node) => {
+    node.dataset.themeKey = content.theme.key;
+    node.innerHTML = templates.renderPhonePreview(content, { logoHTML: logoHTMLFor(state) });
+  });
+};
+
 const updateSetupPreview = () => {
   if (!setupForm) return;
   const state = getSetupState();
   const content = smartWebsiteContent(state);
   const stylesText = content.styles.slice(0, 3).join(", ");
   const aboutText = [state.whatYouDo, state.mission, state.whyJoin].filter(Boolean).join(" ") || content.whatYouDo;
+  renderSharedTemplateSurfaces(state, content);
   applySetupPreviewTheme(state.theme);
   setText("[data-live-brand]", state.businessName);
   setText("[data-live-quote]", state.mission || content.mission);
@@ -1157,6 +1189,9 @@ const restoreOnboardingProgress = async () => {
 };
 
 const themeClassFor = (theme) => {
+  if (window.BeyondEightWebsiteTemplates?.themeClassFor) {
+    return window.BeyondEightWebsiteTemplates.themeClassFor(theme);
+  }
   const map = {
     "Default Elegant": "generated-elegant",
     "Bold & Edgy": "generated-bold",
@@ -1168,6 +1203,9 @@ const themeClassFor = (theme) => {
 };
 
 const generatedSiteHTML = (state) => {
+  if (window.BeyondEightWebsiteTemplates?.generatedSiteHTML) {
+    return window.BeyondEightWebsiteTemplates.generatedSiteHTML(state);
+  }
   const content = smartWebsiteContent(state);
   const themeName = content.theme.name;
   const dancerImage = new URL("assets/dancer-hero.png", window.location.href).href;

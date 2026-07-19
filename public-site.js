@@ -128,6 +128,27 @@
     const themeName = content.theme.name;
     document.body.classList.add(themeClass(themeName));
     document.title = `${content.brandName} | BeyondEight`;
+    if (window.BeyondEightWebsiteTemplates) {
+      const templates = window.BeyondEightWebsiteTemplates;
+      const sharedContent = templates.buildWebsiteContent({ business, settings, website, pages, origin: window.location.origin });
+      document.body.classList.remove("generated-elegant", "generated-bold", "generated-soft", "generated-vibrant", "generated-minimal");
+      document.body.classList.add(templates.themeClassFor(sharedContent.theme.name));
+      document.title = `${sharedContent.brandName} | BeyondEight`;
+      const ownerToolbar = isOwner
+        ? `<div class="owner-toolbar" data-owner-toolbar>
+            <strong>BeyondEight</strong>
+            <span>Viewing as Owner</span>
+            <a href="/dashboard/website/?business=${esc(business.id)}">Edit Website</a>
+            <a href="/dashboard/">Dashboard</a>
+            <button type="button" data-owner-visitor>View as Visitor</button>
+          </div>`
+        : "";
+      root.innerHTML = templates.renderPublicSite(sharedContent, { ownerToolbar, logoUrl });
+      root.querySelector("[data-owner-visitor]")?.addEventListener("click", () => {
+        root.querySelector("[data-owner-toolbar]")?.remove();
+      });
+      return;
+    }
     const pageLinks = [...selectedPages].slice(0, 6).map((page) => `<a href="#${app.slugify(page)}">${esc(page)}</a>`).join("");
     const specialtyTags = content.styles.map((style) => `<span>${esc(style)}</span>`).join("");
     const classCards = content.classes
