@@ -4166,6 +4166,14 @@ h1 {
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.58);
   text-align: center;
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.setup-upload-box:hover,
+.setup-upload-box.is-dragging {
+  border-color: rgba(208, 24, 92, 0.45);
+  box-shadow: 0 16px 38px rgba(34, 16, 47, 0.08);
 }
 
 .setup-image-grid {
@@ -7924,6 +7932,12 @@ body.generated-minimal .published-faq details {
   box-shadow: 0 12px 30px rgba(34, 16, 47, 0.08);
 }
 
+.setup-image-grid button.is-selected {
+  border-color: rgba(208, 24, 92, 0.62);
+  background: linear-gradient(180deg, #fff, rgba(255, 241, 246, 0.88));
+  box-shadow: 0 14px 34px rgba(208, 24, 92, 0.12);
+}
+
 .dashboard-payments-card {
   display: grid;
   grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.1fr);
@@ -9246,6 +9260,22 @@ body.generated-minimal .published-faq details {
   color: var(--setup-theme-muted);
   font-size: 0.78rem;
   line-height: 1.55;
+}
+
+.setup-preview-instructor {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.setup-preview-instructor img {
+  width: 92px;
+  height: 92px;
+  border-radius: 18px;
+  object-fit: cover;
+  object-position: 50% 18%;
+  box-shadow: 0 12px 34px rgba(34, 16, 47, 0.12);
 }
 
 .setup-preview-mini-grid {

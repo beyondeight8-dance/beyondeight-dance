@@ -1,6 +1,11 @@
 (function () {
   const esc = (value = "") =>
     String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+  const assetSrc = (value = "") => {
+    const src = String(value || "");
+    if (!src) return "";
+    return /^(data:|blob:|https?:|\/)/i.test(src) ? src : `/${src}`;
+  };
 
   const themes = [
     {
@@ -115,7 +120,13 @@
       domain: `${origin}/${business.slug || generated.slug || slugify(business.business_name || generated.businessName)}`,
       logoImage: business.logo_url || generated.logoUrl || generated.logoImage || "",
       logoText: generated.logoText || String(business.business_name || generated.businessName || "Beyond Movement").split(/\s+/).slice(0, 2).join("<br>").toUpperCase(),
-      logoFont: generated.logoFont || "serif"
+      logoFont: generated.logoFont || "serif",
+      heroImage: generated.heroImage || "",
+      aboutImage: generated.aboutImage || "",
+      galleryImage: generated.galleryImage || "",
+      workshopImage: generated.workshopImage || "",
+      performanceImage: generated.performanceImage || "",
+      instructorImage: generated.instructorImage || generated.portraitImage || ""
     };
   };
 
@@ -161,9 +172,12 @@
       logoText: state.logoText || brandName.split(/\s+/).slice(0, 2).join("<br>").toUpperCase(),
       logoFont: state.logoFont || "serif",
       images: {
-        hero: state.heroImage || "assets/dancer-hero.png",
-        about: state.aboutImage || "assets/dancer-ethereal.jpg",
-        gallery: state.galleryImage || "assets/dancer-hero.png"
+        hero: state.heroImage || "assets/starter-hero-dance.jpg",
+        about: state.aboutImage || "assets/starter-instructor-portrait.jpg",
+        gallery: state.galleryImage || "assets/starter-dance-class.jpg",
+        workshop: state.workshopImage || "assets/starter-workshop-teaching.jpg",
+        performance: state.performanceImage || "assets/starter-performance.jpg",
+        instructor: state.instructorImage || state.portraitImage || state.aboutImage || "assets/starter-headshot.jpg"
       },
       classes,
       instructorName,
@@ -249,10 +263,13 @@
         <article><strong data-live-class-one>${esc(content.classes[0]?.title || "Signature Class")}</strong><span>Registration open</span></article>
         <article><strong data-live-class-two>${esc(content.classes[1]?.title || "Workshop")}</strong><span>Limited spots</span></article>
       </div>
-      <section class="setup-preview-section">
-        <small>Meet the instructor</small>
-        <h4 data-live-instructor-name>${esc(content.instructorName)}</h4>
-        <p data-live-instructor-bio>${esc(content.instructorBio)}</p>
+      <section class="setup-preview-section setup-preview-instructor">
+        <img src="${esc(content.images.instructor)}" alt="">
+        <div>
+          <small>Meet the instructor</small>
+          <h4 data-live-instructor-name>${esc(content.instructorName)}</h4>
+          <p data-live-instructor-bio>${esc(content.instructorBio)}</p>
+        </div>
       </section>
       <div class="setup-preview-mini-grid" data-live-class-list>${classes}</div>
       <div class="setup-preview-proof" data-live-testimonials>${testimonials}</div>
@@ -312,14 +329,14 @@
             <a class="primary-button" href="#classes">${esc(content.theme.cta)}</a>
           </div>
           <figure class="published-hero-card">
-            <img src="/${esc(content.images.hero)}" alt="">
+            <img src="${esc(assetSrc(content.images.hero))}" alt="">
             <figcaption><strong>${esc(content.theme.eyebrow)}</strong><span>${esc(content.classes[0]?.title || "Signature class")}</span></figcaption>
           </figure>
         </section>
         <section id="classes" class="published-section published-classes"><p class="eyebrow">Upcoming classes</p><h2>Choose your next class.</h2><div class="published-class-grid">${classCards}</div></section>
         <section id="about" class="published-section"><p class="eyebrow">About</p><h2>${esc(content.brandName)} helps dancers move with confidence.</h2><p>${esc(content.mission)} ${esc(content.whyJoin)}</p></section>
-        <section class="published-section published-instructor"><img src="/${esc(content.images.about)}" alt=""><div><p class="eyebrow">Meet the instructor</p><h2>${esc(content.instructorName)}</h2><p>${esc(content.instructorBio)}</p><div class="published-tags">${tags}</div></div></section>
-        <section id="gallery" class="published-section"><p class="eyebrow">Gallery</p><h2>Moments from the studio.</h2><div class="published-gallery"><img src="/${esc(content.images.hero)}" alt=""><img src="/${esc(content.images.about)}" alt=""><img src="/${esc(content.images.gallery)}" alt=""></div></section>
+        <section class="published-section published-instructor"><img src="${esc(assetSrc(content.images.instructor || content.images.about))}" alt=""><div><p class="eyebrow">Meet the instructor</p><h2>${esc(content.instructorName)}</h2><p>${esc(content.instructorBio)}</p><div class="published-tags">${tags}</div></div></section>
+        <section id="gallery" class="published-section"><p class="eyebrow">Gallery</p><h2>Moments from the studio.</h2><div class="published-gallery"><img src="${esc(assetSrc(content.images.about))}" alt=""><img src="${esc(assetSrc(content.images.gallery))}" alt=""><img src="${esc(assetSrc(content.images.performance || content.images.workshop || content.images.hero))}" alt=""></div></section>
         <section class="published-section"><p class="eyebrow">Testimonials</p><h2>Dancers feel the difference.</h2><div class="published-testimonials">${testimonials}</div></section>
         <section class="published-section"><p class="eyebrow">FAQ</p><h2>Good to know before class.</h2><div class="published-faq">${faqs}</div></section>
         <section id="register" class="published-section"><div class="published-contact-card"><div><p class="eyebrow">Contact</p><h2>Ready to dance with us?</h2><p>${esc(content.contact.join(" • "))}</p></div><a class="primary-button" href="mailto:hello@beyond8dance.com">Register interest</a></div></section>

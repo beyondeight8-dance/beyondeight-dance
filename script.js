@@ -60,6 +60,9 @@ const logoUploadStatus = document.querySelector("[data-logo-upload-status]");
 const logoUploadLabel = document.querySelector(".setup-logo-upload");
 const logoUploadTrigger = document.querySelector("[data-logo-upload-trigger]");
 const logoUploadFileName = document.querySelector("[data-logo-file-name]");
+const websiteImageUploadInput = document.querySelector("[data-website-image-upload]");
+const websiteImageUploadTrigger = document.querySelector("[data-website-image-upload-trigger]");
+const websiteImageUploadStatus = document.querySelector("[data-website-image-status]");
 const heroMockup = document.querySelector(".dashboard-mockup");
 const heroView = document.querySelector("[data-hero-view]");
 const heroNavItems = document.querySelectorAll("[data-hero-nav]");
@@ -405,9 +408,18 @@ let slugManuallyEdited = false;
 let pendingOwnerAction = "";
 let logoImageDataUrl = "";
 let logoImageFileName = "";
+const defaultWebsiteImages = {
+  heroImage: "assets/starter-hero-dance.jpg",
+  aboutImage: "assets/starter-instructor-portrait.jpg",
+  galleryImage: "assets/starter-dance-class.jpg",
+  workshopImage: "assets/starter-workshop-teaching.jpg",
+  performanceImage: "assets/starter-performance.jpg",
+  instructorImage: "assets/starter-headshot.jpg"
+};
+let selectedWebsiteImages = { ...defaultWebsiteImages };
 
 const GUEST_SETUP_KEY = "beyondeight.guestWebsiteDraft";
-const GUEST_SETUP_VERSION = 2;
+const GUEST_SETUP_VERSION = 3;
 const PENDING_OWNER_ACTION_KEY = "beyondeight.pendingOwnerAction";
 const LOCAL_PUBLISHED_SITES_KEY = "beyondeight.localPublishedSites";
 
@@ -571,7 +583,8 @@ const getSetupState = () => {
     logoText,
     logoFont,
     logoImage: logoImageDataUrl,
-    logoFileName: logoImageFileName
+    logoFileName: logoImageFileName,
+    ...selectedWebsiteImages
   };
 };
 
@@ -623,6 +636,34 @@ const resizeLogoImage = async (file) => {
   const context = canvas.getContext("2d");
   context.drawImage(image, 0, 0, width, height);
   return canvas.toDataURL(file.type === "image/png" ? "image/png" : "image/jpeg", 0.86);
+};
+
+const resizeWebsiteImage = async (file) => {
+  const originalDataUrl = await fileToDataUrl(file);
+  if (!file.type.startsWith("image/") || file.type === "image/svg+xml") return originalDataUrl;
+
+  const image = new Image();
+  image.decoding = "async";
+  image.src = originalDataUrl;
+  await new Promise((resolve, reject) => {
+    image.addEventListener("load", resolve, { once: true });
+    image.addEventListener("error", () => reject(new Error("We could not preview that image.")), { once: true });
+  });
+
+  const maxWidth = 1400;
+  const maxHeight = 1000;
+  const naturalWidth = image.naturalWidth || image.width;
+  const naturalHeight = image.naturalHeight || image.height;
+  if (!naturalWidth || !naturalHeight) return originalDataUrl;
+  const scale = Math.min(1, maxWidth / naturalWidth, maxHeight / naturalHeight);
+  const width = Math.max(1, Math.round(naturalWidth * scale));
+  const height = Math.max(1, Math.round(naturalHeight * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  context.drawImage(image, 0, 0, width, height);
+  return canvas.toDataURL(file.type === "image/png" ? "image/png" : "image/jpeg", 0.84);
 };
 
 const saveGuestSetupDraft = ({ explicit = false } = {}) => {
@@ -702,8 +743,10 @@ const resetGuestSetup = () => {
   slugManuallyEdited = false;
   logoImageDataUrl = "";
   logoImageFileName = "";
+  selectedWebsiteImages = { ...defaultWebsiteImages };
   if (logoUploadInput) logoUploadInput.value = "";
   renderSpecialties();
+  updateStarterImageSelection();
   setSlugStatus("Start with your brand name and we will check this link.", "neutral");
   updateSetupPreview();
   updateSetupStep();
@@ -858,7 +901,17 @@ const applySetupState = (state = {}) => {
   selectedSpecialties = Array.isArray(state.styles) ? [...new Set(state.styles.map(normalizeSpecialty).filter(Boolean))] : [];
   logoImageDataUrl = state.logoImage || "";
   logoImageFileName = state.logoFileName || (logoImageDataUrl ? "Logo image" : "");
+  selectedWebsiteImages = {
+    ...defaultWebsiteImages,
+    heroImage: state.heroImage || defaultWebsiteImages.heroImage,
+    aboutImage: state.aboutImage || defaultWebsiteImages.aboutImage,
+    galleryImage: state.galleryImage || defaultWebsiteImages.galleryImage,
+    workshopImage: state.workshopImage || defaultWebsiteImages.workshopImage,
+    performanceImage: state.performanceImage || defaultWebsiteImages.performanceImage,
+    instructorImage: state.instructorImage || state.portraitImage || defaultWebsiteImages.instructorImage
+  };
   renderSpecialties();
+  updateStarterImageSelection();
   setCheckedValues("pages", state.pages);
   setRadioValue("brandVibe", state.brandVibe);
   setRadioValue("setupTheme", theme);
@@ -1044,6 +1097,27 @@ const renderSharedTemplateSurfaces = (state, content) => {
   });
 };
 
+const updateStarterImageSelection = () => {
+  document.querySelectorAll("[data-starter-image]").forEach((button) => {
+    const role = button.dataset.starterImage;
+    const src = button.dataset.imageSrc || button.querySelector("img")?.getAttribute("src") || "";
+    const isSelected = Boolean(role && src && selectedWebsiteImages[role] === src);
+    button.classList.toggle("is-selected", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
+};
+
+const selectStarterImage = (button) => {
+  const role = button?.dataset?.starterImage;
+  const src = button?.dataset?.imageSrc || button?.querySelector("img")?.getAttribute("src") || "";
+  if (!role || !src) return;
+  selectedWebsiteImages = { ...selectedWebsiteImages, [role]: src };
+  updateStarterImageSelection();
+  updateSetupPreview();
+  saveGuestSetupDraft();
+  queueOnboardingSave();
+};
+
 const updateSetupPreview = () => {
   if (!setupForm) return;
   const state = getSetupState();
@@ -1052,6 +1126,7 @@ const updateSetupPreview = () => {
   const aboutText = [state.whatYouDo, state.mission, state.whyJoin].filter(Boolean).join(" ") || content.whatYouDo;
   renderSharedTemplateSurfaces(state, content);
   applySetupPreviewTheme(state.theme);
+  updateStarterImageSelection();
   setText("[data-live-brand]", state.businessName);
   setText("[data-live-quote]", state.mission || content.mission);
   setHTML("[data-live-logo]", logoHTMLFor(state));
@@ -1093,6 +1168,12 @@ const updateSetupPreview = () => {
   setText("[data-live-theme]", content.theme.name);
   setText("[data-live-pages]", `${state.pages.length} Pages Selected`);
   setText("[data-live-domain]", state.domain);
+  document.querySelectorAll(".setup-home-preview > img").forEach((image) => {
+    image.src = content.images.hero;
+  });
+  if (setupModal?.classList.contains("is-open")) {
+    document.title = `${state.businessName} Website Setup | BeyondEight`;
+  }
   setText(
     "[data-live-socials]",
     [
@@ -1713,6 +1794,11 @@ specialtyTags?.addEventListener("click", (event) => {
   if (!button) return;
   removeSpecialty(button.dataset.removeSpecialty);
 });
+setupForm?.addEventListener("click", (event) => {
+  const starterImageButton = event.target.closest("[data-starter-image]");
+  if (!starterImageButton) return;
+  selectStarterImage(starterImageButton);
+});
 logoUploadTrigger?.addEventListener("click", () => {
   logoUploadInput?.click();
 });
@@ -1739,6 +1825,50 @@ logoUploadInput?.addEventListener("change", async () => {
     updateSetupPreview();
     if (setupMessage) setupMessage.textContent = error.message || "We could not use that logo image. Please try another file.";
   }
+});
+const applyWebsiteImageFiles = async (files = []) => {
+  const imageFiles = files.filter((file) => file.type.startsWith("image/")).slice(0, 6);
+  if (!imageFiles.length) {
+    if (websiteImageUploadStatus) websiteImageUploadStatus.textContent = "Please choose JPG, PNG, or WEBP images.";
+    return;
+  }
+  const imageSlots = ["heroImage", "aboutImage", "galleryImage", "workshopImage", "performanceImage", "instructorImage"];
+  if (websiteImageUploadStatus) websiteImageUploadStatus.textContent = `Preparing ${imageFiles.length} image${imageFiles.length === 1 ? "" : "s"}...`;
+  try {
+    const resizedImages = await Promise.all(imageFiles.map((file) => resizeWebsiteImage(file)));
+    resizedImages.forEach((dataUrl, index) => {
+      selectedWebsiteImages[imageSlots[index]] = dataUrl;
+    });
+    if (websiteImageUploadStatus) {
+      websiteImageUploadStatus.textContent = `${imageFiles.length} image${imageFiles.length === 1 ? "" : "s"} added to your live website.`;
+    }
+    updateStarterImageSelection();
+    updateSetupPreview();
+    saveGuestSetupDraft();
+    queueOnboardingSave();
+  } catch (error) {
+    console.warn("Website image upload failed:", error);
+    if (websiteImageUploadStatus) websiteImageUploadStatus.textContent = error.message || "We could not preview those images.";
+  }
+};
+websiteImageUploadTrigger?.addEventListener("click", () => {
+  websiteImageUploadInput?.click();
+});
+websiteImageUploadTrigger?.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  websiteImageUploadTrigger.classList.add("is-dragging");
+});
+websiteImageUploadTrigger?.addEventListener("dragleave", () => {
+  websiteImageUploadTrigger.classList.remove("is-dragging");
+});
+websiteImageUploadTrigger?.addEventListener("drop", async (event) => {
+  event.preventDefault();
+  websiteImageUploadTrigger.classList.remove("is-dragging");
+  await applyWebsiteImageFiles(Array.from(event.dataTransfer?.files || []));
+});
+websiteImageUploadInput?.addEventListener("change", async () => {
+  await applyWebsiteImageFiles(Array.from(websiteImageUploadInput.files || []));
+  websiteImageUploadInput.value = "";
 });
 logoUploadInput?.addEventListener("click", () => {
   logoUploadInput.value = "";

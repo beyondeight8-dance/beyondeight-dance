@@ -724,16 +724,16 @@
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column">
-              <div class="setup-upload-box"><strong>Upload Your Images</strong><span>Drag & drop your images here or click to browse</span><small>JPG, PNG, WEBP up to 10MB</small></div>
+              <div class="setup-upload-box" data-website-image-upload-trigger><strong>Upload Your Images</strong><span>Drag & drop your images here or click to browse</span><small data-website-image-status>JPG, PNG, WEBP up to 10MB</small><input type="file" accept="image/*" multiple data-website-image-upload hidden></div>
               <div>
                 <span class="setup-label">BeyondEight Starter Images</span>
                 <div class="setup-image-grid">
-                  <button type="button"><img src="assets/starter-hero-dance.jpg" alt=""><span>Hero Image</span></button>
-                  <button type="button"><img src="assets/starter-instructor-portrait.jpg" alt=""><span>About Image</span></button>
-                  <button type="button"><img src="assets/starter-dance-class.jpg" alt=""><span>Gallery Image</span></button>
-                  <button type="button"><img src="assets/starter-workshop-teaching.jpg" alt=""><span>Workshop</span></button>
-                  <button type="button"><img src="assets/starter-performance.jpg" alt=""><span>Performance</span></button>
-                  <button type="button"><img src="assets/starter-headshot.jpg" alt=""><span>Portrait</span></button>
+                  <button type="button" data-starter-image="heroImage" data-image-src="assets/starter-hero-dance.jpg" aria-pressed="true"><img src="assets/starter-hero-dance.jpg" alt=""><span>Hero Image</span></button>
+                  <button type="button" data-starter-image="aboutImage" data-image-src="assets/starter-instructor-portrait.jpg" aria-pressed="true"><img src="assets/starter-instructor-portrait.jpg" alt=""><span>About Image</span></button>
+                  <button type="button" data-starter-image="galleryImage" data-image-src="assets/starter-dance-class.jpg" aria-pressed="true"><img src="assets/starter-dance-class.jpg" alt=""><span>Gallery Image</span></button>
+                  <button type="button" data-starter-image="workshopImage" data-image-src="assets/starter-workshop-teaching.jpg" aria-pressed="true"><img src="assets/starter-workshop-teaching.jpg" alt=""><span>Workshop</span></button>
+                  <button type="button" data-starter-image="performanceImage" data-image-src="assets/starter-performance.jpg" aria-pressed="true"><img src="assets/starter-performance.jpg" alt=""><span>Performance</span></button>
+                  <button type="button" data-starter-image="instructorImage" data-image-src="assets/starter-headshot.jpg" aria-pressed="true"><img src="assets/starter-headshot.jpg" alt=""><span>Portrait</span></button>
                 </div>
               </div>
             </div>
