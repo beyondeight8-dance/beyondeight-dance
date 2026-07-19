@@ -1199,6 +1199,14 @@ const generatedSiteHTML = (state) => {
   </style>
 </head>
 <body class="${themeClassFor(state.theme)}">
+  <style>
+    .generated-elegant{--site-bg:#fffaf5;--section-bg:rgba(255,246,242,.74);--card-bg:rgba(255,255,255,.9);--header-bg:rgba(255,250,245,.9);--footer-bg:rgba(255,242,236,.76);--chip-bg:rgba(208,24,92,.1);--chip-color:#d0185c;--site-shadow:rgba(34,16,47,.08)}
+    .generated-bold{--site-bg:#101014;--section-bg:rgba(255,255,255,.045);--card-bg:rgba(255,255,255,.08);--header-bg:rgba(16,16,20,.9);--footer-bg:rgba(255,255,255,.055);--chip-bg:rgba(255,49,95,.18);--chip-color:#ff8c62;--site-shadow:rgba(0,0,0,.22)}
+    .generated-soft{--site-bg:#fff7f3;--section-bg:rgba(248,231,223,.55);--card-bg:rgba(255,253,249,.92);--header-bg:rgba(255,247,243,.9);--footer-bg:rgba(232,196,184,.22);--chip-bg:rgba(196,130,142,.14);--chip-color:#9f5f6b;--site-shadow:rgba(104,55,67,.08)}
+    .generated-vibrant{--site-bg:#fff8ef;--section-bg:rgba(255,211,220,.52);--card-bg:rgba(255,255,255,.9);--header-bg:rgba(255,248,239,.9);--footer-bg:rgba(255,112,77,.12);--chip-bg:rgba(224,0,97,.12);--chip-color:#e00061;--site-shadow:rgba(224,0,97,.08)}
+    .generated-minimal{--site-bg:#09080b;--section-bg:rgba(255,255,255,.04);--card-bg:rgba(255,255,255,.08);--header-bg:rgba(9,8,11,.9);--footer-bg:rgba(255,255,255,.055);--chip-bg:rgba(255,255,255,.13);--chip-color:#fffaf6;--site-shadow:rgba(0,0,0,.22)}
+    body{background:radial-gradient(circle at 8% 8%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 22rem),var(--site-bg)!important}.site-header{background:var(--header-bg);border-bottom-color:var(--card-border)}.tags span{background:var(--chip-bg);color:var(--chip-color)}.class-card,.info-card,.testimonial-grid blockquote,details{background:var(--card-bg);border-color:var(--card-border);box-shadow:0 18px 48px var(--site-shadow)}.section:nth-of-type(even){border-radius:32px;background:var(--section-bg);padding-inline:clamp(22px,4vw,48px)}.contact-card{box-shadow:0 24px 70px var(--site-shadow)}.footer{border-color:var(--card-border);border-radius:26px 26px 0 0;background:var(--footer-bg);padding-inline:22px}
+  </style>
   <div class="site">
     <header class="site-header"><div class="brand">${logoHTMLFor(state)}</div><nav class="nav">${pages}</nav><div class="owner-actions"><button class="btn secondary">Edit Page</button><button class="btn secondary">Admin Dashboard</button></div></header>
     <main class="container">
