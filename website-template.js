@@ -130,6 +130,31 @@
     };
   };
 
+  const demoData = {
+    locations: ["In studio", "Downtown studio", "Online option", "Pop-up studio", "Community center"],
+    levels: ["Open level", "Beginner-friendly", "Intermediate", "All levels", "Performance track"],
+    prices: ["$22", "$30", "$45", "$65", "$18"],
+    classSuffixes: ["Foundations", "Intensive", "Workshop", "Lab", "Training"],
+    benefits: [
+      ["Beginner-Friendly Instruction", "Clear progressions help new dancers feel confident from the first class."],
+      ["Performance-Ready Training", "Technique, musicality, and stage presence are built into every session."],
+      ["Supportive Community", "A welcoming room where dancers can grow without feeling lost."],
+      ["Organized Booking", "Students can discover classes, reserve spots, and get details in one place."]
+    ],
+    testimonials: [
+      ["Preview testimonial", "Amazing energy from the first count. The class felt polished, warm, and easy to follow."],
+      ["Preview testimonial", "I loved how clear the registration was. I knew exactly where to go and what to bring."],
+      ["Preview testimonial", "The choreography challenged me while still feeling supportive and fun."]
+    ],
+    faqs: [
+      ["Do I need previous dance experience?", "No. Classes marked open level or beginner-friendly are designed so new dancers can join with confidence."],
+      ["What should I wear?", "Wear something comfortable to move in. Bring water, supportive shoes if needed, and a willingness to try."],
+      ["Can I book a private workshop?", "Yes. Private workshops, intensives, and group sessions can be requested through the contact form."],
+      ["How do I reserve a spot?", "Choose a class or workshop, complete the registration details, and you will receive a confirmation."],
+      ["What is the cancellation policy?", "Cancellation details are shared during registration and can be customized by the choreographer."]
+    ]
+  };
+
   const buildWebsiteContent = (input = {}) => {
     const state = input.business ? stateFromBundle(input) : input;
     const theme = themeProfileFor(state.theme);
@@ -147,17 +172,26 @@
       "Students leave feeling challenged, seen, and excited to keep building their artistry through movement.";
     const instructorName = state.instructorName || `${brandName} Instructor`;
     const classes = styles.slice(0, 5).map((style, index) => {
-      const classTypes = ["Foundations", "Intensive", "Workshop", "Lab", "Training"];
       const days = ["Thu", "Sat", "Sun", "Wed", "Fri"];
       const times = ["7:00 PM", "11:00 AM", "5:30 PM", "6:45 PM", "8:00 PM"];
       return {
-        title: `${style} ${classTypes[index % classTypes.length]}`,
+        title: `${style} ${demoData.classSuffixes[index % demoData.classSuffixes.length]}`,
         date: `${days[index % days.length]} ${index + 12}`,
         time: times[index % times.length],
+        location: demoData.locations[index % demoData.locations.length],
+        level: demoData.levels[index % demoData.levels.length],
+        price: demoData.prices[index % demoData.prices.length],
+        spots: `${14 - index * 2} spots left`,
         instructor: instructorName,
         style
       };
     });
+    const contact = [
+      state.instagram || "Instagram coming soon",
+      state.website || state.domain || "",
+      state.email || "hello@beyond8dance.com",
+      state.location || "Location shared after registration"
+    ].filter(Boolean);
     return {
       theme,
       brandName,
@@ -180,19 +214,27 @@
         instructor: state.instructorImage || state.portraitImage || state.aboutImage || "assets/starter-headshot.jpg"
       },
       classes,
+      workshop: {
+        title: `${styles[0] || "Dance"} Signature Workshop`,
+        date: "Saturday 11:00 AM",
+        location: state.location || "In studio",
+        level: "Open level",
+        price: "$45",
+        description: state.whyJoin || "A focused workshop with choreography, coaching, and space to connect with the movement."
+      },
       instructorName,
       instructorBio: `${brandName} helps dancers grow through ${styles.slice(0, 3).join(", ")} with clear coaching, intentional choreography, and a welcoming class experience.`,
-      testimonials: [
-        "Amazing energy from the first count.",
-        "The registration was easy and the class felt so organized.",
-        "I left feeling confident and excited to come back."
-      ],
-      faqs: [
-        ["Do I need experience?", "All levels are welcome unless a class is marked advanced."],
-        ["How do I register?", "Choose a class, reserve your spot, and complete your details online."],
-        ["Can I join workshops?", "Yes. Workshops and intensives appear as soon as registration opens."]
-      ],
-      contact: [state.instagram || "Instagram coming soon", state.website || state.domain || "", "hello@beyond8dance.com"].filter(Boolean)
+      benefits: demoData.benefits,
+      testimonials: demoData.testimonials,
+      faqs: demoData.faqs,
+      gallery: [
+        state.galleryImage || "assets/starter-dance-class.jpg",
+        state.workshopImage || "assets/starter-workshop-teaching.jpg",
+        state.performanceImage || "assets/starter-performance.jpg",
+        state.instructorImage || "assets/starter-headshot.jpg"
+      ].filter(Boolean),
+      contact,
+      socials: [state.instagram, state.tiktok, state.youtube].filter(Boolean)
     };
   };
 
@@ -237,48 +279,99 @@
       )
       .join("");
 
+  const imageTag = (src, alt, className = "") =>
+    `<img${className ? ` class="${esc(className)}"` : ""} src="${esc(assetSrc(src))}" alt="${esc(alt)}" loading="lazy">`;
+
   const renderDesktopPreview = (content, options = {}) => {
     const tags = content.styles.slice(0, 4).map((style) => `<span>${esc(style)}</span>`).join("");
     const classes = content.classes
       .slice(0, 4)
-      .map((item) => `<article><strong>${esc(item.title)}</strong><span>${esc(item.date)} • ${esc(item.time)}</span><small>${esc(item.instructor)}</small></article>`)
+      .map(
+        (item) =>
+          `<article class="setup-preview-class-card"><small>${esc(item.style)}</small><strong>${esc(item.title)}</strong><span>${esc(item.date)} &bull; ${esc(item.time)}</span><p>${esc(item.location)} &bull; ${esc(item.level)}</p><b>${esc(item.price)} &bull; ${esc(item.spots)}</b><button type="button">Reserve Spot</button></article>`
+      )
       .join("");
-    const testimonials = content.testimonials.slice(0, 2).map((quote) => `<blockquote>${esc(quote)}</blockquote>`).join("");
+    const benefits = content.benefits.map(([title, copy]) => `<article><strong>${esc(title)}</strong><p>${esc(copy)}</p></article>`).join("");
+    const gallery = content.gallery
+      .slice(0, 4)
+      .map((src, index) => imageTag(src, `${content.brandName} gallery image ${index + 1}`))
+      .join("");
+    const testimonials = content.testimonials
+      .slice(0, 3)
+      .map(([label, quote]) => `<blockquote>${options.builderMode ? `<small>${esc(label)}</small>` : ""}<p>${esc(quote)}</p></blockquote>`)
+      .join("");
+    const faqs = content.faqs.map(([question, answer]) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("");
+    const navLinks = ["Home", "About", "Classes", "Workshops", "Gallery", "FAQ", "Contact"]
+      .map((page) => `<a href="#${esc(slugify(page))}">${esc(page)}</a>`)
+      .join("");
     return `
       <div class="setup-preview-nav">
         <strong data-live-logo-small>${logoHTML(content, options.logoHTML)}</strong>
-        <span>Home</span><span>Classes</span><span>About</span>
+        <nav>${navLinks}</nav>
+        <button type="button">${esc(content.theme.cta)}</button>
       </div>
-      <div class="setup-preview-hero">
+      <section id="home" class="setup-preview-hero">
         <div>
           <small data-live-theme>${esc(content.theme.name)}</small>
           <h3 data-live-headline>${esc(content.headline)}</h3>
           <p data-live-about>${esc(content.whatYouDo)}</p>
           <div class="setup-preview-tags" data-live-specialties>${tags}</div>
           <button type="button">${esc(content.theme.cta)}</button>
+          <a href="#classes">View Classes</a>
         </div>
-        <img src="${esc(content.images.hero)}" alt="${esc(`${content.brandName} hero dance image`)}">
-      </div>
-      <div class="setup-preview-cards">
-        <article><strong data-live-class-one>${esc(content.classes[0]?.title || "Signature Class")}</strong><span>Registration open</span></article>
-        <article><strong data-live-class-two>${esc(content.classes[1]?.title || "Workshop")}</strong><span>Limited spots</span></article>
-      </div>
-      <section class="setup-preview-section setup-preview-instructor">
-        <img src="${esc(content.images.instructor)}" alt="${esc(`${content.instructorName} instructor portrait`)}">
+        ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
+      </section>
+      <section id="classes" class="setup-preview-section setup-preview-classes">
+        <small>Upcoming Classes</small>
+        <h4>Book your next class.</h4>
+        <div class="setup-preview-mini-grid" data-live-class-list>${classes}</div>
+      </section>
+      <section id="workshops" class="setup-preview-section setup-preview-workshop">
         <div>
-          <small>Meet the instructor</small>
+          <small>Featured Workshop</small>
+          <h4>${esc(content.workshop.title)}</h4>
+          <p>${esc(content.workshop.description)}</p>
+          <span>${esc(content.workshop.date)} &bull; ${esc(content.workshop.location)} &bull; ${esc(content.workshop.price)}</span>
+          <button type="button">Register</button>
+        </div>
+        ${imageTag(content.images.workshop, `${content.brandName} workshop image`)}
+      </section>
+      <section id="about" class="setup-preview-section setup-preview-instructor">
+        ${imageTag(content.images.instructor, `${content.instructorName} instructor portrait`)}
+        <div>
+          <small>About the choreographer</small>
           <h4 data-live-instructor-name>${esc(content.instructorName)}</h4>
-          <p data-live-instructor-bio>${esc(content.instructorBio)}</p>
+          <p data-live-instructor-bio>${esc(content.instructorBio)} ${esc(content.mission)}</p>
+          <div class="setup-preview-stats"><span>8+ years teaching</span><span>${esc(content.styles[0] || "Dance")} focus</span></div>
         </div>
       </section>
-      <div class="setup-preview-mini-grid" data-live-class-list>${classes}</div>
+      <section class="setup-preview-section setup-preview-benefits">
+        <small>Why dance with me</small>
+        <div>${benefits}</div>
+      </section>
+      <section id="gallery" class="setup-preview-section setup-preview-gallery">
+        <small>Gallery</small>
+        <h4>Moments from the studio.</h4>
+        <div class="setup-preview-gallery-grid">${gallery}</div>
+      </section>
       <div class="setup-preview-proof" data-live-testimonials>${testimonials}</div>
-      <section class="setup-preview-section setup-preview-contact">
+      <section id="faq" class="setup-preview-section setup-preview-faq">
+        <small>FAQ</small>
+        <h4>Good to know before class.</h4>
+        <div>${faqs}</div>
+      </section>
+      <section id="contact" class="setup-preview-section setup-preview-contact">
         <small>Contact</small>
-        <p data-live-contact>${esc(content.contact.join(" • "))}</p>
-      </section>`;
+        <h4>Ready to move?</h4>
+        <p data-live-contact>${esc(content.contact.join(" &bull; "))}</p>
+        <button type="button">Send Inquiry</button>
+      </section>
+      <footer class="setup-preview-footer">
+        <strong>${logoHTML(content, options.logoHTML)}</strong>
+        <nav>${pageLinks(content)}</nav>
+        <span>Powered by BeyondEight</span>
+      </footer>`;
   };
-
   const renderPhonePreview = (content, options = {}) => {
     const state = options.state || content;
     const title = `${content.brandName || "Website"} mobile preview`;
@@ -290,40 +383,12 @@
 
   const renderSharedPublicSite = (content, { ownerToolbar = "", logoUrl = "" } = {}) => {
     const publicContent = logoUrl && !content.logoImage ? { ...content, logoImage: logoUrl } : content;
-    const faqs = content.faqs.map(([question, answer]) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("");
-    const galleryImages = [
-      content.images.about,
-      content.images.gallery,
-      content.images.workshop,
-      content.images.performance,
-      content.images.instructor
-    ]
-      .filter(Boolean)
-      .slice(0, 4)
-      .map((src, index) => `<img src="${esc(assetSrc(src))}" alt="${esc(`${content.brandName} gallery image ${index + 1}`)}">`)
-      .join("");
     return `
       ${ownerToolbar}
       <div class="published-site setup-preview-site" data-theme-key="${esc(content.theme.key)}">
-        ${renderDesktopPreview(publicContent, { logoHTML: logoHTML(publicContent) })}
-        <section id="gallery" class="setup-preview-section setup-preview-gallery">
-          <small>Gallery</small>
-          <h4>Moments from the studio.</h4>
-          <div class="setup-preview-gallery-grid">${galleryImages}</div>
-        </section>
-        <section class="setup-preview-section setup-preview-faq">
-          <small>FAQ</small>
-          <h4>Good to know before class.</h4>
-          <div>${faqs}</div>
-        </section>
-        <footer class="setup-preview-footer">
-          <strong>${logoHTML(publicContent)}</strong>
-          <nav>${pageLinks(content)}</nav>
-          <span>Built with BeyondEight</span>
-        </footer>
+        ${renderDesktopPreview(publicContent, { logoHTML: logoHTML(publicContent), publicMode: true })}
       </div>`;
   };
-
   const generatedSiteHTML = (state) => {
     const content = buildWebsiteContent(state);
     const baseUrl = `${window.location.origin}/`;

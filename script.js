@@ -26,6 +26,7 @@ const setupReady = document.querySelector("[data-setup-ready]");
 const viewGeneratedSiteButton = document.querySelector("[data-view-generated-site]");
 const readyGoogleButton = document.querySelector("[data-ready-google]");
 const readyPublishButton = document.querySelector("[data-ready-publish]");
+const readyKeepEditingButton = document.querySelector("[data-ready-keep-editing]");
 const themeModal = document.querySelector(".theme-modal");
 const themeModalTitle = document.querySelector("#theme-modal-title");
 const themeModalPreview = document.querySelector(".theme-modal-preview");
@@ -826,7 +827,7 @@ const renderSpecialties = () => {
   specialtyTags.innerHTML = selectedSpecialties
     .map(
       (style) =>
-        `<button class="specialty-tag" type="button" data-remove-specialty="${style.replace(/"/g, "&quot;")}"><span>${style}</span><strong aria-hidden="true">×</strong></button>`
+        `<button class="specialty-tag" type="button" data-remove-specialty="${style.replace(/"/g, "&quot;")}"><span>${style}</span><strong aria-hidden="true">&times;</strong></button>`
     )
     .join("");
 
@@ -939,7 +940,7 @@ const validateCurrentSlug = async () => {
       return false;
     }
     if (setupForm?.elements.businessSlug) setupForm.elements.businessSlug.value = localCheck.slug;
-    setSlugStatus("✓ Available. Great choice! Your students will use this link to register.", "success");
+    setSlugStatus("Available. Great choice! Your students will use this link to register.", "success");
     return true;
   } catch (error) {
     console.info("Slug availability will be rechecked before authenticated publishing.", error);
@@ -1089,7 +1090,7 @@ const renderSharedTemplateSurfaces = (state, content) => {
   }
   document.querySelectorAll(".setup-preview-site").forEach((node) => {
     node.dataset.themeKey = content.theme.key;
-    node.innerHTML = templates.renderDesktopPreview(content, { logoHTML: logoHTMLFor(state) });
+    node.innerHTML = templates.renderDesktopPreview(content, { logoHTML: logoHTMLFor(state), builderMode: true });
   });
   document.querySelectorAll(".ready-phone").forEach((node) => {
     node.dataset.themeKey = content.theme.key;
@@ -1144,11 +1145,17 @@ const updateSetupPreview = () => {
       .slice(0, 4)
       .map(
         (item) =>
-          `<article><strong>${escapeHTML(item.title)}</strong><span>${escapeHTML(item.date)} • ${escapeHTML(item.time)}</span><small>${escapeHTML(item.instructor)}</small></article>`
+          `<article class="setup-preview-class-card"><small>${escapeHTML(item.style)}</small><strong>${escapeHTML(item.title)}</strong><span>${escapeHTML(item.date)} &bull; ${escapeHTML(item.time)}</span><p>${escapeHTML(item.location)} &bull; ${escapeHTML(item.level)}</p><b>${escapeHTML(item.price)} &bull; ${escapeHTML(item.spots)}</b><button type="button">Reserve Spot</button></article>`
       )
       .join("")
   );
-  setHTML("[data-live-testimonials]", content.testimonials.slice(0, 2).map((quote) => `<blockquote>${escapeHTML(quote)}</blockquote>`).join(""));
+  setHTML(
+    "[data-live-testimonials]",
+    content.testimonials
+      .slice(0, 3)
+      .map(([label, quote]) => `<blockquote><small>${escapeHTML(label)}</small><p>${escapeHTML(quote)}</p></blockquote>`)
+      .join("")
+  );
   setText("[data-live-contact]", content.contact.join(" • "));
   document.querySelectorAll("[data-live-quote], [data-live-about]").forEach((node) => {
     node.classList.toggle("is-empty", !node.textContent.trim());
@@ -1287,6 +1294,7 @@ const generatedSiteHTML = (state) => {
   if (window.BeyondEightWebsiteTemplates?.generatedSiteHTML) {
     return window.BeyondEightWebsiteTemplates.generatedSiteHTML(state);
   }
+  throw new Error("Website template renderer is unavailable.");
   const content = smartWebsiteContent(state);
   const themeName = content.theme.name;
   const dancerImage = new URL("assets/dancer-hero.png", window.location.href).href;
@@ -1759,9 +1767,23 @@ setupSubmitButton?.addEventListener("click", async (event) => {
   await showGeneratedPreview();
 });
 readyPublishButton?.addEventListener("click", publishCurrentSetup);
+readyKeepEditingButton?.addEventListener("click", () => {
+  setupLaunched = false;
+  setupIndex = setupSteps.length - 1;
+  updateSetupStep();
+  updateSetupPreview();
+});
 viewGeneratedSiteButton?.addEventListener("click", () => {
   generatedSiteUrl = saveLocalPublishedPreview(getSetupState());
   viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
+});
+document.querySelectorAll(".setup-image-grid img").forEach((image) => {
+  image.addEventListener("error", () => {
+    image.closest("[data-starter-image]")?.classList.add("image-missing");
+  });
+  if (image.complete && image.naturalWidth === 0) {
+    image.closest("[data-starter-image]")?.classList.add("image-missing");
+  }
 });
 specialtyInput?.addEventListener("keydown", (event) => {
   const suggestionButtons = Array.from(specialtySuggestions?.querySelectorAll("[data-add-specialty]") || []);
