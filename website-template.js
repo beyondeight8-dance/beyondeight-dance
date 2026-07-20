@@ -257,14 +257,14 @@
           <div class="setup-preview-tags" data-live-specialties>${tags}</div>
           <button type="button">${esc(content.theme.cta)}</button>
         </div>
-        <img src="${esc(content.images.hero)}" alt="">
+        <img src="${esc(content.images.hero)}" alt="${esc(`${content.brandName} hero dance image`)}">
       </div>
       <div class="setup-preview-cards">
         <article><strong data-live-class-one>${esc(content.classes[0]?.title || "Signature Class")}</strong><span>Registration open</span></article>
         <article><strong data-live-class-two>${esc(content.classes[1]?.title || "Workshop")}</strong><span>Limited spots</span></article>
       </div>
       <section class="setup-preview-section setup-preview-instructor">
-        <img src="${esc(content.images.instructor)}" alt="">
+        <img src="${esc(content.images.instructor)}" alt="${esc(`${content.instructorName} instructor portrait`)}">
         <div>
           <small>Meet the instructor</small>
           <h4 data-live-instructor-name>${esc(content.instructorName)}</h4>
@@ -288,45 +288,6 @@
   const pageLinks = (content) =>
     content.pages.slice(0, 6).map((page) => `<a href="#${esc(slugify(page))}">${esc(page)}</a>`).join("");
 
-  const renderLegacyPublicSite = (content, { ownerToolbar = "", logoUrl = "" } = {}) => {
-    const tags = content.styles.map((style) => `<span>${esc(style)}</span>`).join("");
-    const classCards = content.classes
-      .map((item) => `<article><small>${esc(item.date)} • ${esc(item.time)}</small><h3>${esc(item.title)}</h3><p>${esc(item.instructor)}</p><a href="#register">Register</a></article>`)
-      .join("");
-    const testimonials = content.testimonials.map((quote) => `<blockquote>"${esc(quote)}"</blockquote>`).join("");
-    const faqs = content.faqs.map(([question, answer]) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("");
-    const logo = logoUrl ? `<img src="${esc(logoUrl)}" alt="">` : "";
-    return `
-      ${ownerToolbar}
-      <div class="published-site">
-        <header class="published-header">
-          <strong class="published-logo">${logo}<span>${esc(content.brandName)}</span></strong>
-          <nav>${pageLinks(content)}</nav>
-        </header>
-        <section class="published-hero">
-          <div>
-            <p class="eyebrow">${esc(content.theme.name)}</p>
-            <h1>${esc(content.headline)}</h1>
-            <p>${esc(content.whatYouDo)}</p>
-            <div class="published-tags">${tags}</div>
-            <a class="primary-button" href="#classes">${esc(content.theme.cta)}</a>
-          </div>
-          <figure class="published-hero-card">
-            <img src="${esc(assetSrc(content.images.hero))}" alt="">
-            <figcaption><strong>${esc(content.theme.eyebrow)}</strong><span>${esc(content.classes[0]?.title || "Signature class")}</span></figcaption>
-          </figure>
-        </section>
-        <section id="classes" class="published-section published-classes"><p class="eyebrow">Upcoming classes</p><h2>Choose your next class.</h2><div class="published-class-grid">${classCards}</div></section>
-        <section id="about" class="published-section"><p class="eyebrow">About</p><h2>${esc(content.brandName)} helps dancers move with confidence.</h2><p>${esc(content.mission)} ${esc(content.whyJoin)}</p></section>
-        <section class="published-section published-instructor"><img src="${esc(assetSrc(content.images.instructor || content.images.about))}" alt=""><div><p class="eyebrow">Meet the instructor</p><h2>${esc(content.instructorName)}</h2><p>${esc(content.instructorBio)}</p><div class="published-tags">${tags}</div></div></section>
-        <section id="gallery" class="published-section"><p class="eyebrow">Gallery</p><h2>Moments from the studio.</h2><div class="published-gallery"><img src="${esc(assetSrc(content.images.about))}" alt=""><img src="${esc(assetSrc(content.images.gallery))}" alt=""><img src="${esc(assetSrc(content.images.performance || content.images.workshop || content.images.hero))}" alt=""></div></section>
-        <section class="published-section"><p class="eyebrow">Testimonials</p><h2>Dancers feel the difference.</h2><div class="published-testimonials">${testimonials}</div></section>
-        <section class="published-section"><p class="eyebrow">FAQ</p><h2>Good to know before class.</h2><div class="published-faq">${faqs}</div></section>
-        <section id="register" class="published-section"><div class="published-contact-card"><div><p class="eyebrow">Contact</p><h2>Ready to dance with us?</h2><p>${esc(content.contact.join(" • "))}</p></div><a class="primary-button" href="mailto:hello@beyond8dance.com">Register interest</a></div></section>
-        <footer class="published-footer"><span>${esc(content.brandName)}</span><span>Built with BeyondEight</span></footer>
-      </div>`;
-  };
-
   const renderSharedPublicSite = (content, { ownerToolbar = "", logoUrl = "" } = {}) => {
     const publicContent = logoUrl && !content.logoImage ? { ...content, logoImage: logoUrl } : content;
     const faqs = content.faqs.map(([question, answer]) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("");
@@ -339,7 +300,7 @@
     ]
       .filter(Boolean)
       .slice(0, 4)
-      .map((src) => `<img src="${esc(assetSrc(src))}" alt="">`)
+      .map((src, index) => `<img src="${esc(assetSrc(src))}" alt="${esc(`${content.brandName} gallery image ${index + 1}`)}">`)
       .join("");
     return `
       ${ownerToolbar}
