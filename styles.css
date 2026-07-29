@@ -9440,6 +9440,120 @@ body.generated-minimal .published-faq details {
   line-height: 1;
 }
 
+.price-period {
+  margin: -14px 0 24px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.site-footer {
+  display: block !important;
+  padding: clamp(48px, 7vw, 76px) clamp(24px, 6vw, 88px) 28px !important;
+}
+
+.footer-inner {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(240px, 1.15fr) minmax(0, 2fr);
+  gap: clamp(36px, 6vw, 84px);
+  align-items: start;
+}
+
+.footer-brand {
+  display: grid;
+  gap: 14px;
+  max-width: 380px;
+}
+
+.footer-brand p,
+.footer-brand small {
+  margin: 0;
+  color: rgba(255, 250, 246, 0.76);
+  line-height: 1.7;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.footer-brand small {
+  font-size: 0.92rem;
+}
+
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: clamp(22px, 4vw, 42px);
+}
+
+.footer-links div {
+  display: grid;
+  gap: 10px;
+}
+
+.footer-links h3 {
+  margin: 0 0 8px;
+  color: #fffaf6;
+  font-family: var(--body-font);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.footer-links a {
+  color: rgba(255, 250, 246, 0.72);
+  font-size: 0.96rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 160ms ease, transform 160ms ease;
+}
+
+.footer-links a:hover,
+.footer-links a:focus-visible {
+  color: #fffaf6;
+  transform: translateX(2px);
+}
+
+.footer-bottom {
+  width: min(1180px, 100%);
+  margin: 42px auto 0;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  color: rgba(255, 250, 246, 0.62);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.site-footer .footer-brand .brand-mark {
+  width: 34px !important;
+  height: 54px !important;
+  border-radius: 0 !important;
+  overflow: hidden;
+}
+
+.site-footer .footer-brand .brand-mark img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+@media (max-width: 860px) {
+  .footer-inner,
+  .footer-links {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 1120px) {
   .hero {
     grid-template-columns: 1fr !important;
