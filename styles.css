@@ -2923,7 +2923,7 @@ h1 span,
   width: 88px;
   height: 88px;
   border-radius: 24px;
-  background: url("assets/app-logo-3.png") center / cover no-repeat;
+  background: url("assets/app-logo-3-transparent.png") center / contain no-repeat;
   box-shadow: 0 20px 46px rgba(43, 18, 61, 0.22);
 }
 
@@ -9414,20 +9414,20 @@ body.generated-minimal .published-faq details {
 
 .site-footer .brand-mark {
   flex: 0 0 auto;
-  width: 46px !important;
-  height: 46px !important;
+  width: 38px !important;
+  height: 54px !important;
   border: 0 !important;
-  border-radius: 15px !important;
-  background: #fffaf6 !important;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22) !important;
-  overflow: hidden;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible;
 }
 
 .site-footer .brand-mark img {
   display: block !important;
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover;
+  object-fit: contain;
   opacity: 1 !important;
   filter: none !important;
   mix-blend-mode: normal !important;
@@ -9439,10 +9439,15 @@ body.generated-minimal .published-faq details {
 }
 
 .price-period {
-  margin: -14px 0 24px;
-  color: var(--muted);
+  margin: -12px 0 22px;
+  color: rgba(43, 18, 61, 0.68) !important;
   font-size: 0.92rem;
-  font-weight: 700;
+  font-weight: 800;
+}
+
+.price-growth .price-period,
+.price-scale .price-period {
+  color: rgba(43, 18, 61, 0.68) !important;
 }
 
 .site-footer {
@@ -9528,16 +9533,16 @@ body.generated-minimal .published-faq details {
 }
 
 .site-footer .footer-brand .brand-mark {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 15px !important;
-  overflow: hidden;
+  width: 38px !important;
+  height: 54px !important;
+  border-radius: 0 !important;
+  overflow: visible;
 }
 
 .site-footer .footer-brand .brand-mark img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
 }
 
