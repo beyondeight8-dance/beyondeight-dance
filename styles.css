@@ -2923,9 +2923,7 @@ h1 span,
   width: 88px;
   height: 88px;
   border-radius: 24px;
-  background:
-    linear-gradient(rgba(43, 18, 61, 0.72), rgba(43, 18, 61, 0.72)),
-    url("assets/Logo.png") center / cover no-repeat;
+  background: url("assets/app-logo-3.png") center / cover no-repeat;
   box-shadow: 0 20px 46px rgba(43, 18, 61, 0.22);
 }
 
@@ -9416,20 +9414,20 @@ body.generated-minimal .published-faq details {
 
 .site-footer .brand-mark {
   flex: 0 0 auto;
-  width: 30px !important;
-  height: 54px !important;
+  width: 46px !important;
+  height: 46px !important;
   border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  overflow: visible;
+  border-radius: 15px !important;
+  background: #fffaf6 !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22) !important;
+  overflow: hidden;
 }
 
 .site-footer .brand-mark img {
   display: block !important;
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain;
+  object-fit: cover;
   opacity: 1 !important;
   filter: none !important;
   mix-blend-mode: normal !important;
@@ -9530,9 +9528,9 @@ body.generated-minimal .published-faq details {
 }
 
 .site-footer .footer-brand .brand-mark {
-  width: 34px !important;
-  height: 54px !important;
-  border-radius: 0 !important;
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 15px !important;
   overflow: hidden;
 }
 
@@ -9540,7 +9538,7 @@ body.generated-minimal .published-faq details {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover;
-  object-position: center 30%;
+  object-position: center;
 }
 
 @media (max-width: 860px) {
