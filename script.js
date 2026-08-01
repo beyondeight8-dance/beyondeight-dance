@@ -367,6 +367,18 @@ planDemoForm?.addEventListener("submit", (event) => {
   planDemoForm.reset();
 });
 
+const hydrateMarketingThemePreviews = () => {
+  const templates = window.BeyondEightWebsiteTemplates;
+  if (!templates) return;
+  themePreviewButtons.forEach((button) => {
+    const themeName = button.dataset.themePreview;
+    if (!themeName || button.dataset.templateSource === "shared") return;
+    button.innerHTML = templates.renderThemePreview(themeName);
+    button.dataset.templateSource = "shared";
+  });
+};
+
+hydrateMarketingThemePreviews();
 const openThemePreview = (button) => {
   if (!themeModal || !themeModalTitle || !themeModalPreview) return;
   const card = button.closest(".theme-card");
@@ -1084,9 +1096,10 @@ const renderSharedTemplateSurfaces = (state, content) => {
   if (!templates) return;
   const selectedTheme = templates.canonicalThemeName(state.theme);
   const themePicker = document.querySelector(".setup-theme-picker");
-  if (themePicker && themePicker.dataset.templateSource !== "shared") {
+  if (themePicker && (themePicker.dataset.templateSource !== "shared" || themePicker.dataset.selectedTheme !== selectedTheme)) {
     themePicker.innerHTML = templates.renderThemePicker(selectedTheme);
     themePicker.dataset.templateSource = "shared";
+    themePicker.dataset.selectedTheme = selectedTheme;
   }
   document.querySelectorAll(".setup-preview-site").forEach((node) => {
     node.dataset.themeKey = content.theme.key;
@@ -1778,11 +1791,13 @@ viewGeneratedSiteButton?.addEventListener("click", () => {
   viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
 });
 document.querySelectorAll(".setup-image-grid img").forEach((image) => {
-  image.addEventListener("error", () => {
-    image.closest("[data-starter-image]")?.classList.add("image-missing");
-  });
-  if (image.complete && image.naturalWidth === 0) {
-    image.closest("[data-starter-image]")?.classList.add("image-missing");
+  const card = image.closest("[data-starter-image]");
+  image.addEventListener("load", () => card?.classList.remove("image-missing"));
+  image.addEventListener("error", () => card?.classList.add("image-missing"));
+  if (image.complete && image.naturalWidth > 0) {
+    card?.classList.remove("image-missing");
+  } else if (image.complete && image.naturalWidth === 0) {
+    card?.classList.add("image-missing");
   }
 });
 specialtyInput?.addEventListener("keydown", (event) => {

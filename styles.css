@@ -10280,3 +10280,57 @@ body.generated-minimal {
   background: var(--footer-bg);
   padding-inline: 22px;
 }
+
+/* Feature branch QA polish: keep Step 5 starter images visible and consistent. */
+.setup-image-grid {
+  align-items: stretch;
+}
+
+.setup-image-grid button {
+  grid-template-rows: auto auto !important;
+  align-content: start;
+  min-height: 0 !important;
+  padding: 10px !important;
+}
+
+.setup-image-grid button img {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 4 / 3 !important;
+  min-height: 126px;
+  max-height: 168px;
+  border-radius: 12px;
+  object-fit: cover !important;
+  object-position: 50% 24%;
+}
+
+.setup-image-grid button span {
+  display: block;
+  min-height: 1.35em;
+  padding: 0 2px;
+  line-height: 1.25;
+}
+
+.setup-image-grid button.image-missing img {
+  display: none !important;
+}
+
+.setup-image-grid button.image-missing::before {
+  min-height: 126px;
+}
+
+.published-site.setup-preview-site .setup-preview-section,
+.published-site.setup-preview-site .setup-preview-mini-grid,
+.published-site.setup-preview-site .setup-preview-proof {
+  padding-block: clamp(30px, 4vw, 48px);
+}
+
+.published-site.setup-preview-site .setup-preview-workshop {
+  min-height: 0;
+  padding-block: clamp(42px, 5vw, 68px);
+}
+
+.published-site.setup-preview-site .setup-preview-classes {
+  padding-bottom: clamp(24px, 3vw, 40px);
+}
