@@ -150,9 +150,9 @@
       ["Organized Booking", "Students can discover classes, reserve spots, and get details in one place."]
     ],
     testimonials: [
-      ["Preview testimonial", "Amazing energy from the first count. The class felt polished, warm, and easy to follow."],
-      ["Preview testimonial", "I loved how clear the registration was. I knew exactly where to go and what to bring."],
-      ["Preview testimonial", "The choreography challenged me while still feeling supportive and fun."]
+      ["Maya R.", "Amazing energy from the first count. The class felt polished, warm, and easy to follow."],
+      ["Leah T.", "I loved how clear the registration was. I knew exactly where to go and what to bring."],
+      ["Nia S.", "The choreography challenged me while still feeling supportive and fun."]
     ],
     faqs: [
       ["Do I need previous dance experience?", "No. Classes marked open level or beginner-friendly are designed so new dancers can join with confidence."],
@@ -302,9 +302,13 @@
           `<article class="setup-preview-class-card">
             <small>${esc(item.style)}</small>
             <strong>${esc(item.title)}</strong>
-            <span>${esc(item.date)} &bull; ${esc(item.time)}</span>
-            <p>${esc(item.location)} &bull; ${esc(item.level)}</p>
-            <b>${esc(item.price)} &bull; ${esc(item.spots)}</b>
+            <div class="setup-preview-class-meta">
+              <span><em>Date</em><b>${esc(item.date)}</b></span>
+              <span><em>Time</em><b>${esc(item.time)}</b></span>
+              <span><em>Instructor</em><b>${esc(item.instructor)}</b></span>
+              <span><em>Level</em><b>${esc(item.level)}</b></span>
+            </div>
+            <p>${esc(item.location)} &bull; ${esc(item.price)} &bull; ${esc(item.spots)}</p>
             <button type="button">${esc(primaryAction)}</button>
           </article>`
       )
@@ -316,7 +320,20 @@
       .join("");
     const testimonials = content.testimonials
       .slice(0, 3)
-      .map(([label, quote]) => `<blockquote>${options.builderMode ? `<small>${esc(label)}</small>` : ""}<p>${esc(quote)}</p></blockquote>`)
+      .map(([name, quote], index) => {
+        const initials = name
+          .split(/\s+/)
+          .map((part) => part[0])
+          .join("")
+          .slice(0, 2);
+        return `<blockquote>
+          <div class="setup-preview-testimonial-head">
+            <span>${esc(initials || `S${index + 1}`)}</span>
+            <div><strong>${esc(name)}</strong><small>★★★★★</small></div>
+          </div>
+          <p>${esc(quote)}</p>
+        </blockquote>`;
+      })
       .join("");
     const faqs = content.faqs.map(([question, answer]) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("");
     const navLinks = ["Home", "About", "Classes", "Workshops", "Gallery", "FAQ", "Contact"]
@@ -342,8 +359,10 @@
           <h3 data-live-headline>${esc(content.headline)}</h3>
           <p data-live-about>${esc(content.whatYouDo)}</p>
           <div class="setup-preview-tags" data-live-specialties>${tags}</div>
-          <button type="button">${esc(primaryAction)}</button>
-          <a href="#classes">View Classes</a>
+          <div class="setup-preview-cta-group">
+            <button type="button">${esc(primaryAction)}</button>
+            <a href="#classes">View Classes</a>
+          </div>
         </div>
         ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
       </section>
@@ -357,19 +376,30 @@
           <small>Featured Workshop</small>
           <h4>${esc(content.workshop.title)}</h4>
           <p>${esc(content.workshop.description)}</p>
-          <span>${esc(content.workshop.date)} &bull; ${esc(content.workshop.time)} &bull; ${esc(content.workshop.location)} &bull; ${esc(content.workshop.price)}</span>
+          <div class="setup-preview-event-meta">
+            <span><em>Date</em><b>${esc(content.workshop.date)}</b></span>
+            <span><em>Time</em><b>${esc(content.workshop.time)}</b></span>
+            <span><em>Location</em><b>${esc(content.workshop.location)}</b></span>
+            <span><em>Seats</em><b>10 spots left</b></span>
+          </div>
           <button type="button">${esc(primaryAction)}</button>
         </div>
         ${imageTag(content.images.workshop, `${content.brandName} workshop image`)}
       </section>
       <section id="about" class="setup-preview-section setup-preview-instructor">
         ${imageTag(content.images.instructor, `${content.instructorName} instructor portrait`)}
-        <div>
+        <div class="setup-preview-instructor-copy">
           <small>Meet the choreographer</small>
           <h4 data-live-instructor-name>${esc(content.instructorName)}</h4>
           <div data-live-instructor-bio>${aboutParagraphs}</div>
-          <div class="setup-preview-stats"><span>8+ years teaching</span><span>${esc(content.styles[0] || "Dance")} focus</span></div>
-          <a href="#contact">Ask about private sessions</a>
+          <blockquote class="setup-preview-instructor-quote">“${esc(content.whyJoin)}”</blockquote>
+          <div class="setup-preview-stats">
+            <span><b>8+</b><em>years teaching</em></span>
+            <span><b>${esc(content.classes.length)}+</b><em>weekly offerings</em></span>
+            <span><b>${esc(content.styles[0] || "Dance")}</b><em>signature focus</em></span>
+          </div>
+          <div class="setup-preview-socials">${content.socials.slice(0, 3).map((social) => `<a href="#contact">${esc(social)}</a>`).join("") || `<a href="#contact">Instagram</a><a href="#contact">Email</a>`}</div>
+          <a class="setup-preview-text-link" href="#contact">Ask about private sessions</a>
         </div>
       </section>
       <section class="setup-preview-section setup-preview-benefits">
@@ -393,6 +423,7 @@
           <small>Contact</small>
           <h4>Ready to move with ${esc(content.brandName)}?</h4>
           <p data-live-contact>${esc(content.contact.join(" &bull; "))}</p>
+          <div class="setup-preview-contact-links">${content.contact.slice(0, 3).map((item) => `<span>${esc(item)}</span>`).join("")}</div>
         </div>
         <button type="button">${esc(primaryAction)}</button>
       </section>
@@ -436,7 +467,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="${esc(baseUrl)}">
   <title>${esc(content.brandName)} | Generated by BeyondEight</title>
-  <link rel="stylesheet" href="/styles.css?v=20260807-public-site-polish">
+  <link rel="stylesheet" href="/styles.css?v=20260807-template-engine-polish">
 </head>
 <body class="${themeClassFor(content.theme.name)}">
   ${renderSharedPublicSite(content)}
