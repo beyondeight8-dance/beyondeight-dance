@@ -284,6 +284,10 @@ productTabs.forEach((tab) => {
       panel.hidden = !isActive;
       panel.classList.toggle("is-active", isActive);
     });
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      const activePanel = Array.from(productPanels).find((panel) => panel.dataset.productPanel === target);
+      activePanel?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
   });
 
   tab.addEventListener("keydown", (event) => {
@@ -1132,6 +1136,32 @@ const selectStarterImage = (button) => {
   queueOnboardingSave();
 };
 
+const renderUploadedWebsiteImagePreview = () => {
+  if (!websiteImageUploadTrigger) return;
+  const uploadedImages = [
+    ["Hero", selectedWebsiteImages.heroImage],
+    ["About", selectedWebsiteImages.aboutImage],
+    ["Gallery", selectedWebsiteImages.galleryImage],
+    ["Workshop", selectedWebsiteImages.workshopImage],
+    ["Performance", selectedWebsiteImages.performanceImage],
+    ["Portrait", selectedWebsiteImages.instructorImage]
+  ].filter(([, src]) => src && String(src).startsWith("data:image/"));
+  websiteImageUploadTrigger.classList.toggle("has-uploaded-images", Boolean(uploadedImages.length));
+  let preview = websiteImageUploadTrigger.querySelector(".setup-upload-preview");
+  if (!uploadedImages.length) {
+    preview?.remove();
+    return;
+  }
+  if (!preview) {
+    preview = document.createElement("div");
+    preview.className = "setup-upload-preview";
+    websiteImageUploadTrigger.append(preview);
+  }
+  preview.innerHTML = uploadedImages
+    .map(([label, src]) => `<span><img src="${escapeHTML(src)}" alt=""><b>${escapeHTML(label)}</b></span>`)
+    .join("");
+};
+
 const updateSetupPreview = () => {
   if (!setupForm) return;
   const state = getSetupState();
@@ -1141,6 +1171,7 @@ const updateSetupPreview = () => {
   renderSharedTemplateSurfaces(state, content);
   applySetupPreviewTheme(state.theme);
   updateStarterImageSelection();
+  renderUploadedWebsiteImagePreview();
   setText("[data-live-brand]", state.businessName);
   setText("[data-live-quote]", state.mission || content.mission);
   setHTML("[data-live-logo]", logoHTMLFor(state));
@@ -1880,6 +1911,7 @@ const applyWebsiteImageFiles = async (files = []) => {
       websiteImageUploadStatus.textContent = `${imageFiles.length} image${imageFiles.length === 1 ? "" : "s"} added to your live website.`;
     }
     updateStarterImageSelection();
+    renderUploadedWebsiteImagePreview();
     updateSetupPreview();
     saveGuestSetupDraft();
     queueOnboardingSave();
