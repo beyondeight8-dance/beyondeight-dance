@@ -295,23 +295,28 @@
   const renderDesktopPreview = (content, options = {}) => {
     const tags = content.styles.slice(0, 4).map((style) => `<span>${esc(style)}</span>`).join("");
     const primaryAction = themeActionLabel(content.theme);
+    const classThumbs = [content.images.gallery, content.images.workshop, content.images.performance, content.images.hero].filter(Boolean);
     const classes = content.classes
       .slice(0, 3)
-      .map(
-        (item) =>
-          `<article class="setup-preview-class-card">
+      .map((item, index) => {
+        const thumb = classThumbs[index % classThumbs.length] || content.images.hero;
+        return `<article class="setup-preview-class-card">
+            <div class="setup-preview-class-thumb">
+              ${imageTag(thumb, `${item.title} class thumbnail`)}
+              <span>${esc(item.spots)}</span>
+            </div>
             <small>${esc(item.style)}</small>
             <strong>${esc(item.title)}</strong>
             <div class="setup-preview-class-meta">
-              <span><em>Date</em><b>${esc(item.date)}</b></span>
-              <span><em>Time</em><b>${esc(item.time)}</b></span>
-              <span><em>Instructor</em><b>${esc(item.instructor)}</b></span>
-              <span><em>Level</em><b>${esc(item.level)}</b></span>
+              <span><i aria-hidden="true">cal</i><em>Date</em><b>${esc(item.date)}</b></span>
+              <span><i aria-hidden="true">clk</i><em>Time</em><b>${esc(item.time)}</b></span>
+              <span><i aria-hidden="true">usr</i><em>Instructor</em><b>${esc(item.instructor)}</b></span>
+              <span><i aria-hidden="true">lvl</i><em>Level</em><b>${esc(item.level)}</b></span>
             </div>
-            <p>${esc(item.location)} &bull; ${esc(item.price)} &bull; ${esc(item.spots)}</p>
+            <p>${esc(item.location)} &bull; 75 min &bull; ${esc(item.price)}</p>
             <button type="button">${esc(primaryAction)}</button>
-          </article>`
-      )
+          </article>`;
+      })
       .join("");
     const benefits = content.benefits.map(([title, copy]) => `<article><strong>${esc(title)}</strong><p>${esc(copy)}</p></article>`).join("");
     const gallery = content.gallery
@@ -364,7 +369,14 @@
             <a href="#classes">View Classes</a>
           </div>
         </div>
-        ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
+        <div class="setup-preview-hero-media">
+          ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
+          <aside>
+            <small>Next class</small>
+            <strong>${esc(content.classes[0]?.date || "Saturday")} &bull; ${esc(content.classes[0]?.time || "7:00 PM")}</strong>
+            <span>${esc(content.classes[0]?.spots || "5 spots left")}</span>
+          </aside>
+        </div>
       </section>
       <section id="classes" class="setup-preview-section setup-preview-classes">
         <small>Upcoming Classes</small>
@@ -373,7 +385,7 @@
       </section>
       <section id="workshops" class="setup-preview-section setup-preview-workshop">
         <div>
-          <small>Featured Workshop</small>
+          <div class="setup-preview-badges"><span>Featured</span><span>Limited Seats</span><span>Weekend Intensive</span></div>
           <h4>${esc(content.workshop.title)}</h4>
           <p>${esc(content.workshop.description)}</p>
           <div class="setup-preview-event-meta">
@@ -391,12 +403,15 @@
         <div class="setup-preview-instructor-copy">
           <small>Meet the choreographer</small>
           <h4 data-live-instructor-name>${esc(content.instructorName)}</h4>
+          <p class="setup-preview-role">Choreographer, instructor, and movement mentor</p>
           <div data-live-instructor-bio>${aboutParagraphs}</div>
           <blockquote class="setup-preview-instructor-quote">“${esc(content.whyJoin)}”</blockquote>
           <div class="setup-preview-stats">
             <span><b>8+</b><em>years teaching</em></span>
-            <span><b>${esc(content.classes.length)}+</b><em>weekly offerings</em></span>
+            <span><b>240+</b><em>students taught</em></span>
+            <span><b>12</b><em>workshops hosted</em></span>
             <span><b>${esc(content.styles[0] || "Dance")}</b><em>signature focus</em></span>
+            <span><b>3</b><em>cities taught</em></span>
           </div>
           <div class="setup-preview-socials">${content.socials.slice(0, 3).map((social) => `<a href="#contact">${esc(social)}</a>`).join("") || `<a href="#contact">Instagram</a><a href="#contact">Email</a>`}</div>
           <a class="setup-preview-text-link" href="#contact">Ask about private sessions</a>
@@ -422,10 +437,13 @@
         <div>
           <small>Contact</small>
           <h4>Ready to move with ${esc(content.brandName)}?</h4>
-          <p data-live-contact>${esc(content.contact.join(" &bull; "))}</p>
+          <p data-live-contact>Reserve your next class, ask about private workshops, or follow along for the next drop.</p>
           <div class="setup-preview-contact-links">${content.contact.slice(0, 3).map((item) => `<span>${esc(item)}</span>`).join("")}</div>
         </div>
-        <button type="button">${esc(primaryAction)}</button>
+        <div class="setup-preview-contact-actions">
+          <button type="button">${esc(primaryAction)}</button>
+          <a href="#classes">Explore classes</a>
+        </div>
       </section>
       <footer class="setup-preview-footer">
         <div>
@@ -436,6 +454,7 @@
         <div class="setup-preview-footer-meta">
           <span>${esc(content.contact[0] || "@beyondeight")}</span>
           <span>${esc(content.contact[1] || "hello@beyond8dance.com")}</span>
+          <span><a href="#faq">FAQ</a> &bull; <a href="#contact">Contact</a> &bull; <a href="#classes">Register</a></span>
           <span>Powered by BeyondEight</span>
         </div>
       </footer>`;
