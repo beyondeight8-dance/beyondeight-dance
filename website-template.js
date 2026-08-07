@@ -92,6 +92,14 @@
   const themeProfileFor = (theme = "") => themes.find((item) => item.name === canonicalThemeName(theme)) || themes[0];
   const themeKeyFor = (theme = "") => themeProfileFor(theme).key;
   const themeClassFor = (theme = "") => `generated-${themeKeyFor(theme)}`;
+  const themeActionLabel = (theme = {}) => {
+    const label = theme.cta || "Reserve Spot";
+    if (/apply/i.test(label)) return "Apply";
+    if (/claim/i.test(label)) return "Claim spot";
+    if (/book/i.test(label)) return "Book a spot";
+    if (/explore/i.test(label)) return "Explore classes";
+    return "Reserve Spot";
+  };
 
   const slugify = (value = "") =>
     String(value)
@@ -195,6 +203,7 @@
     return {
       theme,
       brandName,
+      tagline: headline,
       headline,
       whatYouDo,
       mission,
@@ -217,6 +226,7 @@
       workshop: {
         title: `${styles[0] || "Dance"} Signature Workshop`,
         date: "Saturday 11:00 AM",
+        time: "11:00 AM",
         location: state.location || "In studio",
         level: "Open level",
         price: "$45",
@@ -284,11 +294,19 @@
 
   const renderDesktopPreview = (content, options = {}) => {
     const tags = content.styles.slice(0, 4).map((style) => `<span>${esc(style)}</span>`).join("");
+    const primaryAction = themeActionLabel(content.theme);
     const classes = content.classes
-      .slice(0, 4)
+      .slice(0, 3)
       .map(
         (item) =>
-          `<article class="setup-preview-class-card"><small>${esc(item.style)}</small><strong>${esc(item.title)}</strong><span>${esc(item.date)} &bull; ${esc(item.time)}</span><p>${esc(item.location)} &bull; ${esc(item.level)}</p><b>${esc(item.price)} &bull; ${esc(item.spots)}</b><button type="button">Reserve Spot</button></article>`
+          `<article class="setup-preview-class-card">
+            <small>${esc(item.style)}</small>
+            <strong>${esc(item.title)}</strong>
+            <span>${esc(item.date)} &bull; ${esc(item.time)}</span>
+            <p>${esc(item.location)} &bull; ${esc(item.level)}</p>
+            <b>${esc(item.price)} &bull; ${esc(item.spots)}</b>
+            <button type="button">${esc(primaryAction)}</button>
+          </article>`
       )
       .join("");
     const benefits = content.benefits.map(([title, copy]) => `<article><strong>${esc(title)}</strong><p>${esc(copy)}</p></article>`).join("");
@@ -304,11 +322,19 @@
     const navLinks = ["Home", "About", "Classes", "Workshops", "Gallery", "FAQ", "Contact"]
       .map((page) => `<a href="#${esc(slugify(page))}">${esc(page)}</a>`)
       .join("");
+    const aboutParagraphs = [
+      content.instructorBio,
+      content.mission,
+      content.whyJoin
+    ]
+      .filter(Boolean)
+      .map((copy) => `<p>${esc(copy)}</p>`)
+      .join("");
     return `
       <div class="setup-preview-nav">
         <strong data-live-logo-small>${logoHTML(content, options.logoHTML)}</strong>
         <nav>${navLinks}</nav>
-        <button type="button">${esc(content.theme.cta)}</button>
+        <button type="button">${esc(primaryAction)}</button>
       </div>
       <section id="home" class="setup-preview-hero">
         <div>
@@ -316,7 +342,7 @@
           <h3 data-live-headline>${esc(content.headline)}</h3>
           <p data-live-about>${esc(content.whatYouDo)}</p>
           <div class="setup-preview-tags" data-live-specialties>${tags}</div>
-          <button type="button">${esc(content.theme.cta)}</button>
+          <button type="button">${esc(primaryAction)}</button>
           <a href="#classes">View Classes</a>
         </div>
         ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
@@ -331,22 +357,24 @@
           <small>Featured Workshop</small>
           <h4>${esc(content.workshop.title)}</h4>
           <p>${esc(content.workshop.description)}</p>
-          <span>${esc(content.workshop.date)} &bull; ${esc(content.workshop.location)} &bull; ${esc(content.workshop.price)}</span>
-          <button type="button">Register</button>
+          <span>${esc(content.workshop.date)} &bull; ${esc(content.workshop.time)} &bull; ${esc(content.workshop.location)} &bull; ${esc(content.workshop.price)}</span>
+          <button type="button">${esc(primaryAction)}</button>
         </div>
         ${imageTag(content.images.workshop, `${content.brandName} workshop image`)}
       </section>
       <section id="about" class="setup-preview-section setup-preview-instructor">
         ${imageTag(content.images.instructor, `${content.instructorName} instructor portrait`)}
         <div>
-          <small>About the choreographer</small>
+          <small>Meet the choreographer</small>
           <h4 data-live-instructor-name>${esc(content.instructorName)}</h4>
-          <p data-live-instructor-bio>${esc(content.instructorBio)} ${esc(content.mission)}</p>
+          <div data-live-instructor-bio>${aboutParagraphs}</div>
           <div class="setup-preview-stats"><span>8+ years teaching</span><span>${esc(content.styles[0] || "Dance")} focus</span></div>
+          <a href="#contact">Ask about private sessions</a>
         </div>
       </section>
       <section class="setup-preview-section setup-preview-benefits">
         <small>Why dance with me</small>
+        <h4>Training that feels clear, expressive, and easy to join.</h4>
         <div>${benefits}</div>
       </section>
       <section id="gallery" class="setup-preview-section setup-preview-gallery">
@@ -363,10 +391,10 @@
       <section id="contact" class="setup-preview-section setup-preview-contact">
         <div>
           <small>Contact</small>
-          <h4>Ready to move?</h4>
+          <h4>Ready to move with ${esc(content.brandName)}?</h4>
           <p data-live-contact>${esc(content.contact.join(" &bull; "))}</p>
         </div>
-        <button type="button">Send Inquiry</button>
+        <button type="button">${esc(primaryAction)}</button>
       </section>
       <footer class="setup-preview-footer">
         <div>
@@ -408,7 +436,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="${esc(baseUrl)}">
   <title>${esc(content.brandName)} | Generated by BeyondEight</title>
-  <link rel="stylesheet" href="/styles.css?v=20260807-mobile-pass">
+  <link rel="stylesheet" href="/styles.css?v=20260807-public-site-polish">
 </head>
 <body class="${themeClassFor(content.theme.name)}">
   ${renderSharedPublicSite(content)}
