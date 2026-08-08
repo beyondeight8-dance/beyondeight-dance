@@ -16,7 +16,7 @@ const openSetupButtons = document.querySelectorAll("[data-open-setup]");
 const closeSetupButtons = document.querySelectorAll("[data-close-setup]");
 const setupSkipButton = document.querySelector("[data-setup-skip]");
 const setupForm = document.querySelector(".setup-form");
-const setupSteps = document.querySelectorAll("[data-setup-step]");
+const setupSteps = document.querySelectorAll("[data-setup-step]:not(.setup-review-step)");
 const setupProgress = document.querySelector("[data-setup-progress]");
 const setupPrevButton = document.querySelector("[data-setup-prev]");
 const setupNextButton = document.querySelector("[data-setup-next]");
@@ -986,6 +986,14 @@ const setHTML = (selector, value) => {
 const escapeHTML = (value = "") =>
   String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
 
+const paragraphsHTML = (value = "") =>
+  String(value || "")
+    .split(/\n{2,}/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => `<p>${escapeHTML(part).replace(/\n/g, "<br>")}</p>`)
+    .join("");
+
 const logoHTMLFor = (state) => {
   const image = state.logoImage ? `<img src="${state.logoImage}" alt="">` : "";
   return `<span class="logo-lockup logo-font-${state.logoFont || "serif"}">${image}<span>${state.logoText}</span></span>`;
@@ -1167,24 +1175,27 @@ const updateSetupPreview = () => {
   const state = getSetupState();
   const content = smartWebsiteContent(state);
   const stylesText = content.styles.slice(0, 3).join(", ");
-  const aboutText = [state.whatYouDo, state.mission, state.whyJoin].filter(Boolean).join(" ") || content.whatYouDo;
+  const workIntro = state.whatYouDo || content.whatYouDo;
+  const workSupport = state.mission || content.mission;
+  const workExperience = state.whyJoin || content.whyJoin;
   renderSharedTemplateSurfaces(state, content);
   applySetupPreviewTheme(state.theme);
   updateStarterImageSelection();
   renderUploadedWebsiteImagePreview();
   setText("[data-live-brand]", state.businessName);
-  setText("[data-live-quote]", state.mission || content.mission);
   setHTML("[data-live-logo]", logoHTMLFor(state));
   setHTML("[data-live-logo-small]", logoHTMLFor(state));
   updateLogoUploadState();
-  setText("[data-live-headline]", content.headline);
-  setText("[data-live-about]", aboutText);
-  setText("[data-live-instructor-name]", content.instructorName);
-  setText("[data-live-instructor-bio]", content.instructorBio);
+  setText(".setup-home-preview [data-live-headline], .setup-story-preview [data-live-headline]", content.headline);
+  setHTML(".setup-story-preview [data-live-quote]", `<h4>Supporting Copy</h4>${paragraphsHTML(workSupport)}`);
+  setHTML(
+    ".setup-story-preview [data-live-about]",
+    `<h4>Introduction</h4>${paragraphsHTML(workIntro)}<h4>Student Experience</h4>${paragraphsHTML(workExperience)}`
+  );
   setText("[data-live-class-one]", content.classes[0]?.title || "Signature Class");
   setText("[data-live-class-two]", content.classes[1]?.title || "Workshop");
   setHTML(
-    "[data-live-class-list]",
+    ".setup-review-step [data-live-class-list]",
     content.classes
       .slice(0, 4)
       .map(
@@ -1194,14 +1205,15 @@ const updateSetupPreview = () => {
       .join("")
   );
   setHTML(
-    "[data-live-testimonials]",
+    ".setup-review-step [data-live-testimonials]",
     content.testimonials
       .slice(0, 3)
       .map(([label, quote]) => `<blockquote><small>${escapeHTML(label)}</small><p>${escapeHTML(quote)}</p></blockquote>`)
       .join("")
   );
   setText("[data-live-contact]", content.contact.join(" • "));
-  document.querySelectorAll("[data-live-quote], [data-live-about]").forEach((node) => {
+  renderSharedTemplateSurfaces(state, content);
+  document.querySelectorAll(".setup-story-preview [data-live-quote], .setup-story-preview [data-live-about]").forEach((node) => {
     node.classList.toggle("is-empty", !node.textContent.trim());
   });
   document.querySelectorAll("[data-live-specialties]").forEach((node) => {
@@ -1488,11 +1500,52 @@ const updateSetupStep = () => {
   renderSetupDots();
 };
 
+const fieldErrorId = (field) => {
+  if (!field.id) field.id = `setup-field-${field.name || Math.random().toString(36).slice(2)}`;
+  return `${field.id}-error`;
+};
+
+const setFieldError = (field, message = "") => {
+  const host = field.closest("label") || field.parentElement;
+  if (!host) return;
+  let error = host.querySelector(".setup-field-error");
+  if (!message) {
+    field.removeAttribute("aria-invalid");
+    if (error) error.remove();
+    return;
+  }
+  const id = fieldErrorId(field);
+  if (!error) {
+    error = document.createElement("small");
+    error.className = "setup-field-error";
+    error.id = id;
+    error.setAttribute("role", "alert");
+    host.append(error);
+  }
+  error.textContent = message;
+  field.setAttribute("aria-invalid", "true");
+  field.setAttribute("aria-describedby", id);
+};
+
+const validateInlineField = (field) => {
+  const value = field.value.trim();
+  let message = "";
+  if (field.required && !value) message = "This is required to continue.";
+  if (!message && field.type === "email" && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    message = "Enter a valid email address.";
+  }
+  if (!message && field.minLength > 0 && value && value.length < field.minLength) {
+    message = `Use at least ${field.minLength} characters.`;
+  }
+  setFieldError(field, message);
+  return !message;
+};
+
 const stepIsValid = async () => {
   const currentStep = setupSteps[setupIndex];
   if (!currentStep) return true;
   const requiredFields = currentStep.querySelectorAll("[required]");
-  const validFields = Array.from(requiredFields).every((field) => field.reportValidity());
+  const validFields = Array.from(requiredFields).every(validateInlineField);
   if (!validFields) return false;
   if (setupIndex === 0) return validateCurrentSlug();
   return true;
@@ -1758,11 +1811,25 @@ setupPrevButton?.addEventListener("click", () => {
   queueOnboardingSave();
 });
 setupNextButton?.addEventListener("click", async () => {
-  if (!(await stepIsValid())) return;
-  await saveOnboardingProgress();
+  if (setupNextButton.dataset.busy === "true") return;
+  const startedAt = performance.now();
+  setupNextButton.dataset.busy = "true";
+  setupNextButton.disabled = true;
+  if (!(await stepIsValid())) {
+    setupNextButton.disabled = false;
+    setupNextButton.dataset.busy = "false";
+    return;
+  }
   setupIndex = Math.min(setupSteps.length - 1, setupIndex + 1);
   updateSetupStep();
-  queueOnboardingSave();
+  console.info(`[setup] Next advanced in ${Math.round(performance.now() - startedAt)}ms; saving in background.`);
+  window.setTimeout(() => {
+    setupNextButton.disabled = false;
+    setupNextButton.dataset.busy = "false";
+  }, 220);
+  saveOnboardingProgress().catch((error) => {
+    console.warn("Background onboarding save failed:", error);
+  });
 });
 const showGeneratedPreview = async () => {
   if (!(await validateCurrentSlug())) return;
@@ -1942,7 +2009,10 @@ websiteImageUploadInput?.addEventListener("change", async () => {
 logoUploadInput?.addEventListener("click", () => {
   logoUploadInput.value = "";
 });
-setupForm?.addEventListener("input", () => {
+setupForm?.addEventListener("input", (event) => {
+  if (event.target?.matches?.("input, textarea, select")) {
+    validateInlineField(event.target);
+  }
   const businessNameField = setupForm?.elements.businessName;
   const slugField = setupForm?.elements.businessSlug;
   if (document.activeElement === specialtyInput) {

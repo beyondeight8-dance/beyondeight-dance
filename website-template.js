@@ -291,6 +291,13 @@
 
   const imageTag = (src, alt, className = "") =>
     `<img${className ? ` class="${esc(className)}"` : ""} src="${esc(assetSrc(src))}" alt="${esc(alt)}" loading="lazy">`;
+  const paragraphHTML = (copy = "") =>
+    String(copy || "")
+      .split(/\n{2,}/)
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => `<p>${esc(part).replace(/\n/g, "<br>")}</p>`)
+      .join("");
 
   const renderDesktopPreview = (content, options = {}) => {
     const tags = content.styles.slice(0, 4).map((style) => `<span>${esc(style)}</span>`).join("");
@@ -307,13 +314,12 @@
             </div>
             <small>${esc(item.style)}</small>
             <strong>${esc(item.title)}</strong>
-            <div class="setup-preview-class-meta">
-              <span><i aria-hidden="true">cal</i><em>Date</em><b>${esc(item.date)}</b></span>
-              <span><i aria-hidden="true">clk</i><em>Time</em><b>${esc(item.time)}</b></span>
-              <span><i aria-hidden="true">usr</i><em>Instructor</em><b>${esc(item.instructor)}</b></span>
-              <span><i aria-hidden="true">lvl</i><em>Level</em><b>${esc(item.level)}</b></span>
+            <div class="setup-preview-class-details">
+              <span>${esc(item.date)} &bull; ${esc(item.time)}</span>
+              <span>with ${esc(item.instructor)} &bull; ${esc(item.level)}</span>
+              <span>${esc(item.location)}</span>
             </div>
-            <p>${esc(item.location)} &bull; 75 min &bull; ${esc(item.price)}</p>
+            <p class="setup-preview-class-footer"><b>${esc(item.price)}</b><span>${esc(item.spots)}</span></p>
             <button type="button">${esc(primaryAction)}</button>
           </article>`;
       })
@@ -345,12 +351,12 @@
       .map((page) => `<a href="#${esc(slugify(page))}">${esc(page)}</a>`)
       .join("");
     const aboutParagraphs = [
-      content.instructorBio,
+      content.whatYouDo,
       content.mission,
       content.whyJoin
     ]
       .filter(Boolean)
-      .map((copy) => `<p>${esc(copy)}</p>`)
+      .map((copy) => paragraphHTML(copy))
       .join("");
     return `
       <div class="setup-preview-nav">
@@ -406,12 +412,8 @@
           <p class="setup-preview-role">Choreographer, instructor, and movement mentor</p>
           <div data-live-instructor-bio>${aboutParagraphs}</div>
           <blockquote class="setup-preview-instructor-quote">“${esc(content.whyJoin)}”</blockquote>
-          <div class="setup-preview-stats">
-            <span><b>8+</b><em>years teaching</em></span>
-            <span><b>240+</b><em>students taught</em></span>
-            <span><b>12</b><em>workshops hosted</em></span>
-            <span><b>${esc(content.styles[0] || "Dance")}</b><em>signature focus</em></span>
-            <span><b>3</b><em>cities taught</em></span>
+          <div class="setup-preview-focus-tags">
+            ${content.styles.slice(0, 5).map((style) => `<span>${esc(style)}</span>`).join("")}
           </div>
           <div class="setup-preview-socials">${content.socials.slice(0, 3).map((social) => `<a href="#contact">${esc(social)}</a>`).join("") || `<a href="#contact">Instagram</a><a href="#contact">Email</a>`}</div>
           <a class="setup-preview-text-link" href="#contact">Ask about private sessions</a>
