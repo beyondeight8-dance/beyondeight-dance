@@ -347,9 +347,16 @@
       })
       .join("");
     const faqs = content.faqs.map(([question, answer]) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("");
-    const navLinks = ["Home", "About", "Classes", "Workshops", "Gallery", "FAQ", "Contact"]
+    const navPages = ["Home", "About", "Classes", "Workshops", "Gallery", "FAQ", "Contact"];
+    const navLinks = navPages
       .map((page) => `<a href="#${esc(slugify(page))}">${esc(page)}</a>`)
       .join("");
+    const mobileNavLinks = navPages
+      .map((page) => `<a href="#${esc(slugify(page))}">${esc(page)}</a>`)
+      .join("");
+    const isPlaceholderBrand = !content.brandName || /^(test|demo|sample|brand|my brand|website)$/i.test(String(content.brandName).trim());
+    const contactHeadline = isPlaceholderBrand ? "Ready to move?" : `Ready to move with ${content.brandName}?`;
+    const secondaryContact = content.socials?.length ? "Follow on Instagram" : "Get in Touch";
     const aboutParagraphs = [
       content.whatYouDo,
       content.mission,
@@ -359,11 +366,19 @@
       .map((copy) => paragraphHTML(copy))
       .join("");
     return `
-      <div class="setup-preview-nav">
-        <strong data-live-logo-small>${logoHTML(content, options.logoHTML)}</strong>
-        <nav>${navLinks}</nav>
-        <button type="button">${esc(primaryAction)}</button>
-      </div>
+      <header class="setup-preview-nav">
+        <a class="setup-preview-brand" href="#home" aria-label="${esc(content.brandName)} home"><strong data-live-logo-small>${logoHTML(content, options.logoHTML)}</strong></a>
+        <nav class="setup-preview-nav-links" aria-label="Primary navigation">${navLinks}</nav>
+        <a class="setup-preview-nav-cta" href="#classes">${esc(primaryAction)}</a>
+        <details class="setup-preview-mobile-menu">
+          <summary aria-label="Open menu"><span></span><span></span><span></span></summary>
+          <div>
+            <strong>${esc(content.brandName)}</strong>
+            <nav aria-label="Mobile navigation">${mobileNavLinks}</nav>
+            <a href="#classes">${esc(primaryAction)}</a>
+          </div>
+        </details>
+      </header>
       <section id="home" class="setup-preview-hero">
         <div>
           <small data-live-theme>${esc(content.theme.name)}</small>
@@ -438,26 +453,32 @@
       <section id="contact" class="setup-preview-section setup-preview-contact">
         <div>
           <small>Contact</small>
-          <h4>Ready to move with ${esc(content.brandName)}?</h4>
+          <h4>${esc(contactHeadline)}</h4>
           <p data-live-contact>Reserve your next class, ask about private workshops, or follow along for the next drop.</p>
           <div class="setup-preview-contact-links">${content.contact.slice(0, 3).map((item) => `<span>${esc(item)}</span>`).join("")}</div>
         </div>
         <div class="setup-preview-contact-actions">
           <button type="button">${esc(primaryAction)}</button>
-          <a href="#classes">Explore classes</a>
+          <a href="#contact">${esc(secondaryContact)}</a>
         </div>
       </section>
       <footer class="setup-preview-footer">
-        <div>
+        <div class="setup-preview-footer-brand">
           <strong>${logoHTML(content, options.logoHTML)}</strong>
-          <p>${esc(content.tagline)}</p>
+          <p>${esc(content.tagline || "A polished home for classes, workshops, and student community.")}</p>
+          <a class="setup-preview-footer-cta" href="#classes">${esc(primaryAction)}</a>
         </div>
-        <nav>${pageLinks(content)}</nav>
-        <div class="setup-preview-footer-meta">
-          <span>${esc(content.contact[0] || "@beyondeight")}</span>
-          <span>${esc(content.contact[1] || "hello@beyond8dance.com")}</span>
-          <span><a href="#faq">FAQ</a> &bull; <a href="#contact">Contact</a> &bull; <a href="#classes">Register</a></span>
+        <nav class="setup-preview-footer-nav" aria-label="Footer navigation">
+          <small>Explore</small>
+          ${pageLinks(content)}
+        </nav>
+        <div class="setup-preview-footer-connect">
+          <small>Connect</small>
+          ${content.contact.slice(0, 3).map((item) => `<span>${esc(item)}</span>`).join("") || `<span>@beyondeight</span><span>hello@beyond8dance.com</span>`}
+        </div>
+        <div class="setup-preview-footer-bottom">
           <span>Powered by BeyondEight</span>
+          <span><a href="#contact">Privacy</a> <a href="#contact">Terms</a></span>
         </div>
       </footer>`;
   };

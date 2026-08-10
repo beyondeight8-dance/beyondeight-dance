@@ -286,7 +286,7 @@ productTabs.forEach((tab) => {
     });
     if (window.matchMedia("(max-width: 760px)").matches) {
       const activePanel = Array.from(productPanels).find((panel) => panel.dataset.productPanel === target);
-      activePanel?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      activePanel?.scrollIntoView({ behavior: "auto", block: "nearest" });
     }
   });
 
@@ -562,6 +562,12 @@ const canonicalThemeName = (theme = "") => {
   return "Default Elegant";
 };
 
+const sanitizeStarterImage = (src, fallback) => {
+  const value = String(src || "");
+  if (!value || value.startsWith("data:image/") || value.startsWith("blob:")) return fallback;
+  return value;
+};
+
 const getSetupState = () => {
   const form = setupForm;
   const field = (name, fallback = "") => form?.elements?.[name]?.value?.trim() || fallback;
@@ -601,7 +607,12 @@ const getSetupState = () => {
     logoFont,
     logoImage: logoImageDataUrl,
     logoFileName: logoImageFileName,
-    ...selectedWebsiteImages
+    heroImage: sanitizeStarterImage(selectedWebsiteImages.heroImage, defaultWebsiteImages.heroImage),
+    aboutImage: sanitizeStarterImage(selectedWebsiteImages.aboutImage, defaultWebsiteImages.aboutImage),
+    galleryImage: sanitizeStarterImage(selectedWebsiteImages.galleryImage, defaultWebsiteImages.galleryImage),
+    workshopImage: sanitizeStarterImage(selectedWebsiteImages.workshopImage, defaultWebsiteImages.workshopImage),
+    performanceImage: sanitizeStarterImage(selectedWebsiteImages.performanceImage, defaultWebsiteImages.performanceImage),
+    instructorImage: sanitizeStarterImage(selectedWebsiteImages.instructorImage, defaultWebsiteImages.instructorImage)
   };
 };
 
@@ -920,12 +931,12 @@ const applySetupState = (state = {}) => {
   logoImageFileName = state.logoFileName || (logoImageDataUrl ? "Logo image" : "");
   selectedWebsiteImages = {
     ...defaultWebsiteImages,
-    heroImage: state.heroImage || defaultWebsiteImages.heroImage,
-    aboutImage: state.aboutImage || defaultWebsiteImages.aboutImage,
-    galleryImage: state.galleryImage || defaultWebsiteImages.galleryImage,
-    workshopImage: state.workshopImage || defaultWebsiteImages.workshopImage,
-    performanceImage: state.performanceImage || defaultWebsiteImages.performanceImage,
-    instructorImage: state.instructorImage || state.portraitImage || defaultWebsiteImages.instructorImage
+    heroImage: sanitizeStarterImage(state.heroImage, defaultWebsiteImages.heroImage),
+    aboutImage: sanitizeStarterImage(state.aboutImage, defaultWebsiteImages.aboutImage),
+    galleryImage: sanitizeStarterImage(state.galleryImage, defaultWebsiteImages.galleryImage),
+    workshopImage: sanitizeStarterImage(state.workshopImage, defaultWebsiteImages.workshopImage),
+    performanceImage: sanitizeStarterImage(state.performanceImage, defaultWebsiteImages.performanceImage),
+    instructorImage: sanitizeStarterImage(state.instructorImage || state.portraitImage, defaultWebsiteImages.instructorImage)
   };
   renderSpecialties();
   updateStarterImageSelection();
@@ -1832,13 +1843,22 @@ setupNextButton?.addEventListener("click", async () => {
   });
 });
 const showGeneratedPreview = async () => {
-  if (!(await validateCurrentSlug())) return;
+  const state = getSetupState();
+  const localCheck = beyondEight.validSlug?.(state.slug) || { valid: true, slug: state.slug, message: "Available format." };
+  if (!localCheck.valid) {
+    setSlugStatus(localCheck.message, "error");
+    return;
+  }
+  if (setupForm?.elements.businessSlug) setupForm.elements.businessSlug.value = localCheck.slug;
+  setSlugStatus("We will recheck this URL before launch.", "neutral");
   try {
     setupMessage.textContent = "Generating your website preview...";
     setupSubmitButton.disabled = true;
     generateWebsitePreview();
     setupLaunched = true;
     updateSetupStep();
+    setupModal?.scrollTo?.({ top: 0, behavior: "auto" });
+    document.querySelector(".setup-panel")?.scrollTo?.({ top: 0, behavior: "auto" });
     setupMessage.textContent = "Your preview is ready. Create your free account to publish it.";
   } catch (error) {
     console.warn("Website preview failed:", error);
