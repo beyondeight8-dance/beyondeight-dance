@@ -13065,3 +13065,72 @@ body.generated-minimal {
     min-height: 40px !important;
   }
 }
+
+/* Public website header polish: keep links intact, but make the bar native to each selected theme. */
+.published-site.setup-preview-site > .setup-preview-nav {
+  width: min(100% - clamp(32px, 6vw, 96px), 1280px) !important;
+  min-height: clamp(72px, 6vw, 84px) !important;
+  margin-inline: auto !important;
+  padding: 16px 0 !important;
+  grid-template-columns: minmax(170px, 1fr) auto auto !important;
+  gap: clamp(18px, 3vw, 36px) !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--site-line, var(--template-line, rgba(43, 15, 57, .16))) 82%, transparent) !important;
+  background: color-mix(in srgb, var(--site-page, var(--template-bg, #fffaf7)) 92%, transparent) !important;
+  color: var(--site-ink, var(--template-ink, #2b1135)) !important;
+  box-shadow: none !important;
+}
+
+.published-site.setup-preview-site .setup-preview-brand strong,
+.published-site.setup-preview-site .setup-preview-brand .logo-lockup,
+.published-site.setup-preview-site .setup-preview-brand .logo-lockup > span {
+  color: var(--site-ink, var(--template-ink, #2b1135)) !important;
+  font-family: var(--body, Inter, system-ui, sans-serif) !important;
+  font-size: clamp(1.08rem, 1.5vw, 1.28rem) !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.05 !important;
+  text-transform: none !important;
+}
+
+.published-site.setup-preview-site .setup-preview-nav-links {
+  gap: clamp(18px, 2.4vw, 30px) !important;
+}
+
+.published-site.setup-preview-site .setup-preview-nav-links a {
+  color: var(--site-muted, var(--template-muted, #725f78)) !important;
+  font-family: var(--body, Inter, system-ui, sans-serif) !important;
+  font-size: clamp(.92rem, 1vw, 1rem) !important;
+  font-weight: 750 !important;
+  letter-spacing: 0 !important;
+  opacity: .92 !important;
+}
+
+.published-site.setup-preview-site .setup-preview-nav-links a:hover {
+  color: var(--site-accent, var(--template-accent, #d6175f)) !important;
+}
+
+.published-site.setup-preview-site .setup-preview-nav-cta {
+  justify-self: end !important;
+  min-height: 44px !important;
+  padding: 11px 18px !important;
+  border-radius: 999px !important;
+  color: #fff !important;
+  background: linear-gradient(135deg, var(--site-accent, #d6175f), var(--site-coral, #ff704d)) !important;
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--site-accent, #d6175f) 22%, transparent) !important;
+  font-family: var(--body, Inter, system-ui, sans-serif) !important;
+  font-size: .95rem !important;
+  font-weight: 900 !important;
+}
+
+.published-site.setup-preview-site[data-theme-key="bold"] > .setup-preview-nav,
+.published-site.setup-preview-site[data-theme-key="minimal"] > .setup-preview-nav {
+  background: color-mix(in srgb, var(--site-page, #09080b) 96%, #ffffff 4%) !important;
+}
+
+@media (max-width: 760px) {
+  .published-site.setup-preview-site > .setup-preview-nav {
+    width: min(100% - 28px, 1280px) !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    min-height: 70px !important;
+  }
+}

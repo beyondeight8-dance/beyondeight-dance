@@ -21,12 +21,15 @@ const setupProgress = document.querySelector("[data-setup-progress]");
 const setupPrevButton = document.querySelector("[data-setup-prev]");
 const setupNextButton = document.querySelector("[data-setup-next]");
 const setupSubmitButton = document.querySelector("[data-setup-submit]");
+const setupActions = document.querySelector(".setup-actions");
 const setupMessage = document.querySelector(".setup-message");
-const setupReady = document.querySelector("[data-setup-ready]");
-const viewGeneratedSiteButton = document.querySelector("[data-view-generated-site]");
-const readyGoogleButton = document.querySelector("[data-ready-google]");
-const readyPublishButton = document.querySelector("[data-ready-publish]");
-const readyKeepEditingButton = document.querySelector("[data-ready-keep-editing]");
+const setupReadyMount = document.querySelector("[data-setup-ready-mount]");
+const setupReadyTemplate = document.querySelector("#setup-ready-template");
+let setupReady = null;
+let viewGeneratedSiteButton = null;
+let readyGoogleButton = null;
+let readyPublishButton = null;
+let readyKeepEditingButton = null;
 const themeModal = document.querySelector(".theme-modal");
 const themeModalTitle = document.querySelector("#theme-modal-title");
 const themeModalPreview = document.querySelector(".theme-modal-preview");
@@ -1459,6 +1462,62 @@ const ensureAccountForPublishing = async () => {
   return currentUser;
 };
 
+const bindReadyScreenEvents = () => {
+  readyGoogleButton?.addEventListener("click", async () => {
+    if (!supabaseClient) {
+      setupMessage.textContent = "Supabase could not load. Check your connection and refresh.";
+      return;
+    }
+    try {
+      saveGuestSetupDraft();
+      prepareAuthForOwnerAction("publish");
+      setupMessage.textContent = "Opening Google sign-in...";
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: getAuthRedirectUrl() }
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.warn("Google publish sign-in failed:", error);
+      setupMessage.textContent = error.message || "Google sign-in is not configured yet in Supabase.";
+    }
+  });
+
+  readyPublishButton?.addEventListener("click", publishCurrentSetup);
+  readyKeepEditingButton?.addEventListener("click", () => {
+    setupLaunched = false;
+    setupIndex = setupSteps.length - 1;
+    updateSetupStep();
+    updateSetupPreview();
+  });
+  viewGeneratedSiteButton?.addEventListener("click", () => {
+    generatedSiteUrl = saveLocalPublishedPreview(getSetupState());
+    viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
+  });
+};
+
+const mountSetupReady = () => {
+  if (!setupReadyMount || !setupReadyTemplate || setupReady) return;
+  setupReadyMount.replaceChildren(setupReadyTemplate.content.cloneNode(true));
+  setupReady = setupReadyMount.querySelector("[data-setup-ready]");
+  viewGeneratedSiteButton = setupReadyMount.querySelector("[data-view-generated-site]");
+  readyGoogleButton = setupReadyMount.querySelector("[data-ready-google]");
+  readyPublishButton = setupReadyMount.querySelector("[data-ready-publish]");
+  readyKeepEditingButton = setupReadyMount.querySelector("[data-ready-keep-editing]");
+  if (generatedSiteUrl) viewGeneratedSiteButton?.setAttribute("href", generatedSiteUrl);
+  bindReadyScreenEvents();
+};
+
+const unmountSetupReady = () => {
+  if (!setupReadyMount || !setupReady) return;
+  setupReadyMount.replaceChildren();
+  setupReady = null;
+  viewGeneratedSiteButton = null;
+  readyGoogleButton = null;
+  readyPublishButton = null;
+  readyKeepEditingButton = null;
+};
+
 const generateWebsitePreview = () => {
   const state = getSetupState();
   if (generatedSiteUrl?.startsWith("blob:")) URL.revokeObjectURL(generatedSiteUrl);
@@ -1498,7 +1557,11 @@ const updateSetupStep = () => {
     step.classList.toggle("is-active", isActive);
     step.toggleAttribute("hidden", !isActive);
   });
-  setupReady?.toggleAttribute("hidden", !setupLaunched);
+  if (setupLaunched) {
+    mountSetupReady();
+  } else {
+    unmountSetupReady();
+  }
   if (setupProgress) {
     setupProgress.style.width = setupLaunched ? "100%" : `${((setupIndex + 1) / setupSteps.length) * 100}%`;
   }
@@ -1507,6 +1570,7 @@ const updateSetupStep = () => {
   if (setupNextButton) setupNextButton.hidden = setupLaunched || setupIndex === setupSteps.length - 1;
   if (setupSubmitButton) setupSubmitButton.hidden = setupLaunched || setupIndex !== setupSteps.length - 1;
   if (setupSkipButton) setupSkipButton.hidden = setupLaunched || setupIndex !== 1;
+  if (setupActions) setupActions.hidden = setupLaunched;
   if (setupMessage) setupMessage.textContent = "";
   renderSetupDots();
 };
@@ -1699,26 +1763,6 @@ authGoogle?.addEventListener("click", async () => {
   }
 });
 
-readyGoogleButton?.addEventListener("click", async () => {
-  if (!supabaseClient) {
-    setupMessage.textContent = "Supabase could not load. Check your connection and refresh.";
-    return;
-  }
-  try {
-    saveGuestSetupDraft();
-    prepareAuthForOwnerAction("publish");
-    setupMessage.textContent = "Opening Google sign-in...";
-    const { error } = await supabaseClient.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: getAuthRedirectUrl() }
-    });
-    if (error) throw error;
-  } catch (error) {
-    console.warn("Google publish sign-in failed:", error);
-    setupMessage.textContent = error.message || "Google sign-in is not configured yet in Supabase.";
-  }
-});
-
 authForgot?.addEventListener("click", async () => {
   if (!supabaseClient) {
     setAuthError("Supabase could not load. Check your connection and refresh.");
@@ -1857,6 +1901,7 @@ const showGeneratedPreview = async () => {
     generateWebsitePreview();
     setupLaunched = true;
     updateSetupStep();
+    updateSetupPreview();
     setupModal?.scrollTo?.({ top: 0, behavior: "auto" });
     document.querySelector(".setup-panel")?.scrollTo?.({ top: 0, behavior: "auto" });
     setupMessage.textContent = "Your preview is ready. Create your free account to publish it.";
@@ -1896,17 +1941,6 @@ setupSubmitButton?.addEventListener("click", async (event) => {
   event.preventDefault();
   if (!(await stepIsValid())) return;
   await showGeneratedPreview();
-});
-readyPublishButton?.addEventListener("click", publishCurrentSetup);
-readyKeepEditingButton?.addEventListener("click", () => {
-  setupLaunched = false;
-  setupIndex = setupSteps.length - 1;
-  updateSetupStep();
-  updateSetupPreview();
-});
-viewGeneratedSiteButton?.addEventListener("click", () => {
-  generatedSiteUrl = saveLocalPublishedPreview(getSetupState());
-  viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
 });
 document.querySelectorAll(".setup-image-grid img").forEach((image) => {
   const card = image.closest("[data-starter-image]");
