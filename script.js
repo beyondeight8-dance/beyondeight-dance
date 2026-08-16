@@ -571,6 +571,10 @@ const sanitizeStarterImage = (src, fallback) => {
   return value;
 };
 
+const DEFAULT_ONBOARDING_PREVIEW_THEME = "Default Elegant";
+const previewThemeForStep = (selectedTheme) =>
+  setupIndex < 3 ? DEFAULT_ONBOARDING_PREVIEW_THEME : canonicalThemeName(selectedTheme);
+
 const getSetupState = () => {
   const form = setupForm;
   const field = (name, fallback = "") => form?.elements?.[name]?.value?.trim() || fallback;
@@ -587,7 +591,6 @@ const getSetupState = () => {
   const pages = Array.from(form?.querySelectorAll('input[name="pages"]:checked') || []).map((item) => item.value);
   const styles = [...selectedSpecialties];
   const logoText = businessName.split(/\s+/).slice(0, 2).join("<br>").toUpperCase();
-  const logoFont = form?.querySelector('input[name="logoFont"]:checked')?.value || "serif";
   return {
     businessName,
     slug,
@@ -607,7 +610,6 @@ const getSetupState = () => {
     domain: `https://beyond8dance.com/${slug || fallbackSlug}`,
     headline: tagline || "",
     logoText,
-    logoFont,
     logoImage: logoImageDataUrl,
     logoFileName: logoImageFileName,
     heroImage: sanitizeStarterImage(selectedWebsiteImages.heroImage, defaultWebsiteImages.heroImage),
@@ -946,7 +948,6 @@ const applySetupState = (state = {}) => {
   setCheckedValues("pages", state.pages);
   setRadioValue("brandVibe", state.brandVibe);
   setRadioValue("setupTheme", theme);
-  setRadioValue("logoFont", state.logoFont);
   updateSetupPreview();
 };
 
@@ -1010,7 +1011,7 @@ const paragraphsHTML = (value = "") =>
 
 const logoHTMLFor = (state) => {
   const image = state.logoImage ? `<img src="${state.logoImage}" alt="">` : "";
-  return `<span class="logo-lockup logo-font-${state.logoFont || "serif"}">${image}<span>${state.logoText}</span></span>`;
+  return `<span class="logo-lockup logo-font-serif">${image}<span>${state.logoText}</span></span>`;
 };
 
 const themeKeyFor = (theme = "") => {
@@ -1187,13 +1188,14 @@ const renderUploadedWebsiteImagePreview = () => {
 const updateSetupPreview = () => {
   if (!setupForm) return;
   const state = getSetupState();
-  const content = smartWebsiteContent(state);
+  const previewState = { ...state, theme: previewThemeForStep(state.theme) };
+  const content = smartWebsiteContent(previewState);
   const stylesText = content.styles.slice(0, 3).join(", ");
   const workIntro = state.whatYouDo || content.whatYouDo;
   const workSupport = state.mission || content.mission;
   const workExperience = state.whyJoin || content.whyJoin;
   renderSharedTemplateSurfaces(state, content);
-  applySetupPreviewTheme(state.theme);
+  applySetupPreviewTheme(previewState.theme);
   updateStarterImageSelection();
   renderUploadedWebsiteImagePreview();
   setText("[data-live-brand]", state.businessName);
@@ -1201,11 +1203,9 @@ const updateSetupPreview = () => {
   setHTML("[data-live-logo-small]", logoHTMLFor(state));
   updateLogoUploadState();
   setText(".setup-home-preview [data-live-headline], .setup-story-preview [data-live-headline]", content.headline);
-  setHTML(".setup-story-preview [data-live-quote]", `<h4>Supporting Copy</h4>${paragraphsHTML(workSupport)}`);
-  setHTML(
-    ".setup-story-preview [data-live-about]",
-    `<h4>Introduction</h4>${paragraphsHTML(workIntro)}<h4>Student Experience</h4>${paragraphsHTML(workExperience)}`
-  );
+  setHTML(".setup-story-preview [data-live-supporting]", paragraphsHTML(workSupport));
+  setHTML(".setup-story-preview [data-live-about]", paragraphsHTML(workIntro));
+  setHTML(".setup-story-preview [data-live-experience]", paragraphsHTML(workExperience));
   setText("[data-live-class-one]", content.classes[0]?.title || "Signature Class");
   setText("[data-live-class-two]", content.classes[1]?.title || "Workshop");
   setHTML(
@@ -1226,8 +1226,7 @@ const updateSetupPreview = () => {
       .join("")
   );
   setText("[data-live-contact]", content.contact.join(" • "));
-  renderSharedTemplateSurfaces(state, content);
-  document.querySelectorAll(".setup-story-preview [data-live-quote], .setup-story-preview [data-live-about]").forEach((node) => {
+  document.querySelectorAll(".setup-story-preview [data-live-supporting], .setup-story-preview [data-live-about], .setup-story-preview [data-live-experience]").forEach((node) => {
     node.classList.toggle("is-empty", !node.textContent.trim());
   });
   document.querySelectorAll("[data-live-specialties]").forEach((node) => {
@@ -1262,6 +1261,11 @@ const updateSetupPreview = () => {
       .filter(Boolean)
       .join(", ") || "Add later"
   );
+  setText("[data-live-social-brand]", state.businessName);
+  setText("[data-live-instagram]", state.instagram || "@beyond.movement");
+  setText("[data-live-tiktok]", state.tiktok || "@beyond.movement");
+  setText("[data-live-youtube]", state.youtube || "/beyondmovement");
+  setText("[data-live-website]", state.website || "beyondmovement.com");
   document.querySelector(".setup-ai-preview")?.classList.add("is-updating");
   window.clearTimeout(updateSetupPreview.timer);
   updateSetupPreview.timer = window.setTimeout(() => {
