@@ -27,9 +27,10 @@ In **Authentication > URL Configuration**:
 
 Add redirect URLs:
 
-- `http://127.0.0.1:8080/auth/callback/`
-- `http://localhost:8080/auth/callback/`
-- `https://YOUR-PUBLIC-DOMAIN/auth/callback/`
+- `http://127.0.0.1:8080/auth/callback`
+- `http://localhost:8080/auth/callback`
+- `https://YOUR-VERCEL-PREVIEW-DOMAIN/auth/callback`
+- `https://beyond8dance.com/auth/callback`
 
 ## 3. Configure Google provider
 

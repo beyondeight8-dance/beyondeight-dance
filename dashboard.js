@@ -105,7 +105,9 @@
     if (!app?.client) throw new Error("Supabase is not available.");
     const user = await app.getSessionUser();
     if (!user) {
-      window.location.replace("/?login=1");
+      const intendedRoute = `${window.location.pathname}${window.location.search}`;
+      window.localStorage.setItem("beyondeight.authReturnTo", intendedRoute);
+      window.location.replace(`/?login=1&returnTo=${encodeURIComponent(intendedRoute)}`);
       return;
     }
     await app.ensureProfile(user);

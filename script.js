@@ -441,6 +441,7 @@ let selectedWebsiteImages = { ...defaultWebsiteImages };
 const GUEST_SETUP_KEY = "beyondeight.guestWebsiteDraft";
 const GUEST_SETUP_VERSION = 3;
 const PENDING_OWNER_ACTION_KEY = "beyondeight.pendingOwnerAction";
+const AUTH_RETURN_TO_KEY = "beyondeight.authReturnTo";
 const LOCAL_PUBLISHED_SITES_KEY = "beyondeight.localPublishedSites";
 
 const beyondEight = window.BeyondEight || {};
@@ -458,7 +459,7 @@ const setAuthBusy = (isBusy) => {
   if (authGoogle) authGoogle.disabled = isBusy;
 };
 
-const getAuthRedirectUrl = () => `${window.location.origin}/auth/callback/`;
+const getAuthRedirectUrl = () => `${window.location.origin}/auth/callback`;
 
 const initialsFor = (user) => {
   const source = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "BE";
@@ -1756,6 +1757,12 @@ authGoogle?.addEventListener("click", async () => {
   setAuthError("");
   try {
     if (setupModal?.classList.contains("is-open")) saveGuestSetupDraft();
+    const authParams = new URLSearchParams(window.location.search);
+    const returnTo = authParams.get("returnTo");
+    if (!setupModal?.classList.contains("is-open") && authParams.get("resumePublish") !== "1") {
+      window.localStorage.removeItem(PENDING_OWNER_ACTION_KEY);
+    }
+    if (returnTo?.startsWith("/dashboard")) window.localStorage.setItem(AUTH_RETURN_TO_KEY, returnTo);
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: getAuthRedirectUrl() }

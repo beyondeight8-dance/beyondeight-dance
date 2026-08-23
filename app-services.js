@@ -80,6 +80,52 @@
     return data.session?.user || null;
   };
 
+  const resolveAuthCallbackSession = async ({ timeoutMs = 8000 } = {}) => {
+    if (!client) throw new Error("Authentication is unavailable.");
+
+    const url = new URL(window.location.href);
+    const hash = new URLSearchParams(url.hash.replace(/^#/, ""));
+    const providerError =
+      url.searchParams.get("error_description") ||
+      hash.get("error_description") ||
+      url.searchParams.get("error") ||
+      hash.get("error");
+    if (providerError) throw new Error("Google sign-in was cancelled or could not be completed.");
+
+    const existing = await client.auth.getSession();
+    if (existing.error) throw existing.error;
+    if (existing.data.session) return existing.data.session;
+
+    const code = url.searchParams.get("code");
+    if (code) {
+      const exchanged = await client.auth.exchangeCodeForSession(code);
+      if (exchanged.error) throw exchanged.error;
+      if (exchanged.data.session) return exchanged.data.session;
+    }
+
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      let subscription;
+      let timer;
+      const finish = (session, error) => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timer);
+        subscription?.unsubscribe();
+        if (error) reject(error);
+        else resolve(session);
+      };
+      const { data } = client.auth.onAuthStateChange((event, session) => {
+        if ((event === "INITIAL_SESSION" || event === "SIGNED_IN") && session) finish(session);
+      });
+      subscription = data.subscription;
+      timer = window.setTimeout(
+        () => finish(null, new Error("Your Google session was not returned. Please try again.")),
+        timeoutMs
+      );
+    });
+  };
+
   const ensureProfile = async (user) => {
     if (!client || !user) return null;
     const metadata = user.user_metadata || {};
@@ -418,8 +464,10 @@
     await ensureProfile(user);
     const { business, businesses } = await getPrimaryBusiness(user.id);
     if (businesses.length > 1) return "/dashboard/?select=1";
-    if (!business) return "/dashboard/";
-    if (!business.onboarding_completed) return "/dashboard/";
+    if (!business) return "/?onboarding=1&app=1";
+    if (!business.onboarding_completed) {
+      return `/?onboarding=1&app=1&business=${encodeURIComponent(business.id)}&step=${Number(business.current_onboarding_step) || 0}`;
+    }
     return "/dashboard/";
   };
 
@@ -435,6 +483,7 @@
     validSlug,
     checkSlugAvailability,
     getSessionUser,
+    resolveAuthCallbackSession,
     ensureProfile,
     listAccessibleBusinesses,
     getPrimaryBusiness,
