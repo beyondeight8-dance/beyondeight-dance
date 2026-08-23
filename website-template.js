@@ -112,6 +112,7 @@
   const stateFromBundle = ({ business = {}, settings = {}, website = {}, pages = [], origin = window.location.origin } = {}) => {
     const generated = settings.generated_content || {};
     return {
+      businessId: business.id || generated.businessId || "",
       businessName: business.business_name || generated.businessName || "Beyond Movement",
       slug: business.slug || generated.slug || slugify(business.business_name || generated.businessName),
       tagline: business.tagline || generated.tagline || generated.headline || "",
@@ -201,6 +202,7 @@
       state.location || "Location shared after registration"
     ].filter(Boolean);
     return {
+      businessId: state.businessId || "",
       theme,
       brandName,
       tagline: headline,
@@ -246,6 +248,34 @@
       contact,
       socials: [state.instagram, state.tiktok, state.youtube].filter(Boolean)
     };
+  };
+
+  const instagramAlt = (item, username) => {
+    const caption = String(item.caption || "").replace(/\s+/g, " ").trim();
+    return caption ? caption.slice(0, 120) : `Instagram post by @${username}`;
+  };
+
+  const renderInstagramSection = ({ username = "", items = [] } = {}) => {
+    const visible = (items || []).filter((item) => item?.permalink && (item.thumbnail_url || item.media_url)).slice(0, 6);
+    if (!visible.length) return "";
+    const cleanUsername = String(username || "").replace(/^@/, "");
+    const tiles = visible
+      .map((item) => {
+        const image = item.thumbnail_url || item.media_url;
+        const isVideo = /VIDEO|REEL/i.test(item.media_type || "");
+        return `<a class="setup-preview-instagram-tile" href="${esc(item.permalink)}" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram post by @${esc(cleanUsername)}">
+          <img src="${esc(image)}" alt="${esc(instagramAlt(item, cleanUsername))}" loading="lazy">
+          <span aria-hidden="true">${isVideo ? "Play" : "IG"}</span>
+        </a>`;
+      })
+      .join("");
+    return `<section class="setup-preview-section setup-preview-instagram">
+      <div class="setup-preview-instagram-heading">
+        <div><small>From the Studio</small><h4>Life in motion.</h4></div>
+        ${cleanUsername ? `<a href="https://www.instagram.com/${esc(cleanUsername)}/" target="_blank" rel="noopener noreferrer">Follow @${esc(cleanUsername)}</a>` : ""}
+      </div>
+      <div class="setup-preview-instagram-grid">${tiles}</div>
+    </section>`;
   };
 
   const logoHTML = (content, fallback = "") => {
@@ -444,6 +474,7 @@
         <h4>Moments from the studio.</h4>
         <div class="setup-preview-gallery-grid">${gallery}</div>
       </section>
+      <div data-instagram-feed data-business-id="${esc(content.businessId)}"></div>
       <div class="setup-preview-proof" data-live-testimonials>${testimonials}</div>
       <section id="faq" class="setup-preview-section setup-preview-faq">
         <small>FAQ</small>
@@ -502,6 +533,7 @@
   const generatedSiteHTML = (state) => {
     const content = buildWebsiteContent(state);
     const baseUrl = `${window.location.origin}/`;
+    const businessId = JSON.stringify(String(content.businessId || ""));
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -513,6 +545,21 @@
 </head>
 <body class="${themeClassFor(content.theme.name)}">
   ${renderSharedPublicSite(content)}
+  <script src="/website-template.js?v=20260822-instagram"><\/script>
+  <script>
+    (() => {
+      const businessId = ${businessId};
+      const mount = document.querySelector("[data-instagram-feed]");
+      if (!businessId || !mount) return;
+      fetch("/api/instagram/feed?businessId=" + encodeURIComponent(businessId))
+        .then((response) => response.ok ? response.json() : { items: [] })
+        .then((feed) => {
+          const templates = window.BeyondEightWebsiteTemplates;
+          if (templates) mount.innerHTML = templates.renderInstagramSection(feed);
+        })
+        .catch(() => mount.replaceChildren());
+    })();
+  <\/script>
 </body>
 </html>`;
   };
@@ -528,6 +575,7 @@
     renderThemePicker,
     renderDesktopPreview,
     renderPhonePreview,
+    renderInstagramSection,
     renderPublicSite: renderSharedPublicSite,
     generatedSiteHTML
   };

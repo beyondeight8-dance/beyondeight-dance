@@ -46,6 +46,17 @@
           </div>`
         : "";
       root.innerHTML = templates.renderPublicSite(sharedContent, { ownerToolbar, logoUrl });
+      const instagramMount = root.querySelector("[data-instagram-feed]");
+      if (instagramMount && business.id) {
+        fetch(`/api/instagram/feed?businessId=${encodeURIComponent(business.id)}`)
+          .then((response) => (response.ok ? response.json() : { items: [] }))
+          .then((feed) => {
+            instagramMount.innerHTML = templates.renderInstagramSection(feed);
+          })
+          .catch(() => {
+            instagramMount.replaceChildren();
+          });
+      }
       root.querySelector("[data-owner-visitor]")?.addEventListener("click", () => {
         root.querySelector("[data-owner-toolbar]")?.remove();
       });

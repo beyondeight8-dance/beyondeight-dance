@@ -5,6 +5,7 @@
     String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
 
   const stateFromForm = (form, business, settings) => ({
+    businessId: business.id,
     businessName: form.businessName.value.trim(),
     slug: business.slug,
     businessType: business.business_type || "Independent Choreographer",
@@ -64,6 +65,23 @@
               .join("")}
           </div>
           <label>Instagram<input name="instagram" value="${esc(social.instagram || "")}"></label>
+          <section class="instagram-editor-card" data-instagram-controls>
+            <div>
+              <span>Instagram Feed</span>
+              <strong data-instagram-status>Checking connection...</strong>
+              <p data-instagram-help>Connect a Creator or Business account to show your latest posts automatically.</p>
+            </div>
+            <div class="instagram-editor-settings" data-instagram-settings hidden>
+              <label><input type="checkbox" data-instagram-visible checked> Show Instagram on website</label>
+              <label>Number of posts<select data-instagram-limit><option value="4">4</option><option value="6" selected>6</option></select></label>
+            </div>
+            <div class="dashboard-actions">
+              <button class="secondary-button" type="button" data-instagram-connect>Connect Instagram</button>
+              <button class="secondary-button" type="button" data-instagram-refresh hidden>Refresh Feed</button>
+              <button class="secondary-button" type="button" data-instagram-disconnect hidden>Disconnect</button>
+            </div>
+            <small data-instagram-message></small>
+          </section>
           <label>TikTok<input name="tiktok" value="${esc(social.tiktok || "")}"></label>
           <label>YouTube<input name="youtube" value="${esc(social.youtube || "")}"></label>
           <label>Website<input name="website" value="${esc(social.website || "")}"></label>
@@ -74,20 +92,119 @@
             <button class="primary-button" type="button" data-publish>Publish changes</button>
           </div>
         </section>
-        <aside class="editor-preview">
-          <span>${esc(business.theme || "Default Elegant")}</span>
-          <h2 data-preview-title>${esc(business.tagline || business.business_name)}</h2>
-          <p data-preview-description>${esc(business.description || "Your public website preview updates as you edit.")}</p>
-        </aside>
+        <aside class="editor-preview" data-editor-preview aria-label="Live website preview"></aside>
       </form>`;
 
     const form = root.querySelector("[data-editor-form]");
     const message = root.querySelector("[data-editor-message]");
-    const updatePreview = () => {
-      root.querySelector("[data-preview-title]").textContent = form.tagline.value || form.businessName.value;
-      root.querySelector("[data-preview-description]").textContent = form.description.value;
+    const templates = window.BeyondEightWebsiteTemplates;
+    const updatePreview = async () => {
+      const preview = root.querySelector("[data-editor-preview]");
+      if (!templates || !preview) return;
+      const content = templates.buildWebsiteContent(stateFromForm(form, business, settings));
+      preview.innerHTML = `<div class="setup-preview-site" data-theme-key="${templates.themeKeyFor(content.theme.name)}">${templates.renderDesktopPreview(content)}</div>`;
+      const mount = preview.querySelector("[data-instagram-feed]");
+      if (mount) {
+        fetch(`/api/instagram/feed?businessId=${encodeURIComponent(business.id)}`)
+          .then((response) => (response.ok ? response.json() : { items: [] }))
+          .then((feed) => (mount.innerHTML = templates.renderInstagramSection(feed)))
+          .catch(() => mount.replaceChildren());
+      }
     };
     form.addEventListener("input", updatePreview);
+    form.addEventListener("change", updatePreview);
+    updatePreview();
+
+    const instagramStatus = root.querySelector("[data-instagram-status]");
+    const instagramHelp = root.querySelector("[data-instagram-help]");
+    const instagramSettings = root.querySelector("[data-instagram-settings]");
+    const instagramVisible = root.querySelector("[data-instagram-visible]");
+    const instagramLimit = root.querySelector("[data-instagram-limit]");
+    const instagramConnect = root.querySelector("[data-instagram-connect]");
+    const instagramRefresh = root.querySelector("[data-instagram-refresh]");
+    const instagramDisconnect = root.querySelector("[data-instagram-disconnect]");
+    const instagramMessage = root.querySelector("[data-instagram-message]");
+    const apiRequest = async (url, options = {}) => {
+      const { data } = await app.client.auth.getSession();
+      const response = await fetch(url, {
+        ...options,
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token || ""}`, ...(options.headers || {}) }
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || "Instagram request failed.");
+      return payload;
+    };
+    const showInstagramState = (status = {}) => {
+      const connected = Boolean(status.connected);
+      instagramStatus.textContent = connected ? `Connected as @${status.username}` : "Not connected";
+      instagramHelp.textContent = status.needsReconnect
+        ? "Your connection needs attention. Reconnect Instagram to resume updates."
+        : connected
+          ? "Your latest posts are cached securely and shown on your public website."
+          : "Connection requires an Instagram Creator or Business account.";
+      instagramSettings.hidden = !connected;
+      instagramRefresh.hidden = !connected;
+      instagramDisconnect.hidden = !connected;
+      instagramConnect.textContent = connected ? "Reconnect" : "Connect Instagram";
+      instagramVisible.checked = status.showOnWebsite !== false;
+      instagramLimit.value = String(status.postLimit || 6);
+    };
+    const loadInstagramState = async () => {
+      try {
+        showInstagramState(await apiRequest(`/api/instagram/manage?businessId=${encodeURIComponent(business.id)}`));
+      } catch (error) {
+        instagramStatus.textContent = "Connection unavailable";
+        instagramMessage.textContent = error.message;
+      }
+    };
+    instagramConnect.addEventListener("click", async () => {
+      try {
+        instagramMessage.textContent = "Opening Instagram...";
+        const payload = await apiRequest("/api/instagram/connect", { method: "POST", body: JSON.stringify({ businessId: business.id }) });
+        window.location.assign(payload.authorizationUrl);
+      } catch (error) {
+        instagramMessage.textContent = error.message;
+      }
+    });
+    instagramRefresh.addEventListener("click", async () => {
+      instagramMessage.textContent = "Refreshing...";
+      try {
+        showInstagramState(await apiRequest("/api/instagram/manage", { method: "POST", body: JSON.stringify({ businessId: business.id, action: "refresh" }) }));
+        instagramMessage.textContent = "Feed refreshed.";
+        updatePreview();
+      } catch (error) {
+        instagramMessage.textContent = "We could not refresh right now. Your cached posts remain live.";
+      }
+    });
+    const saveInstagramSettings = async () => {
+      try {
+        showInstagramState(await apiRequest("/api/instagram/manage", {
+          method: "POST",
+          body: JSON.stringify({ businessId: business.id, action: "settings", showOnWebsite: instagramVisible.checked, postLimit: Number(instagramLimit.value) })
+        }));
+        instagramMessage.textContent = "Instagram settings saved.";
+        updatePreview();
+      } catch (error) {
+        instagramMessage.textContent = error.message;
+      }
+    };
+    instagramVisible.addEventListener("change", saveInstagramSettings);
+    instagramLimit.addEventListener("change", saveInstagramSettings);
+    instagramDisconnect.addEventListener("click", async () => {
+      if (!window.confirm("Disconnect Instagram and remove the automatic feed from your website?")) return;
+      try {
+        showInstagramState(await apiRequest("/api/instagram/manage", { method: "POST", body: JSON.stringify({ businessId: business.id, action: "disconnect" }) }));
+        instagramMessage.textContent = "Instagram disconnected.";
+        updatePreview();
+      } catch (error) {
+        instagramMessage.textContent = error.message;
+      }
+    });
+    const instagramResult = new URLSearchParams(window.location.search).get("instagram");
+    if (instagramResult === "connected") instagramMessage.textContent = "Instagram connected.";
+    if (instagramResult === "professional_required") instagramMessage.textContent = "Instagram connection currently requires a Creator or Business account. You can convert in Instagram settings.";
+    if (["cancelled", "failed", "invalid", "expired"].includes(instagramResult)) instagramMessage.textContent = "Instagram was not connected. Your website is unchanged.";
+    loadInstagramState();
 
     root.querySelector("[data-save-draft]").addEventListener("click", async () => {
       message.textContent = "Saving draft...";

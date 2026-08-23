@@ -15,7 +15,7 @@
       "destination": "/dashboard/website/index.html"
     },
     {
-      "source": "/((?!assets/|auth/|dashboard/|.*\\..*).*)",
+      "source": "/((?!api/|assets/|auth/|dashboard/|.*\\..*).*)",
       "destination": "/404.html"
     }
   ],
