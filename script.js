@@ -444,6 +444,16 @@ const PENDING_OWNER_ACTION_KEY = "beyondeight.pendingOwnerAction";
 const AUTH_RETURN_TO_KEY = "beyondeight.authReturnTo";
 const LOCAL_PUBLISHED_SITES_KEY = "beyondeight.localPublishedSites";
 
+const APP_STATES = Object.freeze({
+  PUBLIC: "PUBLIC",
+  BUILDING: "BUILDING",
+  AUTH_RESOLVING: "AUTH_RESOLVING",
+  AUTHENTICATED_OWNER: "AUTHENTICATED_OWNER",
+  AUTHENTICATED_NEW: "AUTHENTICATED_NEW",
+  SIGNED_OUT: "SIGNED_OUT"
+});
+let applicationState = APP_STATES.AUTH_RESOLVING;
+
 const beyondEight = window.BeyondEight || {};
 const supabaseClient = beyondEight.client;
 window.beyondEightSupabaseReady = Boolean(supabaseClient);
@@ -454,9 +464,20 @@ const setAuthError = (message = "") => {
   if (authError) authError.textContent = message;
 };
 
+const friendlyAuthError = (error, fallback = "We could not complete that request. Please try again.") => {
+  const message = String(error?.message || "").toLowerCase();
+  if (message.includes("invalid login credentials")) return "That email or password is not correct. Please try again.";
+  if (message.includes("already registered") || message.includes("user already exists")) return "An account already exists for this email. Log in instead.";
+  if (message.includes("password") && (message.includes("weak") || message.includes("short") || message.includes("least"))) return "Use a password with at least 8 characters.";
+  if (message.includes("network") || message.includes("fetch")) return "We could not reach BeyondEight. Check your connection and try again.";
+  if (message.includes("cancel") || message.includes("provider")) return "Google sign-in was cancelled. Your website draft is safe, and you can try again.";
+  return fallback;
+};
+
 const setAuthBusy = (isBusy) => {
   if (authSubmit) authSubmit.disabled = isBusy;
   if (authGoogle) authGoogle.disabled = isBusy;
+  authForm?.setAttribute("aria-busy", String(isBusy));
 };
 
 const getAuthRedirectUrl = () => `${window.location.origin}/auth/callback`;
@@ -473,11 +494,16 @@ const initialsFor = (user) => {
 
 const updateHeaderForAuth = async () => {
   const loggedIn = Boolean(currentUser);
-  if (loggedOutAccount) loggedOutAccount.hidden = loggedIn;
-  if (loggedInAccount) loggedInAccount.hidden = !loggedIn;
-  if (userAvatar && loggedIn) userAvatar.textContent = initialsFor(currentUser);
-  const route = loggedIn ? await beyondEight.routeForUser?.(currentUser).catch(() => "/dashboard/") : "/dashboard/";
+  let route = "/dashboard/";
+  if (loggedIn) route = await beyondEight.routeForUser?.(currentUser).catch(() => "/dashboard/");
   const needsOnboarding = route?.includes("onboarding=1");
+  applicationState = loggedIn
+    ? needsOnboarding ? APP_STATES.AUTHENTICATED_NEW : APP_STATES.AUTHENTICATED_OWNER
+    : setupModal?.classList.contains("is-open") ? APP_STATES.BUILDING : APP_STATES.SIGNED_OUT;
+  document.documentElement.dataset.appState = applicationState;
+  if (loggedOutAccount) loggedOutAccount.hidden = applicationState === APP_STATES.AUTH_RESOLVING || loggedIn;
+  if (loggedInAccount) loggedInAccount.hidden = applicationState === APP_STATES.AUTH_RESOLVING || !loggedIn;
+  if (userAvatar && loggedIn) userAvatar.textContent = initialsFor(currentUser);
   dashboardLinks.forEach((link) => {
     link.href = needsOnboarding ? route : "/dashboard/";
   });
@@ -494,18 +520,20 @@ const updateHeaderForAuth = async () => {
 const setAuthMode = (mode) => {
   authMode = mode;
   const isLogin = mode === "login";
-  if (authTitle) authTitle.textContent = isLogin ? "Welcome back" : "Let's build your BeyondEight workspace";
+  if (authTitle) authTitle.textContent = isLogin ? "Welcome back" : "Create your BeyondEight account";
   if (authCopy) {
     authCopy.textContent = isLogin
       ? "Continue with Google or log in with email to manage your website."
-      : "Create your free account to save your website, continue editing anytime, and publish when you're ready.";
+      : "Save your website, publish it, and come back anytime to manage your classes.";
   }
-  if (authSubmit) authSubmit.textContent = isLogin ? "Log In" : "Build My Website";
+  if (authSubmit) authSubmit.textContent = isLogin ? "Log In" : pendingSetupAfterAuth ? "Create Account & Publish" : "Create Account";
+  const passwordInput = authForm?.elements.authPassword;
+  if (passwordInput) passwordInput.autocomplete = isLogin ? "current-password" : "new-password";
   authConfirmGroup?.setAttribute("hidden", "");
   authTermsGroup?.setAttribute("hidden", "");
   authForgot?.toggleAttribute("hidden", !isLogin);
-  if (authToggleText) authToggleText.textContent = isLogin ? "Don't have an account?" : "Already have an account?";
-  if (authToggle) authToggle.textContent = isLogin ? "Build your website" : "Log In";
+  if (authToggleText) authToggleText.textContent = isLogin ? "New to BeyondEight?" : "Already have an account?";
+  if (authToggle) authToggle.textContent = isLogin ? "Start building free" : "Log In";
   if (authError) authError.textContent = "";
 };
 
@@ -1439,7 +1467,7 @@ const ensureAccountForPublishing = async () => {
     launch_source: "setup_wizard"
   };
 
-  let authResponse = await supabaseClient.auth.signUp({
+  const authResponse = await supabaseClient.auth.signUp({
     email,
     password,
     options: {
@@ -1448,15 +1476,11 @@ const ensureAccountForPublishing = async () => {
     }
   });
 
-  if (authResponse.error || !authResponse.data.session) {
-    const loginResponse = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (loginResponse.error) {
-      if (!authResponse.error && !authResponse.data.session) {
-        throw new Error("Account created. Please confirm your email, then log in to publish your website.");
-      }
-      throw new Error("We could not create or log in to that account. If this email already exists, use the correct password.");
-    }
-    authResponse = loginResponse;
+  if (authResponse.error) throw new Error(friendlyAuthError(authResponse.error, "We could not create your account. Please try again."));
+  if (!authResponse.data.session) {
+    saveGuestSetupDraft();
+    prepareAuthForOwnerAction("publish");
+    throw new Error("Check your email to finish creating your account. Your website draft is saved and will be ready after you verify your email.");
   }
 
   currentUser = authResponse.data.session?.user || null;
@@ -1484,7 +1508,7 @@ const bindReadyScreenEvents = () => {
       if (error) throw error;
     } catch (error) {
       console.warn("Google publish sign-in failed:", error);
-      setupMessage.textContent = error.message || "Google sign-in is not configured yet in Supabase.";
+      setupMessage.textContent = friendlyAuthError(error, "Google sign-in could not start. Your website draft is safe; please try again.");
     }
   });
 
@@ -1731,14 +1755,15 @@ authForm?.addEventListener("submit", async (event) => {
 
     if (!authResponse.data.session && authMode === "signup") {
       currentUser = null;
-      setAuthError("Account created. If email confirmation is enabled, check your inbox before logging in.");
+      saveGuestSetupDraft();
+      setAuthError("Check your email to finish creating your account. Your website draft is saved.");
       return;
     }
 
     currentUser = authResponse.data.session?.user || null;
     await completeAuthFlow();
   } catch (error) {
-    setAuthError(error.message || "Supabase could not complete authentication.");
+    setAuthError(friendlyAuthError(error));
   } finally {
     setAuthBusy(false);
   }
@@ -1769,7 +1794,7 @@ authGoogle?.addEventListener("click", async () => {
     });
     if (error) throw error;
   } catch (error) {
-    setAuthError(error.message || "Google sign-in is not configured yet in Supabase.");
+    setAuthError(friendlyAuthError(error, "Google sign-in could not start. Please try again."));
     setAuthBusy(false);
   }
 });
@@ -1791,7 +1816,7 @@ authForgot?.addEventListener("click", async () => {
     if (error) throw error;
     setAuthError("Password reset email requested. Supabase email limits may apply until custom SMTP is connected.");
   } catch (error) {
-    setAuthError(error.message || "Could not request a password reset.");
+    setAuthError(friendlyAuthError(error, "We could not send the reset email. Please try again."));
   }
 });
 
@@ -1799,6 +1824,8 @@ const initSupabaseAuth = async () => {
   if (!supabaseClient) {
     setAuthError("Supabase could not load. Check your connection and refresh.");
     authReady = true;
+    applicationState = APP_STATES.SIGNED_OUT;
+    if (loggedOutAccount) loggedOutAccount.hidden = false;
     return;
   }
 
@@ -1825,28 +1852,32 @@ const initSupabaseAuth = async () => {
       }
     }
 
-    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
       currentUser = session?.user || null;
-      if (event === "SIGNED_OUT") {
-        currentBusinessId = null;
-        setupIndex = 0;
-        setupLaunched = false;
-        updateSetupStep();
-        await updateHeaderForAuth();
-        return;
-      }
-      if (currentUser && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")) {
-        await restoreOnboardingProgress();
-        await updateHeaderForAuth();
-        if (pendingSetupAfterAuth && authModal?.classList.contains("is-open")) {
-          await completeAuthFlow();
+      window.setTimeout(async () => {
+        if (event === "SIGNED_OUT") {
+          currentBusinessId = null;
+          setupIndex = 0;
+          setupLaunched = false;
+          updateSetupStep();
+          await updateHeaderForAuth();
+          return;
         }
-      }
+        if (currentUser && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")) {
+          await restoreOnboardingProgress();
+          await updateHeaderForAuth();
+          if (pendingSetupAfterAuth && authModal?.classList.contains("is-open")) {
+            await completeAuthFlow();
+          }
+        }
+      }, 0);
     });
   } catch (error) {
     authReady = true;
     console.warn("Supabase session restore failed:", error);
-    setAuthError(error.message || "Supabase session restore failed.");
+    applicationState = APP_STATES.SIGNED_OUT;
+    if (loggedOutAccount) loggedOutAccount.hidden = false;
+    setAuthError("We could not restore your session. Please log in again.");
   }
 };
 

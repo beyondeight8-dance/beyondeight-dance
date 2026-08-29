@@ -26,7 +26,7 @@
       <a href="#product">Product</a>
       <a href="#pricing">Pricing</a>
     </nav>
-    <div class="header-account" data-auth-state="logged-out">
+    <div class="header-account" data-auth-state="logged-out" hidden>
       <button class="header-login" type="button" data-open-auth-login>Log In</button>
       <button class="header-cta" type="button" data-open-setup>Start building free</button>
     </div>
@@ -473,15 +473,15 @@
         </a>
         <div class="auth-copy">
           <p class="eyebrow">Workspace access</p>
-          <h2 id="auth-title">Let's build your BeyondEight workspace</h2>
-          <p>Create your free account to save your website, continue editing anytime, and publish when you're ready.</p>
+          <h2 id="auth-title">Create your BeyondEight account</h2>
+          <p>Save your website, publish it, and come back anytime to manage your classes.</p>
         </div>
         <form class="auth-form" novalidate>
           <button class="auth-google" type="button" data-auth-google>Continue with Google</button>
           <div class="auth-divider"><span>OR</span></div>
           <label>Email<input type="email" name="authEmail" autocomplete="email" required></label>
           <label>Password<input type="password" name="authPassword" autocomplete="new-password" required minlength="8"></label>
-          <button class="primary-button auth-submit" type="submit">Build My Website</button>
+          <button class="primary-button auth-submit" type="submit">Create Account</button>
           <button class="auth-forgot" type="button" data-auth-forgot hidden>Forgot password?</button>
           <p class="auth-error" role="alert" aria-live="polite"></p>
           <p class="auth-toggle-copy"><span data-auth-toggle-text>Already have an account?</span> <button type="button" data-auth-toggle>Log In</button></p>
