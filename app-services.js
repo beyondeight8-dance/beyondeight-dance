@@ -1,6 +1,24 @@
 (function () {
   const config = window.BeyondEightConfig || {};
   const sdk = window.supabase || globalThis.supabase || (typeof supabase !== "undefined" ? supabase : null);
+  const validateSupabaseConfig = ({ SUPABASE_URL, SUPABASE_ANON_KEY } = {}) => {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return "BeyondEight authentication is not configured.";
+    try {
+      const url = new URL(SUPABASE_URL);
+      const supportedHost = url.hostname.endsWith(".supabase.co") || url.hostname === window.location.hostname;
+      if (url.protocol !== "https:" || !supportedHost) return "BeyondEight authentication has an invalid service URL.";
+      const encodedPayload = SUPABASE_ANON_KEY.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+      const payload = JSON.parse(atob(encodedPayload.padEnd(Math.ceil(encodedPayload.length / 4) * 4, "=")));
+      if (url.hostname.endsWith(".supabase.co") && payload.ref && url.hostname !== `${payload.ref}.supabase.co`) {
+        return "BeyondEight authentication configuration does not match its project.";
+      }
+      return "";
+    } catch {
+      return "BeyondEight authentication configuration is invalid.";
+    }
+  };
+  const configurationError = validateSupabaseConfig(config);
+  if (configurationError) console.error(configurationError);
   const reservedSlugs = new Set([
     "admin",
     "app",
@@ -20,7 +38,7 @@
     "www"
   ]);
 
-  const client = sdk?.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY, {
+  const client = !configurationError && sdk?.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY, {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
