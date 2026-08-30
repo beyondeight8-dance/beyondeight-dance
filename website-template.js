@@ -109,18 +109,21 @@
       .replace(/^-+|-+$/g, "")
       .slice(0, 50) || "beyond-movement";
 
-  const stateFromBundle = ({ business = {}, settings = {}, website = {}, pages = [], origin = window.location.origin } = {}) => {
-    const generated = settings.generated_content || {};
+  const stateFromBundle = (input = {}) => {
+    const { business = {}, settings = {}, website = {}, pages = [], origin = window.location.origin } = input;
+    const storedContent = input.mode === "public" ? website.published_content : website.draft_content;
+    const generated = storedContent && Object.keys(storedContent).length ? storedContent : website.published_content && Object.keys(website.published_content).length ? website.published_content : settings.generated_content || {};
     return {
+      ...generated,
       businessId: business.id || generated.businessId || "",
-      businessName: business.business_name || generated.businessName || "Beyond Movement",
+      businessName: generated.businessName || business.business_name || "Beyond Movement",
       slug: business.slug || generated.slug || slugify(business.business_name || generated.businessName),
-      tagline: business.tagline || generated.tagline || generated.headline || "",
-      whatYouDo: business.description || generated.whatYouDo || "",
-      mission: business.mission || generated.mission || "",
-      whyJoin: business.why_join || generated.whyJoin || "",
-      theme: business.theme || website.theme || generated.theme || "Default Elegant",
-      styles: settings.dance_styles || generated.styles || [],
+      tagline: generated.tagline || generated.headline || business.tagline || "",
+      whatYouDo: generated.whatYouDo || business.description || "",
+      mission: generated.mission || business.mission || "",
+      whyJoin: generated.whyJoin || business.why_join || "",
+      theme: generated.theme || website.theme || business.theme || "Default Elegant",
+      styles: generated.styles || settings.dance_styles || [],
       pages: pages.length ? pages.map((page) => page.title || page.page_type).filter(Boolean) : generated.pages || [],
       instagram: generated.instagram || "",
       tiktok: generated.tiktok || "",
@@ -180,7 +183,7 @@
       state.whyJoin ||
       "Students leave feeling challenged, seen, and excited to keep building their artistry through movement.";
     const instructorName = state.instructorName || `${brandName} Instructor`;
-    const classes = styles.slice(0, 5).map((style, index) => {
+    const generatedClasses = styles.slice(0, 5).map((style, index) => {
       const days = ["Thu", "Sat", "Sun", "Wed", "Fri"];
       const times = ["7:00 PM", "11:00 AM", "5:30 PM", "6:45 PM", "8:00 PM"];
       return {
@@ -195,11 +198,13 @@
         style
       };
     });
+    const classes = Array.isArray(state.classes) ? state.classes : generatedClasses;
     const contact = [
-      state.instagram || "Instagram coming soon",
+      state.instagram,
       state.website || state.domain || "",
-      state.email || "hello@beyond8dance.com",
-      state.location || "Location shared after registration"
+      state.showEmail === "No" ? "" : state.email || "hello@beyond8dance.com",
+      state.showPhone === "No" ? "" : state.phone,
+      state.showLocation === "No" ? "" : state.location || "Location shared after registration"
     ].filter(Boolean);
     return {
       businessId: state.businessId || "",
@@ -213,6 +218,8 @@
       styles,
       pages: state.pages && state.pages.length ? state.pages : ["Home", "About", "Classes & Workshops", "Gallery", "Contact", "Register"],
       domain: state.domain || `${window.location.origin}/${state.slug || slugify(brandName)}`,
+      ctaText: state.ctaText || themeActionLabel(theme),
+      ctaLink: state.ctaLink || "#classes",
       logoImage: state.logoImage || "",
       logoText: state.logoText || brandName.split(/\s+/).slice(0, 2).join("<br>").toUpperCase(),
       logoFont: state.logoFont || "serif",
@@ -225,7 +232,7 @@
         instructor: state.instructorImage || state.portraitImage || state.aboutImage || "assets/starter-headshot.jpg"
       },
       classes,
-      workshop: {
+      workshop: state.workshop || {
         title: `${styles[0] || "Dance"} Signature Workshop`,
         date: "Saturday 11:00 AM",
         time: "11:00 AM",
@@ -235,11 +242,11 @@
         description: state.whyJoin || "A focused workshop with choreography, coaching, and space to connect with the movement."
       },
       instructorName,
-      instructorBio: `${brandName} helps dancers grow through ${styles.slice(0, 3).join(", ")} with clear coaching, intentional choreography, and a welcoming class experience.`,
+      instructorBio: state.instructorBio || `${brandName} helps dancers grow through ${styles.slice(0, 3).join(", ")} with clear coaching, intentional choreography, and a welcoming class experience.`,
       benefits: demoData.benefits,
-      testimonials: demoData.testimonials,
-      faqs: demoData.faqs,
-      gallery: [
+      testimonials: Array.isArray(state.testimonials) && state.testimonials.length ? state.testimonials : demoData.testimonials,
+      faqs: Array.isArray(state.faqs) && state.faqs.length ? state.faqs : demoData.faqs,
+      gallery: Array.isArray(state.gallery) && state.gallery.length ? state.gallery : [
         state.galleryImage || "assets/starter-dance-class.jpg",
         state.workshopImage || "assets/starter-workshop-teaching.jpg",
         state.performanceImage || "assets/starter-performance.jpg",
@@ -331,12 +338,13 @@
 
   const renderDesktopPreview = (content, options = {}) => {
     const tags = content.styles.slice(0, 4).map((style) => `<span>${esc(style)}</span>`).join("");
-    const primaryAction = themeActionLabel(content.theme);
+    const primaryAction = content.ctaText || themeActionLabel(content.theme);
     const classThumbs = [content.images.gallery, content.images.workshop, content.images.performance, content.images.hero].filter(Boolean);
-    const classes = content.classes
+    const visibleClasses = content.classes.filter((item) => item.published !== false);
+    const classes = visibleClasses
       .slice(0, 3)
       .map((item, index) => {
-        const thumb = classThumbs[index % classThumbs.length] || content.images.hero;
+        const thumb = item.image || classThumbs[index % classThumbs.length] || content.images.hero;
         return `<article class="setup-preview-class-card">
             <div class="setup-preview-class-thumb">
               ${imageTag(thumb, `${item.title} class thumbnail`)}
@@ -349,11 +357,12 @@
               <span>with ${esc(item.instructor)} &bull; ${esc(item.level)}</span>
               <span>${esc(item.location)}</span>
             </div>
+            ${item.description ? `<p>${esc(item.description)}</p>` : ""}
             <p class="setup-preview-class-footer"><b>${esc(item.price)}</b><span>${esc(item.spots)}</span></p>
-            <button type="button">${esc(primaryAction)}</button>
+            <button type="button" data-booking-url="${esc(item.bookingUrl || "#contact")}">${esc(primaryAction)}</button>
           </article>`;
       })
-      .join("");
+      .join("") || `<article class="setup-preview-empty"><strong>New classes coming soon.</strong><p>Follow along or get in touch for the next class announcement.</p></article>`;
     const benefits = content.benefits.map(([title, copy]) => `<article><strong>${esc(title)}</strong><p>${esc(copy)}</p></article>`).join("");
     const gallery = content.gallery
       .slice(0, 4)
@@ -396,27 +405,27 @@
       .map((copy) => paragraphHTML(copy))
       .join("");
     return `
-      <header class="setup-preview-nav">
+      <header class="setup-preview-nav" data-edit-section="header">
         <a class="setup-preview-brand" href="#home" aria-label="${esc(content.brandName)} home"><strong data-live-logo-small>${logoHTML(content, options.logoHTML)}</strong></a>
         <nav class="setup-preview-nav-links" aria-label="Primary navigation">${navLinks}</nav>
-        <a class="setup-preview-nav-cta" href="#classes">${esc(primaryAction)}</a>
+        <a class="setup-preview-nav-cta" href="${esc(content.ctaLink || "#classes")}">${esc(primaryAction)}</a>
         <details class="setup-preview-mobile-menu">
           <summary aria-label="Open menu"><span></span><span></span><span></span></summary>
           <div>
             <strong>${esc(content.brandName)}</strong>
             <nav aria-label="Mobile navigation">${mobileNavLinks}</nav>
-            <a href="#classes">${esc(primaryAction)}</a>
+            <a href="${esc(content.ctaLink || "#classes")}">${esc(primaryAction)}</a>
           </div>
         </details>
       </header>
-      <section id="home" class="setup-preview-hero">
+      <section id="home" class="setup-preview-hero" data-edit-section="hero">
         <div>
           <small data-live-theme>${esc(content.theme.name)}</small>
           <h3 data-live-headline>${esc(content.headline)}</h3>
           <p data-live-about>${esc(content.whatYouDo)}</p>
           <div class="setup-preview-tags" data-live-specialties>${tags}</div>
           <div class="setup-preview-cta-group">
-            <button type="button">${esc(primaryAction)}</button>
+            <a class="setup-preview-primary-action" href="${esc(content.ctaLink || "#classes")}">${esc(primaryAction)}</a>
             <a href="#classes">View Classes</a>
           </div>
         </div>
@@ -424,17 +433,17 @@
           ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
           <aside>
             <small>Next class</small>
-            <strong>${esc(content.classes[0]?.date || "Saturday")} &bull; ${esc(content.classes[0]?.time || "7:00 PM")}</strong>
-            <span>${esc(content.classes[0]?.spots || "5 spots left")}</span>
+            <strong>${esc(visibleClasses[0]?.date || "Saturday")} &bull; ${esc(visibleClasses[0]?.time || "7:00 PM")}</strong>
+            <span>${esc(visibleClasses[0]?.spots || "5 spots left")}</span>
           </aside>
         </div>
       </section>
-      <section id="classes" class="setup-preview-section setup-preview-classes">
+      <section id="classes" class="setup-preview-section setup-preview-classes" data-edit-section="classes">
         <small>Upcoming Classes</small>
         <h4>Book your next class.</h4>
         <div class="setup-preview-mini-grid" data-live-class-list>${classes}</div>
       </section>
-      <section id="workshops" class="setup-preview-section setup-preview-workshop">
+      <section id="workshops" class="setup-preview-section setup-preview-workshop" data-edit-section="workshop">
         <div>
           <div class="setup-preview-badges"><span>Featured</span><span>Limited Seats</span><span>Weekend Intensive</span></div>
           <h4>${esc(content.workshop.title)}</h4>
@@ -449,7 +458,7 @@
         </div>
         ${imageTag(content.images.workshop, `${content.brandName} workshop image`)}
       </section>
-      <section id="about" class="setup-preview-section setup-preview-instructor">
+      <section id="about" class="setup-preview-section setup-preview-instructor" data-edit-section="about">
         ${imageTag(content.images.instructor, `${content.instructorName} instructor portrait`)}
         <div class="setup-preview-instructor-copy">
           <small>Meet the choreographer</small>
@@ -469,19 +478,19 @@
         <h4>Training that feels clear, expressive, and easy to join.</h4>
         <div>${benefits}</div>
       </section>
-      <section id="gallery" class="setup-preview-section setup-preview-gallery">
+      <section id="gallery" class="setup-preview-section setup-preview-gallery" data-edit-section="gallery">
         <small>Gallery</small>
         <h4>Moments from the studio.</h4>
         <div class="setup-preview-gallery-grid">${gallery}</div>
       </section>
       <div data-instagram-feed data-business-id="${esc(content.businessId)}"></div>
-      <div class="setup-preview-proof" data-live-testimonials>${testimonials}</div>
-      <section id="faq" class="setup-preview-section setup-preview-faq">
+      <div class="setup-preview-proof" data-live-testimonials data-edit-section="testimonials">${testimonials}</div>
+      <section id="faq" class="setup-preview-section setup-preview-faq" data-edit-section="faq">
         <small>FAQ</small>
         <h4>Good to know before class.</h4>
         <div>${faqs}</div>
       </section>
-      <section id="contact" class="setup-preview-section setup-preview-contact">
+      <section id="contact" class="setup-preview-section setup-preview-contact" data-edit-section="contact">
         <div>
           <small>Contact</small>
           <h4>${esc(contactHeadline)}</h4>
@@ -493,11 +502,11 @@
           <a href="#contact">${esc(secondaryContact)}</a>
         </div>
       </section>
-      <footer class="setup-preview-footer">
+      <footer class="setup-preview-footer" data-edit-section="footer">
         <div class="setup-preview-footer-brand">
           <strong>${logoHTML(content, options.logoHTML)}</strong>
           <p>${esc(content.tagline || "A polished home for classes, workshops, and student community.")}</p>
-          <a class="setup-preview-footer-cta" href="#classes">${esc(primaryAction)}</a>
+          <a class="setup-preview-footer-cta" href="${esc(content.ctaLink || "#classes")}">${esc(primaryAction)}</a>
         </div>
         <nav class="setup-preview-footer-nav" aria-label="Footer navigation">
           <small>Explore</small>

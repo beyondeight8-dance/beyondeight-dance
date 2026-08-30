@@ -362,10 +362,13 @@
     if (error) throw error;
     const { data: settings } = await client.from("business_settings").select("*").eq("business_id", businessId).maybeSingle();
     const { data: website } = await client.from("websites").select("*").eq("business_id", businessId).maybeSingle();
+    const { data: draft } = website
+      ? await client.from("website_drafts").select("content,updated_at").eq("website_id", website.id).maybeSingle()
+      : { data: null };
     const { data: pages } = website
       ? await client.from("website_pages").select("*").eq("website_id", website.id).order("display_order")
       : { data: [] };
-    return { business, settings, website, pages: pages || [] };
+    return { business, settings, website: website ? { ...website, draft_content: draft?.content || {} } : website, pages: pages || [] };
   };
 
   const getBusinessBundleBySlug = async (slug) => {
@@ -387,7 +390,77 @@
     if (!website) return null;
     const { data: settings } = await client.from("business_settings").select("*").eq("business_id", business.id).maybeSingle();
     const { data: pages } = await client.from("website_pages").select("*").eq("website_id", website.id).eq("enabled", true).order("display_order");
-    return { business, settings, website, pages: pages || [] };
+    return { business, settings, website, pages: pages || [], mode: "public" };
+  };
+
+  const assertBusinessOwner = async (user, businessId) => {
+    if (!client || !user || !businessId) throw new Error("Please sign in again.");
+    const { data, error } = await client.from("businesses").select("*").eq("id", businessId).eq("owner_user_id", user.id).single();
+    if (error || !data) throw new Error("You do not have permission to edit this website.");
+    return data;
+  };
+
+  const saveWebsiteDraft = async ({ user, businessId, state }) => {
+    const business = await assertBusinessOwner(user, businessId);
+    const now = new Date().toISOString();
+    const { data: website, error: websiteError } = await client
+      .from("websites")
+      .update({ theme: state.theme || business.theme, updated_at: now })
+      .eq("business_id", businessId)
+      .select("*")
+      .single();
+    if (websiteError) throw websiteError;
+    const { error } = await client.from("website_drafts").upsert(
+      { website_id: website.id, business_id: businessId, content: state, updated_at: now },
+      { onConflict: "website_id" }
+    );
+    if (error) throw error;
+    return { ...website, draft_content: state };
+  };
+
+  const publishWebsiteDraft = async ({ user, businessId, state }) => {
+    const business = await assertBusinessOwner(user, businessId);
+    const now = new Date().toISOString();
+    const publishState = state || (await getBusinessBundle(businessId)).website?.draft_content;
+    if (!publishState || !Object.keys(publishState).length) throw new Error("There are no draft changes to publish.");
+    const { data: website, error } = await client
+      .from("websites")
+      .update({
+        published_content: publishState,
+        published: true,
+        published_at: now,
+        theme: publishState.theme || business.theme,
+        updated_at: now
+      })
+      .eq("business_id", businessId)
+      .select("*")
+      .single();
+    if (error) throw error;
+    const { error: draftError } = await client.from("website_drafts").upsert(
+      { website_id: website.id, business_id: businessId, content: publishState, updated_at: now },
+      { onConflict: "website_id" }
+    );
+    if (draftError) throw draftError;
+    const businessUpdate = buildBusinessPayload(user.id, { ...publishState, slug: business.slug }, business.current_onboarding_step, true);
+    const { error: businessError } = await client.from("businesses").update(businessUpdate).eq("id", businessId);
+    if (businessError) throw businessError;
+    await saveSettings(businessId, publishState);
+    return website;
+  };
+
+  const uploadBusinessMedia = async ({ user, businessId, file, kind = "website" }) => {
+    await assertBusinessOwner(user, businessId);
+    if (!file || !/^image\/(jpeg|png|webp)$/i.test(file.type)) throw new Error("Choose a JPG, PNG, or WEBP image.");
+    if (file.size > 10 * 1024 * 1024) throw new Error("Images must be 10MB or smaller.");
+    const extension = extensionForMime(file.type);
+    const storagePath = `${businessId}/${user.id}/${slugify(kind)}-${Date.now()}.${extension}`;
+    const { error } = await client.storage.from("business-media").upload(storagePath, file, { contentType: file.type, upsert: false });
+    if (error) throw error;
+    const { data } = client.storage.from("business-media").getPublicUrl(storagePath);
+    const publicUrl = data?.publicUrl;
+    if (!publicUrl) throw new Error("The image uploaded but its URL could not be created.");
+    await client.from("media").insert({ business_id: businessId, storage_path: storagePath, public_url: publicUrl, file_type: file.type, alt_text: `${kind} image` });
+    return { publicUrl, storagePath };
   };
 
   const publishWebsite = async ({ user, state, stepIndex, businessId }) => {
@@ -409,6 +482,7 @@
           theme: publishedState.theme,
           published: true,
           published_at: new Date().toISOString(),
+          published_content: publishedState,
           updated_at: new Date().toISOString()
         },
         { onConflict: "business_id" }
@@ -426,6 +500,7 @@
             theme: publishedState.theme,
             published: true,
             published_at: new Date().toISOString(),
+            published_content: publishedState,
             updated_at: new Date().toISOString()
           },
           { onConflict: "business_id" }
@@ -435,6 +510,11 @@
     }
     if (websiteResponse.error) throw websiteResponse.error;
     const website = websiteResponse.data;
+    const { error: draftError } = await client.from("website_drafts").upsert(
+      { website_id: website.id, business_id: business.id, content: publishedState, updated_at: new Date().toISOString() },
+      { onConflict: "website_id" }
+    );
+    if (draftError) throw draftError;
 
     const pages = (publishedState.pages?.length ? publishedState.pages : ["Home", "About", "Classes & Workshops", "Gallery", "Contact", "Register"]).map((title, index) => ({
       website_id: website.id,
@@ -507,6 +587,10 @@
     getPrimaryBusiness,
     getBusinessBundle,
     getBusinessBundleBySlug,
+    assertBusinessOwner,
+    saveWebsiteDraft,
+    publishWebsiteDraft,
+    uploadBusinessMedia,
     saveOnboarding,
     publishWebsite,
     routeForUser,
