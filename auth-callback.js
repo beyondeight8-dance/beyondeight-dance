@@ -50,7 +50,7 @@
       window.localStorage.removeItem(GUEST_SETUP_KEY);
       window.localStorage.removeItem(PENDING_OWNER_ACTION_KEY);
       window.localStorage.removeItem(AUTH_RETURN_TO_KEY);
-      window.location.replace(`/dashboard/?business=${encodeURIComponent(result.business.id)}&published=1`);
+      window.location.replace(`/${encodeURIComponent(result.business.slug || guestDraft.state.slug)}?owner=1`);
       return;
     }
 

@@ -98,6 +98,7 @@ alter table public.websites add column if not exists theme text not null default
 alter table public.websites add column if not exists published boolean not null default false;
 alter table public.websites add column if not exists published_at timestamptz;
 alter table public.websites add column if not exists custom_domain text;
+alter table public.websites add column if not exists published_content jsonb not null default '{}'::jsonb;
 alter table public.websites add column if not exists created_at timestamptz not null default now();
 alter table public.websites add column if not exists updated_at timestamptz not null default now();
 
@@ -113,6 +114,16 @@ create table if not exists public.website_pages (
   updated_at timestamptz not null default now(),
   unique (website_id, page_type)
 );
+
+create table if not exists public.website_drafts (
+  website_id uuid primary key references public.websites(id) on delete cascade,
+  business_id uuid not null unique references public.businesses(id) on delete cascade,
+  content jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.websites drop column if exists draft_content;
+alter table public.websites drop column if exists draft_updated_at;
 
 alter table public.website_pages add column if not exists website_id uuid references public.websites(id) on delete cascade;
 alter table public.website_pages add column if not exists page_type text;
@@ -171,6 +182,7 @@ create index if not exists business_members_business_id_idx on public.business_m
 create unique index if not exists business_members_business_user_unique_idx on public.business_members(business_id, user_id);
 create index if not exists websites_business_id_idx on public.websites(business_id);
 create unique index if not exists websites_business_id_unique_idx on public.websites(business_id);
+create unique index if not exists website_drafts_business_id_unique_idx on public.website_drafts(business_id);
 create index if not exists website_pages_website_id_idx on public.website_pages(website_id);
 create unique index if not exists website_pages_website_page_type_unique_idx on public.website_pages(website_id, page_type);
 create index if not exists business_settings_business_id_idx on public.business_settings(business_id);
@@ -192,6 +204,7 @@ alter table public.profiles enable row level security;
 alter table public.businesses enable row level security;
 alter table public.business_members enable row level security;
 alter table public.websites enable row level security;
+alter table public.website_drafts enable row level security;
 alter table public.website_pages enable row level security;
 alter table public.business_settings enable row level security;
 alter table public.media enable row level security;
@@ -289,6 +302,21 @@ create policy "websites update owner admin" on public.websites for update using 
 ) with check (
   public.has_business_role(business_id, array['owner','admin'])
   or exists (select 1 from public.businesses b where b.id = business_id and b.owner_user_id = auth.uid())
+);
+
+drop policy if exists "website drafts owner read" on public.website_drafts;
+create policy "website drafts owner read" on public.website_drafts for select using (
+  exists (select 1 from public.businesses b where b.id = website_drafts.business_id and b.owner_user_id = auth.uid())
+);
+drop policy if exists "website drafts owner insert" on public.website_drafts;
+create policy "website drafts owner insert" on public.website_drafts for insert with check (
+  exists (select 1 from public.businesses b where b.id = website_drafts.business_id and b.owner_user_id = auth.uid())
+);
+drop policy if exists "website drafts owner update" on public.website_drafts;
+create policy "website drafts owner update" on public.website_drafts for update using (
+  exists (select 1 from public.businesses b where b.id = website_drafts.business_id and b.owner_user_id = auth.uid())
+) with check (
+  exists (select 1 from public.businesses b where b.id = website_drafts.business_id and b.owner_user_id = auth.uid())
 );
 
 drop policy if exists "pages read permitted or public" on public.website_pages;

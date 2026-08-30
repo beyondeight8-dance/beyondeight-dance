@@ -58,7 +58,7 @@ const runCallback = async ({ storage = {}, route = "/dashboard/" } = {}) => {
   assert.equal(publishing.calls[1][0], "publish");
   assert.equal(publishing.calls[1][1].user.id, "user-1");
   assert.equal(publishing.calls[1][1].state.slug, "studio-eight");
-  assert.equal(publishing.redirects[0], "/dashboard/?business=business-1&published=1");
+  assert.equal(publishing.redirects[0], "/studio-eight?owner=1");
   assert.equal(publishing.localStorage.has("beyondeight.guestWebsiteDraft"), false);
 
   const returning = await runCallback({ route: "/dashboard/" });

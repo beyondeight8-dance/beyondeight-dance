@@ -1962,9 +1962,9 @@ const publishCurrentSetup = async () => {
     const result = await finalizeWebsitePublish();
     if (!result) return;
     clearGuestSetupDraft();
-    setupMessage.textContent = "Your website is live. Opening your dashboard...";
+    setupMessage.textContent = "Your website is live. Opening your website...";
     window.setTimeout(() => {
-      window.location.href = "/dashboard/?published=1";
+      window.location.href = `/${encodeURIComponent(result.business?.slug || getSetupState().slug)}?owner=1`;
     }, 600);
   } catch (error) {
     console.warn("Website publish failed:", error);
