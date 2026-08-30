@@ -51,7 +51,7 @@
     const bundle = await app.getBusinessBundle(business.id);
     const website = bundle.website;
     const isPublished = Boolean(website?.published);
-    const continueHref = business.onboarding_completed ? `/dashboard/website/?business=${business.id}` : `/?onboarding=1&app=1&business=${business.id}&step=${business.current_onboarding_step || 0}`;
+    const continueHref = business.onboarding_completed ? `/${encodeURIComponent(business.slug)}?owner=1` : `/?onboarding=1&app=1&business=${business.id}&step=${business.current_onboarding_step || 0}`;
 
     root.innerHTML = `
       <section class="dashboard-hero">
@@ -67,7 +67,7 @@
           <p>${isPublished ? `Your public URL is ${esc(publicUrl(business))}` : "Launch your site when onboarding is complete."}</p>
           <div class="dashboard-actions">
             <a class="primary-button" href="/${business.slug}" target="_blank" rel="noopener">View Website</a>
-            <a class="secondary-button" href="/dashboard/website/?business=${business.id}">Edit Website</a>
+            <a class="secondary-button" href="/${encodeURIComponent(business.slug)}?owner=1">Edit Website</a>
           </div>
         </article>
         <article class="dashboard-card">

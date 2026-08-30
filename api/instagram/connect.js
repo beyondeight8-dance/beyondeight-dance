@@ -6,7 +6,7 @@ module.exports = async (request, response) => {
   try {
     const user = await getUser(request);
     const businessId = request.body?.businessId;
-    await assertBusinessAccess(user.id, businessId);
+    const business = await assertBusinessAccess(user.id, businessId);
     const state = crypto.randomBytes(32).toString("base64url");
     const stateHash = crypto.createHash("sha256").update(state).digest("hex");
     await db("instagram_oauth_states", {
@@ -16,7 +16,7 @@ module.exports = async (request, response) => {
         state_hash: stateHash,
         user_id: user.id,
         business_id: businessId,
-        return_to: `/dashboard/website/?business=${encodeURIComponent(businessId)}`,
+        return_to: `/${encodeURIComponent(business.slug)}?owner=1`,
         expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString()
       })
     });
