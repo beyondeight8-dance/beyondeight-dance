@@ -79,9 +79,11 @@
   const scheduleSave = () => { window.clearTimeout(saveTimer); markDirty(); saveTimer = window.setTimeout(saveDraft, 800); };
   const field = (label, name, value = "", type = "text") => `<label>${esc(label)}<input type="${type}" name="${esc(name)}" value="${esc(value)}"></label>`;
   const area = (label, name, value = "") => `<label>${esc(label)}<textarea name="${esc(name)}" rows="4">${esc(value)}</textarea></label>`;
+  const selectField = (label, name, value, options) => `<label>${esc(label)}<select name="${esc(name)}">${options.map((option) => `<option${option === value ? " selected" : ""}>${esc(option)}</option>`).join("")}</select></label>`;
   const instagramControls = () => `<section class="owner-instagram" data-owner-instagram><div><small>Instagram feed</small><strong data-instagram-status>Checking connection...</strong><p data-instagram-help>Connect a Creator or Business account to show recent posts.</p></div><div data-instagram-settings hidden><label><input type="checkbox" data-instagram-visible> Show on website</label><label>Posts<select data-instagram-limit><option value="4">4</option><option value="6">6</option></select></label></div><div class="owner-instagram-actions"><button type="button" data-instagram-connect>Connect Instagram</button><button type="button" data-instagram-refresh hidden>Refresh</button><button type="button" data-instagram-disconnect hidden>Disconnect</button></div><small data-instagram-message></small></section>`;
   const imageField = (label, key, current = "") => `<label class="owner-image-field">${esc(label)}${current ? `<img src="${esc(current)}" alt="Current ${esc(label.toLowerCase())}">` : ""}<input type="file" accept="image/jpeg,image/png,image/webp" data-owner-image="${esc(key)}"><small>JPG, PNG, or WEBP up to 10MB</small></label>`;
-  const classEditor = () => (state.classes || contentForState().classes).map((item, index) => `<fieldset data-class-index="${index}"><legend>Class ${index + 1}</legend><div class="owner-reorder"><button type="button" data-move-class="${index}" data-direction="-1" aria-label="Move class up">Up</button><button type="button" data-move-class="${index}" data-direction="1" aria-label="Move class down">Down</button></div>${field("Class name", "title", item.title)}${field("Dance style", "style", item.style)}${field("Date", "date", item.date)}${field("Time", "time", item.time)}${field("Duration", "duration", item.duration || "60 minutes")}${field("Location", "location", item.location)}${field("Format (online or in person)", "format", item.format || "In person")}${field("Level", "level", item.level)}${field("Price", "price", item.price)}${field("Capacity", "capacity", item.capacity || "20")}${field("Available spots", "spots", item.spots)}${field("Instructor", "instructor", item.instructor)}${field("Booking link", "bookingUrl", item.bookingUrl || "#contact")}${area("Description", "description", item.description || "")}${imageField("Class image", `class:${index}`, item.image)}<button type="button" class="owner-remove" data-remove-class="${index}">Remove class</button></fieldset>`).join("");
+  const galleryEditor = (images) => `<div class="owner-gallery-manager">${images.map((src, index) => `<article><img src="${esc(src)}" alt="Gallery image ${index + 1}"><div><button type="button" data-move-gallery="${index}" data-direction="-1">Up</button><button type="button" data-move-gallery="${index}" data-direction="1">Down</button><button type="button" data-remove-gallery="${index}">Remove</button></div></article>`).join("") || `<p>No gallery images yet. Upload the first image below.</p>`}</div>`;
+  const classEditor = () => (state.classes || contentForState().classes).map((item, index) => `<fieldset data-class-index="${index}"><legend>${esc(item.title || `Class ${index + 1}`)}</legend><div class="owner-reorder"><button type="button" data-move-class="${index}" data-direction="-1">Up</button><button type="button" data-move-class="${index}" data-direction="1">Down</button></div>${selectField("Status", "published", item.published === false ? "Draft" : "Published", ["Published", "Draft"])}${field("Class name", "title", item.title)}${field("Dance style", "style", item.style)}${field("Date", "date", item.date, "date")}${field("Start time", "time", item.time, "time")}${field("Duration", "duration", item.duration || "60 minutes")}${selectField("Location type", "format", item.format || "In person", ["In person", "Online"])}${field("Location / venue", "location", item.location)}${selectField("Level", "level", item.level || "Open level", ["Beginner", "Intermediate", "Advanced", "Open level"])}${field("Price", "price", item.price)}${field("Capacity", "capacity", item.capacity || "20", "number")}${field("Available spots", "spots", item.spots)}${field("Instructor", "instructor", item.instructor)}${field("Booking link", "bookingUrl", item.bookingUrl || "#contact")}${area("Description", "description", item.description || "")}${area("What to bring", "whatToBring", item.whatToBring || "")}${area("Cancellation policy", "cancellationPolicy", item.cancellationPolicy || "")}${imageField("Class image", `class:${index}`, item.image)}<button type="button" class="owner-remove" data-remove-class="${index}">Delete class</button></fieldset>`).join("");
   const editorBody = (section) => {
     const content = contentForState();
     const workshop = state.workshop || content.workshop;
@@ -91,11 +93,14 @@
       classes: `<div data-class-list>${classEditor()}</div><button type="button" data-add-class>+ Add Class</button>`,
       workshop: `${field("Title", "workshop.title", workshop.title)}${area("Description", "workshop.description", workshop.description)}${field("Date", "workshop.date", workshop.date)}${field("Time", "workshop.time", workshop.time)}${field("Location", "workshop.location", workshop.location)}${field("Level", "workshop.level", workshop.level)}${field("Price", "workshop.price", workshop.price)}${imageField("Workshop image", "workshopImage", state.workshopImage || content.images.workshop)}`,
       about: `${field("Instructor name", "instructorName", state.instructorName || content.instructorName)}${area("Biography", "instructorBio", state.instructorBio || content.instructorBio)}${area("Teaching philosophy", "mission", state.mission || content.mission)}${area("Why dancers join", "whyJoin", state.whyJoin || content.whyJoin)}${imageField("Instructor portrait", "instructorImage", state.instructorImage || content.images.instructor)}`,
-      gallery: `${area("Gallery image URLs (one per line)", "gallery", (state.gallery || content.gallery).join("\n"))}${imageField("Add gallery image", "gallery:add")}`,
+      gallery: `${galleryEditor(state.gallery || content.gallery)}${imageField("Add gallery image", "gallery:add")}`,
       testimonials: area("Testimonials (Name | Quote, one per line)", "testimonials", (state.testimonials || content.testimonials).map((item) => item.join(" | ")).join("\n")),
       faq: area("FAQ (Question | Answer, one per line)", "faqs", (state.faqs || content.faqs).map((item) => item.join(" | ")).join("\n")),
-      contact: `${field("Email", "email", state.email || "")}${field("Instagram", "instagram", state.instagram || "")}${field("TikTok", "tiktok", state.tiktok || "")}${field("YouTube", "youtube", state.youtube || "")}${field("Website", "website", state.website || "")}${field("Location", "location", state.location || "")}${instagramControls()}`,
-      footer: `${field("Brand tagline", "tagline", state.tagline || content.tagline)}${field("Email", "email", state.email || "")}${field("Instagram", "instagram", state.instagram || "")}`
+      social: `${field("Instagram", "instagram", state.instagram || "")}${field("TikTok", "tiktok", state.tiktok || "")}${field("YouTube", "youtube", state.youtube || "")}${field("Website", "website", state.website || "")}${instagramControls()}`,
+      contact: `${field("Email", "email", state.email || "")}${selectField("Show email", "showEmail", state.showEmail || "Yes", ["Yes", "No"])}${field("Phone (optional)", "phone", state.phone || "")}${selectField("Show phone", "showPhone", state.showPhone || "Yes", ["Yes", "No"])}${field("Location / city", "location", state.location || "")}${selectField("Show location", "showLocation", state.showLocation || "Yes", ["Yes", "No"])}`,
+      theme: `${field("Brand name", "businessName", state.businessName)}${imageField("Logo", "logoImage", state.logoImage)}${selectField("Theme", "theme", state.theme || content.theme.name, ["Default Elegant", "Bold & Edgy", "Soft & Graceful", "Vibrant & Playful", "Minimal Black"])}`,
+      footer: `${field("Brand tagline", "tagline", state.tagline || content.tagline)}${field("Email", "email", state.email || "")}${field("Instagram", "instagram", state.instagram || "")}`,
+      settings: `${field("Website address", "slug", state.slug || bundle.business.slug)}${field("Browser title / brand name", "businessName", state.businessName)}${field("External website", "website", state.website || "")}`
     })[section] || "";
   };
   const updateStateFromForm = (form) => {
@@ -104,7 +109,8 @@
     const selectionStart = typeof active?.selectionStart === "number" ? active.selectionStart : null;
     const selectionEnd = typeof active?.selectionEnd === "number" ? active.selectionEnd : null;
     if (form.dataset.editorSection === "classes") {
-      state.classes = [...form.querySelectorAll("[data-class-index]")].map((group) => Object.fromEntries([...group.querySelectorAll("input:not([type=file]), textarea")].map((input) => [input.name, input.value])));
+      const previous = state.classes || contentForState().classes;
+      state.classes = [...form.querySelectorAll("[data-class-index]")].map((group, index) => { const values = Object.fromEntries([...group.querySelectorAll("input:not([type=file]), textarea, select")].map((input) => [input.name, input.value])); return { ...previous[index], ...values, published: values.published !== "Draft" }; });
     } else new FormData(form).forEach((value, key) => {
       if (key === "styles") state.styles = String(value).split(",").map((item) => item.trim()).filter(Boolean);
       else if (key === "gallery") state.gallery = String(value).split(/\n+/).map((item) => item.trim()).filter(Boolean);
@@ -176,7 +182,10 @@
     if (!editMode) return;
     activeSection = section;
     document.querySelector("[data-owner-drawer]")?.remove();
-    document.body.insertAdjacentHTML("beforeend", `<aside class="owner-editor-drawer" data-owner-drawer aria-label="Edit ${esc(section)}"><header><div><small>Editing section</small><h2>${esc(section.replace(/^./, (letter) => letter.toUpperCase()))}</h2></div><button type="button" data-close-editor aria-label="Close editor">Close</button></header><form data-editor-section="${esc(section)}">${editorBody(section)}<footer><button type="button" data-cancel-editor>Cancel</button><button type="button" class="owner-done" data-done-editor>Done</button></footer></form></aside>`);
+    const editorGroups = [["Content", [["classes", "Classes"], ["workshop", "Workshops"], ["about", "Instructor / About"], ["gallery", "Images & Gallery"], ["social", "Instagram / Social"], ["contact", "Contact"]]], ["Design", [["theme", "Theme & Brand"], ["hero", "Header & Hero"], ["footer", "Footer"]]], ["Settings", [["settings", "Website Settings"]]]];
+    const navigation = editorGroups.map(([label, items]) => `<section><small>${label}</small>${items.map(([key, title]) => `<button type="button" class="${section === key ? "is-active" : ""}" data-editor-nav="${key}">${title}</button>`).join("")}</section>`).join("");
+    const sectionTitle = editorGroups.flatMap(([, items]) => items).find(([key]) => key === section)?.[1] || section;
+    document.body.insertAdjacentHTML("beforeend", `<aside class="owner-editor-drawer" data-owner-drawer aria-label="Edit ${esc(sectionTitle)}"><header><div><small>Website editor</small><h2>${esc(sectionTitle)}</h2></div><button type="button" data-close-editor aria-label="Close editor">Close</button></header><nav class="owner-editor-nav" aria-label="Website editor sections">${navigation}</nav><form data-editor-section="${esc(section)}">${editorBody(section)}<footer><button type="button" data-cancel-editor>Cancel</button><button type="button" class="owner-done" data-done-editor>Done</button></footer></form></aside>`);
     const drawer = document.querySelector("[data-owner-drawer]");
     const form = drawer.querySelector("form");
     form.addEventListener("input", (event) => { if (!event.target.closest("[data-owner-instagram]") && !event.target.matches("[type=file]")) updateStateFromForm(form); });
@@ -184,9 +193,12 @@
     drawer.querySelector("[data-close-editor]").addEventListener("click", closeEditor);
     drawer.querySelector("[data-done-editor]").addEventListener("click", closeEditor);
     drawer.querySelector("[data-cancel-editor]").addEventListener("click", () => { state = clone(savedState); dirty = JSON.stringify(state) !== JSON.stringify(publishedState); closeEditor(); render({ keepDrawer: false }); });
-    form.querySelector("[data-add-class]")?.addEventListener("click", () => { state.classes = [...(state.classes || contentForState().classes), { title: "New Class", style: "Open", date: "Coming soon", time: "TBA", duration: "60 minutes", location: "In studio", level: "Open level", price: "$25", spots: "12 spots left", instructor: state.instructorName || contentForState().instructorName }]; scheduleSave(); render(); });
+    drawer.querySelectorAll("[data-editor-nav]").forEach((button) => button.addEventListener("click", () => openEditor(button.dataset.editorNav)));
+    form.querySelector("[data-add-class]")?.addEventListener("click", () => { state.classes = [...(state.classes || contentForState().classes), { title: "New Class", style: "Open", date: "", time: "", duration: "60 minutes", location: "In studio", format: "In person", level: "Open level", price: "$25", capacity: "20", spots: "20 spots left", instructor: state.instructorName || contentForState().instructorName, published: false }]; scheduleSave(); render(); });
     form.querySelectorAll("[data-move-class]").forEach((button) => button.addEventListener("click", () => { const from = Number(button.dataset.moveClass); const to = from + Number(button.dataset.direction); state.classes = state.classes || clone(contentForState().classes); if (to < 0 || to >= state.classes.length) return; [state.classes[from], state.classes[to]] = [state.classes[to], state.classes[from]]; scheduleSave(); render(); }));
     form.querySelectorAll("[data-remove-class]").forEach((button) => button.addEventListener("click", () => { state.classes.splice(Number(button.dataset.removeClass), 1); scheduleSave(); render(); }));
+    form.querySelectorAll("[data-move-gallery]").forEach((button) => button.addEventListener("click", () => { const from = Number(button.dataset.moveGallery); const to = from + Number(button.dataset.direction); state.gallery = state.gallery || clone(contentForState().gallery); if (to < 0 || to >= state.gallery.length) return; [state.gallery[from], state.gallery[to]] = [state.gallery[to], state.gallery[from]]; scheduleSave(); render(); }));
+    form.querySelectorAll("[data-remove-gallery]").forEach((button) => button.addEventListener("click", () => { state.gallery = state.gallery || clone(contentForState().gallery); state.gallery.splice(Number(button.dataset.removeGallery), 1); scheduleSave(); render(); }));
     bindInstagramEditor(drawer);
     if (focus) drawer.querySelector("input, textarea, button")?.focus();
   };
@@ -208,7 +220,7 @@
       if (destination.startsWith("#")) document.querySelector(destination)?.scrollIntoView({ behavior: "smooth" });
       else window.location.assign(destination);
     }));
-    root.querySelector("[data-owner-edit]")?.addEventListener("click", () => { editMode = !editMode; closeEditor(); render({ keepDrawer: false }); });
+    root.querySelector("[data-owner-edit]")?.addEventListener("click", () => { editMode = !editMode; closeEditor(); render({ keepDrawer: false }); if (editMode) openEditor("classes"); });
     root.querySelector("[data-owner-publish]")?.addEventListener("click", publishChanges);
     root.querySelector("[data-owner-visitor]")?.addEventListener("click", () => { editMode = false; root.querySelector("[data-owner-toolbar]")?.remove(); closeEditor(); });
     if (editMode) root.querySelectorAll("[data-edit-section]").forEach((section) => section.addEventListener("click", (event) => { if (event.target.closest("a, button, input")) return; event.preventDefault(); openEditor(section.dataset.editSection); }));
@@ -227,7 +239,13 @@
     publishedState = stateForBundle({ ...bundle, mode: "public" }, "public");
     dirty = ownsPublicBundle && Object.keys(bundle.website?.published_content || {}).length > 0 && JSON.stringify(state) !== JSON.stringify(publishedState);
     if (!templates) return publicError("We could not load this website.", "The shared BeyondEight template system did not load.");
+    const requestedEditor = params.get("edit");
+    if (ownsPublicBundle && (params.get("owner") === "1" || requestedEditor)) {
+      editMode = true;
+      if (requestedEditor === "classes" && params.get("new") === "1") { state.classes = [...(state.classes || contentForState().classes), { title: "New Class", style: "Open", date: "", time: "", duration: "60 minutes", location: "In studio", format: "In person", level: "Open level", price: "$25", capacity: "20", spots: "20 spots left", instructor: state.instructorName || contentForState().instructorName, published: false }]; dirty = true; scheduleSave(); }
+    }
     render({ keepDrawer: false });
+    if (editMode) openEditor(requestedEditor || "classes");
   } catch (error) {
     console.warn("Public site failed:", error);
     publicError("We could not load this website.", "Please try again soon.");

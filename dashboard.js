@@ -1,127 +1,43 @@
 (async function () {
   const app = window.BeyondEight;
+  const templates = window.BeyondEightWebsiteTemplates;
   const root = document.querySelector("[data-dashboard-root]");
   const logout = document.querySelector("[data-dashboard-logout]");
-
-  const esc = (value = "") =>
-    String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
-
-  const publicUrl = (business) => `${window.location.origin}/${business.slug}`;
-  const displayName = (user) =>
-    user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "there";
-
-  const renderWorkspaceSelector = (businesses) => {
-    root.innerHTML = `
-      <section class="dashboard-hero">
-        <p class="eyebrow">Workspace selector</p>
-        <h1>Choose your dance business.</h1>
-        <p>Select the workspace you want to manage today.</p>
-      </section>
-      <section class="dashboard-grid">
-        ${businesses
-          .map(
-            (business) => `
-              <article class="dashboard-card">
-                <h2>${esc(business.business_name)}</h2>
-                <p>${esc(business.tagline || "Website workspace")}</p>
-                <a class="primary-button" href="/dashboard/?business=${business.id}">Open workspace</a>
-              </article>`
-          )
-          .join("")}
-      </section>`;
+  const esc = (value = "") => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+  const clone = (value) => JSON.parse(JSON.stringify(value || {}));
+  const displayName = (user) => user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "there";
+  const imageUrl = (value) => /^https?:\/\//i.test(value || "") ? value : `/${String(value || "assets/starter-dance-class.jpg").replace(/^\//, "")}`;
+  let user; let business; let bundle; let draftState; let publishedState; let saving = false;
+  const sourceState = (mode) => { const website = bundle.website || {}; const selected = mode === "published" ? website.published_content : website.draft_content; return clone(selected && Object.keys(selected).length ? selected : website.published_content || bundle.settings?.generated_content || {}); };
+  const classesFor = (state) => templates.buildWebsiteContent({ ...state, businessId: business.id, businessName: state.businessName || business.business_name, slug: business.slug, theme: state.theme || business.theme }).classes || [];
+  const isDirty = () => JSON.stringify(draftState) !== JSON.stringify(publishedState);
+  const classDate = (item) => [item.date, item.time].filter(Boolean).join(" • ") || "Schedule coming soon";
+  const registrationCount = (item) => { const capacity = Number.parseInt(item.capacity, 10); const spots = Number.parseInt(item.spots, 10); return Number.isFinite(capacity) && Number.isFinite(spots) ? Math.max(0, capacity - spots) : null; };
+  const classRow = (item, index) => { const registered = registrationCount(item); const capacity = Number.parseInt(item.capacity, 10); return `<article class="owner-class-row"><img src="${esc(imageUrl(item.image))}" alt="" loading="lazy"><div><strong>${esc(item.title || "Untitled class")}</strong><span>${esc(classDate(item))}</span><small>${esc(item.location || "Location coming soon")} • ${esc(item.level || "Open level")}</small></div><div class="owner-class-capacity"><strong>${registered === null ? "—" : registered}${Number.isFinite(capacity) ? ` / ${capacity}` : ""}</strong><span>${registered === null ? "Registration tracking not connected" : "registered"}</span></div><span class="owner-status ${item.published === false ? "is-draft" : ""}">${item.published === false ? "Draft" : "Published"}</span><div class="owner-class-actions"><a href="/${encodeURIComponent(business.slug)}?owner=1&edit=classes&class=${index}">Edit</a><button type="button" data-class-action="duplicate" data-class-index="${index}">Duplicate</button><button type="button" data-class-action="toggle" data-class-index="${index}">${item.published === false ? "Publish" : "Unpublish"}</button><button type="button" data-class-action="delete" data-class-index="${index}">Delete</button></div></article>`; };
+  const render = () => {
+    const draftClasses = classesFor(draftState); const liveClasses = classesFor(publishedState).filter((item) => item.published !== false); const next = liveClasses[0];
+    root.innerHTML = `<div class="owner-shell">
+      <nav class="owner-nav" aria-label="Dashboard navigation"><a class="is-active" href="/dashboard/">Overview</a><a href="#classes">Classes</a><a href="#registrations">Registrations</a><a href="/${encodeURIComponent(business.slug)}?owner=1&edit=classes">Website</a><a href="#analytics">Analytics <span>PRO</span></a><a href="#settings">Settings</a></nav>
+      <section class="owner-welcome"><div><p class="eyebrow">Owner dashboard</p><h1>Welcome back, ${esc(displayName(user))}.</h1><p>Here’s what’s happening with your website and classes.</p></div><div class="owner-primary-actions"><a class="primary-button" href="/${encodeURIComponent(business.slug)}?owner=1&edit=classes">Edit Website</a><a class="secondary-button" href="/${encodeURIComponent(business.slug)}" target="_blank" rel="noopener">View Public Site</a><a class="secondary-button" href="/${encodeURIComponent(business.slug)}?owner=1&edit=classes&new=1">Add Class</a></div></section>
+      ${isDirty() ? `<section class="owner-draft-banner"><div><strong>Unpublished Changes</strong><span>Your draft is saved privately. Visitors still see the last published version.</span></div><button type="button" data-dashboard-publish>${saving ? "Publishing…" : "Publish Changes"}</button></section>` : `<p class="owner-published-state">✓ Published and up to date</p>`}
+      <section class="owner-metrics" aria-label="Business summary"><article><span>Live Classes</span><strong>${liveClasses.length}</strong><p>${liveClasses.length ? "Currently visible on your website" : "Add your first class to begin"}</p><a href="#classes">Manage classes</a></article><article><span>Student Registrations</span><strong>—</strong><p>Registration data will appear after booking is connected.</p><a href="#registrations">View registrations</a></article><article><span>Upcoming Session</span><strong>${esc(next?.date || "—")}</strong><p>${next ? `${esc(next.title)} • ${esc(next.time || "Time TBA")}` : "No upcoming sessions published"}</p><a href="#classes">View class</a></article><article class="is-pro"><span>Website Views <b>PRO</b></span><strong>—</strong><p>Unlock visitor analytics and traffic insights.</p><a href="#analytics">See Analytics Upgrade</a></article></section>
+      <section class="owner-quick-actions"><h2>Quick Actions</h2><div><a href="/${encodeURIComponent(business.slug)}?owner=1&edit=classes&new=1">+ Add a Class</a><a href="/${encodeURIComponent(business.slug)}?owner=1&edit=classes">Edit Website</a><a href="#registrations">Manage Registrations</a><a href="/${encodeURIComponent(business.slug)}?owner=1&edit=social">Connect Instagram</a><a href="/${encodeURIComponent(business.slug)}" target="_blank" rel="noopener">View Public Website</a></div></section>
+      <section id="classes" class="owner-dashboard-section"><header><div><p class="eyebrow">Schedule</p><h2>Upcoming Classes</h2></div><a class="primary-button" href="/${encodeURIComponent(business.slug)}?owner=1&edit=classes&new=1">+ Add Class</a></header><div class="owner-class-list">${draftClasses.length ? draftClasses.map(classRow).join("") : `<div class="owner-empty-state"><strong>Your website is live. Now add your first class.</strong><p>Classes you create will appear here and on your public website after publishing.</p><a class="primary-button" href="/${encodeURIComponent(business.slug)}?owner=1&edit=classes&new=1">Add a Class</a></div>`}</div></section>
+      <section id="registrations" class="owner-dashboard-section owner-registration-section"><header><div><p class="eyebrow">Students</p><h2>Recent Registrations</h2></div></header><div class="owner-empty-state"><strong>No registrations yet.</strong><p>Share your website or publish your next class to start accepting students. Registration storage is not connected yet, so no student data is fabricated here.</p></div></section>
+      <section id="analytics" class="owner-analytics-teaser"><div><p class="eyebrow">Growth Insights <span>PRO</span></p><h2>Understand what’s working.</h2><p>See which pages and classes attract attention, where visitors come from, and how website traffic turns into registrations.</p><a class="primary-button" href="#pricing">Unlock Advanced Analytics</a></div><div class="owner-analytics-mask" aria-label="Locked analytics preview"><article><span>Website visits</span><strong>—</strong></article><article><span>Top class</span><strong>—</strong></article><article><span>Registration conversion</span><strong>—</strong></article><article><span>Traffic source</span><strong>—</strong></article></div></section>
+    </div>`; bindEvents();
   };
-
-  const renderDashboard = async (business, businesses, user) => {
-    if (!business) {
-      root.innerHTML = `
-        <section class="dashboard-hero">
-          <p class="eyebrow">Private workspace</p>
-          <h1>Continue building your website.</h1>
-          <p>Welcome back, ${esc(displayName(user))}. Your account is ready. Start onboarding to create your BeyondEight website and dashboard.</p>
-          <a class="primary-button" href="/?onboarding=1&app=1">Begin onboarding</a>
-        </section>`;
-      return;
-    }
-
-    if (businesses.length > 1 && new URLSearchParams(window.location.search).get("select") === "1") {
-      renderWorkspaceSelector(businesses);
-      return;
-    }
-
-    const bundle = await app.getBusinessBundle(business.id);
-    const website = bundle.website;
-    const isPublished = Boolean(website?.published);
-    const continueHref = business.onboarding_completed ? `/${encodeURIComponent(business.slug)}?owner=1` : `/?onboarding=1&app=1&business=${business.id}&step=${business.current_onboarding_step || 0}`;
-
-    root.innerHTML = `
-      <section class="dashboard-hero">
-        <p class="eyebrow">Owner dashboard</p>
-        <h1>Welcome back, ${esc(displayName(user))}.</h1>
-        <p>${business.onboarding_completed ? `Manage ${esc(business.business_name)} from one private workspace.` : `Continue building ${esc(business.business_name)}. Your progress is saved as you go.`}</p>
-        ${!business.onboarding_completed ? `<a class="primary-button" href="${continueHref}">Continue Building Your Website</a>` : ""}
-      </section>
-      <section class="dashboard-overview">
-        <article class="dashboard-card dashboard-status">
-          <span>Status</span>
-          <strong>${isPublished ? "Published" : "Draft"}</strong>
-          <p>${isPublished ? `Your public URL is ${esc(publicUrl(business))}` : "Launch your site when onboarding is complete."}</p>
-          <div class="dashboard-actions">
-            <a class="primary-button" href="/${business.slug}" target="_blank" rel="noopener">View Website</a>
-            <a class="secondary-button" href="/${encodeURIComponent(business.slug)}?owner=1">Edit Website</a>
-          </div>
-        </article>
-        <article class="dashboard-card">
-          <span>Theme</span>
-          <strong>${esc(business.theme || "Editorial Elegant")}</strong>
-          <p>${esc((bundle.settings?.selected_pages || []).length || "0")} pages selected.</p>
-        </article>
-        <article class="dashboard-card">
-          <span>Public URL</span>
-          <strong>/${esc(business.slug)}</strong>
-          <p>${esc(publicUrl(business))}</p>
-        </article>
-      </section>
-      <section class="dashboard-card dashboard-payments-card">
-        <div>
-          <span>Payments</span>
-          <strong>How do you collect payments today?</strong>
-          <p>Choose the methods you already use. Stripe can be connected later as an upgrade when you are ready for automated checkout.</p>
-        </div>
-        <div class="payment-method-grid" aria-label="Payment methods">
-          ${["Venmo", "Zelle", "PayPal", "Stripe", "Cash", "Bank Transfer", "Other"]
-            .map((item) => `<button type="button" class="${item === "Stripe" ? "is-upgrade" : ""}">${item}<small>${item === "Stripe" ? "Later upgrade" : "Available now"}</small></button>`)
-            .join("")}
-        </div>
-        <label class="venmo-field">Venmo username<input type="text" placeholder="@yourname" aria-label="Venmo username"></label>
-      </section>
-      <section class="dashboard-tools">
-        ${["Classes", "Registrations", "Students", "Payments", "Analytics", "Marketing", "Settings"]
-          .map((item) => `<button type="button">${item}<small>Coming next</small></button>`)
-          .join("")}
-      </section>`;
+  const saveDraft = async (message) => { saving = true; render(); try { await app.saveWebsiteDraft({ user, businessId: business.id, state: draftState }); } catch (error) { window.alert(error.message || message || "Draft could not be saved."); } finally { saving = false; render(); } };
+  const bindEvents = () => {
+    root.querySelector("[data-dashboard-publish]")?.addEventListener("click", async () => { saving = true; render(); try { await app.publishWebsiteDraft({ user, businessId: business.id, state: draftState }); publishedState = clone(draftState); } catch (error) { window.alert(error.message || "Website could not be published."); } finally { saving = false; render(); } });
+    root.querySelectorAll("[data-class-action]").forEach((button) => button.addEventListener("click", async () => { const index = Number(button.dataset.classIndex); const action = button.dataset.classAction; const classes = classesFor(draftState); if (action === "duplicate") classes.splice(index + 1, 0, { ...clone(classes[index]), title: `${classes[index].title} Copy`, published: false }); if (action === "toggle") classes[index].published = classes[index].published === false; if (action === "delete" && window.confirm(`Delete ${classes[index].title}?`)) classes.splice(index, 1); else if (action === "delete") return; draftState.classes = classes; await saveDraft("Class change could not be saved."); }));
   };
-
   try {
-    if (!app?.client) throw new Error("Supabase is not available.");
-    const user = await app.getSessionUser();
-    if (!user) {
-      const intendedRoute = `${window.location.pathname}${window.location.search}`;
-      window.localStorage.setItem("beyondeight.authReturnTo", intendedRoute);
-      window.location.replace(`/?login=1&returnTo=${encodeURIComponent(intendedRoute)}`);
-      return;
-    }
-    await app.ensureProfile(user);
-    const businesses = await app.listAccessibleBusinesses(user.id);
-    const requestedBusinessId = new URLSearchParams(window.location.search).get("business");
-    const business = businesses.find((item) => item.id === requestedBusinessId) || businesses[0] || null;
-    await renderDashboard(business, businesses, user);
-  } catch (error) {
-    console.warn("Dashboard failed:", error);
-    root.innerHTML = `<section class="route-loading"><h1>We could not load your dashboard.</h1><p>Please refresh or sign in again.</p><a class="primary-button" href="/">Back home</a></section>`;
-  }
-
-  logout?.addEventListener("click", async () => {
-    await app.signOut();
-    window.location.replace("/");
-  });
+    if (!app?.client || !templates) throw new Error("BeyondEight services are unavailable."); user = await app.getSessionUser();
+    if (!user) { const returnTo = `${window.location.pathname}${window.location.search}`; window.localStorage.setItem("beyondeight.authReturnTo", returnTo); window.location.replace(`/?login=1&returnTo=${encodeURIComponent(returnTo)}`); return; }
+    await app.ensureProfile(user); const businesses = await app.listAccessibleBusinesses(user.id); const requested = new URLSearchParams(window.location.search).get("business"); business = businesses.find((item) => item.id === requested) || businesses[0] || null;
+    if (!business) { root.innerHTML = `<section class="dashboard-hero"><h1>Continue building your website.</h1><p>Your account is ready for its first BeyondEight website.</p><a class="primary-button" href="/?onboarding=1&app=1">Begin onboarding</a></section>`; return; }
+    bundle = await app.getBusinessBundle(business.id); draftState = sourceState("draft"); publishedState = sourceState("published"); render();
+  } catch (error) { console.warn("Dashboard failed:", error); root.innerHTML = `<section class="route-loading"><h1>We could not load your dashboard.</h1><p>Please refresh or sign in again.</p><a class="primary-button" href="/">Back home</a></section>`; }
+  logout?.addEventListener("click", async () => { await app.signOut(); window.location.replace("/"); });
 })();

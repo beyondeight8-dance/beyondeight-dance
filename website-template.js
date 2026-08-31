@@ -199,12 +199,7 @@
       };
     });
     const classes = Array.isArray(state.classes) ? state.classes : generatedClasses;
-    const contact = [
-      state.instagram || "Instagram coming soon",
-      state.website || state.domain || "",
-      state.email || "hello@beyond8dance.com",
-      state.location || "Location shared after registration"
-    ].filter(Boolean);
+    const contact = [state.instagram, state.website || state.domain || "", state.showEmail === "No" ? "" : state.email || "hello@beyond8dance.com", state.showPhone === "No" ? "" : state.phone, state.showLocation === "No" ? "" : state.location || "Location shared after registration"].filter(Boolean);
     return {
       businessId: state.businessId || "",
       theme,
@@ -339,7 +334,8 @@
     const tags = content.styles.slice(0, 4).map((style) => `<span>${esc(style)}</span>`).join("");
     const primaryAction = content.ctaText || themeActionLabel(content.theme);
     const classThumbs = [content.images.gallery, content.images.workshop, content.images.performance, content.images.hero].filter(Boolean);
-    const classes = content.classes
+    const visibleClasses = content.classes.filter((item) => item.published !== false);
+    const classes = visibleClasses
       .slice(0, 3)
       .map((item, index) => {
         const thumb = item.image || classThumbs[index % classThumbs.length] || content.images.hero;
@@ -431,8 +427,8 @@
           ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
           <aside>
             <small>Next class</small>
-            <strong>${esc(content.classes[0]?.date || "Saturday")} &bull; ${esc(content.classes[0]?.time || "7:00 PM")}</strong>
-            <span>${esc(content.classes[0]?.spots || "5 spots left")}</span>
+            <strong>${esc(visibleClasses[0]?.date || "Saturday")} &bull; ${esc(visibleClasses[0]?.time || "7:00 PM")}</strong>
+            <span>${esc(visibleClasses[0]?.spots || "5 spots left")}</span>
           </aside>
         </div>
       </section>
