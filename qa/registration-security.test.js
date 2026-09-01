@@ -1,0 +1,12 @@
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const root = path.resolve(__dirname, "..");
+const services = fs.readFileSync(path.join(root, "app-services.js"), "utf8");
+const schema = fs.readFileSync(path.join(root, "supabase-booking-registration.sql"), "utf8");
+assert.match(services, /await assertBusinessOwner\(user, businessId\)/, "owner reads must verify ownership");
+assert.match(services, /from\("registrations"\)\.insert/, "public booking must create a registration record");
+assert.match(schema, /w\.published = true/, "public inserts must require a published website");
+assert.match(schema, /b\.owner_user_id = auth\.uid\(\)/, "registration reads must be owner scoped");
+assert.doesNotMatch(schema, /for select using \(true\)/i, "student registrations must never be publicly readable");
+console.log("registration security regression tests passed");

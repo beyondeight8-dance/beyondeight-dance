@@ -238,7 +238,7 @@
       instructorName,
       instructorBio: state.instructorBio || `${brandName} helps dancers grow through ${styles.slice(0, 3).join(", ")} with clear coaching, intentional choreography, and a welcoming class experience.`,
       benefits: demoData.benefits,
-      testimonials: Array.isArray(state.testimonials) && state.testimonials.length ? state.testimonials : demoData.testimonials,
+      testimonials: Array.isArray(state.testimonials) ? state.testimonials : demoData.testimonials,
       faqs: Array.isArray(state.faqs) && state.faqs.length ? state.faqs : demoData.faqs,
       gallery: Array.isArray(state.gallery) && state.gallery.length ? state.gallery : [
         state.galleryImage || "assets/starter-dance-class.jpg",
@@ -339,10 +339,10 @@
       .slice(0, 3)
       .map((item, index) => {
         const thumb = item.image || classThumbs[index % classThumbs.length] || content.images.hero;
-        return `<article class="setup-preview-class-card">
+        return `<article class="setup-preview-class-card${item.highlighted ? " is-highlighted" : ""}">
             <div class="setup-preview-class-thumb">
               ${imageTag(thumb, `${item.title} class thumbnail`)}
-              <span>${esc(item.spots)}</span>
+              <span>${esc(item.highlighted ? "Featured Class" : item.spots)}</span>
             </div>
             <small>${esc(item.style)}</small>
             <strong>${esc(item.title)}</strong>
@@ -353,7 +353,7 @@
             </div>
             ${item.description ? `<p>${esc(item.description)}</p>` : ""}
             <p class="setup-preview-class-footer"><b>${esc(item.price)}</b><span>${esc(item.spots)}</span></p>
-            <button type="button" data-booking-url="${esc(item.bookingUrl || "#contact")}">${esc(primaryAction)}</button>
+            <button type="button" data-book-class="${esc(item.id || slugify(item.title))}"${item.registrationOpen === false ? " disabled" : ""}>${item.registrationOpen === false ? "Registration Closed" : "Book a Spot"}</button>
           </article>`;
       })
       .join("") || `<article class="setup-preview-empty"><strong>New classes coming soon.</strong><p>Follow along or get in touch for the next class announcement.</p></article>`;
@@ -478,7 +478,7 @@
         <div class="setup-preview-gallery-grid">${gallery}</div>
       </section>
       <div data-instagram-feed data-business-id="${esc(content.businessId)}"></div>
-      <div class="setup-preview-proof" data-live-testimonials data-edit-section="testimonials">${testimonials}</div>
+      ${testimonials ? `<div class="setup-preview-proof" data-live-testimonials data-edit-section="testimonials">${testimonials}</div>` : ""}
       <section id="faq" class="setup-preview-section setup-preview-faq" data-edit-section="faq">
         <small>FAQ</small>
         <h4>Good to know before class.</h4>

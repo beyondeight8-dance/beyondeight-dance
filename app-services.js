@@ -101,6 +101,12 @@
   const resolveAuthCallbackSession = async ({ timeoutMs = 8000 } = {}) => {
     if (!client) throw new Error("Authentication is unavailable.");
 
+    // Supabase session state is authoritative. Providers can leave stale error
+    // parameters behind even after a successful redirect/session exchange.
+    const existing = await client.auth.getSession();
+    if (existing.error) throw existing.error;
+    if (existing.data.session) return existing.data.session;
+
     const url = new URL(window.location.href);
     const hash = new URLSearchParams(url.hash.replace(/^#/, ""));
     const providerError =
@@ -109,10 +115,6 @@
       url.searchParams.get("error") ||
       hash.get("error");
     if (providerError) throw new Error("Google sign-in was cancelled or could not be completed.");
-
-    const existing = await client.auth.getSession();
-    if (existing.error) throw existing.error;
-    if (existing.data.session) return existing.data.session;
 
     const code = url.searchParams.get("code");
     if (code) {
@@ -463,6 +465,39 @@
     return { publicUrl, storagePath };
   };
 
+  const createRegistration = async ({ businessId, websiteId, registration }) => {
+    if (!client || !businessId || !websiteId || !registration?.classId) throw new Error("This class is not available for booking.");
+    const payload = {
+      business_id: businessId,
+      website_id: websiteId,
+      class_id: String(registration.classId),
+      student_name: String(registration.studentName || "").trim(),
+      student_email: String(registration.studentEmail || "").trim(),
+      student_phone: String(registration.studentPhone || "").trim(),
+      notes: String(registration.notes || "").trim(),
+      payment_method: registration.paymentMethod || "venmo",
+      payment_status: registration.paymentStatus || "payment_pending_verification",
+      class_snapshot: registration.classSnapshot || {}
+    };
+    if (!payload.student_name || !payload.student_email || !payload.student_phone) throw new Error("Please complete your name, email, and phone number.");
+    const { data, error } = await client.from("registrations").insert(payload).select("*").single();
+    if (error) {
+      console.warn("Registration creation failed:", error);
+      throw new Error("We couldn't complete your booking. Please try again.");
+    }
+    return data;
+  };
+
+  const listRegistrations = async ({ user, businessId }) => {
+    await assertBusinessOwner(user, businessId);
+    const { data, error } = await client.from("registrations").select("*").eq("business_id", businessId).order("registered_at", { ascending: false });
+    if (error) {
+      console.warn("Registration list failed:", error);
+      throw new Error("We couldn't load registrations right now.");
+    }
+    return data || [];
+  };
+
   const publishWebsite = async ({ user, state, stepIndex, businessId }) => {
     let business = await ensureBusiness(user, state, stepIndex, businessId, false);
     let publishedState = { ...state, slug: business.slug };
@@ -561,12 +596,12 @@
     if (!user) return "/";
     await ensureProfile(user);
     const { business, businesses } = await getPrimaryBusiness(user.id);
-    if (businesses.length > 1) return `/${encodeURIComponent(business.slug)}`;
+    if (businesses.length > 1) return "/dashboard/?select=1";
     if (!business) return "/?onboarding=1&app=1";
     if (!business.onboarding_completed) {
       return `/?onboarding=1&app=1&business=${encodeURIComponent(business.id)}&step=${Number(business.current_onboarding_step) || 0}`;
     }
-    return `/${encodeURIComponent(business.slug)}`;
+    return "/dashboard/";
   };
 
   const signOut = async () => {
@@ -591,6 +626,8 @@
     saveWebsiteDraft,
     publishWebsiteDraft,
     uploadBusinessMedia,
+    createRegistration,
+    listRegistrations,
     saveOnboarding,
     publishWebsite,
     routeForUser,
