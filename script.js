@@ -1864,6 +1864,8 @@ const initSupabaseAuth = async () => {
           return;
         }
         if (currentUser && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")) {
+          setAuthError("");
+          setAuthBusy(false);
           await restoreOnboardingProgress();
           await updateHeaderForAuth();
           if (pendingSetupAfterAuth && authModal?.classList.contains("is-open")) {
