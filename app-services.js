@@ -363,10 +363,12 @@
     const { data: business, error } = await client.from("businesses").select("*").eq("id", businessId).single();
     if (error) throw error;
     const { data: settings } = await client.from("business_settings").select("*").eq("business_id", businessId).maybeSingle();
-    const { data: website } = await client.from("websites").select("*").eq("business_id", businessId).maybeSingle();
-    const { data: draft } = website
+    const { data: website, error: websiteError } = await client.from("websites").select("*").eq("business_id", businessId).maybeSingle();
+    if (websiteError) throw websiteError;
+    const { data: draft, error: draftError } = website
       ? await client.from("website_drafts").select("content,updated_at").eq("website_id", website.id).maybeSingle()
       : { data: null };
+    if (draftError) throw draftError;
     const { data: pages } = website
       ? await client.from("website_pages").select("*").eq("website_id", website.id).order("display_order")
       : { data: [] };
@@ -401,6 +403,47 @@
     if (error || !data) throw new Error("You do not have permission to edit this website.");
     return data;
   };
+
+  const normalizeClass = (input) => {
+    const item = { ...input };
+    for (const key of ["title", "style", "description", "date", "time", "duration", "level", "format"]) {
+      item[key] = String(input[key] ?? "").trim();
+    }
+    for (const key of ["image", "venue", "location", "address", "city", "onlineLink", "instructor", "bookingNotes"]) {
+      item[key] = String(input[key] ?? "").trim() || null;
+    }
+    for (const key of ["title", "style", "description", "duration"]) {
+      if (!item[key]) throw new Error(`Please complete the class ${key}.`);
+    }
+    const price = String(input.price ?? "").trim().replace(/^\$/, "");
+    if (!/^\d+(\.\d{1,2})?$/.test(price)) throw new Error("Price must be a number with at most two decimal places.");
+    item.price = Number(price);
+    item.capacity = Number(input.capacity);
+    if (!Number.isFinite(item.price) || !Number.isSafeInteger(item.capacity) || item.capacity < 1) throw new Error("Capacity must be a positive whole number.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(item.date) || !Number.isFinite(Date.parse(item.date)) || new Date(item.date).toISOString().slice(0, 10) !== item.date) throw new Error("Choose a valid class date.");
+    if (!/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/.test(item.time)) throw new Error("Choose a valid class start time.");
+    item.published = input.published === true;
+    item.registrationOpen = input.registrationOpen !== false;
+    item.venmoRequired = input.venmoRequired !== false;
+    return item;
+  };
+
+  const mutateClass = async ({ businessId, operation, classId = null, values = {} }) => {
+    const { data: auth, error: authError } = await client.auth.getUser();
+    if (authError) throw authError;
+    if (!auth?.user) throw new Error("Please sign in again.");
+    await assertBusinessOwner(auth.user, businessId);
+    const { data, error } = await client.rpc("mutate_class", {
+      p_business_id: businessId, p_operation: operation, p_class_id: classId, p_class: values
+    });
+    if (error) throw error;
+    return data;
+  };
+  const createClass = ({ businessId, values }) => mutateClass({ businessId, operation: "create", values: normalizeClass(values) });
+  const updateClass = ({ businessId, classId, values }) => mutateClass({ businessId, classId, operation: "update", values: normalizeClass(values) });
+  const duplicateClass = ({ businessId, classId }) => mutateClass({ businessId, classId, operation: "duplicate" });
+  const deleteClass = ({ businessId, classId }) => mutateClass({ businessId, classId, operation: "delete" });
+  const highlightClass = ({ businessId, classId }) => mutateClass({ businessId, classId, operation: "highlight" });
 
   const saveWebsiteDraft = async ({ user, businessId, state }) => {
     const business = await assertBusinessOwner(user, businessId);
@@ -453,7 +496,7 @@
   const uploadBusinessMedia = async ({ user, businessId, file, kind = "website" }) => {
     await assertBusinessOwner(user, businessId);
     if (!file || !/^image\/(jpeg|png|webp)$/i.test(file.type)) throw new Error("Choose a JPG, PNG, or WEBP image.");
-    if (file.size > 10 * 1024 * 1024) throw new Error("Images must be 10MB or smaller.");
+    if (file.size > 5 * 1024 * 1024) throw new Error("Images must be 5MB or smaller.");
     const extension = extensionForMime(file.type);
     const storagePath = `${businessId}/${user.id}/${slugify(kind)}-${Date.now()}.${extension}`;
     const { error } = await client.storage.from("business-media").upload(storagePath, file, { contentType: file.type, upsert: false });
@@ -623,6 +666,12 @@
     getBusinessBundle,
     getBusinessBundleBySlug,
     assertBusinessOwner,
+    normalizeClass,
+    createClass,
+    updateClass,
+    duplicateClass,
+    deleteClass,
+    highlightClass,
     saveWebsiteDraft,
     publishWebsiteDraft,
     uploadBusinessMedia,

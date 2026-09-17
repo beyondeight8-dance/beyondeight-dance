@@ -11,7 +11,7 @@
   let activeView = "overview"; let saving = false; let editingIndex = -1; let pendingDelete = -1;
 
   const content = (state) => templates.buildWebsiteContent({ ...state, businessId: business.id, businessName: state.businessName || business.business_name, slug: business.slug, theme: state.theme || business.theme });
-  const classes = () => (Array.isArray(draftState.classes) ? draftState.classes : content(draftState).classes || []).map((item) => ({ registrationOpen: true, venmoRequired: true, ...item, id: item.id || uid() }));
+  const classes = () => (Array.isArray(draftState.classes) ? draftState.classes : []).map((item) => ({ registrationOpen: true, venmoRequired: true, ...item }));
   const dirty = () => JSON.stringify(draftState) !== JSON.stringify(publishedState);
   const toast = (message, error = false) => { document.querySelector("[data-owner-toast]")?.remove(); document.body.insertAdjacentHTML("beforeend", `<div class="owner-toast${error ? " is-error" : ""}" data-owner-toast role="status">${esc(message)}</div>`); setTimeout(() => document.querySelector("[data-owner-toast]")?.remove(), 3200); };
   const nav = () => `<nav class="owner-nav" aria-label="Dashboard navigation">${[["overview","Overview"],["classes","Classes"],["registrations","Registrations"],["website","Website"],["instructors","Instructors"],["reviews","Reviews"],["social","Social"],["analytics","Analytics"],["settings","Settings"]].map(([key,label]) => `<button type="button" class="${activeView === key ? "is-active" : ""}" data-view="${key}">${label}${key === "analytics" ? " <span>PRO</span>" : ""}</button>`).join("")}</nav>`;
@@ -25,12 +25,87 @@
   const render = () => { const views = { overview, classes: classView, registrations: registrationView, website: websiteView, settings: settingsView, instructors: () => placeholder("Instructors"), reviews: () => placeholder("Reviews"), social: () => placeholder("Social"), analytics: () => placeholder("Analytics") }; root.innerHTML = `<div class="owner-shell">${nav()}${views[activeView]()}</div>`; bind(); };
   const persist = async (publish, message) => { if (saving) return; saving = true; try { draftState.classes = classes(); await app.saveWebsiteDraft({ user, businessId: business.id, state: draftState }); if (publish) { await app.publishWebsiteDraft({ user, businessId: business.id, state: draftState }); publishedState = clone(draftState); } toast(message); } catch (error) { console.warn(error); toast("We couldn't save this class. Please try again.", true); } finally { saving = false; render(); } };
 
-  const formHtml = (item = {}) => `<form class="owner-class-form" data-class-form><header><div><p class="eyebrow">${editingIndex < 0 ? "New class" : "Edit class"}</p><h2>${editingIndex < 0 ? "Add Class" : esc(item.title)}</h2></div><button type="button" data-close aria-label="Close">×</button></header><div class="owner-form-grid"><fieldset><legend>Class details</legend><label>Class Name<input required name="title" value="${esc(item.title || "")}"></label><label>Dance Style<input required name="style" value="${esc(item.style || "")}"></label><label>Short Description<textarea required name="description">${esc(item.description || "")}</textarea></label><label class="owner-image-field">Class Image<img src="${esc(imageUrl(item.image))}" data-image-preview alt="Preview"><input type="file" accept="image/jpeg,image/png,image/webp" data-image><small data-upload>JPG, PNG, or WEBP up to 10MB</small></label><input type="hidden" name="image" value="${esc(item.image || "")}"></fieldset><fieldset><legend>Schedule</legend><label>Date<input required type="date" name="date" value="${esc(item.date || "")}"></label><label>Start Time<input required type="time" name="time" value="${esc(item.time || "")}"></label><label>Duration<input required name="duration" value="${esc(item.duration || "60 minutes")}"></label><legend>Location</legend><label>Format<select name="format"><option${item.format !== "Online" ? " selected" : ""}>In Person</option><option${item.format === "Online" ? " selected" : ""}>Online</option></select></label><label>Venue Name<input name="venue" value="${esc(item.venue || item.location || "")}"></label><label>Address<input name="address" value="${esc(item.address || "")}"></label><label>City<input name="city" value="${esc(item.city || "")}"></label><label>Online Link<input type="url" name="onlineLink" value="${esc(item.onlineLink || "")}"></label></fieldset><fieldset><legend>Class info</legend><label>Level<select name="level">${["Beginner","Intermediate","Advanced","Open Level"].map((value) => `<option${String(item.level || "Open Level").toLowerCase() === value.toLowerCase() ? " selected" : ""}>${value}</option>`).join("")}</select></label><label>Instructor<input name="instructor" value="${esc(item.instructor || draftState.instructorName || "")}"></label><label>Price<input required name="price" value="${esc(item.price || "$25")}"></label><label>Capacity<input required type="number" min="1" name="capacity" value="${esc(item.capacity || "20")}"></label><legend>Booking</legend><label class="owner-check"><input type="checkbox" name="registrationOpen"${item.registrationOpen !== false ? " checked" : ""}> Registration open</label><label class="owner-check"><input type="checkbox" name="venmoRequired"${item.venmoRequired !== false ? " checked" : ""}> Venmo payment required</label><label>Booking Notes<textarea name="bookingNotes">${esc(item.bookingNotes || "")}</textarea></label></fieldset></div><footer><button type="button" data-close>Cancel</button><button type="submit" value="draft">Save Draft</button><button class="primary-button" type="submit" value="publish">Publish Class</button></footer></form>`;
+  const formHtml = (item = {}) => `<form class="owner-class-form" data-class-form><header><div><p class="eyebrow">${editingIndex < 0 ? "New class" : "Edit class"}</p><h2>${editingIndex < 0 ? "Add Class" : esc(item.title)}</h2></div><button type="button" data-close aria-label="Close">×</button></header><div class="owner-form-grid"><fieldset><legend>Class details</legend><label>Class Name<input required name="title" value="${esc(item.title || "")}"></label><label>Dance Style<input required name="style" value="${esc(item.style || "")}"></label><label>Short Description<textarea required name="description">${esc(item.description || "")}</textarea></label><label class="owner-image-field">Class Image<img src="${esc(imageUrl(item.image))}" data-image-preview alt="Preview"><input type="file" accept="image/jpeg,image/png,image/webp" data-image><small data-upload>JPG, PNG, or WEBP up to 5MB</small></label><input type="hidden" name="image" value="${esc(item.image || "")}"></fieldset><fieldset><legend>Schedule</legend><label>Date<input required type="date" name="date" value="${esc(item.date || "")}"></label><label>Start Time<input required type="time" name="time" value="${esc(item.time || "")}"></label><label>Duration<input required name="duration" value="${esc(item.duration || "60 minutes")}"></label><legend>Location</legend><label>Format<select name="format"><option${item.format !== "Online" ? " selected" : ""}>In Person</option><option${item.format === "Online" ? " selected" : ""}>Online</option></select></label><label>Venue Name<input name="venue" value="${esc(item.venue || item.location || "")}"></label><label>Address<input name="address" value="${esc(item.address || "")}"></label><label>City<input name="city" value="${esc(item.city || "")}"></label><label>Online Link<input type="url" name="onlineLink" value="${esc(item.onlineLink || "")}"></label></fieldset><fieldset><legend>Class info</legend><label>Level<select name="level">${["Beginner","Intermediate","Advanced","Open Level"].map((value) => `<option${String(item.level || "Open Level").toLowerCase() === value.toLowerCase() ? " selected" : ""}>${value}</option>`).join("")}</select></label><label>Instructor<input name="instructor" value="${esc(item.instructor || draftState.instructorName || "")}"></label><label>Price<input required name="price" value="${esc(item.price ?? "$25")}"></label><label>Capacity<input required type="number" min="1" name="capacity" value="${esc(item.capacity || "20")}"></label><legend>Booking</legend><label class="owner-check"><input type="checkbox" name="registrationOpen"${item.registrationOpen !== false ? " checked" : ""}> Registration open</label><label class="owner-check"><input type="checkbox" name="venmoRequired"${item.venmoRequired !== false ? " checked" : ""}> Venmo payment required</label><label>Booking Notes<textarea name="bookingNotes">${esc(item.bookingNotes || "")}</textarea></label></fieldset></div><footer><button type="button" data-close>Cancel</button><button type="submit" value="draft">Save Draft</button><button class="primary-button" type="submit" value="publish">Publish Class</button></footer></form>`;
   const openForm = (index = -1) => { editingIndex = index; const item = index >= 0 ? classes()[index] : {}; document.body.insertAdjacentHTML("beforeend", `<div class="owner-modal" data-modal role="dialog" aria-modal="true"><div>${formHtml(item)}</div></div>`); const modal = document.querySelector("[data-modal]"); modal.querySelectorAll("[data-close]").forEach((button) => button.onclick = closeModal); modal.querySelector("[data-image]").onchange = uploadImage; modal.querySelector("form").onsubmit = saveClass; modal.querySelector("input")?.focus(); };
   const closeModal = () => { document.querySelector("[data-modal]")?.remove(); editingIndex = -1; };
-  const uploadImage = async (event) => { const file = event.target.files?.[0]; if (!file) return; const form = event.target.form; const status = form.querySelector("[data-upload]"); if (!/^image\/(jpeg|png|webp)$/i.test(file.type) || file.size > 10485760) return status.textContent = "Choose a JPG, PNG, or WEBP image up to 10MB."; form.querySelector("[data-image-preview]").src = URL.createObjectURL(file); status.textContent = "Uploading…"; try { const result = await app.uploadBusinessMedia({ user, businessId: business.id, file, kind: "class" }); form.elements.image.value = result.publicUrl; status.textContent = "Image uploaded."; } catch (error) { console.warn(error); status.textContent = "We couldn't upload this image."; } };
-  const saveClass = async (event) => { event.preventDefault(); const intent = event.submitter.value; const data = new FormData(event.currentTarget); const list = classes(); const old = editingIndex >= 0 ? list[editingIndex] : {}; const item = { ...old, id: old.id || uid(), title:data.get("title"), style:data.get("style"), description:data.get("description"), image:data.get("image"), date:data.get("date"), time:data.get("time"), duration:data.get("duration"), format:data.get("format"), venue:data.get("venue"), location:data.get("venue"), address:data.get("address"), city:data.get("city"), onlineLink:data.get("onlineLink"), level:data.get("level"), instructor:data.get("instructor"), price:data.get("price"), capacity:data.get("capacity"), registrationOpen:data.has("registrationOpen"), venmoRequired:data.has("venmoRequired"), bookingNotes:data.get("bookingNotes"), published:intent === "publish" }; if (editingIndex >= 0) list[editingIndex] = item; else list.push(item); draftState.classes = list; closeModal(); await persist(intent === "publish", intent === "publish" ? "Class published." : "Class saved as draft."); };
-  const action = async (name, index) => { const list = classes(); const item = list[index]; if (name === "edit") return openForm(index); if (name === "registrations") { activeView = "registrations"; return render(); } if (name === "duplicate") { list.splice(index + 1,0,{...clone(item),id:uid(),title:`${item.title} — Copy`,published:false,highlighted:false}); draftState.classes=list; return persist(false,"Class duplicated as a draft."); } if (name === "toggle") { item.published=item.published===false; draftState.classes=list; return persist(true,item.published?"Class published.":"Class unpublished."); } if (name === "highlight") { const enable=!item.highlighted; list.forEach((entry,i)=>entry.highlighted=enable&&i===index); draftState.classes=list; return persist(true,enable?"Class highlighted.":"Class highlight removed."); } if (name === "delete") { pendingDelete=index; document.body.insertAdjacentHTML("beforeend",`<div class="owner-modal owner-confirm" data-confirm role="alertdialog"><div><h2>Delete “${esc(item.title)}”?</h2><p>This cannot be undone.${registrations.some((r)=>r.class_id===item.id)?" This class has registrations; their history will remain available.":""}</p><footer><button data-cancel-delete>Cancel</button><button class="owner-danger" data-delete>Delete Class</button></footer></div></div>`); document.querySelector("[data-cancel-delete]").onclick=()=>document.querySelector("[data-confirm]").remove(); document.querySelector("[data-delete]").onclick=async()=>{list.splice(pendingDelete,1);draftState.classes=list;document.querySelector("[data-confirm]").remove();await persist(true,"Class deleted.");}; } };
+  const uploadImage = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const form = event.target.form;
+    const status = form.querySelector("[data-upload]");
+    const controls = [...form.querySelectorAll("button[type=submit], [data-image]")];
+    form.dataset.uploading = "true";
+    controls.forEach((control) => control.disabled = true);
+    status.textContent = "Uploading...";
+    try {
+      const result = await app.uploadBusinessMedia({ user, businessId: business.id, file, kind: "class" });
+      form.elements.image.value = result.publicUrl;
+      form.querySelector("[data-image-preview]").src = result.publicUrl;
+      status.textContent = "Image uploaded.";
+    } catch (error) {
+      console.warn("Class image upload failed:", error);
+      status.textContent = `Image upload failed: ${error.message || "Please try again."} You can still save without a new image.`;
+    } finally {
+      form.dataset.uploading = "false";
+      controls.forEach((control) => control.disabled = false);
+    }
+  };
+  const saveError = (error) => `${error.message || "Class could not be saved."}${error.code ? ` (${error.code})` : ""}`;
+  const runClassMutation = async (operation, message, onSuccess) => {
+    if (saving) return false;
+    saving = true;
+    const controls = [...document.querySelectorAll("[data-modal] button, [data-modal] input, [data-class-action], [data-add-class]")];
+    controls.forEach((control) => control.disabled = true);
+    try {
+      const result = await operation();
+      draftState = clone(result.draft_content);
+      publishedState = clone(result.published_content);
+      onSuccess?.();
+      render();
+      toast(message);
+      return true;
+    } catch (error) {
+      console.warn("Class persistence failed:", error);
+      const form = document.querySelector("[data-class-form]");
+      if (form) {
+        form.querySelector("[data-save-error]")?.remove();
+        form.querySelector("footer").insertAdjacentHTML("beforebegin", `<p role="alert" data-save-error>${esc(saveError(error))}</p>`);
+      }
+      toast(saveError(error), true);
+      return false;
+    } finally {
+      saving = false;
+      controls.forEach((control) => control.disabled = false);
+    }
+  };
+  const saveClass = async (event) => {
+    event.preventDefault();
+    if (saving || event.currentTarget.dataset.uploading === "true") return;
+    const intent = event.submitter?.value || "draft";
+    const data = new FormData(event.currentTarget);
+    const old = editingIndex >= 0 ? classes()[editingIndex] : null;
+    const values = { ...old, ...Object.fromEntries(data), location: data.get("venue"), registrationOpen: data.has("registrationOpen"), venmoRequired: data.has("venmoRequired"), published: intent === "publish" };
+    await runClassMutation(() => old
+      ? app.updateClass({ businessId: business.id, classId: old.id, values })
+      : app.createClass({ businessId: business.id, values }),
+    intent === "publish" ? "Class published." : "Class saved as draft.", closeModal);
+  };
+  const action = async (name, index) => {
+    if (saving) return;
+    const item = classes()[index];
+    if (name === "edit") return openForm(index);
+    if (name === "registrations") { activeView = "registrations"; return render(); }
+    const target = { businessId: business.id, classId: item.id };
+    if (name === "duplicate") return runClassMutation(() => app.duplicateClass(target), "Class duplicated as a draft.");
+    if (name === "toggle") return runClassMutation(() => app.updateClass({ ...target, values: { ...item, published: item.published === false } }), item.published === false ? "Class published." : "Class unpublished.");
+    if (name === "highlight") return runClassMutation(() => app.highlightClass(target), item.highlighted ? "Class highlight removed." : "Class highlighted.");
+    if (name === "delete") {
+      document.body.insertAdjacentHTML("beforeend", `<div class="owner-modal owner-confirm" data-confirm role="alertdialog"><div><h2>Delete “${esc(item.title)}”?</h2><p>This cannot be undone. Registration history will remain available.</p><footer><button data-cancel-delete>Cancel</button><button class="owner-danger" data-delete>Delete Class</button></footer></div></div>`);
+      const close = () => document.querySelector("[data-confirm]")?.remove();
+      document.querySelector("[data-cancel-delete]").onclick = close;
+      document.querySelector("[data-delete]").onclick = () => runClassMutation(() => app.deleteClass(target), "Class deleted.", close);
+    }
+  };
   const bind = () => { root.querySelectorAll("[data-view]").forEach((button)=>button.onclick=()=>{activeView=button.dataset.view;render();}); root.querySelectorAll("[data-add-class]").forEach((button)=>button.onclick=()=>openForm()); root.querySelectorAll("[data-class-action]").forEach((button)=>button.onclick=()=>action(button.dataset.classAction,Number(button.dataset.index))); root.querySelectorAll("[data-publish]").forEach((button)=>button.onclick=()=>persist(true,"Changes published.")); root.querySelector("[data-payment]")?.addEventListener("submit",async(event)=>{event.preventDefault();const data=new FormData(event.currentTarget);draftState.venmoUsername=String(data.get("venmoUsername")||"").replace(/^@/,"");draftState.venmoUrl=data.get("venmoUrl");await persist(false,"Payment settings saved.");}); };
   try { if (!app?.client) throw new Error(); user=await app.getSessionUser(); if (!user) return location.replace("/?login=1"); const result=await app.getPrimaryBusiness(user.id); business=result.business; if (!business) return location.replace("/?onboarding=1&app=1"); await app.assertBusinessOwner(user,business.id); bundle=await app.getBusinessBundle(business.id); draftState=clone(Object.keys(bundle.website?.draft_content||{}).length?bundle.website.draft_content:bundle.website?.published_content||bundle.settings?.generated_content||{}); publishedState=clone(bundle.website?.published_content||{}); draftState.classes=classes(); try{registrations=await app.listRegistrations({user,businessId:business.id});}catch(error){console.warn(error);} render(); } catch(error){console.warn(error);root.innerHTML=`<section class="route-loading"><h1>We couldn't load your dashboard.</h1><p>Please refresh or sign in again.</p><a class="primary-button" href="/?login=1">Sign in</a></section>`;}
   logout?.addEventListener("click",async()=>{await app.signOut();location.replace("/");});

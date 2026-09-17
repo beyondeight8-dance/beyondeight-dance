@@ -352,7 +352,7 @@
               <span>${esc(item.location)}</span>
             </div>
             ${item.description ? `<p>${esc(item.description)}</p>` : ""}
-            <p class="setup-preview-class-footer"><b>${esc(item.price)}</b><span>${esc(item.spots)}</span></p>
+            <p class="setup-preview-class-footer"><b>${esc(typeof item.price === "number" ? `$${item.price.toFixed(2)}` : item.price)}</b><span>${esc(item.spots)}</span></p>
             <button type="button" data-book-class="${esc(item.id || slugify(item.title))}"${item.registrationOpen === false ? " disabled" : ""}>${item.registrationOpen === false ? "Registration Closed" : "Book a Spot"}</button>
           </article>`;
       })
