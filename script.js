@@ -872,6 +872,16 @@ const saveLocalPublishedPreview = (state) => {
   return localPublicNavigationUrl(slug);
 };
 
+// Drop the pre-auth preview snapshot once the real Supabase record is live,
+// so it can never shadow published/dashboard changes for this slug again.
+const clearLocalPublishedPreview = (slug) => {
+  if (!slug) return;
+  const localSites = JSON.parse(window.localStorage.getItem(LOCAL_PUBLISHED_SITES_KEY) || "{}");
+  if (!(slug in localSites)) return;
+  delete localSites[slug];
+  window.localStorage.setItem(LOCAL_PUBLISHED_SITES_KEY, JSON.stringify(localSites));
+};
+
 const normalizeSpecialty = (value = "") =>
   value
     .trim()
@@ -1567,6 +1577,8 @@ const finalizeWebsitePublish = async () => {
     businessId: currentBusinessId
   });
   currentBusinessId = result?.business?.id || currentBusinessId;
+  clearLocalPublishedPreview(state.slug);
+  clearLocalPublishedPreview(result?.business?.slug);
   generatedSiteUrl = localPublicNavigationUrl(result?.business?.slug || state.slug);
   viewGeneratedSiteButton?.setAttribute("href", generatedSiteUrl);
   return result;

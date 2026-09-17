@@ -264,7 +264,8 @@
     if (!slug || app.reservedSlugs?.has(slug)) return publicError("Page not found.", "This BeyondEight page does not exist.");
     if (querySlug && window.location.pathname.includes("404.html")) window.history.replaceState({}, "", `/${slug}`);
     const localSites = JSON.parse(window.localStorage.getItem(LOCAL_PUBLISHED_SITES_KEY) || "{}");
-    const publicBundle = localSites[slug] || await app.getBusinessBundleBySlug(slug);
+    const remoteBundle = await app.getBusinessBundleBySlug(slug).catch(() => null);
+    const publicBundle = remoteBundle || localSites[slug];
     if (!publicBundle) return publicError("Website not published yet.", "This BeyondEight site is private or unavailable.");
     user = await app.getSessionUser?.().catch(() => null);
     const ownsPublicBundle = Boolean(user && publicBundle.business.owner_user_id === user.id && !String(publicBundle.business.id).startsWith("local-"));

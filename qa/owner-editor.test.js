@@ -15,5 +15,7 @@ assert.match(schema, /owner_user_id = auth\.uid\(\)/, "draft RLS must be owner s
 assert.match(publicSite, /bundle\?\.business\?\.owner_user_id === user\.id|publicBundle\.business\.owner_user_id === user\.id/, "editor UI must require ownership");
 assert.match(publicSite, /templates\.renderPublicSite/, "owner and visitor modes must share the public renderer");
 assert.match(templates, /input\.mode === "public" \? website\.published_content : website\.draft_content/, "renderer must choose published or draft state by mode");
+assert.match(publicSite, /const remoteBundle = await app\.getBusinessBundleBySlug\(slug\)/, "public page must query the live database before falling back to any cached preview");
+assert.doesNotMatch(publicSite, /localSites\[slug\] \|\| await app\.getBusinessBundleBySlug/, "the pre-auth local preview cache must never take priority over live published data");
 
 console.log("owner editor architecture regression tests passed");
