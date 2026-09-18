@@ -8320,10 +8320,13 @@ body.generated-minimal .published-faq details {
 .owner-metrics article > span { color: #78687c; font-size: 0.75rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
 .owner-metrics article > strong { margin-top: 16px; font: 700 2.6rem/1 Georgia, serif; }
 .owner-metrics article p { color: #6f6073; line-height: 1.5; }
-.owner-metrics article a { margin-top: auto; color: #b11250; font-weight: 850; }
+.owner-metrics article a, .owner-metrics article button { margin-top: auto; border: 0; padding: 0; background: transparent; color: #b11250; font: 850 inherit; text-align: left; cursor: pointer; }
 .owner-metrics article.is-pro { background: #281331; color: #fff; }
 .owner-metrics article.is-pro p, .owner-metrics article.is-pro > span { color: #d7cbd9; }
-.owner-metrics article.is-pro a { color: #ff9a78; }
+.owner-metrics article.is-pro a, .owner-metrics article.is-pro button { color: #ff9a78; }
+.owner-metrics article.is-attention { background: #b42342; color: #fff; }
+.owner-metrics article.is-attention p, .owner-metrics article.is-attention > span { color: #f7d7de; }
+.owner-metrics article.is-attention button { color: #fff; }
 .owner-quick-actions { display: grid; grid-template-columns: 180px 1fr; align-items: center; gap: 16px; }
 .owner-quick-actions h2 { margin: 0; font-size: 1.05rem; }
 .owner-quick-actions a { border: 1px solid #eadde5; border-radius: 999px; padding: 10px 14px; background: #fff; color: #4f3f54; font-weight: 800; text-decoration: none; }
@@ -8347,6 +8350,7 @@ body.generated-minimal .published-faq details {
 .owner-registration-list article { display: grid; grid-template-columns: 1fr 1fr auto; gap: 18px; align-items: center; border: 1px solid #eadde5; border-radius: 8px; padding: 16px; background: #fff; }
 .owner-registration-list article > div { display: grid; gap: 4px; }
 .owner-registration-list article span { color: #756679; }
+.owner-registration-list article .owner-class-actions { grid-column: 1 / -1; justify-content: flex-start; }
 .owner-settings-form { display: grid; max-width: 680px; gap: 16px; }
 .owner-settings-form label, .owner-class-form label { display: grid; gap: 7px; color: #443149; font-weight: 800; }
 .owner-settings-form input, .owner-class-form input, .owner-class-form textarea, .owner-class-form select { width: 100%; border: 1px solid #d9c8d2; border-radius: 6px; padding: 12px; background: #fff; color: #281331; font: inherit; }
