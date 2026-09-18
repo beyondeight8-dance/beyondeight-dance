@@ -9,7 +9,11 @@ assert.match(dashboard, /templates\.buildWebsiteContent/);
 assert.match(dashboard, /saveWebsiteDraft/);
 assert.match(dashboard, /publishWebsiteDraft/);
 assert.match(dashboard, /listRegistrations/);
-assert.match(dashboard, /Website Views[\s\S]*<strong>—<\/strong>/);
+// The old "Website Views PRO" overview tile was a permanent "—" placeholder with no real
+// data and no upgrade path. Replaced with a real, actionable stat: pending payment count.
+assert.doesNotMatch(dashboard, /Website Views/, "the fake PRO stat placeholder must not come back");
+assert.match(dashboard, /Pending Payments/);
+assert.match(dashboard, /updateRegistrationStatus/, "registrations must be confirmable, not just listed");
 assert.match(dashboard, /\["duplicate","Duplicate"\]/);
 assert.match(dashboard, /\["toggle",item\.published/);
 assert.match(dashboard, /\["delete","Delete"\]/);

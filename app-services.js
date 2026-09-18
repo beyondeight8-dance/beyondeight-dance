@@ -541,6 +541,22 @@
     return data || [];
   };
 
+  const updateRegistrationStatus = async ({ user, businessId, registrationId, paymentStatus }) => {
+    await assertBusinessOwner(user, businessId);
+    const { data, error } = await client
+      .from("registrations")
+      .update({ payment_status: paymentStatus, updated_at: new Date().toISOString() })
+      .eq("id", registrationId)
+      .eq("business_id", businessId)
+      .select("*")
+      .single();
+    if (error) {
+      console.warn("Registration status update failed:", error);
+      throw new Error("We couldn't update this registration. Please try again.");
+    }
+    return data;
+  };
+
   const publishWebsite = async ({ user, state, stepIndex, businessId }) => {
     let business = await ensureBusiness(user, state, stepIndex, businessId, false);
     let publishedState = { ...state, slug: business.slug };
@@ -677,6 +693,7 @@
     uploadBusinessMedia,
     createRegistration,
     listRegistrations,
+    updateRegistrationStatus,
     saveOnboarding,
     publishWebsite,
     routeForUser,
