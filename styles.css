@@ -8269,6 +8269,25 @@ body.generated-minimal .published-faq details {
 .owner-gallery-manager img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .owner-gallery-manager article div { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px; }
 .owner-gallery-manager button { min-height: 30px; border: 1px solid rgba(47, 20, 61, 0.12); border-radius: 999px; padding: 6px 9px; background: #fffaf7; color: #55445a; font: 750 0.7rem/1 Inter, system-ui, sans-serif; }
+
+/* Classes manager: a focused card grid + expand-to-edit modal, replacing the old side drawer. */
+.owner-classes-modal > div { width: min(100%, 900px); }
+.owner-classes-modal .owner-section-intro-fields { margin: 0 24px; padding: 20px 0; }
+.owner-classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; padding: 24px; }
+.owner-class-card { display: grid; align-content: start; text-align: left; border: 1px solid #eadde5; border-radius: 14px; background: #fff; overflow: hidden; cursor: pointer; transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+.owner-class-card:hover, .owner-class-card:focus-visible { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(40, 19, 49, 0.14); border-color: rgba(208, 24, 92, 0.35); }
+.owner-class-card.is-highlighted { border-color: #df7da4; box-shadow: 0 10px 30px rgba(177, 18, 80, 0.1); }
+.owner-class-card-media { position: relative; aspect-ratio: 4 / 3; background: #f6eaf0; }
+.owner-class-card-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.owner-class-card-media .owner-status { position: absolute; top: 10px; right: 10px; }
+.owner-class-card-placeholder { display: grid; place-items: center; width: 100%; height: 100%; font-size: 2rem; }
+.owner-class-card-body { display: grid; gap: 4px; padding: 14px 16px 18px; }
+.owner-class-card-body strong { font-size: 1rem; color: #281331; }
+.owner-class-card-body span { color: #6f6073; font-size: 0.85rem; }
+.owner-class-card-body small { color: #8d7c91; font-size: 0.78rem; }
+.owner-class-card-add { align-items: center; justify-items: center; align-content: center; gap: 8px; min-height: 190px; border: 2px dashed #d9c8d2; background: #fffaf7; color: #a4124d; padding: 24px 16px; font-weight: 850; }
+.owner-class-card-add span { font-size: 2rem; line-height: 1; }
+.owner-class-card-add:hover, .owner-class-card-add:focus-visible { border-color: #d0185c; background: #fff1f6; box-shadow: none; }
 .published-site.setup-preview-site .setup-preview-primary-action { border-color: transparent; background: var(--site-accent); color: var(--site-button-ink, #fff); box-shadow: 0 10px 28px color-mix(in srgb, var(--site-accent) 24%, transparent); }
 .owner-publish-toast { position: fixed; right: 24px; bottom: 24px; z-index: 140; border-radius: 8px; padding: 14px 18px; background: #281331; color: #fff; box-shadow: 0 18px 46px rgba(34, 16, 47, 0.24); font-weight: 850; }
 
@@ -8297,6 +8316,8 @@ body.generated-minimal .published-faq details {
   .owner-toolbar span { display: none; }
   .owner-editor-drawer { width: 100%; }
   .owner-editor-nav { position: sticky; top: 79px; z-index: 1; max-height: 184px; overflow-y: auto; padding: 12px 16px; }
+  .owner-classes-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 16px; }
+  .owner-classes-modal .owner-section-intro-fields { margin: 0 16px; }
 }
 
 /* Authenticated owner command center. */

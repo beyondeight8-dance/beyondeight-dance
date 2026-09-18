@@ -33,4 +33,14 @@ assert.match(templates, /data-edit-section="benefits"/, "the benefits section mu
 assert.match(templates, /benefits: Array\.isArray\(state\.benefits\)/, "benefits content must come from saved state, not always the hardcoded demo array");
 assert.match(publicSite, /benefits: `\$\{field\("Section label", "benefitsEyebrow"/, "benefits must have an editor form, not just an on-page click target");
 
+// Classes now open a card-grid + expand-to-edit modal instead of the side drawer used by every
+// other section. The focus-restore logic keys off [data-owner-drawer] OR [data-classes-modal] -
+// if a future edit only checks the drawer again, typing in a class field will silently stop
+// restoring cursor focus after every keystroke (the same bug class already fixed once for the
+// drawer itself).
+assert.match(publicSite, /const openClassesManager = \(focus = true\) => \{/, "classes must have their own manager, not the shared section drawer");
+assert.doesNotMatch(publicSite, /classes: `<div class="owner-section-intro-fields"/, "classes must not go back through the generic editorBody/drawer path");
+assert.match(publicSite, /data-owner-drawer\] \[name\], \[data-classes-modal\] \[name\]/, "focus-restore must cover both the drawer and the classes modal");
+assert.match(publicSite, /owner-class-card-add" data-add-class/, "the classes grid must offer an explicit Add Class card");
+
 console.log("owner editor architecture regression tests passed");
