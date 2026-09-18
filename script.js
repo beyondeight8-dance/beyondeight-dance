@@ -1,16 +1,8 @@
 const navToggle = document.querySelector(".nav-toggle");
 const siteNav = document.querySelector(".site-nav");
-const demoForm = document.querySelector(".demo-form");
-const formMessage = document.querySelector(".form-message");
 const comparisonModal = document.querySelector(".comparison-modal");
 const openComparisonButton = document.querySelector("[data-open-comparison]");
 const closeComparisonButtons = document.querySelectorAll("[data-close-comparison]");
-const planDemoModal = document.querySelector(".plan-demo-modal");
-const planDemoForm = document.querySelector(".plan-demo-form");
-const planDemoName = document.querySelector("[data-plan-demo-name]");
-const planDemoMessage = document.querySelector(".plan-demo-message");
-const planDemoButtons = document.querySelectorAll("[data-request-demo-plan]");
-const closePlanDemoButtons = document.querySelectorAll("[data-close-plan-demo]");
 const setupModal = document.querySelector(".setup-modal");
 const openSetupButtons = document.querySelectorAll("[data-open-setup]");
 const closeSetupButtons = document.querySelectorAll("[data-close-setup]");
@@ -30,11 +22,6 @@ let viewGeneratedSiteButton = null;
 let readyGoogleButton = null;
 let readyPublishButton = null;
 let readyKeepEditingButton = null;
-const themeModal = document.querySelector(".theme-modal");
-const themeModalTitle = document.querySelector("#theme-modal-title");
-const themeModalPreview = document.querySelector(".theme-modal-preview");
-const themePreviewButtons = document.querySelectorAll("[data-theme-preview]");
-const closeThemePreviewButtons = document.querySelectorAll("[data-close-theme-preview]");
 const authModal = document.querySelector(".auth-modal");
 const authForm = document.querySelector(".auth-form");
 const authTitle = document.querySelector("#auth-title");
@@ -67,13 +54,8 @@ const logoUploadFileName = document.querySelector("[data-logo-file-name]");
 const websiteImageUploadInput = document.querySelector("[data-website-image-upload]");
 const websiteImageUploadTrigger = document.querySelector("[data-website-image-upload-trigger]");
 const websiteImageUploadStatus = document.querySelector("[data-website-image-status]");
-const heroMockup = document.querySelector(".dashboard-mockup");
-const heroView = document.querySelector("[data-hero-view]");
-const heroNavItems = document.querySelectorAll("[data-hero-nav]");
-const productTabs = document.querySelectorAll("[data-product-tab]");
-const productPanels = document.querySelectorAll("[data-product-panel]");
 const revealItems = document.querySelectorAll(
-  ".section-heading, .dashboard-mockup, .workflow-card, .steps-grid article, .dance-visual, .product-tabs, .product-platform, .price-card, .theme-card, .launch-cta, .demo-copy, .demo-form"
+  ".restyle-section-heading, .restyle-example, .restyle-launch"
 );
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -125,185 +107,6 @@ const specialtyAliases = {
 let selectedSpecialties = [...defaultSpecialties];
 let activeSpecialtyIndex = -1;
 
-const heroViews = [
-  {
-    nav: "Classes",
-    label: "Live program",
-    title: "Heels Intensive",
-    status: "Registration open",
-    metrics: [["Registered dancers", "48"], ["Paid students", "42"], ["Revenue", "$12.4k"], ["Waitlist", "6"]],
-    chart: "Weekly registrations",
-    trend: "+28%",
-    listTitle: "Recent registrations",
-    rows: [["MR", "Maya R.", "Paid"], ["LT", "Leah T.", "Plan"], ["NS", "Nia S.", "New"]]
-  },
-  {
-    nav: "Roster",
-    label: "Roster management",
-    title: "Tonight's Classes",
-    status: "Check-in live",
-    metrics: [["Checked in", "31"], ["Absent", "3"], ["Groups", "5"], ["Notes", "12"]],
-    chart: "Attendance by hour",
-    trend: "91%",
-    listTitle: "Needs attention",
-    rows: [["AP", "Ari P.", "Waiver"], ["KM", "Kai M.", "Balance"], ["JT", "Jules T.", "Waitlist"]]
-  },
-  {
-    nav: "Payments",
-    label: "Payment center",
-    title: "Summer Launch",
-    status: "Stripe synced",
-    metrics: [["Deposits", "$4.8k"], ["Plans", "28"], ["Paid", "112"], ["Refunds", "2"]],
-    chart: "Revenue collected",
-    trend: "$24.8k",
-    listTitle: "Transactions",
-    rows: [["MR", "Maya R.", "Paid"], ["LT", "Leah T.", "Deposit"], ["NS", "Nia S.", "Plan"]]
-  },
-  {
-    nav: "Portal",
-    label: "Student portal",
-    title: "Dancer Home",
-    status: "3 updates",
-    metrics: [["Upcoming", "4"], ["Homework", "2"], ["Balance", "$85"], ["Posts", "9"]],
-    chart: "Portal activity",
-    trend: "76%",
-    listTitle: "For dancers",
-    rows: [["CL", "Class schedule", "Today"], ["HW", "Combo video", "New"], ["AN", "Announcement", "Live"]]
-  },
-  {
-    nav: "Analytics",
-    label: "Growth analytics",
-    title: "Momentum Dance Co.",
-    status: "Insights ready",
-    metrics: [["Capacity", "84%"], ["Attendance", "91%"], ["Conversion", "18%"], ["Revenue", "$31k"]],
-    chart: "Launch performance",
-    trend: "+32%",
-    listTitle: "Top drivers",
-    rows: [["QR", "QR signups", "42"], ["EM", "Email opens", "64%"], ["RF", "Referrals", "19"]]
-  },
-  {
-    nav: "Marketing",
-    label: "Marketing studio",
-    title: "Audition Prep Launch",
-    status: "Campaign live",
-    metrics: [["Email opens", "64%"], ["QR scans", "218"], ["Referrals", "19"], ["Leads", "73"]],
-    chart: "Campaign response",
-    trend: "+41%",
-    listTitle: "Next actions",
-    rows: [["EM", "Follow-up email", "Ready"], ["QR", "Lobby QR code", "Live"], ["RF", "Referral push", "Draft"]]
-  }
-];
-
-let heroIndex = 0;
-let heroTimer;
-let heroChangeTimer;
-
-const renderHeroView = (index) => {
-  if (!heroView) return;
-  const view = heroViews[index];
-  heroView.classList.add("is-changing");
-  window.clearTimeout(heroChangeTimer);
-  heroChangeTimer = window.setTimeout(() => {
-    heroView.innerHTML = `
-      <div class="mockup-topbar">
-        <div>
-          <span class="tiny-label">${view.label}</span>
-          <strong>${view.title}</strong>
-        </div>
-        <span class="status-pill">${view.status}</span>
-      </div>
-      <div class="metric-row">
-        ${view.metrics.map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join("")}
-      </div>
-      <div class="mockup-content">
-        <div class="chart-card">
-          <div class="chart-head">
-            <span>${view.chart}</span>
-            <strong>${view.trend}</strong>
-          </div>
-          <div class="chart-line" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-        </div>
-        <div class="registrations-card">
-          <div class="mini-title">${view.listTitle}</div>
-          ${view.rows.map(([initials, name, status]) => `<div class="student-row"><span>${initials}</span><p>${name}</p><strong>${status}</strong></div>`).join("")}
-        </div>
-      </div>
-    `;
-    heroNavItems.forEach((item) => item.classList.toggle("is-active", item.textContent.trim() === view.nav));
-    heroView.classList.remove("is-changing");
-  }, prefersReducedMotion.matches ? 0 : 180);
-};
-
-const startHeroRotation = () => {
-  if (!heroView || prefersReducedMotion.matches) return;
-  window.clearInterval(heroTimer);
-  heroTimer = window.setInterval(() => {
-    heroIndex = (heroIndex + 1) % heroViews.length;
-    renderHeroView(heroIndex);
-  }, 1000);
-};
-
-renderHeroView(heroIndex);
-startHeroRotation();
-
-const pauseHeroRotation = () => {
-  window.clearInterval(heroTimer);
-  window.clearTimeout(heroChangeTimer);
-  heroView?.classList.remove("is-changing");
-};
-
-heroMockup?.addEventListener("mouseenter", pauseHeroRotation);
-heroMockup?.addEventListener("pointerenter", pauseHeroRotation);
-heroMockup?.addEventListener("focusin", pauseHeroRotation);
-heroMockup?.addEventListener("mouseleave", startHeroRotation);
-heroMockup?.addEventListener("pointerleave", startHeroRotation);
-heroMockup?.addEventListener("focusout", startHeroRotation);
-
-heroNavItems.forEach((item) => {
-  item.setAttribute("role", "button");
-  item.tabIndex = 0;
-
-  item.addEventListener("click", () => {
-    const nextIndex = heroViews.findIndex((view) => view.nav === item.textContent.trim());
-    if (nextIndex < 0) return;
-    heroIndex = nextIndex;
-    renderHeroView(heroIndex);
-    startHeroRotation();
-  });
-
-  item.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    item.click();
-  });
-});
-
-productTabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    const target = tab.dataset.productTab;
-    productTabs.forEach((item) => item.setAttribute("aria-selected", String(item === tab)));
-    productPanels.forEach((panel) => {
-      const isActive = panel.dataset.productPanel === target;
-      panel.hidden = !isActive;
-      panel.classList.toggle("is-active", isActive);
-    });
-    if (window.matchMedia("(max-width: 760px)").matches) {
-      const activePanel = Array.from(productPanels).find((panel) => panel.dataset.productPanel === target);
-      activePanel?.scrollIntoView({ behavior: "auto", block: "nearest" });
-    }
-  });
-
-  tab.addEventListener("keydown", (event) => {
-    if (!["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft"].includes(event.key)) return;
-    event.preventDefault();
-    const direction = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : -1;
-    const currentIndex = Array.from(productTabs).indexOf(tab);
-    const nextTab = productTabs[(currentIndex + direction + productTabs.length) % productTabs.length];
-    nextTab.focus();
-    nextTab.click();
-  });
-});
-
 if (navToggle && siteNav) {
   navToggle.addEventListener("click", () => {
     const isOpen = siteNav.classList.toggle("is-open");
@@ -316,14 +119,6 @@ if (navToggle && siteNav) {
     siteNav.classList.remove("is-open");
     navToggle.setAttribute("aria-expanded", "false");
     navToggle.setAttribute("aria-label", "Open navigation");
-  });
-}
-
-if (demoForm && formMessage) {
-  demoForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    formMessage.textContent = "Thanks. Your BeyondEight demo request is ready to send.";
-    demoForm.reset();
   });
 }
 
@@ -342,77 +137,6 @@ const closeComparison = () => {
 
 openComparisonButton?.addEventListener("click", openComparison);
 closeComparisonButtons.forEach((button) => button.addEventListener("click", closeComparison));
-
-const openPlanDemo = (plan = "Growth") => {
-  if (!planDemoModal) return;
-  if (planDemoName) planDemoName.textContent = plan;
-  if (planDemoMessage) planDemoMessage.textContent = "";
-  planDemoModal.classList.add("is-open");
-  planDemoModal.setAttribute("aria-hidden", "false");
-  document.body.classList.add("modal-open");
-  planDemoForm?.querySelector("input")?.focus();
-};
-
-const closePlanDemo = () => {
-  if (!planDemoModal) return;
-  planDemoModal.classList.remove("is-open");
-  planDemoModal.setAttribute("aria-hidden", "true");
-  document.body.classList.remove("modal-open");
-};
-
-planDemoButtons.forEach((button) => {
-  button.addEventListener("click", () => openPlanDemo(button.dataset.requestDemoPlan || "Growth"));
-});
-closePlanDemoButtons.forEach((button) => button.addEventListener("click", closePlanDemo));
-planDemoForm?.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const emailField = planDemoForm.elements.planDemoEmail;
-  if (!emailField?.reportValidity()) return;
-  if (planDemoMessage) {
-    planDemoMessage.textContent = "Thank you for your interest. Our team will reach out soon with the demo and any updates.";
-  }
-  planDemoForm.reset();
-});
-
-const hydrateMarketingThemePreviews = () => {
-  const templates = window.BeyondEightWebsiteTemplates;
-  if (!templates) return;
-  themePreviewButtons.forEach((button) => {
-    const themeName = button.dataset.themePreview;
-    if (!themeName || button.dataset.templateSource === "shared") return;
-    button.innerHTML = templates.renderThemePreview(themeName);
-    button.dataset.templateSource = "shared";
-  });
-};
-
-hydrateMarketingThemePreviews();
-const openThemePreview = (button) => {
-  if (!themeModal || !themeModalTitle || !themeModalPreview) return;
-  const card = button.closest(".theme-card");
-  const preview = button.querySelector(".mini-site-preview");
-  if (!card || !preview) return;
-  themeModalTitle.textContent = button.dataset.themePreview || card.querySelector("h3")?.textContent || "Website Theme";
-  themeModalPreview.innerHTML = "";
-  const clone = preview.cloneNode(true);
-  clone.setAttribute("aria-hidden", "true");
-  themeModalPreview.append(clone);
-  const themeClass = Array.from(card.classList).find((name) => name.startsWith("theme-") && name !== "theme-card") || "";
-  themeModal.className = `theme-modal is-open ${themeClass}`.trim();
-  themeModal.setAttribute("aria-hidden", "false");
-  document.body.classList.add("modal-open");
-  themeModal.querySelector("[data-close-theme-preview]")?.focus();
-};
-
-const closeThemePreview = () => {
-  if (!themeModal || !themeModalPreview) return;
-  themeModal.className = "theme-modal";
-  themeModal.setAttribute("aria-hidden", "true");
-  themeModalPreview.innerHTML = "";
-  document.body.classList.remove("modal-open");
-};
-
-themePreviewButtons.forEach((button) => button.addEventListener("click", () => openThemePreview(button)));
-closeThemePreviewButtons.forEach((button) => button.addEventListener("click", closeThemePreview));
 
 let setupIndex = 0;
 let setupLaunched = false;
@@ -2156,9 +1880,6 @@ renderSpecialties();
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && comparisonModal?.classList.contains("is-open")) {
     closeComparison();
-  }
-  if (event.key === "Escape" && themeModal?.classList.contains("is-open")) {
-    closeThemePreview();
   }
   if (event.key === "Escape" && authModal?.classList.contains("is-open")) {
     closeAuth();
