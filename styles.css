@@ -8271,27 +8271,42 @@ body.generated-minimal .published-faq details {
 .owner-gallery-manager button { min-height: 30px; border: 1px solid rgba(47, 20, 61, 0.12); border-radius: 999px; padding: 6px 9px; background: #fffaf7; color: #55445a; font: 750 0.7rem/1 Inter, system-ui, sans-serif; }
 
 /* Classes manager: a focused card grid + expand-to-edit modal, replacing the old side drawer. */
-.owner-classes-modal > div { width: min(100%, 900px); }
+.owner-classes-modal > div { width: min(100%, 960px); }
 .owner-classes-panel > header { position: sticky; z-index: 2; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 24px; background: #fffaf7; border-bottom: 1px solid #eadde5; border-radius: 8px 8px 0 0; }
-.owner-classes-panel > header small { display: block; color: #8d7c91; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.7rem; }
-.owner-classes-panel > header h2 { margin: 2px 0 0; font: 700 1.6rem/1.1 Georgia, serif; color: #281331; }
+.owner-classes-panel > header h2 { margin: 0; font: 700 1.5rem/1.1 Georgia, serif; color: #281331; }
 .owner-classes-panel > header > button { width: 34px; height: 34px; border: 0; border-radius: 999px; background: rgba(47, 20, 61, 0.06); color: #55445a; font-size: 1.25rem; line-height: 1; cursor: pointer; transition: background 140ms ease; }
 .owner-classes-panel > header > button:hover { background: rgba(47, 20, 61, 0.12); }
 .owner-classes-panel .owner-reorder { display: flex; flex-wrap: wrap; gap: 8px; padding: 18px 24px 0; }
-.owner-classes-modal .owner-section-intro-fields { margin: 0 24px; padding: 20px 0; }
-.owner-classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; padding: 24px; }
-.owner-class-card { display: grid; align-content: start; text-align: left; border: 1px solid #eadde5; border-radius: 14px; background: #fff; overflow: hidden; cursor: pointer; transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
-.owner-class-card:hover, .owner-class-card:focus-visible { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(40, 19, 49, 0.14); border-color: rgba(208, 24, 92, 0.35); }
+.owner-classes-toolbar { display: flex; justify-content: flex-end; padding: 14px 24px 0; }
+.owner-classes-settings-toggle { border: 0; background: transparent; padding: 4px 0; color: #8d7c91; font-weight: 800; font-size: 0.78rem; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.owner-classes-settings-toggle:hover { color: #a4124d; }
+.owner-classes-modal .owner-section-intro-fields { margin: 12px 24px 0; padding: 0 0 16px; }
+.owner-classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; padding: 24px; }
+.owner-class-card { display: grid; grid-template-rows: auto 1fr auto; align-content: start; text-align: left; border: 1px solid #eadde5; border-radius: 14px; background: #fff; overflow: hidden; transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+.owner-class-card:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(40, 19, 49, 0.14); border-color: rgba(208, 24, 92, 0.35); }
 .owner-class-card.is-highlighted { border-color: #df7da4; box-shadow: 0 10px 30px rgba(177, 18, 80, 0.1); }
-.owner-class-card-media { position: relative; aspect-ratio: 4 / 3; background: #f6eaf0; }
+.owner-class-card-media { display: block; position: relative; width: 100%; aspect-ratio: 4 / 3; margin: 0; padding: 0; border: 0; background: #f6eaf0; cursor: pointer; }
 .owner-class-card-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.owner-class-card-media:hover, .owner-class-card-media:focus-visible { outline: 2px solid rgba(208, 24, 92, 0.4); outline-offset: -2px; }
 .owner-class-card-media .owner-status { position: absolute; top: 10px; right: 10px; }
 .owner-class-card-placeholder { display: grid; place-items: center; width: 100%; height: 100%; font-size: 2rem; }
-.owner-class-card-body { display: grid; gap: 4px; padding: 14px 16px 18px; }
+.owner-class-card-body { display: grid; gap: 4px; padding: 14px 16px 10px; }
 .owner-class-card-body strong { font-size: 1rem; color: #281331; }
 .owner-class-card-body span { color: #6f6073; font-size: 0.85rem; }
-.owner-class-card-body small { color: #8d7c91; font-size: 0.78rem; }
-.owner-class-card-add { align-items: center; justify-items: center; align-content: center; gap: 8px; min-height: 190px; border: 2px dashed #d9c8d2; background: #fffaf7; color: #a4124d; padding: 24px 16px; font-weight: 850; }
+.owner-class-card-meta { color: #a4124d !important; font-weight: 800; }
+.owner-class-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 16px 16px; }
+.owner-class-card-edit { border: 1px solid #eadde5; border-radius: 999px; padding: 8px 16px; background: #fff; color: #55465d; font-weight: 800; font-size: 0.82rem; cursor: pointer; transition: border-color 140ms ease, color 140ms ease; }
+.owner-class-card-edit:hover, .owner-class-card-edit:focus-visible { border-color: rgba(208, 24, 92, 0.4); color: #a4124d; }
+.owner-card-menu { position: relative; }
+.owner-card-menu summary { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 999px; background: rgba(47, 20, 61, 0.06); color: #55465d; font-size: 1.1rem; list-style: none; cursor: pointer; }
+.owner-card-menu summary::-webkit-details-marker { display: none; }
+.owner-card-menu[open] summary { background: rgba(47, 20, 61, 0.12); }
+.owner-card-menu > div { position: absolute; z-index: 5; right: 0; bottom: calc(100% + 6px); display: grid; gap: 2px; min-width: 170px; padding: 6px; border: 1px solid #eadde5; border-radius: 10px; background: #fff; box-shadow: 0 16px 40px rgba(40, 19, 49, 0.18); }
+.owner-card-menu > div button { border: 0; border-radius: 6px; padding: 9px 10px; background: transparent; color: #443149; font-weight: 750; font-size: 0.85rem; text-align: left; cursor: pointer; }
+.owner-card-menu > div button:hover { background: #f6eaf0; }
+.owner-card-menu > div button.owner-danger { background: transparent !important; color: #b42342 !important; }
+.owner-card-menu > div button.owner-danger:hover { background: #fdecef !important; }
+.owner-class-card-add { align-items: center; justify-items: center; align-content: center; gap: 8px; min-height: 220px; border: 2px dashed #d9c8d2; background: #fffaf7; color: #a4124d; padding: 24px 16px; font-weight: 850; cursor: pointer; }
 .owner-class-card-add span { font-size: 2rem; line-height: 1; }
 .owner-class-card-add:hover, .owner-class-card-add:focus-visible { border-color: #d0185c; background: #fff1f6; box-shadow: none; }
 .published-site.setup-preview-site .setup-preview-primary-action { border-color: transparent; background: var(--site-accent); color: var(--site-button-ink, #fff); box-shadow: 0 10px 28px color-mix(in srgb, var(--site-accent) 24%, transparent); }
