@@ -114,4 +114,19 @@ for (const oldKey of ["elegant", "bold", "soft", "vibrant", "minimal"]) {
   assert.doesNotMatch(templateSrc, new RegExp(`key: "${oldKey}"`), `website-template.js must not define a theme with the retired "${oldKey}" key`);
 }
 
+// Regression guard: the sticky nav, mobile menu, footer, and contact-action buttons once used
+// only var(--template-*) custom properties that are never defined anywhere in this file, so
+// those elements always rendered hardcoded light colors no matter which theme was selected (a
+// light-cream footer on the dark Noir theme, for example - "the theme applying throughout the
+// site, not just part of it"). Every themed background/color declaration must resolve through a
+// real --site-* token before it may fall back to the dead --template-* name.
+assert.doesNotMatch(styles, /background:\s*var\(--template-(?![\s\S]*--site-)/, "a background must never use --template-* without a --site-* theme token first");
+assert.doesNotMatch(styles, /color:\s*var\(--template-(?![\s\S]*--site-)/, "a text color must never use --template-* without a --site-* theme token first");
+assert.match(styles, /background: color-mix\(in srgb, var\(--footer-bg, var\(--site-page, var\(--template-footer,/, "the footer background must resolve through a real theme token, not the dead --template-footer fallback");
+
+// Regression guard: Noir's full-bleed hero must stay height-capped. It previously had only a
+// min-height (vh-based, so viewport/print-context quirks could make it dramatically taller than
+// intended, dwarfing every other section on the page).
+assert.match(styles, /\.theme-hero-noir\s*\{[^}]*max-height: 720px/, "the Noir hero must have a hard max-height cap, not just a vh-based min-height");
+
 console.log("website theme system regression tests passed");
