@@ -8253,6 +8253,12 @@ body.generated-minimal .published-faq details {
 .owner-editor-drawer .owner-instagram-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .owner-editor-drawer .owner-reorder button,
 .owner-editor-drawer .owner-instagram-actions button { min-height: 36px; padding: 7px 12px; }
+.owner-section-intro-fields { display: grid; gap: 14px; padding-bottom: 16px; margin-bottom: 4px; border-bottom: 1px dashed rgba(47, 20, 61, 0.14); }
+.owner-empty-note { margin: 0; padding: 16px; border: 1px dashed #d9c8d2; border-radius: 8px; color: #756679; text-align: center; }
+.owner-editor-drawer [data-class-list] { display: grid; gap: 10px; }
+.owner-editor-drawer .owner-class-row { grid-template-columns: 64px minmax(0, 1fr) auto auto; gap: 12px; padding: 10px; }
+.owner-editor-drawer .owner-class-row > img { width: 64px; }
+.owner-editor-drawer .owner-class-actions { justify-content: flex-start; }
 .owner-editor-drawer .owner-instagram { display: grid; gap: 14px; margin-top: 20px; padding: 16px; border: 1px solid #eadde5; border-radius: 8px; background: #fff8fb; }
 .owner-editor-drawer .owner-instagram strong,
 .owner-editor-drawer .owner-instagram p { display: block; margin: 5px 0 0; }
