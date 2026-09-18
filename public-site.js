@@ -39,7 +39,10 @@
     if (!mount || !bundle?.business?.id) return;
     fetch(`/api/instagram/feed?businessId=${encodeURIComponent(bundle.business.id)}`)
       .then((response) => response.ok ? response.json() : { items: [] })
-      .then((feed) => { mount.innerHTML = templates.renderInstagramSection(feed); })
+      .then((feed) => {
+        const html = templates.renderInstagramSection(feed);
+        mount.innerHTML = html || (isOwner() && editMode ? `<section class="setup-preview-section setup-preview-instagram"><div class="setup-preview-instagram-heading"><div><small>From the Studio</small><h4>Life in motion.</h4></div></div><p>Connect Instagram to show recent posts here.</p></section>` : "");
+      })
       .catch(() => mount.replaceChildren());
   };
   const render = ({ keepDrawer = true } = {}) => {
@@ -262,7 +265,7 @@
   };
   function bindOwnerEvents() {
     root.querySelectorAll("[data-book-class]").forEach((button) => button.addEventListener("click", () => openBooking(button.dataset.bookClass)));
-    root.querySelector("[data-owner-edit]")?.addEventListener("click", () => { editMode = !editMode; closeEditor(); render({ keepDrawer: false }); if (editMode) openEditor("hero"); });
+    root.querySelector("[data-owner-edit]")?.addEventListener("click", () => { editMode = !editMode; closeEditor(); render({ keepDrawer: false }); });
     root.querySelector("[data-owner-publish]")?.addEventListener("click", publishChanges);
     root.querySelector("[data-owner-visitor]")?.addEventListener("click", () => { editMode = false; root.querySelector("[data-owner-toolbar]")?.remove(); closeEditor(); });
     if (editMode) root.querySelectorAll("[data-edit-section]").forEach((section) => section.addEventListener("click", (event) => { if (event.target.closest("a, button, input")) return; event.preventDefault(); openEditor(section.dataset.editSection); }));
@@ -288,7 +291,7 @@
       if (requestedEditor === "classes" && params.get("new") === "1") { state.classes = [...(state.classes || contentForState().classes), { title: "New Class", style: "Open", date: "", time: "", duration: "60 minutes", location: "In studio", format: "In person", level: "Open level", price: "$25", capacity: "20", spots: "20 spots left", instructor: state.instructorName || contentForState().instructorName, published: false }]; dirty = true; scheduleSave(); }
     }
     render({ keepDrawer: false });
-    if (editMode) openEditor(requestedEditor || "hero");
+    if (editMode && requestedEditor) openEditor(requestedEditor);
   } catch (error) {
     console.warn("Public site failed:", error);
     publicError("We could not load this website.", "Please try again soon.");
