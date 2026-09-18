@@ -8,7 +8,7 @@
     const businessId = new URLSearchParams(window.location.search).get("business");
     const business = businesses.find((item) => item.id === businessId) || businesses[0];
     if (!business) { window.location.replace("/?onboarding=1&app=1"); return; }
-    window.location.replace(`/${encodeURIComponent(business.slug)}?owner=1&edit=classes`);
+    window.location.replace(`/${encodeURIComponent(business.slug)}?owner=1`);
   } catch (error) {
     console.warn("Website editor handoff failed:", error);
     root.innerHTML = `<section class="route-loading"><h1>We could not open your website editor.</h1><p>Please return to the dashboard and try again.</p><a class="primary-button" href="/dashboard/">Dashboard</a></section>`;

@@ -8143,24 +8143,37 @@ body.generated-minimal .published-faq details {
 
 .owner-edit-mode [data-edit-section]::after {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 14px;
+  right: 14px;
   z-index: 8;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
-  padding: 7px 11px;
   background: #fff;
-  box-shadow: 0 8px 24px rgba(34, 16, 47, 0.14);
+  box-shadow: 0 8px 24px rgba(34, 16, 47, 0.16);
   color: #8e1649;
-  content: "Edit";
-  font: 800 0.72rem/1 Inter, system-ui, sans-serif;
+  content: "✎";
+  font-size: 1rem;
+  line-height: 1;
   opacity: 0;
+  transform: scale(0.85);
   pointer-events: none;
-  transition: opacity 160ms ease;
+  transition: opacity 160ms ease, transform 160ms ease;
 }
 
 .owner-edit-mode [data-edit-section]:hover::after,
 .owner-edit-mode [data-edit-section]:focus-visible::after {
   opacity: 1;
+  transform: scale(1);
+}
+
+@media (hover: none) {
+  .owner-edit-mode [data-edit-section]::after {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .owner-editor-drawer {

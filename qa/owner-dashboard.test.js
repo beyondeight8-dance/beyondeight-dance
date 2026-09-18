@@ -19,9 +19,11 @@ assert.match(dashboard, /highlighted/);
 assert.doesNotMatch(dashboard, /edit=classes&new=1/);
 assert.match(editor, /data-editor-nav="\$\{key\}"/);
 assert.match(editor, /\["classes", "Classes"\]/);
-assert.match(editor, /data-owner-edit.*openEditor\("hero"\)/);
-assert.match(editor, /openEditor\(requestedEditor \|\| "hero"\)/);
-assert.doesNotMatch(editor, /data-owner-edit.*openEditor\("classes"\)/, "Edit Website must open the general editor, not jump straight to classes");
+// "Edit Website" (toolbar button, or ?owner=1 with no ?edit=) must land on the live page
+// with click-to-edit affordances, not force a specific section's drawer open. A drawer only
+// opens when the owner clicks an actual on-page section, or an explicit ?edit= deep link.
+assert.doesNotMatch(editor, /data-owner-edit.*openEditor\(/, "Edit Website must not force any editor section open");
+assert.match(editor, /if \(editMode && requestedEditor\) openEditor\(requestedEditor\)/, "only an explicit ?edit= deep link may open a section automatically");
 assert.match(editor, /data-move-gallery/);
 assert.match(editor, /data-remove-gallery/);
 assert.match(editor, /uploadBusinessMedia/);
@@ -35,7 +37,9 @@ assert.doesNotMatch(dashboard, /edit=\$\{title\.toLowerCase\(\)\}/, "unbuilt tab
 assert.match(dashboard, /comingSoon\("Instructors"/);
 assert.match(dashboard, /comingSoon\("Reviews"/);
 assert.match(dashboard, /comingSoon\("Analytics"/);
-assert.match(dashboard, /placeholder\("Social", "social"\)/, "Social is a real editor section and should keep its working link");
+assert.match(dashboard, /social: \(\) => placeholder\("Social"\)/, "Social opens the live editor like every other dashboard entry point, not a forced section");
+assert.doesNotMatch(dashboard, /\?owner=1&edit=/, "no dashboard link should force a specific editor section open");
+assert.match(template, /data-instagram-feed data-edit-section="social"/, "the Instagram/social area must be clickable in edit mode like every other section");
 // Class/registration search+filter must preserve the class's real array index, or actions
 // (edit/duplicate/toggle/delete) target the wrong class once the list is filtered.
 assert.match(dashboard, /const filteredClasses = \(\) => classes\(\)\.map\(\(item, index\) => \(\{ item, index \}\)\)/);
