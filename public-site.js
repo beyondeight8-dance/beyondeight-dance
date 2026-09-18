@@ -41,7 +41,7 @@
   };
   const render = () => {
     const content = contentForState();
-    document.body.classList.remove("generated-elegant", "generated-bold", "generated-soft", "generated-vibrant", "generated-minimal");
+    document.body.classList.remove("generated-editorial", "generated-studio", "generated-electric", "generated-noir", "generated-muse", "generated-motion");
     document.body.classList.add(templates.themeClassFor(content.theme.name));
     document.title = `${content.brandName} | BeyondEight`;
     root.innerHTML = templates.renderPublicSite(content, { ownerToolbar: ownerToolbar(), logoUrl: state.logoImage || "" });

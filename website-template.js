@@ -7,99 +7,128 @@
     return /^(data:|blob:|https?:|\/)/i.test(src) ? src : `/${src}`;
   };
 
+  // Six genuinely different site designs (not palette swaps of one template) - see the
+  // "kicker" (hero eyebrow lines), "cta", and "classesLayout" fields, which drive structurally
+  // different hero and class-list markup in renderDesktopPreview below.
   const themes = [
     {
-      name: "Default Elegant",
-      key: "elegant",
-      cardClass: "theme-elegant",
-      eyebrow: "Now enrolling",
-      cta: "Join a class",
+      name: "Editorial",
+      key: "editorial",
+      cardClass: "theme-editorial",
+      eyebrow: "Sophisticated. Fashion-forward. Timeless.",
+      kicker: ["Choreographer", "Educator", "Storyteller"],
+      flourish: "More than movement",
+      cta: "Explore Classes",
+      classesLayout: "editorial",
       sampleBrand: "Beyond Studio",
-      sampleHeadline: "Elevate. Inspire. Move.",
-      description: "Clean, modern, and beautifully minimal.",
+      sampleHeadline: "Dance shapes a brighter tomorrow.",
+      description: "A premium editorial page built around striking photography.",
       classOne: "Heels Foundations",
       classTwo: "Contemporary Flow",
       noteTitle: "About",
-      note: "Refined pages for graceful brands, clean booking, and premium class launches."
+      note: "Large image-led cards, quiet serif type, and a fashion-editorial feel."
     },
     {
-      name: "Bold & Edgy",
-      key: "bold",
-      cardClass: "theme-bold",
-      eyebrow: "Limited drop",
-      cta: "Claim spot",
+      name: "Studio",
+      key: "studio",
+      cardClass: "theme-studio",
+      eyebrow: "Clean. Modern. Professional.",
+      kicker: ["Choreographer", "Educator", "Movement for a brighter you"],
+      flourish: "Move better together",
+      cta: "Book a Class",
+      classesLayout: "list",
       sampleBrand: "Move Co.",
-      sampleHeadline: "Make your move.",
-      description: "Strong, high-contrast, and full of attitude.",
-      classOne: "Audition Prep",
-      classTwo: "Street Jazz",
-      noteTitle: "Instructor",
-      note: "High contrast, bold cards, and punchy CTAs for expressive dance brands."
-    },
-    {
-      name: "Soft & Graceful",
-      key: "soft",
-      cardClass: "theme-soft",
-      eyebrow: "Contemporary studio",
-      cta: "Explore classes",
-      sampleBrand: "Grace",
-      sampleHeadline: "Movement is poetry.",
-      description: "Elegant type, soft tones, and refined flow.",
-      classOne: "Ballet Flow",
-      classTwo: "Modern Lab",
+      sampleHeadline: "Discipline. Creativity. Community.",
+      description: "A crisp, professional page with a numbered class schedule.",
+      classOne: "Bollywood Fusion",
+      classTwo: "Choreography Lab",
       noteTitle: "Studio note",
-      note: "Muted blush, delicate spacing, and editorial storytelling for softer brands."
+      note: "A clean numbered schedule, confident blue accents, and tight typography."
     },
     {
-      name: "Vibrant & Playful",
-      key: "vibrant",
-      cardClass: "theme-vibrant",
-      eyebrow: "Fresh workshops",
-      cta: "Book a spot",
+      name: "Electric",
+      key: "electric",
+      cardClass: "theme-electric",
+      eyebrow: "Bold. Energetic. Unapologetic.",
+      kicker: ["Bollywood", "Hip Hop", "Commercial", "Heels", "Choreography"],
+      flourish: "Good moves, brighter people",
+      cta: "Explore Classes",
+      classesLayout: "badge",
       sampleBrand: "Pulse",
-      sampleHeadline: "Dance. Create. Be you.",
-      description: "Youthful, energetic, and full of personality.",
-      classOne: "Pop-up Class",
-      classTwo: "Creator Lab",
+      sampleHeadline: "Dance bigger.",
+      description: "High-color, high-energy layouts with bold overlapping type.",
+      classOne: "Bollywood Fusion",
+      classTwo: "BollyHop",
       noteTitle: "Community",
-      note: "Energetic color, playful cards, and fast paths into events and signups."
+      note: "Neon-bright color blocks, oversized type, and date-badge class cards."
     },
     {
-      name: "Minimal Black",
-      key: "minimal",
-      cardClass: "theme-minimal",
-      eyebrow: "Private training",
-      cta: "Apply now",
+      name: "Noir",
+      key: "noir",
+      cardClass: "theme-noir",
+      eyebrow: "Cinematic. Dramatic. Immersive.",
+      kicker: ["Choreographer", "Educator", "Creator"],
+      flourish: "Watch Reel",
+      cta: "Book a Class",
+      classesLayout: "rows",
       sampleBrand: "Eight",
-      sampleHeadline: "Focus. Create. Perform.",
-      description: "Sleek, modern, and unapologetically focused.",
-      classOne: "Performance Lab",
-      classTwo: "Private Coaching",
+      sampleHeadline: "Movement lives in the in-between.",
+      description: "A moody, cinematic page built on a near-black canvas.",
+      classOne: "Bollywood Fusion",
+      classTwo: "Choreography Lab",
       noteTitle: "Approach",
-      note: "Luxury monochrome, dramatic image crops, and generous negative space."
+      note: "Full-bleed dark imagery, minimal overlay copy, and dramatic contrast."
+    },
+    {
+      name: "Muse",
+      key: "muse",
+      cardClass: "theme-muse",
+      eyebrow: "Warm. Artistic. Personal.",
+      kicker: ["Choreographer", "Educator", "Community Builder"],
+      flourish: "Same brighter you",
+      cta: "Explore Classes",
+      classesLayout: "editorial",
+      sampleBrand: "Grace",
+      sampleHeadline: "Movement is a kinder world.",
+      description: "A warm, hand-crafted page with soft artistic textures.",
+      classOne: "Bollywood Fusion",
+      classTwo: "Choreography Lab",
+      noteTitle: "Studio note",
+      note: "Warm terracotta tones, brushstroke accents, and an artist's-journal feel."
+    },
+    {
+      name: "Motion",
+      key: "motion",
+      cardClass: "theme-motion",
+      eyebrow: "Experimental. Creative. Unconventional.",
+      kicker: ["Choreographer", "Educator", "Creative"],
+      flourish: "Dance. Create. Belong.",
+      cta: "Book a Class",
+      classesLayout: "eventList",
+      sampleBrand: "Beyond Movement",
+      sampleHeadline: "Move with intention.",
+      description: "An experimental, graphic layout with kinetic accents.",
+      classOne: "Bollywood Fusion",
+      classTwo: "Choreography Lab",
+      noteTitle: "Community",
+      note: "Bold black type, a neon accent color, and a numbered event layout."
     }
   ];
 
   const canonicalThemeName = (theme = "") => {
     const normalized = String(theme).toLowerCase();
-    if (normalized.includes("bold") || normalized.includes("urban")) return "Bold & Edgy";
-    if (normalized.includes("soft") || normalized.includes("classical")) return "Soft & Graceful";
-    if (normalized.includes("vibrant")) return "Vibrant & Playful";
-    if (normalized.includes("minimal")) return "Minimal Black";
-    return "Default Elegant";
+    if (normalized.includes("studio")) return "Studio";
+    if (normalized.includes("electric") || normalized.includes("bold") || normalized.includes("urban") || normalized.includes("edgy")) return "Electric";
+    if (normalized.includes("noir") || normalized.includes("minimal") || normalized.includes("black")) return "Noir";
+    if (normalized.includes("muse") || normalized.includes("soft") || normalized.includes("classical") || normalized.includes("graceful")) return "Muse";
+    if (normalized.includes("motion") || normalized.includes("vibrant") || normalized.includes("playful")) return "Motion";
+    return "Editorial";
   };
 
   const themeProfileFor = (theme = "") => themes.find((item) => item.name === canonicalThemeName(theme)) || themes[0];
   const themeKeyFor = (theme = "") => themeProfileFor(theme).key;
   const themeClassFor = (theme = "") => `generated-${themeKeyFor(theme)}`;
-  const themeActionLabel = (theme = {}) => {
-    const label = theme.cta || "Reserve Spot";
-    if (/apply/i.test(label)) return "Apply";
-    if (/claim/i.test(label)) return "Claim spot";
-    if (/book/i.test(label)) return "Book a spot";
-    if (/explore/i.test(label)) return "Explore classes";
-    return "Reserve Spot";
-  };
+  const themeActionLabel = (theme = {}) => theme.cta || "Reserve Spot";
 
   const slugify = (value = "") =>
     String(value)
@@ -122,7 +151,7 @@
       whatYouDo: generated.whatYouDo || business.description || "",
       mission: generated.mission || business.mission || "",
       whyJoin: generated.whyJoin || business.why_join || "",
-      theme: generated.theme || website.theme || business.theme || "Default Elegant",
+      theme: generated.theme || website.theme || business.theme || "Editorial",
       styles: generated.styles || settings.dance_styles || [],
       pages: pages.length ? pages.map((page) => page.title || page.page_type).filter(Boolean) : generated.pages || [],
       instagram: generated.instagram || "",
@@ -317,7 +346,7 @@
       </div>`;
   };
 
-  const renderThemePicker = (selectedTheme = "Default Elegant") =>
+  const renderThemePicker = (selectedTheme = "Editorial") =>
     themes
       .map(
         (theme) => `
@@ -339,32 +368,224 @@
       .map((part) => `<p>${esc(part).replace(/\n/g, "<br>")}</p>`)
       .join("");
 
+  // Six structurally different hero + class-list layouts, dispatched by theme key below. Every
+  // real data field (title, date, price, image, published/registrationOpen) flows through
+  // unchanged from buildWebsiteContent - only the markup shape differs per theme. Every class
+  // item keeps its data-book-class button so public-site.js's booking flow works identically
+  // in every theme.
+  const classPrice = (item) => (typeof item.price === "number" ? `$${item.price.toFixed(2)}` : item.price || "");
+  const classDateTime = (item) => [item.date, item.time].filter(Boolean).join(" • ") || "Date TBA";
+  // Real classes store an ISO date (YYYY-MM-DD); the generated demo fallback classes store an
+  // ad-hoc "Thu 12" string instead, so this must degrade gracefully rather than parse garbage.
+  const classMonthDay = (item) => {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(item.date || "")) {
+      const parsed = new Date(`${item.date}T00:00:00`);
+      if (!Number.isNaN(parsed.getTime())) {
+        return { month: parsed.toLocaleDateString("en-US", { month: "short" }).toUpperCase(), day: String(parsed.getDate()) };
+      }
+    }
+    return { month: "", day: item.date || "TBA" };
+  };
+  const classesEmptyHTML = `<p class="theme-classes-empty">New classes coming soon. Follow along or get in touch for the next class announcement.</p>`;
+  const bookButton = (item, label = "Book a Spot", className = "") =>
+    `<button type="button"${className ? ` class="${className}"` : ""} data-book-class="${esc(item.id || slugify(item.title))}"${item.registrationOpen === false ? " disabled" : ""}>${item.registrationOpen === false ? "Registration Closed" : label}</button>`;
+
+  const heroEditorial = (content, ctx) => `
+    <section id="home" class="theme-hero theme-hero-editorial" data-edit-section="hero">
+      <div class="theme-hero-copy">
+        <p class="theme-hero-kicker">${content.theme.kicker.map((word) => esc(word)).join(" · ")}</p>
+        <h1 class="theme-hero-headline">${esc(content.headline)}</h1>
+        <a class="theme-hero-cta" href="${esc(content.ctaLink || "#classes")}">${esc(ctx.primaryAction)}</a>
+      </div>
+      <div class="theme-hero-media">
+        ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
+        <blockquote class="theme-hero-quote">${esc(content.theme.flourish)}</blockquote>
+      </div>
+    </section>`;
+
+  const heroStudio = (content, ctx) => {
+    const words = String(content.headline).trim().split(/\s+/).filter(Boolean);
+    const [firstWord, ...restWords] = words;
+    return `
+    <section id="home" class="theme-hero theme-hero-studio" data-edit-section="hero">
+      <div class="theme-hero-copy">
+        <p class="theme-hero-kicker">${content.theme.kicker.map((line) => `<span>${esc(line)}</span>`).join("")}</p>
+        <h1 class="theme-hero-headline"><span class="theme-hero-accent">${esc(firstWord || "")}</span> ${esc(restWords.join(" "))}</h1>
+        <a class="theme-hero-link" href="${esc(content.ctaLink || "#classes")}">${esc(ctx.primaryAction)} →</a>
+      </div>
+      <div class="theme-hero-media">
+        <span class="theme-hero-block" aria-hidden="true"></span>
+        ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
+      </div>
+    </section>`;
+  };
+
+  const heroElectric = (content, ctx) => `
+    <section id="home" class="theme-hero theme-hero-electric" data-edit-section="hero">
+      <div class="theme-hero-media">
+        ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
+        <div class="theme-hero-tagcloud">${content.styles.slice(0, 5).map((style) => `<span>${esc(style)}</span>`).join("")}</div>
+      </div>
+      <div class="theme-hero-copy">
+        <h1 class="theme-hero-headline">${esc(content.headline)}</h1>
+        <a class="theme-hero-cta" href="${esc(content.ctaLink || "#classes")}">${esc(ctx.primaryAction)}</a>
+      </div>
+    </section>`;
+
+  const heroNoir = (content, ctx) => `
+    <section id="home" class="theme-hero theme-hero-noir" data-edit-section="hero">
+      ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
+      <div class="theme-hero-copy">
+        <p class="theme-hero-kicker">${content.theme.kicker.map((word) => esc(word)).join(" · ")}</p>
+        <h1 class="theme-hero-headline">${esc(content.headline)}</h1>
+        <p class="theme-hero-name">${esc(content.instructorName)}</p>
+        <a class="theme-hero-link" href="#about">▶ ${esc(content.theme.flourish)}</a>
+      </div>
+    </section>`;
+
+  const heroMuse = (content, ctx) => `
+    <section id="home" class="theme-hero theme-hero-muse" data-edit-section="hero">
+      <div class="theme-hero-copy">
+        <p class="theme-hero-kicker">${content.theme.kicker.map((word) => esc(word)).join(" · ")}</p>
+        <h1 class="theme-hero-headline">${esc(content.headline)}</h1>
+        <a class="theme-hero-cta" href="${esc(content.ctaLink || "#classes")}">${esc(ctx.primaryAction)} →</a>
+      </div>
+      <div class="theme-hero-media">
+        ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
+        <span class="theme-hero-flourish">${esc(content.theme.flourish)}</span>
+      </div>
+    </section>`;
+
+  const heroMotion = (content, ctx) => {
+    const words = String(content.headline).trim().split(/\s+/).filter(Boolean);
+    const lastWord = words.pop() || "";
+    return `
+    <section id="home" class="theme-hero theme-hero-motion" data-edit-section="hero">
+      <div class="theme-hero-copy">
+        <h1 class="theme-hero-headline">${esc(words.join(" "))} <span class="theme-hero-accent">${esc(lastWord)}</span></h1>
+        <p class="theme-hero-tagblock">${content.theme.kicker.map((word) => esc(word)).join(" ")}<br>${esc(content.theme.flourish)}</p>
+      </div>
+      <div class="theme-hero-media">
+        ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
+      </div>
+    </section>`;
+  };
+
+  // Editorial cards: large image, quiet caption below. Shared by Editorial and Muse - the two
+  // themes stay genuinely distinct through color, type, and texture, not structure.
+  const classesEditorial = (content, ctx) => {
+    const items = ctx.visibleClasses.map((item, index) => {
+      const thumb = item.image || ctx.classThumbs[index % ctx.classThumbs.length] || content.images.hero;
+      return `<article class="theme-class-card${item.highlighted ? " is-highlighted" : ""}">
+        <div class="theme-class-card-media">${imageTag(thumb, `${item.title} class thumbnail`)}</div>
+        <div class="theme-class-card-body">
+          <small>${esc(classDateTime(item))}${item.level ? ` &bull; ${esc(item.level)}` : ""}</small>
+          <strong>${esc(item.title)}</strong>
+          <span>${esc(classPrice(item))}</span>
+        </div>
+        ${bookButton(item)}
+      </article>`;
+    }).join("") || classesEmptyHTML;
+    return `<section id="classes" class="theme-classes theme-classes-editorial" data-edit-section="classes">
+      <small>${esc(content.classesEyebrow)}</small>
+      <h2>${esc(content.classesHeading)}</h2>
+      <div class="theme-classes-grid">${items}</div>
+    </section>`;
+  };
+
+  // Clean numbered schedule, no images - Studio.
+  const classesStudio = (content, ctx) => {
+    const items = ctx.visibleClasses.map((item, index) => `<article class="theme-class-row">
+      <span class="theme-class-index">${String(index + 1).padStart(2, "0")}</span>
+      <div class="theme-class-row-body">
+        <strong>${esc(item.title)}</strong>
+        <span>${esc(classDateTime(item))}</span>
+      </div>
+      <span class="theme-class-row-level">${esc(item.level || "")}</span>
+      <span class="theme-class-row-price">${esc(classPrice(item))}</span>
+      ${bookButton(item, "→", "theme-class-row-cta")}
+    </article>`).join("") || classesEmptyHTML;
+    return `<section id="classes" class="theme-classes theme-classes-list" data-edit-section="classes">
+      <small>${esc(content.classesEyebrow)}</small>
+      <h2>${esc(content.classesHeading)}</h2>
+      <div class="theme-classes-rows">${items}</div>
+    </section>`;
+  };
+
+  // Bold colorful image cards with a date badge overlay - Electric.
+  const classesElectric = (content, ctx) => {
+    const items = ctx.visibleClasses.map((item, index) => {
+      const thumb = item.image || ctx.classThumbs[index % ctx.classThumbs.length] || content.images.hero;
+      const { month, day } = classMonthDay(item);
+      return `<article class="theme-class-card${item.highlighted ? " is-highlighted" : ""}">
+        <div class="theme-class-card-media">
+          ${imageTag(thumb, `${item.title} class thumbnail`)}
+          <span class="theme-class-badge">${month ? `<em>${esc(month)}</em>${esc(day)}` : esc(day)}</span>
+        </div>
+        <strong>${esc(item.title)}</strong>
+        <small>${[item.time, item.level].filter(Boolean).map((value) => esc(value)).join(" · ")}</small>
+        ${bookButton(item, classPrice(item) || "Book")}
+      </article>`;
+    }).join("") || classesEmptyHTML;
+    return `<section id="classes" class="theme-classes theme-classes-badge" data-edit-section="classes">
+      <small>${esc(content.classesEyebrow)}</small>
+      <h2>${esc(content.classesHeading)}</h2>
+      <div class="theme-classes-grid">${items}</div>
+    </section>`;
+  };
+
+  // Dark cinematic image-led rows - Noir.
+  const classesNoir = (content, ctx) => {
+    const items = ctx.visibleClasses.map((item, index) => {
+      const thumb = item.image || ctx.classThumbs[index % ctx.classThumbs.length] || content.images.hero;
+      return `<article class="theme-class-row">
+        <div class="theme-class-row-media">${imageTag(thumb, `${item.title} class thumbnail`)}</div>
+        <div class="theme-class-row-body">
+          <strong>${esc(item.title)}</strong>
+          <span>${esc(classDateTime(item))}${item.level ? ` &bull; ${esc(item.level)}` : ""}</span>
+        </div>
+        <span class="theme-class-row-price">${esc(classPrice(item))}</span>
+        ${bookButton(item, "→", "theme-class-row-cta")}
+      </article>`;
+    }).join("") || classesEmptyHTML;
+    return `<section id="classes" class="theme-classes theme-classes-noir" data-edit-section="classes">
+      <small>${esc(content.classesEyebrow)}</small>
+      <h2>${esc(content.classesHeading)}</h2>
+      <div class="theme-classes-rows">${items}</div>
+    </section>`;
+  };
+
+  // Experimental numbered event layout, with a small thumbnail per row - Motion.
+  const classesMotion = (content, ctx) => {
+    const items = ctx.visibleClasses.map((item, index) => {
+      const thumb = item.image || ctx.classThumbs[index % ctx.classThumbs.length] || content.images.hero;
+      return `<article class="theme-class-row">
+        <span class="theme-class-index">${String(index + 1).padStart(2, "0")}</span>
+        <div class="theme-class-row-media">${imageTag(thumb, `${item.title} class thumbnail`)}</div>
+        <div class="theme-class-row-body">
+          <strong>${esc(item.title)}</strong>
+          <span>${esc(classDateTime(item))}${item.level ? ` &bull; ${esc(item.level)}` : ""}</span>
+        </div>
+        <span class="theme-class-row-price">${esc(classPrice(item))}</span>
+        ${bookButton(item, "→", "theme-class-row-cta")}
+      </article>`;
+    }).join("") || classesEmptyHTML;
+    return `<section id="classes" class="theme-classes theme-classes-event" data-edit-section="classes">
+      <small>${esc(content.classesEyebrow)}</small>
+      <h2>${esc(content.classesHeading)}</h2>
+      <div class="theme-classes-rows">${items}</div>
+    </section>`;
+  };
+
+  const heroRenderers = { editorial: heroEditorial, studio: heroStudio, electric: heroElectric, noir: heroNoir, muse: heroMuse, motion: heroMotion };
+  const classesRenderers = { editorial: classesEditorial, studio: classesStudio, electric: classesElectric, noir: classesNoir, muse: classesEditorial, motion: classesMotion };
+
   const renderDesktopPreview = (content, options = {}) => {
-    const tags = content.styles.slice(0, 4).map((style) => `<span>${esc(style)}</span>`).join("");
     const primaryAction = content.ctaText || themeActionLabel(content.theme);
     const classThumbs = [content.images.gallery, content.images.workshop, content.images.performance, content.images.hero].filter(Boolean);
     const visibleClasses = content.classes.filter((item) => item.published !== false);
-    const classes = visibleClasses
-      .map((item, index) => {
-        const thumb = item.image || classThumbs[index % classThumbs.length] || content.images.hero;
-        return `<article class="setup-preview-class-card${item.highlighted ? " is-highlighted" : ""}">
-            <div class="setup-preview-class-thumb">
-              ${imageTag(thumb, `${item.title} class thumbnail`)}
-              <span>${esc(item.highlighted ? "Featured Class" : item.spots)}</span>
-            </div>
-            <small>${esc(item.style)}</small>
-            <strong>${esc(item.title)}</strong>
-            <div class="setup-preview-class-details">
-              <span>${esc(item.date)} &bull; ${esc(item.time)}</span>
-              <span>with ${esc(item.instructor)} &bull; ${esc(item.level)}</span>
-              <span>${esc(item.location)}</span>
-            </div>
-            ${item.description ? `<p>${esc(item.description)}</p>` : ""}
-            <p class="setup-preview-class-footer"><b>${esc(typeof item.price === "number" ? `$${item.price.toFixed(2)}` : item.price)}</b><span>${esc(item.spots)}</span></p>
-            <button type="button" data-book-class="${esc(item.id || slugify(item.title))}"${item.registrationOpen === false ? " disabled" : ""}>${item.registrationOpen === false ? "Registration Closed" : "Book a Spot"}</button>
-          </article>`;
-      })
-      .join("") || `<article class="setup-preview-empty"><strong>New classes coming soon.</strong><p>Follow along or get in touch for the next class announcement.</p></article>`;
+    const heroMarkup = (heroRenderers[content.theme.key] || heroEditorial)(content, { primaryAction });
+    const classesMarkup = (classesRenderers[content.theme.key] || classesEditorial)(content, { visibleClasses, classThumbs, primaryAction });
     const benefits = content.benefits.map(([title, copy]) => `<article><strong>${esc(title)}</strong><p>${esc(copy)}</p></article>`).join("");
     const gallery = content.gallery
       .slice(0, 4)
@@ -420,31 +641,8 @@
           </div>
         </details>
       </header>
-      <section id="home" class="setup-preview-hero" data-edit-section="hero">
-        <div>
-          <small data-live-theme>${esc(content.theme.name)}</small>
-          <h3 data-live-headline>${esc(content.headline)}</h3>
-          <p data-live-about>${esc(content.whatYouDo)}</p>
-          <div class="setup-preview-tags" data-live-specialties>${tags}</div>
-          <div class="setup-preview-cta-group">
-            <a class="setup-preview-primary-action" href="${esc(content.ctaLink || "#classes")}">${esc(primaryAction)}</a>
-            <a href="#classes">View Classes</a>
-          </div>
-        </div>
-        <div class="setup-preview-hero-media">
-          ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
-          <aside>
-            <small>Next class</small>
-            <strong>${esc(visibleClasses[0]?.date || "Saturday")} &bull; ${esc(visibleClasses[0]?.time || "7:00 PM")}</strong>
-            <span>${esc(visibleClasses[0]?.spots || "5 spots left")}</span>
-          </aside>
-        </div>
-      </section>
-      <section id="classes" class="setup-preview-section setup-preview-classes" data-edit-section="classes">
-        <small>${esc(content.classesEyebrow)}</small>
-        <h4>${esc(content.classesHeading)}</h4>
-        <div class="setup-preview-mini-grid" data-live-class-list>${classes}</div>
-      </section>
+      ${heroMarkup}
+      ${classesMarkup}
       <section id="workshops" class="setup-preview-section setup-preview-workshop" data-edit-section="workshop">
         <div>
           <div class="setup-preview-badges"><span>Featured</span><span>Limited Seats</span><span>Weekend Intensive</span></div>
@@ -505,6 +703,7 @@
         </div>
       </section>
       <footer class="setup-preview-footer" data-edit-section="footer">
+        <p class="theme-footer-flourish">${esc(content.theme.flourish)}</p>
         <div class="setup-preview-footer-brand">
           <strong>${logoHTML(content, options.logoHTML)}</strong>
           <p>${esc(content.tagline || "A polished home for classes, workshops, and student community.")}</p>
@@ -552,11 +751,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="${esc(baseUrl)}">
   <title>${esc(content.brandName)} | Generated by BeyondEight</title>
-  <link rel="stylesheet" href="/styles.css?v=20260919-style-your-website">
+  <link rel="stylesheet" href="/styles.css?v=20260919-six-themes">
 </head>
 <body class="${themeClassFor(content.theme.name)}">
   ${renderSharedPublicSite(content)}
-  <script src="/website-template.js?v=20260918-live-page-editor2"><\/script>
+  <script src="/website-template.js?v=20260919-six-themes"><\/script>
   <script>
     (() => {
       const businessId = ${businessId};
