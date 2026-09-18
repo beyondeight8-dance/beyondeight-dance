@@ -8272,6 +8272,12 @@ body.generated-minimal .published-faq details {
 
 /* Classes manager: a focused card grid + expand-to-edit modal, replacing the old side drawer. */
 .owner-classes-modal > div { width: min(100%, 900px); }
+.owner-classes-panel > header { position: sticky; z-index: 2; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 24px; background: #fffaf7; border-bottom: 1px solid #eadde5; border-radius: 8px 8px 0 0; }
+.owner-classes-panel > header small { display: block; color: #8d7c91; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.7rem; }
+.owner-classes-panel > header h2 { margin: 2px 0 0; font: 700 1.6rem/1.1 Georgia, serif; color: #281331; }
+.owner-classes-panel > header > button { width: 34px; height: 34px; border: 0; border-radius: 999px; background: rgba(47, 20, 61, 0.06); color: #55445a; font-size: 1.25rem; line-height: 1; cursor: pointer; transition: background 140ms ease; }
+.owner-classes-panel > header > button:hover { background: rgba(47, 20, 61, 0.12); }
+.owner-classes-panel .owner-reorder { display: flex; flex-wrap: wrap; gap: 8px; padding: 18px 24px 0; }
 .owner-classes-modal .owner-section-intro-fields { margin: 0 24px; padding: 20px 0; }
 .owner-classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; padding: 24px; }
 .owner-class-card { display: grid; align-content: start; text-align: left; border: 1px solid #eadde5; border-radius: 14px; background: #fff; overflow: hidden; cursor: pointer; transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
