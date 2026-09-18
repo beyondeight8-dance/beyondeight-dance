@@ -8168,7 +8168,7 @@ body.generated-minimal .published-faq details {
   top: 0;
   right: 0;
   z-index: 120;
-  width: min(560px, 94vw);
+  width: min(760px, 94vw);
   height: 100dvh;
   overflow: auto;
   border-left: 1px solid rgba(47, 20, 61, 0.12);

@@ -109,6 +109,12 @@
     const activeName = active?.name || "";
     const selectionStart = typeof active?.selectionStart === "number" ? active.selectionStart : null;
     const selectionEnd = typeof active?.selectionEnd === "number" ? active.selectionEnd : null;
+    // Class fields repeat the same "name" per class (title, date, ...), so the active
+    // field must be matched by its position among same-named fields, not just by name,
+    // or focus jumps to the first class sharing that field name after every keystroke.
+    const activeIndex = activeName
+      ? [...document.querySelectorAll("[data-owner-drawer] [name]")].filter((input) => input.name === activeName).indexOf(active)
+      : -1;
     if (form.dataset.editorSection === "classes") {
       const previous = state.classes || contentForState().classes;
       state.classes = [...form.querySelectorAll("[data-class-index]")].map((group, index) => { const values = Object.fromEntries([...group.querySelectorAll("input:not([type=file]), textarea, select")].map((input) => [input.name, input.value])); return { ...previous[index], ...values, published: values.published !== "Draft" }; });
@@ -122,7 +128,8 @@
     scheduleSave();
     render();
     if (activeName) {
-      const replacement = [...document.querySelectorAll("[data-owner-drawer] [name]")].find((input) => input.name === activeName);
+      const matches = [...document.querySelectorAll("[data-owner-drawer] [name]")].filter((input) => input.name === activeName);
+      const replacement = matches[activeIndex] ?? matches[0];
       replacement?.focus({ preventScroll: true });
       if (selectionStart !== null && replacement?.setSelectionRange) replacement.setSelectionRange(selectionStart, selectionEnd);
     }
