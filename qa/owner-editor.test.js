@@ -23,8 +23,14 @@ assert.doesNotMatch(publicSite, /localSites\[slug\] \|\| await app\.getBusinessB
 // [data-class-index] must scope to that one class by its own index - not reassign the whole
 // array from whatever fieldsets happen to be present, which would silently drop every other
 // class from state the moment more than one exists.
-assert.match(publicSite, /previous\.map\(\(item, index\) => index === idx \? \{ \.\.\.item, \.\.\.values, published: values\.published !== "Draft" \} : item\)/, "editing one expanded class must not overwrite the rest of state.classes");
+assert.match(publicSite, /previous\.map\(\(item, index\) => index === idx \? \{ \.\.\.item, \.\.\.values \} : item\)/, "editing one expanded class must not overwrite the rest of state.classes");
 assert.doesNotMatch(publicSite, /state\.classes = \[\.\.\.form\.querySelectorAll\("\[data-class-index\]"\)\]\.map\(\(group, index\) => \{ const values[\s\S]{0,40}return \{ \.\.\.previous\[index\]/, "must not rebuild the full classes array from only the DOM fieldsets present");
+// Status is now set only by the explicit Save as Draft / Publish buttons, not a form field
+// scanned by updateStateFromForm - there must be no "published" select left for that scan to
+// misread (an absent field would otherwise make `values.published !== "Draft"` always true).
+assert.doesNotMatch(publicSite, /selectField\("Status", "published"/, "class status must be set by explicit Save as Draft/Publish actions, not a status field");
+assert.match(publicSite, /data-class-save="draft">Save as Draft/, "classes must offer an explicit Save as Draft action");
+assert.match(publicSite, /data-class-save="publish">Publish/, "classes must offer an explicit Publish action");
 
 // The "Why dance with me" benefits section previously had no data-edit-section and its content
 // was always the hardcoded demo array, regardless of anything the owner typed - clicking it did
