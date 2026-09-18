@@ -1513,7 +1513,7 @@ const bindReadyScreenEvents = () => {
       setupMessage.textContent = "Opening Google sign-in...";
       const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: getAuthRedirectUrl() }
+        options: { redirectTo: getAuthRedirectUrl(), queryParams: { prompt: "select_account" } }
       });
       if (error) throw error;
     } catch (error) {
@@ -1802,7 +1802,7 @@ authGoogle?.addEventListener("click", async () => {
     if (returnTo?.startsWith("/dashboard")) window.localStorage.setItem(AUTH_RETURN_TO_KEY, returnTo);
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: getAuthRedirectUrl() }
+      options: { redirectTo: getAuthRedirectUrl(), queryParams: { prompt: "select_account" } }
     });
     if (error) throw error;
   } catch (error) {
