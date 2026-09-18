@@ -20,6 +20,7 @@
   let saveTimer = 0;
   let saving = false;
   let expandedClassIndex = -1;
+  let classesSectionSettingsOpen = false;
   const imageUrl = (value) => /^https?:\/\//i.test(value || "") ? value : `/${String(value || "assets/starter-dance-class.jpg").replace(/^\//, "")}`;
 
   const publicError = (title, copy) => {
@@ -89,12 +90,41 @@
   const instagramControls = () => `<section class="owner-instagram" data-owner-instagram><div><small>Instagram feed</small><strong data-instagram-status>Checking connection...</strong><p data-instagram-help>Connect a Creator or Business account to show recent posts.</p></div><div data-instagram-settings hidden><label><input type="checkbox" data-instagram-visible> Show on website</label><label>Posts<select data-instagram-limit><option value="4">4</option><option value="6">6</option></select></label></div><div class="owner-instagram-actions"><button type="button" data-instagram-connect>Connect Instagram</button><button type="button" data-instagram-refresh hidden>Refresh</button><button type="button" data-instagram-disconnect hidden>Disconnect</button></div><small data-instagram-message></small></section>`;
   const imageField = (label, key, current = "") => `<label class="owner-image-field">${esc(label)}${current ? `<img src="${esc(current)}" alt="Current ${esc(label.toLowerCase())}">` : ""}<input type="file" accept="image/jpeg,image/png,image/webp" data-owner-image="${esc(key)}"><small>JPG, PNG, or WEBP up to 5MB</small></label>`;
   const galleryEditor = (images) => `<div class="owner-gallery-manager">${images.map((src, index) => `<article><img src="${esc(src)}" alt="Gallery image ${index + 1}"><div><button type="button" data-move-gallery="${index}" data-direction="-1">Up</button><button type="button" data-move-gallery="${index}" data-direction="1">Down</button><button type="button" data-remove-gallery="${index}">Remove</button></div></article>`).join("") || `<p>No gallery images yet. Upload the first image below.</p>`}</div>`;
-  const classCard = (item, index) => `<button type="button" class="owner-class-card${item.highlighted ? " is-highlighted" : ""}" data-class-edit="${index}"><span class="owner-class-card-media">${item.image ? `<img src="${esc(imageUrl(item.image))}" alt="" loading="lazy">` : `<span class="owner-class-card-placeholder" aria-hidden="true">🎭</span>`}<span class="owner-status ${item.published === false ? "is-draft" : ""}">${item.published === false ? "Draft" : "Published"}</span></span><span class="owner-class-card-body"><strong>${esc(item.title || `Class ${index + 1}`)}</strong><span>${esc([item.date, item.time].filter(Boolean).join(" • ") || "Schedule coming soon")}</span><small>${esc(item.venue || item.location || "Location coming soon")}</small></span></button>`;
+  const classCard = (item, index) => {
+    const label = esc(item.title || `Class ${index + 1}`);
+    const meta = [item.price, item.capacity ? `${item.capacity} spots` : ""].filter(Boolean).map((value) => esc(value)).join(" • ");
+    return `<article class="owner-class-card${item.highlighted ? " is-highlighted" : ""}">
+      <button type="button" class="owner-class-card-media" data-class-edit="${index}" aria-label="Edit ${label}">
+        ${item.image ? `<img src="${esc(imageUrl(item.image))}" alt="" loading="lazy">` : `<span class="owner-class-card-placeholder" aria-hidden="true">🎭</span>`}
+        <span class="owner-status ${item.published === false ? "is-draft" : ""}">${item.published === false ? "Draft" : "Published"}</span>
+      </button>
+      <div class="owner-class-card-body">
+        <strong>${label}</strong>
+        <span>${esc([item.date, item.time].filter(Boolean).join(" • ") || "Schedule coming soon")}</span>
+        <span>${esc(item.venue || item.location || "Location coming soon")}</span>
+        ${meta ? `<span class="owner-class-card-meta">${meta}</span>` : ""}
+      </div>
+      <div class="owner-class-card-footer">
+        <button type="button" class="owner-class-card-edit" data-class-edit="${index}">Edit</button>
+        <details class="owner-card-menu">
+          <summary aria-label="More options">⋮</summary>
+          <div>
+            <button type="button" data-class-toggle="${index}">${item.published === false ? "Publish" : "Unpublish"}</button>
+            <button type="button" data-move-class="${index}" data-direction="-1">Move up</button>
+            <button type="button" data-move-class="${index}" data-direction="1">Move down</button>
+            <button type="button" class="owner-danger" data-class-delete="${index}">Delete</button>
+          </div>
+        </details>
+      </div>
+    </article>`;
+  };
   const addClassCard = () => `<button type="button" class="owner-class-card owner-class-card-add" data-add-class><span aria-hidden="true">+</span><strong>Add Class</strong></button>`;
   const classDetailForm = (item, index) => `<form class="owner-class-form" data-editor-section="classes"><div class="owner-reorder"><button type="button" data-collapse-class>← Back to classes</button><button type="button" data-move-class="${index}" data-direction="-1">Move up</button><button type="button" data-move-class="${index}" data-direction="1">Move down</button><button type="button" class="owner-danger" data-class-delete="${index}">Delete class</button></div><div class="owner-form-grid" data-class-index="${index}"><fieldset><legend>Class details</legend>${field("Class name", "title", item.title)}${field("Dance style", "style", item.style)}${selectField("Level", "level", item.level || "Open level", ["Beginner", "Intermediate", "Advanced", "Open level"])}${area("Description", "description", item.description || "")}${imageField("Class image", `class:${index}`, item.image)}</fieldset><fieldset><legend>Schedule &amp; Location</legend>${field("Date", "date", item.date, "date")}${field("Start time", "time", item.time, "time")}${field("Duration", "duration", item.duration || "60 minutes")}${selectField("Location type", "format", item.format || "In person", ["In person", "Online"])}${field("Location / venue", "location", item.location)}</fieldset><fieldset><legend>Pricing &amp; Booking</legend>${field("Price", "price", item.price)}${field("Capacity", "capacity", item.capacity || "20", "number")}${field("Available spots", "spots", item.spots)}${field("Instructor", "instructor", item.instructor)}${field("Booking link", "bookingUrl", item.bookingUrl || "#contact")}${area("What to bring", "whatToBring", item.whatToBring || "")}${area("Cancellation policy", "cancellationPolicy", item.cancellationPolicy || "")}</fieldset></div><footer><button type="button" data-class-save="draft">Save as Draft</button><button type="button" class="primary-button" data-class-save="publish">Publish</button></footer></form>`;
   const classesGridView = () => {
     const items = state.classes || contentForState().classes;
-    return `<form data-editor-section="classes"><div class="owner-section-intro-fields">${field("Section label", "classesEyebrow", state.classesEyebrow ?? contentForState().classesEyebrow)}${field("Section heading", "classesHeading", state.classesHeading ?? contentForState().classesHeading)}</div></form><div class="owner-classes-grid">${items.map(classCard).join("")}${addClassCard()}</div>`;
+    const toolbar = `<div class="owner-classes-toolbar"><button type="button" class="owner-classes-settings-toggle" data-toggle-section-settings aria-expanded="${classesSectionSettingsOpen}">${classesSectionSettingsOpen ? "Hide section settings" : "Section settings"}</button></div>`;
+    const settings = classesSectionSettingsOpen ? `<form data-editor-section="classes"><div class="owner-section-intro-fields">${field("Section label", "classesEyebrow", state.classesEyebrow ?? contentForState().classesEyebrow)}${field("Section heading", "classesHeading", state.classesHeading ?? contentForState().classesHeading)}</div></form>` : "";
+    return `${toolbar}${settings}<div class="owner-classes-grid">${items.map(classCard).join("")}${addClassCard()}</div>`;
   };
   const editorBody = (section) => {
     const content = contentForState();
@@ -218,7 +248,7 @@
     const showingDetail = expandedClassIndex >= 0 && items[expandedClassIndex];
     const title = showingDetail ? (items[expandedClassIndex].title || "New class") : "Classes";
     const body = showingDetail ? classDetailForm(items[expandedClassIndex], expandedClassIndex) : classesGridView();
-    document.body.insertAdjacentHTML("beforeend", `<div class="owner-modal owner-classes-modal" data-classes-modal role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="owner-classes-panel"><header><div><small>Website editor</small><h2>${esc(title)}</h2></div><button type="button" data-close-editor aria-label="Close editor">×</button></header>${body}</div></div>`);
+    document.body.insertAdjacentHTML("beforeend", `<div class="owner-modal owner-classes-modal" data-classes-modal role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="owner-classes-panel"><header><h2>${esc(title)}</h2><button type="button" data-close-editor aria-label="Close editor">×</button></header>${body}</div></div>`);
     const modal = document.querySelector("[data-classes-modal]");
     const form = modal.querySelector("form");
     if (form) {
@@ -233,10 +263,16 @@
     modal.querySelectorAll("[data-move-class]").forEach((button) => button.addEventListener("click", () => { const from = Number(button.dataset.moveClass); const to = from + Number(button.dataset.direction); state.classes = state.classes || clone(contentForState().classes); if (to < 0 || to >= state.classes.length) return; [state.classes[from], state.classes[to]] = [state.classes[to], state.classes[from]]; if (expandedClassIndex === from) expandedClassIndex = to; else if (expandedClassIndex === to) expandedClassIndex = from; scheduleSave(); render(); }));
     modal.querySelectorAll("[data-class-delete]").forEach((button) => button.addEventListener("click", () => { const idx = Number(button.dataset.classDelete); if (!window.confirm("Delete this class? This cannot be undone.")) return; state.classes.splice(idx, 1); expandedClassIndex = -1; scheduleSave(); render(); }));
     modal.querySelectorAll("[data-class-save]").forEach((button) => button.addEventListener("click", () => { const publish = button.dataset.classSave === "publish"; const idx = expandedClassIndex; state.classes = (state.classes || contentForState().classes).map((item, index) => index === idx ? { ...item, published: publish } : item); expandedClassIndex = -1; scheduleSave(); render(); }));
-    // .owner-class-card, not input/textarea, so grid view doesn't steal focus into the
-    // section-label field ahead of it in document order (a plain multi-selector querySelector
-    // returns document order, not list order, so those can't just be combined).
-    const focusTarget = showingDetail ? modal.querySelector("input, textarea") : modal.querySelector(".owner-class-card");
+    modal.querySelectorAll("[data-class-toggle]").forEach((button) => button.addEventListener("click", () => { const idx = Number(button.dataset.classToggle); state.classes = state.classes || clone(contentForState().classes); state.classes[idx] = { ...state.classes[idx], published: state.classes[idx].published === false }; scheduleSave(); render(); }));
+    modal.querySelector("[data-toggle-section-settings]")?.addEventListener("click", () => { classesSectionSettingsOpen = !classesSectionSettingsOpen; openClassesManager(false); });
+    // Native <details> menus don't close on an outside click by themselves; do it manually so a
+    // card's "more options" menu doesn't stay open once the owner has moved on.
+    modal.addEventListener("click", (event) => { modal.querySelectorAll("details[open]").forEach((details) => { if (!details.contains(event.target)) details.removeAttribute("open"); }); });
+    // .owner-class-card-media, not the .owner-class-card article itself (which is no longer a
+    // focusable element), so grid view doesn't steal focus into the section-settings field ahead
+    // of it in document order (a plain multi-selector querySelector returns document order, not
+    // list order, so those can't just be combined).
+    const focusTarget = showingDetail ? modal.querySelector("input, textarea") : modal.querySelector(".owner-class-card-media, .owner-class-card-add");
     if (focus) focusTarget?.focus({ preventScroll: true });
   };
   const openEditor = (section, focus = true) => {
@@ -262,7 +298,7 @@
     bindInstagramEditor(drawer);
     if (focus) drawer.querySelector("input, textarea, button")?.focus();
   };
-  const closeEditor = () => { activeSection = ""; expandedClassIndex = -1; document.querySelector("[data-owner-drawer]")?.remove(); document.querySelector("[data-classes-modal]")?.remove(); };
+  const closeEditor = () => { activeSection = ""; expandedClassIndex = -1; classesSectionSettingsOpen = false; document.querySelector("[data-owner-drawer]")?.remove(); document.querySelector("[data-classes-modal]")?.remove(); };
   const publishChanges = async () => {
     if (!isOwner() || saving) return;
     const button = root.querySelector("[data-owner-publish]");

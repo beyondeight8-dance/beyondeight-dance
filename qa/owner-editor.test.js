@@ -49,4 +49,13 @@ assert.doesNotMatch(publicSite, /classes: `<div class="owner-section-intro-field
 assert.match(publicSite, /data-owner-drawer\] \[name\], \[data-classes-modal\] \[name\]/, "focus-restore must cover both the drawer and the classes modal");
 assert.match(publicSite, /owner-class-card-add" data-add-class/, "the classes grid must offer an explicit Add Class card");
 
+// A class card is <article> wrapping its own <button> (edit) and <details> (menu) - a <button>
+// cannot legally contain another interactive element, and nesting one would make the browser
+// break the DOM apart in a way that silently breaks click handling for whichever control lands
+// outside the resulting tree.
+assert.doesNotMatch(publicSite, /<button type="button" class="owner-class-card\$\{/, "a class card must not itself be a <button> wrapping other interactive controls");
+assert.match(publicSite, /<article class="owner-class-card/, "a class card must be a non-interactive container");
+assert.match(publicSite, /class="owner-class-card-edit" data-class-edit/, "each card needs its own explicit Edit control, not just a click-anywhere card");
+assert.match(publicSite, /class="owner-card-menu"/, "each card needs a secondary-actions menu");
+
 console.log("owner editor architecture regression tests passed");
