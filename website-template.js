@@ -336,7 +336,6 @@
     const classThumbs = [content.images.gallery, content.images.workshop, content.images.performance, content.images.hero].filter(Boolean);
     const visibleClasses = content.classes.filter((item) => item.published !== false);
     const classes = visibleClasses
-      .slice(0, 3)
       .map((item, index) => {
         const thumb = item.image || classThumbs[index % classThumbs.length] || content.images.hero;
         return `<article class="setup-preview-class-card${item.highlighted ? " is-highlighted" : ""}">
@@ -548,7 +547,7 @@
 </head>
 <body class="${themeClassFor(content.theme.name)}">
   ${renderSharedPublicSite(content)}
-  <script src="/website-template.js?v=20260822-instagram"><\/script>
+  <script src="/website-template.js?v=20260918-class-limit-fix"><\/script>
   <script>
     (() => {
       const businessId = ${businessId};
