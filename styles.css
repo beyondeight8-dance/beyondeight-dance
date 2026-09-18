@@ -8311,6 +8311,9 @@ body.generated-minimal .published-faq details {
 .owner-dashboard-section { display: grid; gap: 18px; border-top: 1px solid #eadde5; padding-top: 28px; }
 .owner-dashboard-section > header { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
 .owner-dashboard-section h2, .owner-analytics-teaser h2 { margin: 4px 0 0; font: 700 2rem/1.05 Georgia, serif; }
+.owner-list-filters { display: flex; flex-wrap: wrap; gap: 10px; }
+.owner-list-filters input[type="search"] { flex: 1 1 220px; min-width: 0; }
+.owner-list-filters input[type="search"], .owner-list-filters select { border: 1px solid #d9c8d2; border-radius: 6px; padding: 10px 12px; background: #fff; color: #281331; font: inherit; }
 .owner-class-list { display: grid; gap: 10px; }
 .owner-class-row { display: grid; grid-template-columns: 92px minmax(220px, 1fr) 170px auto auto; align-items: center; gap: 18px; border: 1px solid #eadde5; border-radius: 8px; padding: 12px; background: #fff; }
 .owner-class-row > img { width: 92px; aspect-ratio: 4 / 3; border-radius: 6px; object-fit: cover; }
