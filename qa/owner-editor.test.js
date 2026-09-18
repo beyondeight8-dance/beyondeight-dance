@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const services = fs.readFileSync(require.resolve("../app-services.js"), "utf8");
 const publicSite = fs.readFileSync(require.resolve("../public-site.js"), "utf8");
 const templates = fs.readFileSync(require.resolve("../website-template.js"), "utf8");
+const dashboard = fs.readFileSync(require.resolve("../dashboard.js"), "utf8");
 const schema = fs.readFileSync(require.resolve("../supabase-owner-editor.sql"), "utf8");
 
 assert.match(services, /\.eq\("owner_user_id", user\.id\)/, "owner mutations must verify authoritative ownership");
@@ -12,50 +13,34 @@ assert.match(services, /published_content: publishState/, "publishing must expli
 assert.doesNotMatch(services.slice(services.indexOf("const getBusinessBundleBySlug"), services.indexOf("const assertBusinessOwner")), /website_drafts/, "public bundle must never query drafts");
 assert.match(schema, /alter table public\.website_drafts enable row level security/, "draft table must enforce RLS");
 assert.match(schema, /owner_user_id = auth\.uid\(\)/, "draft RLS must be owner scoped");
-assert.match(publicSite, /bundle\?\.business\?\.owner_user_id === user\.id|publicBundle\.business\.owner_user_id === user\.id/, "editor UI must require ownership");
+assert.match(publicSite, /bundle\?\.business\?\.owner_user_id === user\.id/, "the public page must require ownership before showing the owner toolbar");
 assert.match(publicSite, /templates\.renderPublicSite/, "owner and visitor modes must share the public renderer");
 assert.match(templates, /input\.mode === "public" \? website\.published_content : website\.draft_content/, "renderer must choose published or draft state by mode");
 assert.match(publicSite, /const remoteBundle = await app\.getBusinessBundleBySlug\(slug\)/, "public page must query the live database before falling back to any cached preview");
 assert.doesNotMatch(publicSite, /localSites\[slug\] \|\| await app\.getBusinessBundleBySlug/, "the pre-auth local preview cache must never take priority over live published data");
 
-// The classes editor shows only the expanded class's fieldset in the DOM at a time (a compact
-// summary row for every other class), so rebuilding state.classes from a querySelectorAll over
-// [data-class-index] must scope to that one class by its own index - not reassign the whole
-// array from whatever fieldsets happen to be present, which would silently drop every other
-// class from state the moment more than one exists.
-assert.match(publicSite, /previous\.map\(\(item, index\) => index === idx \? \{ \.\.\.item, \.\.\.values \} : item\)/, "editing one expanded class must not overwrite the rest of state.classes");
-assert.doesNotMatch(publicSite, /state\.classes = \[\.\.\.form\.querySelectorAll\("\[data-class-index\]"\)\]\.map\(\(group, index\) => \{ const values[\s\S]{0,40}return \{ \.\.\.previous\[index\]/, "must not rebuild the full classes array from only the DOM fieldsets present");
-// Status is now set only by the explicit Save as Draft / Publish buttons, not a form field
-// scanned by updateStateFromForm - there must be no "published" select left for that scan to
-// misread (an absent field would otherwise make `values.published !== "Draft"` always true).
-assert.doesNotMatch(publicSite, /selectField\("Status", "published"/, "class status must be set by explicit Save as Draft/Publish actions, not a status field");
-assert.match(publicSite, /data-class-save="draft">Save as Draft/, "classes must offer an explicit Save as Draft action");
-assert.match(publicSite, /data-class-save="publish">Publish/, "classes must offer an explicit Publish action");
+// Editing (appearance and classes) now happens exclusively in the Dashboard. The live public
+// page must never re-grow a click-any-section drawer/modal editor - it only links back to the
+// Dashboard for an owner, and stays a plain read-only renderer plus the booking flow otherwise.
+assert.doesNotMatch(publicSite, /data-edit-section/, "the public page must not listen for on-page section edit clicks anymore");
+assert.doesNotMatch(publicSite, /editMode/, "there must be no more in-place edit-mode toggle on the live page");
+assert.doesNotMatch(publicSite, /openEditor|openClassesManager|editorBody|classDetailForm|classesGridView/, "the old drawer/modal editor must be fully removed from the public page");
+assert.match(publicSite, /href="\/dashboard\/\?view=website">Edit Website</, "the owner toolbar must hand editing off to the dashboard's Website tab");
 
-// The "Why dance with me" benefits section previously had no data-edit-section and its content
-// was always the hardcoded demo array, regardless of anything the owner typed - clicking it did
-// nothing, and there was no way to change it at all.
-assert.match(templates, /data-edit-section="benefits"/, "the benefits section must be clickable like every other section");
-assert.match(templates, /benefits: Array\.isArray\(state\.benefits\)/, "benefits content must come from saved state, not always the hardcoded demo array");
-assert.match(publicSite, /benefits: `\$\{field\("Section label", "benefitsEyebrow"/, "benefits must have an editor form, not just an on-page click target");
+// Classes are managed exclusively from the Dashboard's Classes tab now - the public page must
+// not offer its own class create/edit/delete affordances.
+assert.doesNotMatch(publicSite, /data-class-edit|data-add-class|data-class-save|data-class-delete/, "the public page must not offer its own class editing controls");
+assert.match(dashboard, /const classView = \(\)/, "classes stay managed exclusively on the dashboard's Classes tab");
 
-// Classes now open a card-grid + expand-to-edit modal instead of the side drawer used by every
-// other section. The focus-restore logic keys off [data-owner-drawer] OR [data-classes-modal] -
-// if a future edit only checks the drawer again, typing in a class field will silently stop
-// restoring cursor focus after every keystroke (the same bug class already fixed once for the
-// drawer itself).
-assert.match(publicSite, /const openClassesManager = \(focus = true\) => \{/, "classes must have their own manager, not the shared section drawer");
-assert.doesNotMatch(publicSite, /classes: `<div class="owner-section-intro-fields"/, "classes must not go back through the generic editorBody/drawer path");
-assert.match(publicSite, /data-owner-drawer\] \[name\], \[data-classes-modal\] \[name\]/, "focus-restore must cover both the drawer and the classes modal");
-assert.match(publicSite, /owner-class-card-add" data-add-class/, "the classes grid must offer an explicit Add Class card");
-
-// A class card is <article> wrapping its own <button> (edit) and <details> (menu) - a <button>
-// cannot legally contain another interactive element, and nesting one would make the browser
-// break the DOM apart in a way that silently breaks click handling for whichever control lands
-// outside the resulting tree.
-assert.doesNotMatch(publicSite, /<button type="button" class="owner-class-card\$\{/, "a class card must not itself be a <button> wrapping other interactive controls");
-assert.match(publicSite, /<article class="owner-class-card/, "a class card must be a non-interactive container");
-assert.match(publicSite, /class="owner-class-card-edit" data-class-edit/, "each card needs its own explicit Edit control, not just a click-anywhere card");
-assert.match(publicSite, /class="owner-card-menu"/, "each card needs a secondary-actions menu");
+// Style Your Website: a tabbed, appearance-only panel with exactly the five approved areas -
+// Look/Theme, Hero, About Me, Gallery, Socials - and nothing else (no section labels/headings,
+// no header/footer controls, no benefits/testimonials/FAQ/contact forms).
+assert.match(dashboard, /const websiteTabs = \[\["look", "Look & Theme"\], \["hero", "Hero"\], \["about", "About Me"\], \["gallery", "Gallery"\], \["socials", "Socials"\]\]/, "the website panel must expose exactly the five approved areas");
+assert.match(dashboard, /templates\.renderThemePicker\(draftState\.theme \|\| c\.theme\.name\)/, "the Look & Theme tab must offer a visual theme picker");
+assert.match(dashboard, /photoCard\("Hero photo", "heroImage"/, "the Hero tab must offer a hero photo");
+assert.match(dashboard, /photoCard\("Your photo", "instructorImage"/, "the About Me tab must offer an instructor photo");
+assert.match(dashboard, /websiteGalleryTab/, "the Gallery tab must remain available");
+assert.match(dashboard, /wfield\("Instagram", "instagram"/, "the Socials tab must offer social links");
+assert.doesNotMatch(dashboard, /classesEyebrow|classesHeading|benefitsEyebrow|benefitsHeading|galleryEyebrow|galleryHeading|faqEyebrow|faqHeading|aboutEyebrow/, "section label/heading clutter must not resurface in the website panel");
 
 console.log("owner editor architecture regression tests passed");
