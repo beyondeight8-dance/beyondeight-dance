@@ -262,7 +262,7 @@
   };
   function bindOwnerEvents() {
     root.querySelectorAll("[data-book-class]").forEach((button) => button.addEventListener("click", () => openBooking(button.dataset.bookClass)));
-    root.querySelector("[data-owner-edit]")?.addEventListener("click", () => { editMode = !editMode; closeEditor(); render({ keepDrawer: false }); if (editMode) openEditor("classes"); });
+    root.querySelector("[data-owner-edit]")?.addEventListener("click", () => { editMode = !editMode; closeEditor(); render({ keepDrawer: false }); if (editMode) openEditor("hero"); });
     root.querySelector("[data-owner-publish]")?.addEventListener("click", publishChanges);
     root.querySelector("[data-owner-visitor]")?.addEventListener("click", () => { editMode = false; root.querySelector("[data-owner-toolbar]")?.remove(); closeEditor(); });
     if (editMode) root.querySelectorAll("[data-edit-section]").forEach((section) => section.addEventListener("click", (event) => { if (event.target.closest("a, button, input")) return; event.preventDefault(); openEditor(section.dataset.editSection); }));
@@ -288,7 +288,7 @@
       if (requestedEditor === "classes" && params.get("new") === "1") { state.classes = [...(state.classes || contentForState().classes), { title: "New Class", style: "Open", date: "", time: "", duration: "60 minutes", location: "In studio", format: "In person", level: "Open level", price: "$25", capacity: "20", spots: "20 spots left", instructor: state.instructorName || contentForState().instructorName, published: false }]; dirty = true; scheduleSave(); }
     }
     render({ keepDrawer: false });
-    if (editMode) openEditor(requestedEditor || "classes");
+    if (editMode) openEditor(requestedEditor || "hero");
   } catch (error) {
     console.warn("Public site failed:", error);
     publicError("We could not load this website.", "Please try again soon.");
