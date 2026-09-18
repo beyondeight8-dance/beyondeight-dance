@@ -14,7 +14,10 @@
   <header class="site-header">
     <a class="brand" href="#top" aria-label="BeyondEight home">
       <span class="brand-mark"><img src="assets/app-logo-3-transparent.png" alt=""></span>
-      <span class="brand-name">Beyond<span>Eight</span></span>
+      <span class="brand-lockup">
+        <span class="brand-name">Beyond<span>Eight</span></span>
+        <small class="brand-tagline">For Dancepreneurs</small>
+      </span>
     </a>
     <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
       <span></span>
@@ -38,66 +41,68 @@
 
   <main id="top">
     <section class="home-hero" aria-labelledby="hero-title">
-      <img class="home-hero-photo" src="assets/dancer-hero.png" alt="A dance instructor mid-movement in the studio" loading="eager">
+      <img class="home-hero-photo" src="assets/homepage-dance-studio.png" alt="A dance class mid-movement in a bright studio" loading="eager">
       <div class="home-hero-scrim" aria-hidden="true"></div>
       <div class="home-hero-content">
+        <p class="hero-eyebrow">Built for dancepreneurs</p>
         <h1 id="hero-title">You teach.<br><em>We handle the rest.</em></h1>
         <p>Spend less time checking payments, managing rosters, and sending reminders. BeyondEight keeps your classes running smoothly, so you can focus on what you love: teaching.</p>
-        <a class="primary-button" href="#setup" data-open-setup>Get Started Free<span aria-hidden="true"> &rarr;</span></a>
+        <a class="primary-button home-primary-button" href="#setup" data-open-setup>Get Started Free<span aria-hidden="true"> &rarr;</span></a>
       </div>
     </section>
 
     <section class="how-it-works" id="how-it-works" aria-labelledby="how-it-works-title">
       <div class="section-heading center-heading">
         <p class="eyebrow">How It Works</p>
-        <h2 id="how-it-works-title">You create the class. <span>BeyondEight</span> takes it from there.</h2>
+        <h2 id="how-it-works-title">You create the class. <em>BeyondEight takes it from there.</em></h2>
       </div>
       <div class="how-steps">
         <article class="how-step">
           <span class="how-step-number">1</span>
-          <h3>Create the class</h3>
+          <h3>Create your class</h3>
           <div class="how-step-ui how-step-form" aria-hidden="true">
             <div class="mini-title">Create New Class</div>
-            <label>Class Title<span></span></label>
-            <label>Date &amp; Time<span></span></label>
-            <label>Location<span></span></label>
-            <label>Price<span></span></label>
+            <label>Class Title<span>Heels Workshop</span></label>
+            <label>Date &amp; Time<span>Oct 12, 2024 &middot; 4:00 PM</span></label>
+            <label>Location<span>The Movement Lab, NY</span></label>
+            <label>Price<span>$25</span></label>
             <div class="mini-publish">Publish Class</div>
           </div>
         </article>
         <article class="how-step">
           <span class="how-step-number">2</span>
-          <h3>They register and pay</h3>
+          <h3>Students register and pay</h3>
           <div class="how-step-ui how-step-confirm" aria-hidden="true">
             <span class="how-step-check">&#10003;</span>
             <strong>You're Registered!</strong>
+            <p>A confirmation email has been sent.</p>
             <div class="mini-view-details">View Details</div>
           </div>
         </article>
         <article class="how-step">
           <span class="how-step-number">3</span>
-          <h3>Your roster fills itself</h3>
+          <h3>Your roster builds itself</h3>
           <div class="how-step-ui how-step-roster" aria-hidden="true">
             <div class="mini-title">Class Roster (24)</div>
-            <div class="student-row"><span>MR</span><p>Maya R.</p><strong>Paid</strong></div>
-            <div class="student-row"><span>LT</span><p>Leah T.</p><strong>Paid</strong></div>
-            <div class="student-row"><span>NS</span><p>Nia S.</p><strong>Paid</strong></div>
-            <div class="student-row"><span>AP</span><p>Ari P.</p><strong>Paid</strong></div>
-            <div class="student-row"><span>KM</span><p>Kai M.</p><strong>Paid</strong></div>
+            <div class="student-row"><span>A</span><p>Ava Patel</p><strong>Paid</strong></div>
+            <div class="student-row"><span>R</span><p>Rohan Mehta</p><strong>Paid</strong></div>
+            <div class="student-row"><span>M</span><p>Maya Singh</p><strong>Paid</strong></div>
+            <div class="student-row"><span>P</span><p>Priya Shah</p><strong>Paid</strong></div>
+            <div class="student-row"><span>D</span><p>Daniel Kim</p><strong>Paid</strong></div>
           </div>
         </article>
         <article class="how-step">
           <span class="how-step-number">4</span>
-          <h3>Students stay in the loop</h3>
+          <h3>Students stay informed</h3>
           <div class="how-step-ui how-step-notify" aria-hidden="true">
-            <div class="mini-notify-row"><i class="notify-icon notify-confirm"></i><p>Registration confirmed</p></div>
-            <div class="mini-notify-row"><i class="notify-icon notify-reminder"></i><p>Class reminder</p></div>
-            <div class="mini-notify-row"><i class="notify-icon notify-update"></i><p>Class updates</p></div>
+            <div class="mini-notify-row"><i class="notify-icon notify-mail"></i><div><p>Registration confirmed</p><small>Instant after signup</small></div></div>
+            <div class="mini-notify-row"><i class="notify-icon notify-bell"></i><div><p>Class reminder</p><small>24 hours before class</small></div></div>
+            <div class="mini-notify-row"><i class="notify-icon notify-mail"></i><div><p>Class updates</p><small>Sent to all registered students</small></div></div>
           </div>
         </article>
         <article class="how-step how-step-photo">
           <span class="how-step-number">5</span>
-          <h3>You just teach</h3>
+          <h3>You teach.</h3>
           <div class="how-step-ui how-step-image">
             <img src="assets/dancer-ethereal.jpg" alt="A dancer mid-class, fully present in the room" loading="lazy">
           </div>
@@ -106,12 +111,13 @@
     </section>
 
     <section class="value-section" aria-labelledby="value-title">
-      <img class="value-photo" src="assets/dancer-flow.png" alt="A dance instructor teaching a class" loading="lazy">
+      <img class="value-photo" src="assets/homepage-teaching-studio.png" alt="An instructor talking with dancers seated on the studio floor" loading="lazy">
       <div class="value-scrim" aria-hidden="true"></div>
       <div class="value-content">
         <h2 id="value-title">Your class shouldn't come with a second job.</h2>
-        <p>Between registrations, reminders, and payments, teaching can start to feel like the smallest part of your day. BeyondEight quietly handles the rest, so your time goes back to the room.</p>
-        <a class="primary-button" href="#setup" data-open-setup>Get Started Free<span aria-hidden="true"> &rarr;</span></a>
+        <p>You became a dancepreneur to teach, create and build a community. Not to spend your nights checking Venmo, updating spreadsheets and sending the same reminder twenty times.</p>
+        <p>BeyondEight handles the work around the class, so you can focus on the class itself.</p>
+        <a class="primary-button home-primary-button" href="#setup" data-open-setup>Get Started Free<span aria-hidden="true"> &rarr;</span></a>
       </div>
     </section>
 
@@ -207,7 +213,7 @@
         <h2 id="launch-title">Ready for <span>less admin</span>?</h2>
         <p>Create your next class and let BeyondEight handle what comes after.</p>
       </div>
-      <a class="primary-button" href="#setup" data-open-setup>Get Started Free</a>
+      <a class="primary-button home-primary-button" href="#setup" data-open-setup>Get Started Free<span aria-hidden="true"> &rarr;</span></a>
     </section>
 
     <div class="auth-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="auth-title">
