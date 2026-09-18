@@ -29,4 +29,17 @@ assert.match(template, /content\.classes\.filter\(\(item\) => item\.published !=
 assert.match(template, /data-book-class/);
 assert.match(editor, /createRegistration/);
 assert.match(editor, /Pay .* with Venmo/);
+// Nav tabs with no real feature behind them must say so, not link to a dead editor section.
+assert.match(dashboard, /UNBUILT_VIEWS = new Set\(\["instructors", "reviews", "analytics"\]\)/);
+assert.doesNotMatch(dashboard, /edit=\$\{title\.toLowerCase\(\)\}/, "unbuilt tabs must not link to a website-editor section that does not exist");
+assert.match(dashboard, /comingSoon\("Instructors"/);
+assert.match(dashboard, /comingSoon\("Reviews"/);
+assert.match(dashboard, /comingSoon\("Analytics"/);
+assert.match(dashboard, /placeholder\("Social", "social"\)/, "Social is a real editor section and should keep its working link");
+// Class/registration search+filter must preserve the class's real array index, or actions
+// (edit/duplicate/toggle/delete) target the wrong class once the list is filtered.
+assert.match(dashboard, /const filteredClasses = \(\) => classes\(\)\.map\(\(item, index\) => \(\{ item, index \}\)\)/);
+assert.match(dashboard, /list\.map\(\(\{ item, index \}\) => row\(item, index\)\)/);
+assert.match(dashboard, /data-class-search/);
+assert.match(dashboard, /data-registration-search/);
 console.log("owner dashboard regression tests passed");
