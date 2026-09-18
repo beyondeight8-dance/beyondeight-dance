@@ -89,12 +89,12 @@
   const instagramControls = () => `<section class="owner-instagram" data-owner-instagram><div><small>Instagram feed</small><strong data-instagram-status>Checking connection...</strong><p data-instagram-help>Connect a Creator or Business account to show recent posts.</p></div><div data-instagram-settings hidden><label><input type="checkbox" data-instagram-visible> Show on website</label><label>Posts<select data-instagram-limit><option value="4">4</option><option value="6">6</option></select></label></div><div class="owner-instagram-actions"><button type="button" data-instagram-connect>Connect Instagram</button><button type="button" data-instagram-refresh hidden>Refresh</button><button type="button" data-instagram-disconnect hidden>Disconnect</button></div><small data-instagram-message></small></section>`;
   const imageField = (label, key, current = "") => `<label class="owner-image-field">${esc(label)}${current ? `<img src="${esc(current)}" alt="Current ${esc(label.toLowerCase())}">` : ""}<input type="file" accept="image/jpeg,image/png,image/webp" data-owner-image="${esc(key)}"><small>JPG, PNG, or WEBP up to 5MB</small></label>`;
   const galleryEditor = (images) => `<div class="owner-gallery-manager">${images.map((src, index) => `<article><img src="${esc(src)}" alt="Gallery image ${index + 1}"><div><button type="button" data-move-gallery="${index}" data-direction="-1">Up</button><button type="button" data-move-gallery="${index}" data-direction="1">Down</button><button type="button" data-remove-gallery="${index}">Remove</button></div></article>`).join("") || `<p>No gallery images yet. Upload the first image below.</p>`}</div>`;
-  const classSummaryRow = (item, index) => `<article class="owner-class-row${item.highlighted ? " is-highlighted" : ""}"><img src="${esc(imageUrl(item.image))}" alt="" loading="lazy"><div><strong>${esc(item.title || `Class ${index + 1}`)}</strong><span>${esc([item.date, item.time].filter(Boolean).join(" • ") || "Schedule coming soon")}</span><small>${esc(item.venue || item.location || "Location coming soon")}</small></div><span class="owner-status ${item.published === false ? "is-draft" : ""}">${item.published === false ? "Draft" : "Published"}</span><div class="owner-class-actions"><button type="button" data-class-edit="${index}">Edit</button><button type="button" data-class-toggle="${index}">${item.published === false ? "Publish" : "Unpublish"}</button><button type="button" class="owner-danger" data-class-delete="${index}">Delete</button></div></article>`;
-  const classFormFieldset = (item, index) => `<fieldset data-class-index="${index}"><legend>${esc(item.title || `Class ${index + 1}`)}</legend><div class="owner-reorder"><button type="button" data-collapse-class="${index}">← Back to list</button><button type="button" data-move-class="${index}" data-direction="-1">Up</button><button type="button" data-move-class="${index}" data-direction="1">Down</button></div>${selectField("Status", "published", item.published === false ? "Draft" : "Published", ["Published", "Draft"])}${field("Class name", "title", item.title)}${field("Dance style", "style", item.style)}${field("Date", "date", item.date, "date")}${field("Start time", "time", item.time, "time")}${field("Duration", "duration", item.duration || "60 minutes")}${selectField("Location type", "format", item.format || "In person", ["In person", "Online"])}${field("Location / venue", "location", item.location)}${selectField("Level", "level", item.level || "Open level", ["Beginner", "Intermediate", "Advanced", "Open level"])}${field("Price", "price", item.price)}${field("Capacity", "capacity", item.capacity || "20", "number")}${field("Available spots", "spots", item.spots)}${field("Instructor", "instructor", item.instructor)}${field("Booking link", "bookingUrl", item.bookingUrl || "#contact")}${area("Description", "description", item.description || "")}${area("What to bring", "whatToBring", item.whatToBring || "")}${area("Cancellation policy", "cancellationPolicy", item.cancellationPolicy || "")}${imageField("Class image", `class:${index}`, item.image)}<button type="button" class="owner-remove owner-danger" data-class-delete="${index}">Delete class</button></fieldset>`;
-  const classEditor = () => {
+  const classCard = (item, index) => `<button type="button" class="owner-class-card${item.highlighted ? " is-highlighted" : ""}" data-class-edit="${index}"><span class="owner-class-card-media">${item.image ? `<img src="${esc(imageUrl(item.image))}" alt="" loading="lazy">` : `<span class="owner-class-card-placeholder" aria-hidden="true">🎭</span>`}<span class="owner-status ${item.published === false ? "is-draft" : ""}">${item.published === false ? "Draft" : "Published"}</span></span><span class="owner-class-card-body"><strong>${esc(item.title || `Class ${index + 1}`)}</strong><span>${esc([item.date, item.time].filter(Boolean).join(" • ") || "Schedule coming soon")}</span><small>${esc(item.venue || item.location || "Location coming soon")}</small></span></button>`;
+  const addClassCard = () => `<button type="button" class="owner-class-card owner-class-card-add" data-add-class><span aria-hidden="true">+</span><strong>Add Class</strong></button>`;
+  const classDetailForm = (item, index) => `<form class="owner-class-form" data-editor-section="classes"><div class="owner-form-grid" data-class-index="${index}"><fieldset><legend>Class details</legend>${selectField("Status", "published", item.published === false ? "Draft" : "Published", ["Published", "Draft"])}${field("Class name", "title", item.title)}${field("Dance style", "style", item.style)}${selectField("Level", "level", item.level || "Open level", ["Beginner", "Intermediate", "Advanced", "Open level"])}${area("Description", "description", item.description || "")}${imageField("Class image", `class:${index}`, item.image)}</fieldset><fieldset><legend>Schedule &amp; Location</legend>${field("Date", "date", item.date, "date")}${field("Start time", "time", item.time, "time")}${field("Duration", "duration", item.duration || "60 minutes")}${selectField("Location type", "format", item.format || "In person", ["In person", "Online"])}${field("Location / venue", "location", item.location)}</fieldset><fieldset><legend>Pricing &amp; Booking</legend>${field("Price", "price", item.price)}${field("Capacity", "capacity", item.capacity || "20", "number")}${field("Available spots", "spots", item.spots)}${field("Instructor", "instructor", item.instructor)}${field("Booking link", "bookingUrl", item.bookingUrl || "#contact")}${area("What to bring", "whatToBring", item.whatToBring || "")}${area("Cancellation policy", "cancellationPolicy", item.cancellationPolicy || "")}</fieldset></div><footer><button type="button" data-collapse-class>← Back to classes</button><button type="button" data-move-class="${index}" data-direction="-1">Move up</button><button type="button" data-move-class="${index}" data-direction="1">Move down</button><button type="button" class="owner-danger" data-class-delete="${index}">Delete class</button></footer></form>`;
+  const classesGridView = () => {
     const items = state.classes || contentForState().classes;
-    if (!items.length) return `<p class="owner-empty-note">No classes yet. Add your first one below.</p>`;
-    return items.map((item, index) => expandedClassIndex === index ? classFormFieldset(item, index) : classSummaryRow(item, index)).join("");
+    return `<form data-editor-section="classes"><div class="owner-section-intro-fields">${field("Section label", "classesEyebrow", state.classesEyebrow ?? contentForState().classesEyebrow)}${field("Section heading", "classesHeading", state.classesHeading ?? contentForState().classesHeading)}</div></form><div class="owner-classes-grid">${items.map(classCard).join("")}${addClassCard()}</div>`;
   };
   const editorBody = (section) => {
     const content = contentForState();
@@ -102,7 +102,6 @@
     return ({
       header: `${field("Brand name", "businessName", state.businessName)}${imageField("Logo", "logoImage", state.logoImage)}${field("Instagram", "instagram", state.instagram)}${field("TikTok", "tiktok", state.tiktok)}${field("YouTube", "youtube", state.youtube)}`,
       hero: `${field("Headline", "tagline", state.tagline || content.headline)}${area("Supporting text", "whatYouDo", state.whatYouDo || content.whatYouDo)}${field("Dance styles (comma separated)", "styles", (state.styles || content.styles).join(", "))}${field("Call to action", "ctaText", state.ctaText || content.ctaText)}${field("Call to action link", "ctaLink", state.ctaLink || content.ctaLink)}${imageField("Hero image", "heroImage", state.heroImage || content.images.hero)}`,
-      classes: `<div class="owner-section-intro-fields">${field("Section label", "classesEyebrow", state.classesEyebrow ?? content.classesEyebrow)}${field("Section heading", "classesHeading", state.classesHeading ?? content.classesHeading)}</div><div data-class-list>${classEditor()}</div><button type="button" data-add-class>+ Add Class</button>`,
       workshop: `${field("Title", "workshop.title", workshop.title)}${area("Description", "workshop.description", workshop.description)}${field("Date", "workshop.date", workshop.date)}${field("Time", "workshop.time", workshop.time)}${field("Location", "workshop.location", workshop.location)}${field("Level", "workshop.level", workshop.level)}${field("Price", "workshop.price", workshop.price)}${imageField("Workshop image", "workshopImage", state.workshopImage || content.images.workshop)}`,
       about: `${field("Section label", "aboutEyebrow", state.aboutEyebrow ?? content.aboutEyebrow)}${field("Instructor name", "instructorName", state.instructorName || content.instructorName)}${area("Biography", "instructorBio", state.instructorBio || content.instructorBio)}${area("Teaching philosophy", "mission", state.mission || content.mission)}${area("Why dancers join", "whyJoin", state.whyJoin || content.whyJoin)}${imageField("Instructor portrait", "instructorImage", state.instructorImage || content.images.instructor)}`,
       gallery: `${field("Section label", "galleryEyebrow", state.galleryEyebrow ?? content.galleryEyebrow)}${field("Section heading", "galleryHeading", state.galleryHeading ?? content.galleryHeading)}${galleryEditor(state.gallery || content.gallery)}${imageField("Add gallery image", "gallery:add")}`,
@@ -125,7 +124,7 @@
     // field must be matched by its position among same-named fields, not just by name,
     // or focus jumps to the first class sharing that field name after every keystroke.
     const activeIndex = activeName
-      ? [...document.querySelectorAll("[data-owner-drawer] [name]")].filter((input) => input.name === activeName).indexOf(active)
+      ? [...document.querySelectorAll("[data-owner-drawer] [name], [data-classes-modal] [name]")].filter((input) => input.name === activeName).indexOf(active)
       : -1;
     if (form.dataset.editorSection === "classes") {
       // Only the expanded class has a [data-class-index] fieldset in the DOM at a time now;
@@ -150,7 +149,7 @@
     scheduleSave();
     render();
     if (activeName) {
-      const matches = [...document.querySelectorAll("[data-owner-drawer] [name]")].filter((input) => input.name === activeName);
+      const matches = [...document.querySelectorAll("[data-owner-drawer] [name], [data-classes-modal] [name]")].filter((input) => input.name === activeName);
       const replacement = matches[activeIndex] ?? matches[0];
       replacement?.focus({ preventScroll: true });
       if (selectionStart !== null && replacement?.setSelectionRange) replacement.setSelectionRange(selectionStart, selectionEnd);
@@ -208,10 +207,41 @@
     disconnect.addEventListener("click", async () => { if (!window.confirm("Disconnect Instagram and remove its feed from your website?")) return; try { showStatus(await ownerApiRequest("/api/instagram/manage", { method: "POST", body: JSON.stringify({ businessId: bundle.business.id, action: "disconnect" }) })); message.textContent = "Instagram disconnected."; loadInstagram(); } catch (error) { message.textContent = error.message; } });
     requestStatus();
   };
+  const openClassesManager = (focus = true) => {
+    if (!editMode) return;
+    activeSection = "classes";
+    document.querySelector("[data-owner-drawer]")?.remove();
+    document.querySelector("[data-classes-modal]")?.remove();
+    const items = state.classes || contentForState().classes;
+    const showingDetail = expandedClassIndex >= 0 && items[expandedClassIndex];
+    const title = showingDetail ? (items[expandedClassIndex].title || "New class") : "Classes";
+    const body = showingDetail ? classDetailForm(items[expandedClassIndex], expandedClassIndex) : classesGridView();
+    document.body.insertAdjacentHTML("beforeend", `<div class="owner-modal owner-classes-modal" data-classes-modal role="dialog" aria-modal="true" aria-label="${esc(title)}"><div><header><div><small>Website editor</small><h2>${esc(title)}</h2></div><button type="button" data-close-editor aria-label="Close editor">×</button></header>${body}</div></div>`);
+    const modal = document.querySelector("[data-classes-modal]");
+    const form = modal.querySelector("form");
+    if (form) {
+      form.addEventListener("input", (event) => { if (!event.target.matches("[type=file]")) updateStateFromForm(form); });
+      form.addEventListener("change", (event) => { if (event.target.matches("[data-owner-image]")) uploadImage(event.target); });
+    }
+    modal.querySelectorAll("[data-close-editor]").forEach((button) => button.addEventListener("click", closeEditor));
+    modal.addEventListener("click", (event) => { if (event.target === modal) closeEditor(); });
+    modal.querySelectorAll("[data-class-edit]").forEach((button) => button.addEventListener("click", () => { expandedClassIndex = Number(button.dataset.classEdit); openClassesManager(); }));
+    modal.querySelector("[data-add-class]")?.addEventListener("click", () => { state.classes = [...(state.classes || contentForState().classes), { title: "New Class", style: "Open", date: "", time: "", duration: "60 minutes", location: "In studio", format: "In person", level: "Open level", price: "$25", capacity: "20", spots: "20 spots left", instructor: state.instructorName || contentForState().instructorName, published: false }]; expandedClassIndex = state.classes.length - 1; scheduleSave(); render(); });
+    modal.querySelectorAll("[data-collapse-class]").forEach((button) => button.addEventListener("click", () => { expandedClassIndex = -1; openClassesManager(); }));
+    modal.querySelectorAll("[data-move-class]").forEach((button) => button.addEventListener("click", () => { const from = Number(button.dataset.moveClass); const to = from + Number(button.dataset.direction); state.classes = state.classes || clone(contentForState().classes); if (to < 0 || to >= state.classes.length) return; [state.classes[from], state.classes[to]] = [state.classes[to], state.classes[from]]; if (expandedClassIndex === from) expandedClassIndex = to; else if (expandedClassIndex === to) expandedClassIndex = from; scheduleSave(); render(); }));
+    modal.querySelectorAll("[data-class-delete]").forEach((button) => button.addEventListener("click", () => { const idx = Number(button.dataset.classDelete); if (!window.confirm("Delete this class? This cannot be undone.")) return; state.classes.splice(idx, 1); expandedClassIndex = -1; scheduleSave(); render(); }));
+    // .owner-class-card, not input/textarea, so grid view doesn't steal focus into the
+    // section-label field ahead of it in document order (a plain multi-selector querySelector
+    // returns document order, not list order, so those can't just be combined).
+    const focusTarget = showingDetail ? modal.querySelector("input, textarea") : modal.querySelector(".owner-class-card");
+    if (focus) focusTarget?.focus({ preventScroll: true });
+  };
   const openEditor = (section, focus = true) => {
     if (!editMode) return;
+    if (section === "classes") { openClassesManager(focus); return; }
     activeSection = section;
     document.querySelector("[data-owner-drawer]")?.remove();
+    document.querySelector("[data-classes-modal]")?.remove();
     const editorGroups = [["Content", [["classes", "Classes"], ["workshop", "Workshops"], ["about", "Instructor / About"], ["benefits", "Why Dance With Me"], ["gallery", "Images & Gallery"], ["testimonials", "Testimonials"], ["faq", "FAQ"], ["social", "Instagram / Social"], ["contact", "Contact"]]], ["Design", [["theme", "Theme & Brand"], ["hero", "Header & Hero"], ["header", "Header / Logo"], ["footer", "Footer"]]], ["Settings", [["settings", "Website Settings"]]]];
     const navigation = editorGroups.map(([label, items]) => `<section><small>${label}</small>${items.map(([key, title]) => `<button type="button" class="${section === key ? "is-active" : ""}" data-editor-nav="${key}">${title}</button>`).join("")}</section>`).join("");
     const sectionTitle = editorGroups.flatMap(([, items]) => items).find(([key]) => key === section)?.[1] || section;
@@ -224,18 +254,12 @@
     drawer.querySelector("[data-done-editor]").addEventListener("click", closeEditor);
     drawer.querySelector("[data-cancel-editor]").addEventListener("click", () => { state = clone(savedState); dirty = JSON.stringify(state) !== JSON.stringify(publishedState); closeEditor(); render({ keepDrawer: false }); });
     drawer.querySelectorAll("[data-editor-nav]").forEach((button) => button.addEventListener("click", () => openEditor(button.dataset.editorNav)));
-    form.querySelector("[data-add-class]")?.addEventListener("click", () => { state.classes = [...(state.classes || contentForState().classes), { title: "New Class", style: "Open", date: "", time: "", duration: "60 minutes", location: "In studio", format: "In person", level: "Open level", price: "$25", capacity: "20", spots: "20 spots left", instructor: state.instructorName || contentForState().instructorName, published: false }]; expandedClassIndex = state.classes.length - 1; scheduleSave(); render(); });
-    form.querySelectorAll("[data-move-class]").forEach((button) => button.addEventListener("click", () => { const from = Number(button.dataset.moveClass); const to = from + Number(button.dataset.direction); state.classes = state.classes || clone(contentForState().classes); if (to < 0 || to >= state.classes.length) return; [state.classes[from], state.classes[to]] = [state.classes[to], state.classes[from]]; if (expandedClassIndex === from) expandedClassIndex = to; else if (expandedClassIndex === to) expandedClassIndex = from; scheduleSave(); render(); }));
-    form.querySelectorAll("[data-class-edit]").forEach((button) => button.addEventListener("click", () => { expandedClassIndex = Number(button.dataset.classEdit); render(); }));
-    form.querySelectorAll("[data-collapse-class]").forEach((button) => button.addEventListener("click", () => { expandedClassIndex = -1; render(); }));
-    form.querySelectorAll("[data-class-toggle]").forEach((button) => button.addEventListener("click", () => { const idx = Number(button.dataset.classToggle); state.classes = state.classes || clone(contentForState().classes); state.classes[idx] = { ...state.classes[idx], published: state.classes[idx].published === false }; scheduleSave(); render(); }));
-    form.querySelectorAll("[data-class-delete]").forEach((button) => button.addEventListener("click", () => { const idx = Number(button.dataset.classDelete); if (!window.confirm("Delete this class? This cannot be undone.")) return; state.classes.splice(idx, 1); if (expandedClassIndex >= idx) expandedClassIndex = -1; scheduleSave(); render(); }));
     form.querySelectorAll("[data-move-gallery]").forEach((button) => button.addEventListener("click", () => { const from = Number(button.dataset.moveGallery); const to = from + Number(button.dataset.direction); state.gallery = state.gallery || clone(contentForState().gallery); if (to < 0 || to >= state.gallery.length) return; [state.gallery[from], state.gallery[to]] = [state.gallery[to], state.gallery[from]]; scheduleSave(); render(); }));
     form.querySelectorAll("[data-remove-gallery]").forEach((button) => button.addEventListener("click", () => { state.gallery = state.gallery || clone(contentForState().gallery); state.gallery.splice(Number(button.dataset.removeGallery), 1); scheduleSave(); render(); }));
     bindInstagramEditor(drawer);
     if (focus) drawer.querySelector("input, textarea, button")?.focus();
   };
-  const closeEditor = () => { activeSection = ""; document.querySelector("[data-owner-drawer]")?.remove(); };
+  const closeEditor = () => { activeSection = ""; expandedClassIndex = -1; document.querySelector("[data-owner-drawer]")?.remove(); document.querySelector("[data-classes-modal]")?.remove(); };
   const publishChanges = async () => {
     if (!isOwner() || saving) return;
     const button = root.querySelector("[data-owner-publish]");
