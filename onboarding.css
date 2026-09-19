@@ -11,15 +11,20 @@
   --setup-sans: "Inter", Arial, sans-serif;
 }
 
+html:has(body.modal-open) {
+  overflow: hidden !important;
+}
+
 .setup-restyle .setup-backdrop {
   background: rgba(17, 27, 43, 0.5) !important;
 }
 
 .setup-restyle .setup-panel {
   display: grid !important;
-  grid-template-columns: 240px minmax(0, 1fr) !important;
+  grid-template-columns: 232px minmax(0, 1fr) !important;
   width: min(1180px, 100%) !important;
-  max-height: min(820px, calc(100vh - 36px)) !important;
+  height: min(660px, calc(100vh - 24px)) !important;
+  max-height: min(660px, calc(100vh - 24px)) !important;
   padding: 0 !important;
   border: 1px solid var(--setup-line) !important;
   border-radius: 18px !important;
@@ -145,10 +150,26 @@
 
 /* Main column */
 .setup-main {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
-  max-height: min(820px, calc(100vh - 36px));
+  min-height: 0;
   overflow: auto;
-  padding: 32px 40px 36px;
+  padding: 22px 32px 24px;
+}
+
+.setup-main form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.setup-restyle .setup-step.is-active {
+  display: flex !important;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
 }
 
 .setup-restyle .setup-shell-heading {
@@ -156,7 +177,7 @@
 }
 
 .setup-restyle .setup-step-header {
-  margin-bottom: 18px !important;
+  margin-bottom: 10px !important;
 }
 
 .setup-restyle .setup-number {
@@ -164,25 +185,27 @@
 }
 
 .setup-restyle .setup-step-header h2 {
-  margin: 0 0 8px !important;
+  margin: 0 0 6px !important;
   font-family: var(--setup-display) !important;
-  font-size: 32px !important;
+  font-size: 26px !important;
   font-weight: 400 !important;
+  line-height: 1.15 !important;
   color: var(--setup-ink) !important;
 }
 
 .setup-restyle .setup-step-header p {
   margin: 0 !important;
   font-family: var(--setup-sans) !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
   color: var(--setup-muted) !important;
 }
 
 .setup-restyle .setup-dots {
   display: flex !important;
+  flex-shrink: 0;
   gap: 6px;
   height: 4px;
-  margin: 18px 0 28px !important;
+  margin: 14px 0 18px !important;
   padding: 0 !important;
   background: none !important;
 }
@@ -207,35 +230,38 @@
 
 .setup-restyle .setup-two-column {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.85fr) !important;
-  gap: 32px !important;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.8fr) !important;
+  gap: 24px !important;
   align-items: start;
+  min-height: 0;
+  flex: 1;
 }
 
 .setup-restyle .setup-fields,
 .setup-restyle .setup-stack {
   display: flex !important;
   flex-direction: column !important;
-  gap: 16px !important;
+  gap: 9px !important;
 }
 
 .setup-restyle .setup-fields label,
 .setup-restyle .setup-stack label {
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px;
+  gap: 3px;
   padding: 0 !important;
   border: 0 !important;
   font-family: var(--setup-sans);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--setup-ink);
 }
 
 .setup-restyle .setup-fields small,
 .setup-restyle .setup-stack small {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
+  line-height: 1.35;
   color: var(--setup-muted);
 }
 
@@ -243,13 +269,31 @@
 .setup-restyle .setup-fields textarea,
 .setup-restyle .setup-stack input,
 .setup-restyle .setup-stack textarea {
-  padding: 11px 14px !important;
+  padding: 8px 12px !important;
   border: 1px solid #ddd3d6 !important;
   border-radius: 8px !important;
   background: white !important;
   font-family: var(--setup-sans) !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
   color: var(--setup-ink) !important;
+}
+
+.setup-restyle .specialty-field small {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.setup-restyle .specialty-tags {
+  gap: 4px !important;
+}
+
+.setup-restyle .specialty-tag {
+  padding: 3px 8px !important;
+  font-size: 11px !important;
+}
+
+.setup-restyle .specialty-suggestions {
+  max-height: 90px;
 }
 
 .setup-restyle .setup-fields input:focus,
@@ -272,8 +316,9 @@
 
 .setup-restyle .setup-actions {
   display: flex !important;
+  flex-shrink: 0;
   gap: 10px;
-  margin-top: 24px !important;
+  margin-top: 14px !important;
   padding: 0 !important;
   border: 0 !important;
   background: none !important;
@@ -310,11 +355,34 @@
 /* Live preview panels (brand/home preview + story preview) */
 .setup-restyle .setup-brand-preview,
 .setup-restyle .setup-story-preview {
+  min-height: 0 !important;
+  max-height: 420px;
+  padding: 0 !important;
   border: 1px solid var(--setup-line) !important;
   border-radius: 12px !important;
   background: white !important;
   box-shadow: 0 10px 30px rgba(17, 27, 43, 0.06) !important;
   overflow: hidden;
+}
+
+.setup-restyle .setup-brand-preview img {
+  max-height: 130px !important;
+  object-fit: cover !important;
+}
+
+.setup-restyle .setup-brand-preview blockquote {
+  margin: 10px 0 0 !important;
+  padding: 0 16px 16px !important;
+  font-size: 1.05rem !important;
+  line-height: 1.2 !important;
+}
+
+.setup-restyle .setup-brand-preview .preview-nav {
+  padding: 10px 16px !important;
+}
+
+.setup-restyle .preview-site-details {
+  padding: 0 16px 16px !important;
 }
 
 .setup-restyle .setup-presence-card {
