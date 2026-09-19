@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260920-editorial-redesign">
   <link rel="stylesheet" href="homepage.css?v=20260919-icon-fix-2">
-  <link rel="stylesheet" href="onboarding.css?v=20260919-preview-color-2">
+  <link rel="stylesheet" href="onboarding.css?v=20260920-mockup-redesign">
   <link rel="preload" as="image" href="assets/homepage-dance-studio.png">
 </head>
 <body class="home-restyle">
@@ -192,16 +192,33 @@
                 </div>
               </div>
               <aside class="setup-brand-preview setup-home-preview">
-                <div class="preview-nav"><strong data-live-brand>Beyond Movement</strong><span>Home &middot; Classes &middot; About</span></div>
+                <div class="preview-nav">
+                  <strong data-live-brand>Beyond Movement</strong>
+                  <span>Home &middot; Classes &middot; About</span>
+                  <span class="preview-nav-socials" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M14.2 3h2.4a4.7 4.7 0 0 0 3 4.1v2.4a7 7 0 0 1-3-.68v5.53a5.15 5.15 0 1 1-4.4-5.1v2.5a2.65 2.65 0 1 0 1.86 2.53L14.2 3Z" fill="currentColor"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="5.5" width="19" height="13" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="M10.4 9.1v5.8l5-2.9-5-2.9Z" fill="currentColor"/></svg>
+                  </span>
+                </div>
                 <img src="assets/dancer-hero.png" alt="">
-                <blockquote>
+                <div class="preview-hero-copy">
                   <span data-live-headline>Where confidence meets choreography.</span>
                   <small data-live-specialties>Heels • Hip Hop • Contemporary</small>
                   <button type="button">View Classes</button>
-                </blockquote>
-                <div class="preview-site-details" aria-hidden="true">
-                  <span><strong>Classes</strong> Workshops, weekly training, and pop-ups.</span>
-                  <span><strong>About</strong> A polished home for your choreography brand.</span>
+                </div>
+                <div class="preview-classes">
+                  <span class="preview-classes-eyebrow">Upcoming Classes</span>
+                  <div class="preview-class-card">
+                    <img src="assets/dancer-hero.png" alt="" class="preview-class-thumb">
+                    <div class="preview-class-info">
+                      <strong>Heels Workshop</strong>
+                      <small>Sat, Oct 12 &middot; 4:00 PM</small>
+                      <small>The Movement Lab, NY</small>
+                    </div>
+                    <span class="preview-class-price">$25</span>
+                    <span class="preview-class-chevron" aria-hidden="true">&rarr;</span>
+                  </div>
                 </div>
                 <p class="setup-preview-note">This is a preview. You can always make changes later.</p>
               </aside>
