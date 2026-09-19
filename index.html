@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260919-theme-tokens-fix">
   <link rel="stylesheet" href="homepage.css?v=20260919-icon-fix-2">
+  <link rel="stylesheet" href="onboarding.css?v=20260919-onboarding-restyle">
   <link rel="preload" as="image" href="assets/homepage-dance-studio.png">
 </head>
 <body class="home-restyle">
@@ -142,16 +143,30 @@
       </section>
     </div>
 
-    <div class="setup-modal" id="setup" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+    <div class="setup-modal setup-restyle" id="setup" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="setup-title">
       <div class="setup-backdrop" data-close-setup></div>
       <section class="setup-panel website-setup-panel">
         <button class="modal-close setup-close" type="button" aria-label="Skip this setup step" data-setup-skip hidden>Skip</button>
+        <aside class="setup-sidebar">
+          <a class="setup-sidebar-brand" href="#top" aria-label="BeyondEight home">
+            <span class="brand-mark"><img src="assets/app-logo-3-transparent.png" alt=""></span>
+            <span class="setup-sidebar-lockup"><strong>BeyondEight</strong><small>For Dancepreneurs</small></span>
+          </a>
+          <nav class="setup-sidebar-nav" aria-label="Setup steps">
+            <span data-setup-nav="0"><i>1</i>About You</span>
+            <span data-setup-nav="1"><i>2</i>Your Presence</span>
+            <span data-setup-nav="2"><i>3</i>Your Story</span>
+            <span data-setup-nav="ready"><i>4</i>Create Account</span>
+          </nav>
+          <p class="setup-sidebar-footnote">Dance further.<br>We'll handle the rest.</p>
+        </aside>
+        <div class="setup-main">
         <div class="setup-shell-heading">BeyondEight website setup</div>
         <form class="setup-form" novalidate>
           <fieldset class="setup-step is-active" data-setup-step="0">
             <div class="setup-step-header">
               <span class="setup-number">1</span>
-              <div><h2 id="setup-title">About Your Brand</h2><p>Set up the website for your choreography brand.</p></div>
+              <div><h2 id="setup-title">Let's start with the basics.</h2><p>This will help us create your personalized website on beyond8dance.com.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column">
@@ -192,7 +207,7 @@
           <fieldset class="setup-step" data-setup-step="1">
             <div class="setup-step-header">
               <span class="setup-number">2</span>
-              <div><h2>Your Presence</h2><p>Add the places students can recognize and follow you.</p></div>
+              <div><h2>Add your socials.</h2><p>Help students connect with you beyond the studio.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column setup-presence-grid">
@@ -233,7 +248,7 @@
           <fieldset class="setup-step" data-setup-step="2">
             <div class="setup-step-header">
               <span class="setup-number">3</span>
-              <div><h2>Tell Us About Your Work</h2><p>This helps us build content that sounds like you.</p></div>
+              <div><h2>Tell us about your work.</h2><p>This will help us create your About section. You can always edit this later.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column setup-content-step">
@@ -275,15 +290,6 @@
             </div>
           </fieldset>
 
-          <fieldset class="setup-step" data-setup-step="3">
-            <div class="setup-step-header">
-              <span class="setup-number">4</span>
-              <div><h2>Choose Your Theme</h2><p>Pick a design that matches your brand.</p></div>
-            </div>
-            <div class="setup-dots" aria-label="Setup progress"></div>
-            <div class="setup-theme-picker" data-template-source="pending" aria-live="polite"></div>
-          </fieldset>
-
           <div data-setup-ready-mount></div>
           <template id="setup-ready-template">
             <section class="setup-ready" data-setup-ready>
@@ -304,9 +310,13 @@
                   <div class="auth-divider"><span>OR</span></div>
                   <label>Email<input type="email" name="publishEmail" autocomplete="email" required></label>
                   <label>Password<input type="password" name="publishPassword" autocomplete="new-password" minlength="8" required></label>
-                  <button class="primary-button" type="button" data-ready-publish>Create Account & Publish</button>
+                  <button class="primary-button" type="button" data-ready-publish>Create Account &amp; Publish</button>
                 </div>
               </div>
+              <aside class="setup-ready-visual" aria-hidden="true">
+                <img src="assets/homepage-dance-studio.png" alt="">
+                <blockquote>Same passion.<br>Less admin.<span>Create. Teach. Inspire. We'll handle the rest.</span></blockquote>
+              </aside>
             </section>
           </template>
 
@@ -317,6 +327,7 @@
           </div>
           <p class="setup-message" role="status" aria-live="polite"></p>
         </form>
+        </div>
       </section>
     </div>
 

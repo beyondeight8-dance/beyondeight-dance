@@ -14,6 +14,7 @@ const setupPrevButton = document.querySelector("[data-setup-prev]");
 const setupNextButton = document.querySelector("[data-setup-next]");
 const setupSubmitButton = document.querySelector("[data-setup-submit]");
 const setupActions = document.querySelector(".setup-actions");
+const setupSidebarNavItems = document.querySelectorAll("[data-setup-nav]");
 const setupMessage = document.querySelector(".setup-message");
 const setupReadyMount = document.querySelector("[data-setup-ready-mount]");
 const setupReadyTemplate = document.querySelector("#setup-ready-template");
@@ -1315,6 +1316,17 @@ const renderSetupDots = () => {
   });
 };
 
+const renderSetupSidebarNav = () => {
+  setupSidebarNavItems.forEach((item) => {
+    const isReadyNav = item.dataset.setupNav === "ready";
+    const index = Number(item.dataset.setupNav);
+    const isActive = isReadyNav ? setupLaunched : !setupLaunched && index === setupIndex;
+    const isComplete = isReadyNav ? false : setupLaunched || index < setupIndex;
+    item.classList.toggle("is-active", isActive);
+    item.classList.toggle("is-complete", isComplete);
+  });
+};
+
 const updateSetupStep = () => {
   if (!setupSteps.length) return;
   setupSteps.forEach((step, index) => {
@@ -1338,6 +1350,7 @@ const updateSetupStep = () => {
   if (setupActions) setupActions.hidden = setupLaunched;
   if (setupMessage) setupMessage.textContent = "";
   renderSetupDots();
+  renderSetupSidebarNav();
 };
 
 const fieldErrorId = (field) => {
