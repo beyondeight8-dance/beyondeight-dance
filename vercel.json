@@ -7,6 +7,10 @@
       "destination": "/auth/callback/index.html"
     },
     {
+      "source": "/get-started",
+      "destination": "/index.html"
+    },
+    {
       "source": "/dashboard",
       "destination": "/dashboard/index.html"
     },

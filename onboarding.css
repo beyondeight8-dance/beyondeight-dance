@@ -1,12 +1,15 @@
-/* Onboarding wizard restyle. Scoped to .setup-restyle so nothing here reaches the dashboard,
-   the website editor, or any other place .setup-modal / .setup-panel classes might be reused. */
+/* Onboarding workspace. Scoped to .setup-restyle so nothing here reaches the dashboard,
+   the website editor, or any other place .setup-modal / .setup-panel classes might be reused.
+   This is a dedicated full-page workspace (route /get-started), not a modal - the homepage
+   must not remain visible behind it. */
 .setup-restyle {
-  --setup-ink: #111b2b;
-  --setup-muted: #6b7280;
+  --setup-ink: #2b1c14;
+  --setup-muted: #7a6a5e;
   --setup-rose: #a33453;
   --setup-rose-dark: #87283f;
-  --setup-line: #ece1e5;
-  --setup-cream: #fffcfc;
+  --setup-blush: #f6dee3;
+  --setup-line: #e7dcd3;
+  --setup-cream: #fdf8f3;
   --setup-display: "Source Serif 4", Georgia, serif;
   --setup-sans: "Inter", Arial, sans-serif;
 }
@@ -15,22 +18,30 @@ html:has(body.modal-open) {
   overflow: hidden !important;
 }
 
+/* The workspace fills the viewport; there is no dimmed backdrop over the homepage. */
 .setup-restyle .setup-backdrop {
-  background: rgba(17, 27, 43, 0.5) !important;
+  display: none !important;
+}
+
+.setup-restyle.setup-modal {
+  place-items: stretch !important;
+  padding: 0 !important;
+  background: var(--setup-cream) !important;
 }
 
 .setup-restyle .setup-panel {
   display: grid !important;
-  grid-template-columns: 232px minmax(0, 1fr) !important;
+  grid-template-columns: 240px minmax(0, 1fr) !important;
   grid-template-rows: minmax(0, 1fr) !important;
-  width: min(1180px, 100%) !important;
-  height: min(660px, calc(100vh - 24px)) !important;
-  max-height: min(660px, calc(100vh - 24px)) !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
   padding: 0 !important;
-  border: 1px solid var(--setup-line) !important;
-  border-radius: 18px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
   background: var(--setup-cream) !important;
-  box-shadow: 0 34px 96px rgba(17, 27, 43, 0.22) !important;
+  box-shadow: none !important;
   overflow: hidden !important;
   font-family: var(--setup-sans);
   color: var(--setup-ink);
@@ -38,20 +49,20 @@ html:has(body.modal-open) {
 
 .setup-restyle .setup-close {
   z-index: 5;
-  top: 16px;
-  right: 16px;
+  top: 20px;
+  right: 24px;
   color: var(--setup-muted);
 }
 
-/* Sidebar */
+/* Sidebar - fixed, stable while step content changes */
 .setup-sidebar {
   display: flex;
   flex-direction: column;
   min-height: 0;
   min-width: 0;
-  padding: 28px 24px;
+  padding: 32px 24px;
   border-right: 1px solid var(--setup-line);
-  background: #fdf9f7;
+  background: #f9f1ec;
   overflow: hidden;
 }
 
@@ -59,7 +70,7 @@ html:has(body.modal-open) {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 40px;
+  margin-bottom: 44px;
   text-decoration: none;
 }
 
@@ -97,15 +108,15 @@ html:has(body.modal-open) {
 .setup-sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .setup-sidebar-nav span {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 8px;
-  border-radius: 8px;
+  padding: 9px 10px;
+  border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
   color: var(--setup-muted);
@@ -115,33 +126,40 @@ html:has(body.modal-open) {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border: 1px solid var(--setup-line);
   border-radius: 50%;
-  background: white;
+  background: transparent;
   font-style: normal;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--setup-muted);
 }
 
 .setup-sidebar-nav span.is-active {
-  background: #f8dfe4;
+  background: var(--setup-blush);
   color: var(--setup-ink);
   font-weight: 700;
 }
 
 .setup-sidebar-nav span.is-active i {
   border-color: var(--setup-rose);
-  background: var(--setup-rose);
-  color: white;
+  color: var(--setup-rose);
 }
 
 .setup-sidebar-nav span.is-complete i {
   border-color: var(--setup-rose);
-  background: white;
-  color: var(--setup-rose);
+  background: var(--setup-rose);
+  color: white;
+}
+
+.setup-sidebar-nav span.is-complete i::before {
+  content: "\2713";
+}
+
+.setup-mobile-step {
+  display: none;
 }
 
 .setup-sidebar-footnote {
@@ -153,7 +171,7 @@ html:has(body.modal-open) {
   color: var(--setup-muted);
 }
 
-/* Main column */
+/* Main column - no outer card, content sits on the workspace background */
 .setup-main {
   display: flex;
   flex-direction: column;
@@ -161,7 +179,7 @@ html:has(body.modal-open) {
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 22px 32px 24px;
+  padding: 40px 56px 32px;
 }
 
 .setup-main form {
@@ -170,6 +188,7 @@ html:has(body.modal-open) {
   min-width: 0;
   min-height: 0;
   flex: 1;
+  max-width: 1080px;
 }
 
 .setup-restyle .setup-step.is-active {
@@ -185,7 +204,8 @@ html:has(body.modal-open) {
 }
 
 .setup-restyle .setup-step-header {
-  margin-bottom: 10px !important;
+  flex-shrink: 0;
+  margin-bottom: 6px !important;
 }
 
 .setup-restyle .setup-number {
@@ -195,7 +215,7 @@ html:has(body.modal-open) {
 .setup-restyle .setup-step-header h2 {
   margin: 0 0 6px !important;
   font-family: var(--setup-display) !important;
-  font-size: 26px !important;
+  font-size: 30px !important;
   font-weight: 400 !important;
   line-height: 1.15 !important;
   color: var(--setup-ink) !important;
@@ -204,7 +224,7 @@ html:has(body.modal-open) {
 .setup-restyle .setup-step-header p {
   margin: 0 !important;
   font-family: var(--setup-sans) !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   color: var(--setup-muted) !important;
 }
 
@@ -212,10 +232,11 @@ html:has(body.modal-open) {
   display: flex !important;
   flex-shrink: 0;
   gap: 6px;
-  height: 4px;
-  margin: 14px 0 18px !important;
+  height: 3px;
+  margin: 20px 0 28px !important;
   padding: 0 !important;
   background: none !important;
+  max-width: 340px;
 }
 
 .setup-restyle .setup-dots span {
@@ -238,8 +259,8 @@ html:has(body.modal-open) {
 
 .setup-restyle .setup-two-column {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) !important;
-  gap: 24px !important;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr) !important;
+  gap: 48px !important;
   align-items: start;
   min-width: 0;
   min-height: 0;
@@ -251,7 +272,7 @@ html:has(body.modal-open) {
 .setup-restyle .setup-stack {
   display: flex !important;
   flex-direction: column !important;
-  gap: 9px !important;
+  gap: 18px !important;
   min-width: 0 !important;
 }
 
@@ -271,20 +292,20 @@ html:has(body.modal-open) {
 .setup-restyle .setup-stack label {
   display: flex !important;
   flex-direction: column !important;
-  gap: 3px;
+  gap: 5px;
   padding: 0 !important;
   border: 0 !important;
   font-family: var(--setup-sans);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--setup-ink);
 }
 
 .setup-restyle .setup-fields small,
 .setup-restyle .setup-stack small {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
-  line-height: 1.35;
+  line-height: 1.4;
   color: var(--setup-muted);
 }
 
@@ -292,13 +313,36 @@ html:has(body.modal-open) {
 .setup-restyle .setup-fields textarea,
 .setup-restyle .setup-stack input,
 .setup-restyle .setup-stack textarea {
-  padding: 8px 12px !important;
-  border: 1px solid #ddd3d6 !important;
-  border-radius: 8px !important;
-  background: white !important;
+  padding: 10px 0 !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--setup-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
   font-family: var(--setup-sans) !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   color: var(--setup-ink) !important;
+}
+
+.setup-restyle .setup-fields input:focus,
+.setup-restyle .setup-fields textarea:focus,
+.setup-restyle .setup-stack input:focus,
+.setup-restyle .setup-stack textarea:focus {
+  outline: none;
+  border-bottom-color: var(--setup-rose) !important;
+  box-shadow: none;
+}
+
+.setup-restyle .setup-stack textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.setup-restyle .slug-builder {
+  border: 0 !important;
+  border-bottom: 1px solid var(--setup-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 10px 0 !important;
 }
 
 .setup-restyle .specialty-field small {
@@ -307,61 +351,52 @@ html:has(body.modal-open) {
 }
 
 .setup-restyle .specialty-tags {
-  gap: 4px !important;
+  gap: 6px !important;
 }
 
 .setup-restyle .specialty-tag {
-  padding: 3px 8px !important;
-  font-size: 11px !important;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--setup-line) !important;
+  background: var(--setup-blush) !important;
+  font-size: 12px !important;
 }
 
-.setup-restyle .specialty-suggestions {
-  max-height: 90px;
+.setup-restyle .specialty-control,
+.setup-restyle .specialty-control input {
+  border: 0 !important;
+  border-bottom: 1px solid var(--setup-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
 }
 
-.setup-restyle .setup-fields input:focus,
-.setup-restyle .setup-fields textarea:focus,
-.setup-restyle .setup-stack input:focus,
-.setup-restyle .setup-stack textarea:focus {
-  outline: none;
-  border-color: var(--setup-rose) !important;
-  box-shadow: 0 0 0 3px rgba(163, 52, 83, 0.12);
-}
-
-.setup-restyle .slug-builder {
-  border-color: #ddd3d6 !important;
-}
-
-.setup-restyle .specialty-tags,
-.setup-restyle .specialty-control {
-  border-color: #ddd3d6 !important;
-}
-
+/* Restrained footer/action row, aligned with the main content column only */
 .setup-restyle .setup-actions {
   display: flex !important;
   flex-shrink: 0;
-  gap: 10px;
-  margin-top: 14px !important;
-  padding: 0 !important;
-  border: 0 !important;
+  gap: 12px;
+  margin-top: 24px !important;
+  padding-top: 20px !important;
+  border-top: 1px solid var(--setup-line) !important;
   background: none !important;
+  max-width: 1080px;
 }
 
 .setup-restyle .primary-button,
 .setup-restyle .secondary-button {
-  min-height: 44px !important;
+  min-height: 42px !important;
   padding: 0 22px !important;
   border-radius: 6px !important;
   font-family: var(--setup-sans) !important;
   font-size: 14px !important;
   font-weight: 600 !important;
+  box-shadow: none !important;
 }
 
 .setup-restyle .primary-button {
   border: 1px solid var(--setup-rose) !important;
   background: var(--setup-rose) !important;
   color: white !important;
-  box-shadow: none !important;
 }
 
 .setup-restyle .primary-button:hover {
@@ -370,42 +405,34 @@ html:has(body.modal-open) {
 
 .setup-restyle .secondary-button {
   border: 1px solid var(--setup-line) !important;
-  background: white !important;
+  background: transparent !important;
   color: var(--setup-ink) !important;
-  box-shadow: none !important;
 }
 
-/* Live preview panels (brand/home preview + story preview) */
-.setup-restyle .setup-brand-preview,
-.setup-restyle .setup-story-preview {
+/* Step 1 only: a large live website preview */
+.setup-restyle .setup-brand-preview {
   min-height: 0 !important;
   min-width: 0 !important;
-  max-height: 420px;
+  max-height: none;
   padding: 0 !important;
   border: 1px solid var(--setup-line) !important;
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   background: white !important;
-  box-shadow: 0 10px 30px rgba(17, 27, 43, 0.06) !important;
+  box-shadow: none !important;
   overflow: hidden;
+  align-self: stretch;
 }
 
 .setup-restyle .setup-brand-preview img {
-  max-height: 130px !important;
+  max-height: 240px !important;
   object-fit: cover !important;
-}
-
-.setup-restyle .setup-brand-preview blockquote {
-  margin: 10px 0 0 !important;
-  padding: 0 16px 16px !important;
-  font-size: 1.05rem !important;
-  line-height: 1.2 !important;
 }
 
 .setup-restyle .setup-brand-preview .preview-nav {
   display: flex !important;
   flex-wrap: wrap !important;
   gap: 4px 10px !important;
-  padding: 10px 16px !important;
+  padding: 12px 18px !important;
 }
 
 .setup-restyle .setup-brand-preview .preview-nav span {
@@ -413,35 +440,50 @@ html:has(body.modal-open) {
   font-size: 10px !important;
 }
 
-.setup-restyle .preview-site-details {
-  padding: 0 16px 16px !important;
+.setup-restyle .setup-brand-preview blockquote {
+  margin: 14px 0 0 !important;
+  padding: 0 18px 18px !important;
+  font-size: 1.15rem !important;
+  line-height: 1.25 !important;
 }
 
+.setup-restyle .preview-site-details {
+  padding: 0 18px 18px !important;
+}
+
+/* Step 2 only: a small contextual preview, not the full website */
 .setup-restyle .setup-presence-card {
   border: 1px solid var(--setup-line) !important;
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   background: white !important;
+  box-shadow: none !important;
+  max-width: 320px;
 }
 
-.setup-restyle .setup-two-column::after,
-.setup-restyle .setup-content-step::after {
-  content: "This is a preview. You can always make changes later.";
-  grid-column: 2;
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--setup-muted);
-  text-align: center;
+/* Step 3: no preview at all, spacious writing-focused single column */
+.setup-restyle .setup-content-step {
+  grid-template-columns: minmax(0, 1fr) !important;
+  max-width: 640px;
+}
+
+.setup-restyle .setup-content-step .setup-story-preview {
+  display: none !important;
+}
+
+.setup-restyle .setup-content-fields {
+  gap: 28px !important;
 }
 
 /* Ready / launch screen */
 .setup-restyle .setup-ready {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr) !important;
-  gap: 32px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr) !important;
+  gap: 48px;
   align-items: stretch;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+  flex: 1;
 }
 
 .setup-restyle .setup-ready-copy {
@@ -450,33 +492,88 @@ html:has(body.modal-open) {
   box-shadow: none !important;
 }
 
-.setup-restyle .ready-check {
-  background: var(--setup-rose) !important;
-  color: white !important;
+.setup-account-copy,
+.setup-launch-copy {
+  display: none;
 }
 
-.setup-restyle .setup-ready h2 {
+.setup-restyle .setup-ready[data-published="false"] .setup-account-copy {
+  display: block;
+}
+
+.setup-restyle .setup-ready[data-published="true"] .setup-launch-copy {
+  display: block;
+}
+
+.setup-restyle .setup-ready[data-published="false"] .setup-ready-visual {
+  display: none;
+}
+
+.setup-account-copy h2,
+.setup-launch-copy h2 {
   font-family: var(--setup-display) !important;
   font-weight: 400 !important;
+  font-size: 30px !important;
   color: var(--setup-ink) !important;
+  margin: 0 0 10px !important;
+}
+
+.setup-account-copy p {
+  margin: 0 0 24px !important;
+  font-size: 14px !important;
+  color: var(--setup-muted) !important;
 }
 
 .setup-restyle .ready-publish-card {
-  border: 1px solid var(--setup-line) !important;
-  background: white !important;
+  max-width: 380px;
+  border: 0 !important;
+  background: none !important;
+  padding: 0 !important;
 }
 
 .setup-restyle .ready-publish-card input {
-  border: 1px solid #ddd3d6 !important;
-  border-radius: 8px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--setup-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.setup-restyle .ready-check {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--setup-rose) !important;
+  color: white !important;
+  font-size: 18px;
+}
+
+.setup-restyle .ready-domain {
+  margin: 14px 0 22px;
+  padding: 10px 14px;
+  border: 1px solid var(--setup-line);
+  border-radius: 6px;
+  background: white;
+  font-family: var(--setup-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--setup-rose);
+  display: inline-block;
+}
+
+.setup-restyle .ready-actions {
+  display: flex;
+  gap: 12px;
 }
 
 .setup-ready-visual {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border-radius: 14px;
-  min-height: 320px;
+  border-radius: 10px;
+  min-height: 0;
 }
 
 .setup-ready-visual img {
@@ -494,41 +591,29 @@ html:has(body.modal-open) {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(17, 27, 43, 0.15) 0%, rgba(17, 27, 43, 0.35) 55%, rgba(17, 27, 43, 0.6) 100%);
+  background: linear-gradient(180deg, rgba(43, 28, 20, 0.05) 0%, rgba(43, 28, 20, 0.3) 100%);
 }
 
-.setup-ready-visual blockquote {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  padding: 24px;
-  align-self: end;
-  font-family: var(--setup-display);
-  font-size: 26px;
-  font-weight: 400;
-  line-height: 1.15;
-  color: white;
+@media (max-width: 980px) {
+  .setup-main {
+    padding: 32px 32px 24px;
+  }
+
+  .setup-restyle .setup-two-column {
+    gap: 28px !important;
+  }
 }
 
-.setup-ready-visual blockquote span {
-  display: block;
-  margin-top: 10px;
-  font-family: var(--setup-sans);
-  font-size: 12px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-@media (max-width: 900px) {
+@media (max-width: 760px) {
   .setup-restyle .setup-panel {
     grid-template-columns: 1fr !important;
-    max-height: min(92dvh, 860px) !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
   }
 
   .setup-sidebar {
     flex-direction: row;
     align-items: center;
-    padding: 16px 20px;
+    padding: 14px 20px;
     border-right: 0;
     border-bottom: 1px solid var(--setup-line);
   }
@@ -541,12 +626,24 @@ html:has(body.modal-open) {
     display: none;
   }
 
+  .setup-mobile-step {
+    display: block;
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--setup-ink);
+  }
+
   .setup-sidebar-footnote {
     display: none;
   }
 
   .setup-main {
-    padding: 24px 20px 28px;
+    padding: 24px 20px 24px;
+  }
+
+  .setup-restyle .setup-step-header h2 {
+    font-size: 24px !important;
   }
 
   .setup-restyle .setup-two-column,
@@ -554,12 +651,15 @@ html:has(body.modal-open) {
     grid-template-columns: 1fr !important;
   }
 
-  .setup-restyle .setup-two-column::after,
-  .setup-restyle .setup-content-step::after {
-    grid-column: 1;
+  .setup-restyle .setup-brand-preview {
+    order: -1;
+  }
+
+  .setup-restyle .setup-ready[data-published="false"] .setup-ready-visual {
+    display: none;
   }
 
   .setup-ready-visual {
-    min-height: 200px;
+    min-height: 220px;
   }
 }

@@ -50,7 +50,8 @@
       window.localStorage.removeItem(GUEST_SETUP_KEY);
       window.localStorage.removeItem(PENDING_OWNER_ACTION_KEY);
       window.localStorage.removeItem(AUTH_RETURN_TO_KEY);
-      window.location.replace("/dashboard/?published=1");
+      const slug = result?.business?.slug || guestDraft.state?.slug || "";
+      window.location.replace(`/get-started?launched=1&slug=${encodeURIComponent(slug)}`);
       return;
     }
 

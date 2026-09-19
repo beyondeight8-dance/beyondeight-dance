@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260919-theme-tokens-fix">
   <link rel="stylesheet" href="homepage.css?v=20260919-icon-fix-2">
-  <link rel="stylesheet" href="onboarding.css?v=20260919-overflow-fix">
+  <link rel="stylesheet" href="onboarding.css?v=20260919-fullpage-rebuild">
   <link rel="preload" as="image" href="assets/homepage-dance-studio.png">
 </head>
 <body class="home-restyle">
@@ -148,7 +148,7 @@
       <section class="setup-panel website-setup-panel">
         <button class="modal-close setup-close" type="button" aria-label="Skip this setup step" data-setup-skip hidden>Skip</button>
         <aside class="setup-sidebar">
-          <a class="setup-sidebar-brand" href="#top" aria-label="BeyondEight home">
+          <a class="setup-sidebar-brand" href="/" aria-label="Exit to BeyondEight home" data-close-setup>
             <span class="brand-mark"><img src="assets/app-logo-3-transparent.png" alt=""></span>
             <span class="setup-sidebar-lockup"><strong>BeyondEight</strong><small>For Dancepreneurs</small></span>
           </a>
@@ -157,7 +157,9 @@
             <span data-setup-nav="1"><i>2</i>Your Presence</span>
             <span data-setup-nav="2"><i>3</i>Your Story</span>
             <span data-setup-nav="ready"><i>4</i>Create Account</span>
+            <span data-setup-nav="launch"><i>5</i>Launch</span>
           </nav>
+          <p class="setup-mobile-step" data-setup-mobile-step aria-live="polite"></p>
           <p class="setup-sidebar-footnote">Dance further.<br>We'll handle the rest.</p>
         </aside>
         <div class="setup-main">
@@ -292,30 +294,31 @@
 
           <div data-setup-ready-mount></div>
           <template id="setup-ready-template">
-            <section class="setup-ready" data-setup-ready>
+            <section class="setup-ready" data-setup-ready data-published="false">
               <div class="setup-ready-copy">
-                <span class="ready-check" aria-hidden="true">&#10003;</span>
-                <h2>Your website is ready to meet the world.</h2>
-                <p>Create your BeyondEight account to save your design, publish your website, and manage future classes and workshops.</p>
-                <div class="ready-domain" data-live-domain>beyondmovement.com</div>
-                <div class="ready-actions">
-                  <a class="secondary-button ready-preview-link" href="#" target="_blank" rel="noopener" data-view-generated-site>View public preview</a>
-                  <button class="secondary-button" type="button" data-ready-keep-editing>Keep Editing</button>
+                <div class="setup-account-copy">
+                  <h2>Save your BeyondEight workspace.</h2>
+                  <p>Create your account to save what you've built so far and publish it when you're ready.</p>
+                  <div class="ready-publish-card">
+                    <button class="auth-google ready-google" type="button" data-ready-google>Continue with Google</button>
+                    <div class="auth-divider"><span>OR</span></div>
+                    <label>Email<input type="email" name="publishEmail" autocomplete="email" required></label>
+                    <label>Password<input type="password" name="publishPassword" autocomplete="new-password" minlength="8" required></label>
+                    <button class="primary-button" type="button" data-ready-publish>Create Account &amp; Publish</button>
+                  </div>
                 </div>
-                <div class="ready-benefits" aria-label="Account benefits">
-                  <span>Save your website</span><span>Publish when ready</span><span>Add and manage classes</span><span>Update content anytime</span>
-                </div>
-                <div class="ready-publish-card">
-                  <button class="auth-google ready-google" type="button" data-ready-google>Continue with Google</button>
-                  <div class="auth-divider"><span>OR</span></div>
-                  <label>Email<input type="email" name="publishEmail" autocomplete="email" required></label>
-                  <label>Password<input type="password" name="publishPassword" autocomplete="new-password" minlength="8" required></label>
-                  <button class="primary-button" type="button" data-ready-publish>Create Account &amp; Publish</button>
+                <div class="setup-launch-copy">
+                  <span class="ready-check" aria-hidden="true">&#10003;</span>
+                  <h2>Your website is ready to meet the world.</h2>
+                  <div class="ready-domain" data-live-domain>beyondmovement.com</div>
+                  <div class="ready-actions">
+                    <a class="primary-button ready-preview-link" href="#" target="_blank" rel="noopener" data-view-generated-site>View My Website</a>
+                    <a class="secondary-button" href="/dashboard/" data-dashboard-link>Go to Dashboard</a>
+                  </div>
                 </div>
               </div>
               <aside class="setup-ready-visual" aria-hidden="true">
                 <img src="assets/homepage-dance-studio.png" alt="">
-                <blockquote>Same passion.<br>Less admin.<span>Create. Teach. Inspire. We'll handle the rest.</span></blockquote>
               </aside>
             </section>
           </template>
@@ -400,6 +403,6 @@
   <script src="app-config.js?v=20260829-auth-hostname"></script>
   <script src="app-services.js?v=20260918-dashboard-payments"></script>
   <script src="website-template.js?v=20260919-six-themes"></script>
-  <script src="script.js?v=20260919-dead-js-cleanup"></script>
+  <script src="script.js?v=20260919-fullpage-onboarding"></script>
 </body>
 </html>

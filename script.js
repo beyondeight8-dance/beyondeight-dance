@@ -15,6 +15,7 @@ const setupNextButton = document.querySelector("[data-setup-next]");
 const setupSubmitButton = document.querySelector("[data-setup-submit]");
 const setupActions = document.querySelector(".setup-actions");
 const setupSidebarNavItems = document.querySelectorAll("[data-setup-nav]");
+const setupMobileStep = document.querySelector("[data-setup-mobile-step]");
 const setupMessage = document.querySelector(".setup-message");
 const setupReadyMount = document.querySelector("[data-setup-ready-mount]");
 const setupReadyTemplate = document.querySelector("#setup-ready-template");
@@ -141,6 +142,7 @@ closeComparisonButtons.forEach((button) => button.addEventListener("click", clos
 
 let setupIndex = 0;
 let setupLaunched = false;
+let setupPublished = false;
 let generatedSiteUrl = "";
 let authMode = "signup";
 let pendingSetupAfterAuth = false;
@@ -526,6 +528,7 @@ const resetGuestSetup = () => {
   selectedSpecialties = [...defaultSpecialties];
   setupIndex = 0;
   setupLaunched = false;
+  setupPublished = false;
   currentBusinessId = null;
   slugManuallyEdited = false;
   logoImageDataUrl = "";
@@ -1255,6 +1258,7 @@ const bindReadyScreenEvents = () => {
     updateSetupPreview();
   });
   viewGeneratedSiteButton?.addEventListener("click", () => {
+    if (setupPublished) return;
     generatedSiteUrl = saveLocalPublishedPreview(getSetupState());
     viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
   });
@@ -1316,15 +1320,34 @@ const renderSetupDots = () => {
   });
 };
 
+const SETUP_STEP_NAMES = ["About You", "Your Presence", "Your Story"];
+
+const currentSetupStepName = () => {
+  if (setupPublished) return "Launch";
+  if (setupLaunched) return "Create Account";
+  return SETUP_STEP_NAMES[setupIndex] || "";
+};
+
 const renderSetupSidebarNav = () => {
   setupSidebarNavItems.forEach((item) => {
-    const isReadyNav = item.dataset.setupNav === "ready";
-    const index = Number(item.dataset.setupNav);
-    const isActive = isReadyNav ? setupLaunched : !setupLaunched && index === setupIndex;
-    const isComplete = isReadyNav ? false : setupLaunched || index < setupIndex;
+    const nav = item.dataset.setupNav;
+    const isReadyNav = nav === "ready";
+    const isLaunchNav = nav === "launch";
+    const index = Number(nav);
+    const isActive = isLaunchNav
+      ? setupPublished
+      : isReadyNav
+        ? setupLaunched && !setupPublished
+        : !setupLaunched && index === setupIndex;
+    const isComplete = isLaunchNav ? false : isReadyNav ? setupPublished : setupLaunched || index < setupIndex;
     item.classList.toggle("is-active", isActive);
     item.classList.toggle("is-complete", isComplete);
   });
+  if (setupMobileStep) {
+    const total = setupSidebarNavItems.length || 5;
+    const position = Array.from(setupSidebarNavItems).findIndex((item) => item.classList.contains("is-active")) + 1;
+    setupMobileStep.textContent = `Step ${Math.max(position, 1)} of ${total} · ${currentSetupStepName()}`;
+  }
 };
 
 const updateSetupStep = () => {
@@ -1336,18 +1359,19 @@ const updateSetupStep = () => {
   });
   if (setupLaunched) {
     mountSetupReady();
+    setupReady?.setAttribute("data-published", String(setupPublished));
   } else {
     unmountSetupReady();
   }
   if (setupProgress) {
     setupProgress.style.width = setupLaunched ? "100%" : `${((setupIndex + 1) / setupSteps.length) * 100}%`;
   }
-  if (setupPrevButton) setupPrevButton.hidden = setupLaunched;
-  if (setupPrevButton) setupPrevButton.disabled = setupIndex === 0;
+  if (setupPrevButton) setupPrevButton.hidden = setupPublished;
+  if (setupPrevButton) setupPrevButton.disabled = setupIndex === 0 && !setupLaunched;
   if (setupNextButton) setupNextButton.hidden = setupLaunched || setupIndex === setupSteps.length - 1;
   if (setupSubmitButton) setupSubmitButton.hidden = setupLaunched || setupIndex !== setupSteps.length - 1;
   if (setupSkipButton) setupSkipButton.hidden = setupLaunched || setupIndex !== 1;
-  if (setupActions) setupActions.hidden = setupLaunched;
+  if (setupActions) setupActions.hidden = setupPublished;
   if (setupMessage) setupMessage.textContent = "";
   renderSetupDots();
   renderSetupSidebarNav();
@@ -1409,6 +1433,9 @@ const openSetupDirect = (event) => {
   setupModal.classList.add("is-open");
   setupModal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
+  if (window.location.pathname !== "/get-started") {
+    window.history.pushState({ setup: true }, "", "/get-started");
+  }
   updateSetupPreview();
   updateSetupStep();
   setupModal.querySelector("input, button")?.focus();
@@ -1435,14 +1462,37 @@ const openSetup = async (event) => {
   openSetupDirect(event);
 };
 
-const closeSetup = () => {
+const closeSetup = (eventOrOptions) => {
+  eventOrOptions?.preventDefault?.();
+  const fromPopState = eventOrOptions?.fromPopState === true;
   if (setupModal?.classList.contains("is-open") && !currentUser && !setupLaunched) {
     saveGuestSetupDraft({ explicit: true });
   }
   setupModal.classList.remove("is-open");
   setupModal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
+  if (!fromPopState && window.location.pathname === "/get-started") {
+    window.history.pushState(null, "", "/");
+  }
 };
+
+window.addEventListener("popstate", () => {
+  if (window.location.pathname !== "/get-started" && setupModal?.classList.contains("is-open")) {
+    closeSetup({ fromPopState: true });
+  } else if (window.location.pathname === "/get-started" && !setupModal?.classList.contains("is-open")) {
+    if (currentUser) {
+      beyondEight.routeForUser?.(currentUser).catch(() => null).then((route) => {
+        if (route && !route.includes("onboarding=1")) {
+          window.location.href = route;
+        } else {
+          restoreOnboardingProgress().then(() => openSetupDirect());
+        }
+      });
+    } else {
+      openSetupDirect();
+    }
+  }
+});
 
 const skipSetupStep = () => {
   if (!setupModal?.classList.contains("is-open")) return;
@@ -1601,6 +1651,30 @@ const initSupabaseAuth = async () => {
       }
     }
 
+    if (params.get("launched") === "1" && currentUser) {
+      const slug = params.get("slug") || "";
+      setupLaunched = true;
+      setupPublished = true;
+      generatedSiteUrl = slug ? localPublicNavigationUrl(slug) : generatedSiteUrl;
+      openSetupDirect();
+      if (viewGeneratedSiteButton && generatedSiteUrl) viewGeneratedSiteButton.setAttribute("href", generatedSiteUrl);
+      if (slug) setText("[data-live-domain]", `beyond8dance.com/${slug}`);
+      window.history.replaceState(null, "", "/get-started");
+    } else if (window.location.pathname === "/get-started" && !setupModal?.classList.contains("is-open")) {
+      if (currentUser) {
+        const route = await beyondEight.routeForUser?.(currentUser).catch(() => null);
+        if (route && !route.includes("onboarding=1")) {
+          window.location.href = route;
+        } else {
+          await restoreOnboardingProgress();
+          openSetupDirect();
+        }
+      } else {
+        resetGuestSetup();
+        openSetupDirect();
+      }
+    }
+
     supabaseClient.auth.onAuthStateChange((event, session) => {
       currentUser = session?.user || null;
       window.setTimeout(async () => {
@@ -1608,6 +1682,7 @@ const initSupabaseAuth = async () => {
           currentBusinessId = null;
           setupIndex = 0;
           setupLaunched = false;
+          setupPublished = false;
           updateSetupStep();
           await updateHeaderForAuth();
           return;
@@ -1654,8 +1729,14 @@ document.addEventListener("click", (event) => {
 closeSetupButtons.forEach((button) => button.addEventListener("click", closeSetup));
 setupSkipButton?.addEventListener("click", skipSetupStep);
 setupPrevButton?.addEventListener("click", () => {
-  setupIndex = Math.max(0, setupIndex - 1);
+  if (setupLaunched && !setupPublished) {
+    setupLaunched = false;
+    setupIndex = setupSteps.length - 1;
+  } else {
+    setupIndex = Math.max(0, setupIndex - 1);
+  }
   updateSetupStep();
+  updateSetupPreview();
   queueOnboardingSave();
 });
 setupNextButton?.addEventListener("click", async () => {
@@ -1713,10 +1794,11 @@ const publishCurrentSetup = async () => {
     const result = await finalizeWebsitePublish();
     if (!result) return;
     clearGuestSetupDraft();
-    setupMessage.textContent = "Your website is live. Opening your website...";
-    window.setTimeout(() => {
-      window.location.href = `/${encodeURIComponent(result.business?.slug || getSetupState().slug)}?owner=1`;
-    }, 600);
+    setupPublished = true;
+    updateSetupStep();
+    const liveSlug = result.business?.slug || getSetupState().slug;
+    setText("[data-live-domain]", `beyond8dance.com/${liveSlug}`);
+    setupMessage.textContent = "Your website is live.";
   } catch (error) {
     console.warn("Website publish failed:", error);
     setupMessage.textContent = error.message || "We could not publish yet. Please check your account details and try again.";
