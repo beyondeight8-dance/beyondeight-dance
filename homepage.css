@@ -77,9 +77,20 @@ body.home-restyle {
 .restyle-notifications > div { display: flex; gap: 12px; align-items: center; padding: 20px 0; border-bottom: 1px solid #f0e6e9; }
 .restyle-notifications > div:last-child { border-bottom: 0; }
 .restyle-notifications > div > span { font-size: 30px; color: #ae0b4d; width: 32px; text-align: center; flex-shrink: 0; }
-.restyle-reminder-icon { position: relative; display: inline-flex; align-items: center; justify-content: center; height: 32px; color: transparent; }
+.restyle-notifications > div > span.restyle-reminder-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  color: transparent;
+  font-size: 0;
+}
 .restyle-reminder-icon::before {
   content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
   width: 24px;
   height: 24px;
   background: #ae0b4d;
