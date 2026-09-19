@@ -642,7 +642,10 @@ const renderSpecialties = () => {
       ? `<button type="button" data-add-specialty="${customValue.replace(/"/g, "&quot;")}">+ Create "${customValue}"</button>`
       : "";
   specialtySuggestions.innerHTML = `${matches.map((option) => `<button type="button" role="option" data-add-specialty="${option}">${option}</button>`).join("")}${customButton}`;
-  specialtySuggestions.hidden = !matches.length && !customButton;
+  // Only show the suggestion list while the search box is actually focused - otherwise it was
+  // permanently visible from page load (a wall of unexplained style names) since an empty query
+  // matches everything.
+  specialtySuggestions.hidden = document.activeElement !== specialtyInput || (!matches.length && !customButton);
   const suggestionButtons = specialtySuggestions.querySelectorAll("[data-add-specialty]");
   activeSpecialtyIndex = suggestionButtons.length ? Math.min(Math.max(activeSpecialtyIndex, -1), suggestionButtons.length - 1) : -1;
   suggestionButtons.forEach((button, index) => button.classList.toggle("is-active", index === activeSpecialtyIndex));
@@ -1869,6 +1872,15 @@ specialtySuggestions?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-add-specialty]");
   if (!button) return;
   addSpecialty(button.dataset.addSpecialty);
+});
+// Clicking a suggestion would otherwise blur the input first (hiding the suggestion list via
+// the focus check above) before the click itself has a chance to fire - the standard combobox
+// fix is to stop the button from taking focus in the first place.
+specialtySuggestions?.addEventListener("mousedown", (event) => event.preventDefault());
+specialtyInput?.addEventListener("focus", () => renderSpecialties());
+specialtyInput?.addEventListener("blur", () => {
+  if (specialtySuggestions) specialtySuggestions.hidden = true;
+  specialtyInput.setAttribute("aria-expanded", "false");
 });
 specialtyTags?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-remove-specialty]");
