@@ -5,9 +5,10 @@
 .setup-restyle {
   --setup-ink: #2b1c14;
   --setup-muted: #7a6a5e;
-  --setup-rose: #a33453;
-  --setup-rose-dark: #87283f;
-  --setup-blush: #f6dee3;
+  --setup-rose: #a8746a;
+  --setup-rose-dark: #8f5b52;
+  --setup-wine: #743c39;
+  --setup-blush: #eee3dc;
   --setup-line: #e7dcd3;
   --setup-cream: #fdf8f3;
   --setup-display: "Source Serif 4", Georgia, serif;
@@ -128,7 +129,7 @@ html:has(body.modal-open) {
   flex-shrink: 0;
   width: 18px;
   height: 18px;
-  border: 1px solid var(--setup-line);
+  border: 0;
   border-radius: 50%;
   background: transparent;
   font-style: normal;
@@ -139,17 +140,16 @@ html:has(body.modal-open) {
 
 .setup-sidebar-nav span.is-active {
   background: var(--setup-blush);
-  color: var(--setup-ink);
+  color: var(--setup-wine);
   font-weight: 700;
 }
 
 .setup-sidebar-nav span.is-active i {
-  border-color: var(--setup-rose);
-  color: var(--setup-rose);
+  background: #fff;
+  color: var(--setup-wine);
 }
 
 .setup-sidebar-nav span.is-complete i {
-  border-color: var(--setup-rose);
   background: var(--setup-rose);
   color: white;
 }
@@ -304,6 +304,14 @@ html:has(body.modal-open) {
   color: var(--setup-muted);
 }
 
+/* Step 1 matches the mockup's minimal label+input treatment - drop the extra
+   instructional captions, but keep the live slug-availability status message,
+   which is real functional feedback rather than decorative copy. */
+.setup-restyle [data-setup-step="0"] .setup-fields > label:not(.setup-slug-field) > small,
+.setup-restyle [data-setup-step="0"] .setup-slug-field > small:not(.slug-status) {
+  display: none !important;
+}
+
 .setup-restyle .setup-fields input,
 .setup-restyle .setup-fields textarea,
 .setup-restyle .setup-stack input,
@@ -326,7 +334,7 @@ html:has(body.modal-open) {
 .setup-restyle .setup-stack textarea:focus {
   outline: none;
   border-color: var(--setup-rose) !important;
-  box-shadow: 0 0 0 3px rgba(163, 52, 83, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(168, 116, 106, 0.18) !important;
 }
 
 .setup-restyle .setup-stack textarea {
@@ -368,7 +376,7 @@ html:has(body.modal-open) {
 .setup-restyle .slug-builder input:focus {
   outline: none;
   border-color: var(--setup-rose) !important;
-  box-shadow: 0 0 0 3px rgba(163, 52, 83, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(168, 116, 106, 0.18) !important;
 }
 
 .setup-restyle .specialty-field small {
@@ -403,7 +411,7 @@ html:has(body.modal-open) {
 
 .setup-restyle .specialty-control:focus-within {
   border-color: var(--setup-rose) !important;
-  box-shadow: 0 0 0 3px rgba(163, 52, 83, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(168, 116, 106, 0.18) !important;
 }
 
 .setup-restyle .specialty-control input {
@@ -663,7 +671,7 @@ html:has(body.modal-open) {
 .setup-restyle .ready-publish-card input:focus {
   outline: none;
   border-color: var(--setup-rose) !important;
-  box-shadow: 0 0 0 3px rgba(163, 52, 83, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(168, 116, 106, 0.18) !important;
 }
 
 .setup-restyle .ready-check {
