@@ -451,6 +451,14 @@ html:has(body.modal-open) {
   color: white !important;
 }
 
+/* The buttons above force display:inline-flex, which would otherwise defeat the
+   browser's [hidden]{display:none} default - Next/Submit share .primary-button
+   and must never both be visible at once. */
+.setup-restyle .primary-button[hidden],
+.setup-restyle .secondary-button[hidden] {
+  display: none !important;
+}
+
 .setup-restyle .primary-button:hover {
   background: var(--setup-rose-dark) !important;
 }
