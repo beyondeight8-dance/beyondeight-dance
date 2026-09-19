@@ -551,12 +551,28 @@ html:has(body.modal-open) {
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
+/* The specialty line renders as individual <span> pill badges (not plain
+   text) - they carry their own color/border/background in styles.css, so
+   the rule above alone never reaches them. Match the onboarding palette
+   instead of the legacy bright-pink pill styling. */
+.setup-restyle .setup-brand-preview blockquote small[data-live-specialties] span {
+  border-color: var(--setup-line) !important;
+  background: var(--setup-blush) !important;
+  color: var(--setup-wine) !important;
+}
+
 .setup-restyle .setup-brand-preview blockquote button {
   margin-top: 12px;
-  /* Onboarding never sets a theme key, so this button would otherwise fall
-     back to the site editor's default magenta/coral gradient - match the
-     onboarding palette instead since no real theme choice is being shown. */
+}
+
+/* Onboarding never sets a theme key, so this button would otherwise fall back
+   to the site editor's default magenta/coral gradient. A same-!important,
+   higher-specificity legacy rule (.website-setup-panel .setup-step[...] ...)
+   was still winning that fight, so this repeats that same ancestry to match
+   its specificity and override it with the onboarding palette instead. */
+.setup-restyle .website-setup-panel .setup-step[data-setup-step="0"] .setup-brand-preview button {
   background: var(--setup-rose) !important;
+  box-shadow: none !important;
 }
 
 .setup-restyle .preview-site-details {
