@@ -393,7 +393,19 @@ html:has(body.modal-open) {
   border-radius: 999px !important;
   border: 1px solid var(--setup-line) !important;
   background: var(--setup-blush) !important;
+  color: var(--setup-wine) !important;
   font-size: 12px !important;
+}
+
+.setup-restyle .specialty-tag strong {
+  color: var(--setup-wine) !important;
+}
+
+.setup-restyle .specialty-suggestions button:hover,
+.setup-restyle .specialty-suggestions button.is-active {
+  border-color: var(--setup-rose) !important;
+  background: var(--setup-blush) !important;
+  color: var(--setup-wine) !important;
 }
 
 .setup-restyle .specialty-control {
@@ -541,6 +553,10 @@ html:has(body.modal-open) {
 
 .setup-restyle .setup-brand-preview blockquote button {
   margin-top: 12px;
+  /* Onboarding never sets a theme key, so this button would otherwise fall
+     back to the site editor's default magenta/coral gradient - match the
+     onboarding palette instead since no real theme choice is being shown. */
+  background: var(--setup-rose) !important;
 }
 
 .setup-restyle .preview-site-details {
