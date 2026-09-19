@@ -1321,14 +1321,21 @@ const currentSetupStepPosition = () => {
   return setupIndex + 1;
 };
 
+/* The in-page "Step X of 4" bar counts only the fillable form steps
+   (About You / Your Presence / Your Story / Create Account) - Launch is
+   the reward screen at the end, not a step you fill out, so it isn't
+   counted here even though it has its own row in the sidebar. */
+const SETUP_FORM_STEP_TOTAL = 4;
+
 const renderSetupDots = () => {
-  const position = currentSetupStepPosition();
-  const dotGroups = document.querySelectorAll(".setup-dots");
-  dotGroups.forEach((group) => {
-    group.innerHTML = Array.from(
-      { length: SETUP_TOTAL_STEPS },
-      (_, index) => `<span class="${index + 1 === position ? "is-active" : ""}">${index + 1}</span>`
-    ).join("");
+  if (setupPublished || !setupSteps.length) return;
+  const position = setupLaunched ? SETUP_FORM_STEP_TOTAL : setupIndex + 1;
+  const percent = Math.round((position / SETUP_FORM_STEP_TOTAL) * 100);
+  document.querySelectorAll(".setup-dots").forEach((track) => {
+    track.innerHTML = `<span style="width:${percent}%"></span>`;
+  });
+  document.querySelectorAll("[data-setup-eyebrow]").forEach((el) => {
+    el.textContent = `Step ${position} of ${SETUP_FORM_STEP_TOTAL}`;
   });
 };
 

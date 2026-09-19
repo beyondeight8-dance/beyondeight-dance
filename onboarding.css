@@ -224,38 +224,40 @@ html:has(body.modal-open) {
   color: var(--setup-muted) !important;
 }
 
-.setup-restyle .setup-dots {
-  display: flex !important;
+.setup-restyle .setup-step-eyebrow {
   flex-shrink: 0;
-  gap: 6px;
+  margin: 14px 0 8px !important;
+  font-family: var(--setup-sans) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--setup-muted) !important;
+}
+
+.setup-restyle .setup-dots {
+  display: block !important;
+  flex-shrink: 0;
   height: 3px;
-  margin: 14px 0 18px !important;
+  margin: 0 0 18px !important;
   padding: 0 !important;
-  background: none !important;
-  max-width: 340px;
+  background: var(--setup-line) !important;
+  border-radius: 999px;
+  max-width: 200px;
+  overflow: hidden;
 }
 
 .setup-restyle .setup-dots span {
-  flex: 1;
+  display: block;
   height: 100%;
   border-radius: 999px;
-  background: var(--setup-line);
-  font-size: 0;
-  color: transparent;
-}
-
-.setup-restyle .setup-dots span::after {
-  display: none;
-}
-
-.setup-restyle .setup-dots span.is-active,
-.setup-restyle .setup-dots span:has(~ span.is-active) {
   background: var(--setup-rose);
+  transition: width 0.2s ease;
 }
 
 .setup-restyle .setup-two-column {
   display: grid !important;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr) !important;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) !important;
   gap: 36px !important;
   align-items: start;
   min-width: 0;
@@ -336,29 +338,37 @@ html:has(body.modal-open) {
 .setup-restyle .slug-builder {
   display: flex !important;
   align-items: center !important;
+  gap: 4px;
   min-height: 38px;
-  border: 1px solid var(--setup-line) !important;
-  border-radius: 8px !important;
-  background: #fff !important;
-  padding: 0 12px !important;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  border: 0 !important;
+  background: none !important;
+  padding: 0 !important;
 }
 
-.setup-restyle .slug-builder:focus-within {
-  border-color: var(--setup-rose) !important;
-  box-shadow: 0 0 0 3px rgba(163, 52, 83, 0.12) !important;
+.setup-restyle .slug-builder > span {
+  flex-shrink: 0;
+  font-family: var(--setup-sans) !important;
+  font-size: 14px !important;
+  font-weight: 600;
+  color: var(--setup-muted) !important;
 }
 
 .setup-restyle .slug-builder input {
-  min-height: 0;
-  border: 0 !important;
-  background: transparent !important;
-  padding: 8px 2px !important;
+  min-height: 38px;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--setup-line) !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  padding: 8px 12px !important;
   box-shadow: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .setup-restyle .slug-builder input:focus {
-  box-shadow: none !important;
+  outline: none;
+  border-color: var(--setup-rose) !important;
+  box-shadow: 0 0 0 3px rgba(163, 52, 83, 0.12) !important;
 }
 
 .setup-restyle .specialty-field small {
@@ -414,18 +424,18 @@ html:has(body.modal-open) {
   display: flex !important;
   flex-shrink: 0;
   gap: 12px;
-  margin-top: 16px !important;
-  padding-top: 14px !important;
-  border-top: 1px solid var(--setup-line) !important;
+  margin-top: 20px !important;
+  padding-top: 0 !important;
+  border-top: 0 !important;
   background: none !important;
   max-width: 1080px;
 }
 
 .setup-restyle .primary-button,
 .setup-restyle .secondary-button {
-  min-height: 38px !important;
+  min-height: 40px !important;
   padding: 0 22px !important;
-  border-radius: 6px !important;
+  border-radius: 9px !important;
   font-family: var(--setup-sans) !important;
   font-size: 14px !important;
   font-weight: 600 !important;
@@ -433,6 +443,9 @@ html:has(body.modal-open) {
 }
 
 .setup-restyle .primary-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px;
   border: 1px solid var(--setup-rose) !important;
   background: var(--setup-rose) !important;
   color: white !important;
@@ -440,6 +453,10 @@ html:has(body.modal-open) {
 
 .setup-restyle .primary-button:hover {
   background: var(--setup-rose-dark) !important;
+}
+
+.setup-restyle [data-setup-next]::after {
+  content: "\2192";
 }
 
 .setup-restyle .secondary-button {
@@ -450,28 +467,32 @@ html:has(body.modal-open) {
 
 /* Step 1 only: a large live website preview */
 .setup-restyle .setup-brand-preview {
+  position: relative;
   min-height: 0 !important;
   min-width: 0 !important;
   max-height: none;
   padding: 0 !important;
-  border: 1px solid var(--setup-line) !important;
-  border-radius: 10px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
   background: white !important;
-  box-shadow: none !important;
+  box-shadow: 0 24px 48px -28px rgba(43, 28, 20, 0.35) !important;
   overflow: hidden;
   align-self: stretch;
 }
 
 .setup-restyle .setup-brand-preview img {
-  max-height: 240px !important;
+  max-height: 230px !important;
   object-fit: cover !important;
 }
 
 .setup-restyle .setup-brand-preview .preview-nav {
+  position: relative;
+  z-index: 2;
   display: flex !important;
   flex-wrap: wrap !important;
   gap: 4px 10px !important;
   padding: 12px 18px !important;
+  border-bottom: 1px solid var(--setup-line) !important;
 }
 
 .setup-restyle .setup-brand-preview .preview-nav span {
@@ -479,15 +500,50 @@ html:has(body.modal-open) {
   font-size: 10px !important;
 }
 
+/* Hero copy overlays the bottom of the image, like a real website hero */
 .setup-restyle .setup-brand-preview blockquote {
-  margin: 14px 0 0 !important;
-  padding: 0 18px 18px !important;
+  position: relative;
+  z-index: 2;
+  margin: -90px 0 0 !important;
+  padding: 48px 20px 16px !important;
+  background: linear-gradient(180deg, rgba(30, 16, 12, 0) 0%, rgba(30, 16, 12, 0.62) 50%, rgba(30, 16, 12, 0.8) 100%) !important;
+  border: 0 !important;
   font-size: 1.15rem !important;
-  line-height: 1.25 !important;
+  line-height: 1.2 !important;
+}
+
+.setup-restyle .setup-brand-preview blockquote [data-live-headline] {
+  color: #fff !important;
+  font-family: var(--setup-display) !important;
+  font-weight: 600 !important;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.3);
+}
+
+.setup-restyle .setup-brand-preview blockquote small[data-live-specialties] {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.setup-restyle .setup-brand-preview blockquote button {
+  margin-top: 12px;
 }
 
 .setup-restyle .preview-site-details {
-  padding: 0 18px 18px !important;
+  position: relative;
+  z-index: 2;
+  padding: 0 18px 12px !important;
+}
+
+.setup-restyle .setup-preview-note {
+  position: relative;
+  z-index: 2;
+  margin: 0 !important;
+  padding: 10px 18px 16px !important;
+  border-top: 1px solid var(--setup-line);
+  font-family: var(--setup-sans) !important;
+  font-size: 11px !important;
+  font-style: italic;
+  text-align: center;
+  color: var(--setup-muted) !important;
 }
 
 /* Step 2 only: a small contextual preview, not the full website */
@@ -715,8 +771,9 @@ html:has(body.modal-open) {
     grid-template-columns: 1fr !important;
   }
 
+  /* Step 1 on mobile: form first, preview second (matches the approved mockup) */
   .setup-restyle .setup-brand-preview {
-    order: -1;
+    order: 0;
   }
 
   .setup-restyle .setup-ready[data-published="false"] .setup-ready-visual {
