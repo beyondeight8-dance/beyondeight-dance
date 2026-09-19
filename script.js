@@ -1313,10 +1313,22 @@ const finalizeWebsitePublish = async () => {
   return result;
 };
 
+const SETUP_TOTAL_STEPS = 5;
+
+const currentSetupStepPosition = () => {
+  if (setupPublished) return SETUP_TOTAL_STEPS;
+  if (setupLaunched) return SETUP_TOTAL_STEPS - 1;
+  return setupIndex + 1;
+};
+
 const renderSetupDots = () => {
+  const position = currentSetupStepPosition();
   const dotGroups = document.querySelectorAll(".setup-dots");
   dotGroups.forEach((group) => {
-    group.innerHTML = Array.from(setupSteps, (_, index) => `<span class="${index === setupIndex ? "is-active" : ""}">${index + 1}</span>`).join("");
+    group.innerHTML = Array.from(
+      { length: SETUP_TOTAL_STEPS },
+      (_, index) => `<span class="${index + 1 === position ? "is-active" : ""}">${index + 1}</span>`
+    ).join("");
   });
 };
 
@@ -1344,9 +1356,7 @@ const renderSetupSidebarNav = () => {
     item.classList.toggle("is-complete", isComplete);
   });
   if (setupMobileStep) {
-    const total = setupSidebarNavItems.length || 5;
-    const position = Array.from(setupSidebarNavItems).findIndex((item) => item.classList.contains("is-active")) + 1;
-    setupMobileStep.textContent = `Step ${Math.max(position, 1)} of ${total} · ${currentSetupStepName()}`;
+    setupMobileStep.textContent = `Step ${currentSetupStepPosition()} of ${SETUP_TOTAL_STEPS} · ${currentSetupStepName()}`;
   }
 };
 
