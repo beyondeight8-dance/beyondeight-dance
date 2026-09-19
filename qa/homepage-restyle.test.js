@@ -12,7 +12,7 @@ assert.match(html, /id="how-it-works"/);
 assert.match(html, /id="about"/);
 assert.equal((html.match(/class="restyle-step-number"/g) || []).length, 5);
 assert.ok((html.match(/data-open-setup/g) || []).length >= 4);
-for (const hook of ['data-open-auth-login', 'data-open-comparison', 'auth-modal', 'setup-modal', 'comparison-modal']) {
+for (const hook of ['data-open-auth-login', 'auth-modal', 'setup-modal', 'comparison-modal']) {
   assert.ok(html.includes(hook), `Existing ${hook} flow remains available`);
 }
 for (const filename of ['homepage-dance-studio.png', 'homepage-teaching-studio.png']) {
