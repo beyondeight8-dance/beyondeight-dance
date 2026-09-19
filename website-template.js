@@ -285,7 +285,10 @@
         state.instructorImage || "assets/starter-headshot.jpg"
       ].filter(Boolean),
       contact,
-      socials: [state.instagram, state.tiktok, state.youtube].filter(Boolean)
+      socials: [state.instagram, state.tiktok, state.youtube].filter(Boolean),
+      instagram: state.instagram || "",
+      tiktok: state.tiktok || "",
+      youtube: state.youtube || ""
     };
   };
 
@@ -360,6 +363,37 @@
 
   const imageTag = (src, alt, className = "") =>
     `<img${className ? ` class="${esc(className)}"` : ""} src="${esc(assetSrc(src))}" alt="${esc(alt)}" loading="lazy">`;
+
+  const SOCIAL_ICONS = {
+    instagram: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg>',
+    tiktok: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.2 3h2.4a4.7 4.7 0 0 0 3 4.1v2.4a7 7 0 0 1-3-.68v5.53a5.15 5.15 0 1 1-4.4-5.1v2.5a2.65 2.65 0 1 0 1.86 2.53L14.2 3Z" fill="currentColor"/></svg>',
+    youtube: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="M10.4 9.1v5.8l5-2.9-5-2.9Z" fill="currentColor"/></svg>'
+  };
+  const socialHref = (platform, value = "") => {
+    const clean = String(value || "").trim();
+    if (!clean) return "";
+    if (/^https?:\/\//i.test(clean)) return clean;
+    const handle = clean.replace(/^[@/]+/, "");
+    if (!handle) return "";
+    if (platform === "instagram") return `https://www.instagram.com/${handle}/`;
+    if (platform === "tiktok") return `https://www.tiktok.com/@${handle}`;
+    if (platform === "youtube") return `https://www.youtube.com/${handle.startsWith("@") ? handle : `@${handle}`}`;
+    return clean;
+  };
+  const socialLinksHTML = (content) => {
+    const links = [
+      ["instagram", content.instagram, "Instagram"],
+      ["tiktok", content.tiktok, "TikTok"],
+      ["youtube", content.youtube, "YouTube"]
+    ]
+      .map(([key, value, label]) => {
+        const href = socialHref(key, value);
+        return href ? `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)}">${SOCIAL_ICONS[key]}</a>` : "";
+      })
+      .filter(Boolean)
+      .join("");
+    return links ? `<div class="setup-preview-nav-socials">${links}</div>` : "";
+  };
   const paragraphHTML = (copy = "") =>
     String(copy || "")
       .split(/\n{2,}/)
@@ -390,16 +424,16 @@
   const bookButton = (item, label = "Book a Spot", className = "") =>
     `<button type="button"${className ? ` class="${className}"` : ""} data-book-class="${esc(item.id || slugify(item.title))}"${item.registrationOpen === false ? " disabled" : ""}>${item.registrationOpen === false ? "Registration Closed" : label}</button>`;
 
+  // Near-full-bleed hero image with the headline overlaid in the upper-left (matches the
+  // approved mockup) - same structural pattern as heroNoir below (image as a direct child,
+  // absolutely positioned over it by CSS), not a second bespoke layout.
   const heroEditorial = (content, ctx) => `
     <section id="home" class="theme-hero theme-hero-editorial" data-edit-section="hero">
+      ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
       <div class="theme-hero-copy">
         <p class="theme-hero-kicker">${content.theme.kicker.map((word) => esc(word)).join(" · ")}</p>
         <h1 class="theme-hero-headline">${esc(content.headline)}</h1>
         <a class="theme-hero-cta" href="${esc(content.ctaLink || "#classes")}">${esc(ctx.primaryAction)}</a>
-      </div>
-      <div class="theme-hero-media">
-        ${imageTag(content.images.hero, `${content.brandName} hero dance image`)}
-        <blockquote class="theme-hero-quote">${esc(content.theme.flourish)}</blockquote>
       </div>
     </section>`;
 
@@ -476,14 +510,16 @@
   const classesEditorial = (content, ctx) => {
     const items = ctx.visibleClasses.map((item, index) => {
       const thumb = item.image || ctx.classThumbs[index % ctx.classThumbs.length] || content.images.hero;
+      const location = item.venue || item.location || "";
       return `<article class="theme-class-card${item.highlighted ? " is-highlighted" : ""}">
         <div class="theme-class-card-media">${imageTag(thumb, `${item.title} class thumbnail`)}</div>
         <div class="theme-class-card-body">
           <small>${esc(classDateTime(item))}${item.level ? ` &bull; ${esc(item.level)}` : ""}</small>
           <strong>${esc(item.title)}</strong>
           <span>${esc(classPrice(item))}</span>
+          ${location ? `<em>${esc(location)}</em>` : ""}
         </div>
-        ${bookButton(item)}
+        ${bookButton(item, "Book a Spot", content.theme.key === "editorial" ? "theme-class-card-cta" : "")}
       </article>`;
     }).join("") || classesEmptyHTML;
     return `<section id="classes" class="theme-classes theme-classes-editorial" data-edit-section="classes">
@@ -627,11 +663,15 @@
       .filter(Boolean)
       .map((copy) => paragraphHTML(copy))
       .join("");
+    // Editorial's nav matches the approved mockup: wordmark, links, small social icons -
+    // no CTA pill in the header itself. Every other theme keeps its existing nav-cta button.
+    const editorialSocials = content.theme.key === "editorial" ? socialLinksHTML(content) : "";
+    const navCtaOrSocials = editorialSocials || `<a class="setup-preview-nav-cta" href="${esc(content.ctaLink || "#classes")}">${esc(primaryAction)}</a>`;
     return `
       <header class="setup-preview-nav" data-edit-section="header">
         <a class="setup-preview-brand" href="#home" aria-label="${esc(content.brandName)} home"><strong data-live-logo-small>${logoHTML(content, options.logoHTML)}</strong></a>
         <nav class="setup-preview-nav-links" aria-label="Primary navigation">${navLinks}</nav>
-        <a class="setup-preview-nav-cta" href="${esc(content.ctaLink || "#classes")}">${esc(primaryAction)}</a>
+        ${navCtaOrSocials}
         <details class="setup-preview-mobile-menu">
           <summary aria-label="Open menu"><span></span><span></span><span></span></summary>
           <div>
@@ -751,11 +791,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="${esc(baseUrl)}">
   <title>${esc(content.brandName)} | Generated by BeyondEight</title>
-  <link rel="stylesheet" href="/styles.css?v=20260919-theme-tokens-fix">
+  <link rel="stylesheet" href="/styles.css?v=20260920-editorial-redesign">
 </head>
 <body class="${themeClassFor(content.theme.name)}">
   ${renderSharedPublicSite(content)}
-  <script src="/website-template.js?v=20260919-six-themes"><\/script>
+  <script src="/website-template.js?v=20260920-editorial-redesign"><\/script>
   <script>
     (() => {
       const businessId = ${businessId};
