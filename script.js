@@ -26,6 +26,7 @@ const setupMessage = document.querySelector(".setup-message");
 const setupReadyMount = document.querySelector("[data-setup-ready-mount]");
 const setupReadyTemplate = document.querySelector("#setup-ready-template");
 let setupReady = null;
+let setupPublished = false;
 let viewGeneratedSiteButton = null;
 let readyGoogleButton = null;
 let readyPublishButton = null;
@@ -796,6 +797,7 @@ const clearGuestSetupDraft = () => {
 };
 
 const resetGuestSetup = () => {
+  setupPublished = false;
   clearGuestSetupDraft();
   setupForm?.reset();
   selectedSpecialties = [...defaultSpecialties];
@@ -1168,6 +1170,7 @@ const renderSharedTemplateSurfaces = (state, content) => {
     themePicker.dataset.selectedTheme = selectedTheme;
   }
   document.querySelectorAll(".setup-preview-site").forEach((node) => {
+    node.classList.add("approved-public-site");
     node.dataset.themeKey = content.theme.key;
     node.innerHTML = templates.renderDesktopPreview(content, { logoHTML: logoHTMLFor(state), builderMode: true });
   });
@@ -1525,7 +1528,7 @@ const bindReadyScreenEvents = () => {
   readyPublishButton?.addEventListener("click", publishCurrentSetup);
   readyKeepEditingButton?.addEventListener("click", () => {
     setupLaunched = false;
-    setupIndex = setupSteps.length - 1;
+    setupIndex = 2;
     updateSetupStep();
     updateSetupPreview();
   });
@@ -1593,25 +1596,41 @@ const renderSetupDots = () => {
 
 const updateSetupStep = () => {
   if (!setupSteps.length) return;
+  const accountStep = setupLaunched || setupIndex === 3;
   setupSteps.forEach((step, index) => {
-    const isActive = !setupLaunched && index === setupIndex;
+    const isActive = !accountStep && !setupPublished && index === setupIndex;
     step.classList.toggle("is-active", isActive);
     step.toggleAttribute("hidden", !isActive);
   });
-  if (setupLaunched) {
+  if (accountStep && !setupPublished) {
     mountSetupReady();
   } else {
     unmountSetupReady();
   }
   if (setupProgress) {
-    setupProgress.style.width = setupLaunched ? "100%" : `${((setupIndex + 1) / setupSteps.length) * 100}%`;
+    setupProgress.style.width = `${((setupPublished ? 5 : accountStep ? 4 : setupIndex + 1) / 5) * 100}%`;
   }
   if (setupPrevButton) setupPrevButton.hidden = setupLaunched;
   if (setupPrevButton) setupPrevButton.disabled = setupIndex === 0;
   if (setupNextButton) setupNextButton.hidden = setupLaunched || setupIndex === setupSteps.length - 1;
   if (setupSubmitButton) setupSubmitButton.hidden = setupLaunched || setupIndex !== setupSteps.length - 1;
   if (setupSkipButton) setupSkipButton.hidden = setupLaunched || setupIndex !== 1;
-  if (setupActions) setupActions.hidden = setupLaunched;
+  if (setupActions) setupActions.hidden = accountStep || setupPublished;
+  const workspaceIndex = setupPublished ? 4 : accountStep ? 3 : setupIndex;
+  const workspaceNames = ["About You", "Your Presence", "Your Story", "Create Account", "Launch"];
+  document.querySelectorAll("[data-workspace-step]").forEach((item, index) => {
+    item.classList.toggle("is-current", index === workspaceIndex);
+    item.classList.toggle("is-complete", index < workspaceIndex);
+    if (index === workspaceIndex) item.setAttribute("aria-current", "step");
+    else item.removeAttribute("aria-current");
+    item.querySelector(".onboarding-step-marker").textContent = index < workspaceIndex ? "\u2713" : String(index + 1);
+  });
+  setText("[data-workspace-progress]", `Step ${workspaceIndex + 1} of 5 · ${workspaceNames[workspaceIndex]}`);
+  setupModal.setAttribute("aria-label", workspaceNames[workspaceIndex]);
+  setupModal.removeAttribute("aria-labelledby");
+  setupForm.hidden = setupPublished;
+  document.querySelector("[data-workspace-launch]").hidden = !setupPublished;
+  if (setupModal.classList.contains("is-open")) setupModal.scrollTo({ top: 0, behavior: "auto" });
   if (setupMessage) setupMessage.textContent = "";
   renderSetupDots();
 };
@@ -1976,10 +1995,13 @@ const publishCurrentSetup = async () => {
     const result = await finalizeWebsitePublish();
     if (!result) return;
     clearGuestSetupDraft();
-    setupMessage.textContent = "Your website is live. Opening your website...";
-    window.setTimeout(() => {
-      window.location.href = `/${encodeURIComponent(result.business?.slug || getSetupState().slug)}?owner=1`;
-    }, 600);
+    const publishedSlug = result.business?.slug || getSetupState().slug;
+    document.querySelector("[data-workspace-view]").href = `/${encodeURIComponent(publishedSlug)}?owner=1`;
+    setText("[data-workspace-domain]", `beyond8dance.com/${publishedSlug}`);
+    setupPublished = true;
+    updateSetupStep();
+    updateSetupPreview();
+    setupModal.scrollTo({ top: 0, behavior: "auto" });
   } catch (error) {
     console.warn("Website publish failed:", error);
     setupMessage.textContent = error.message || "We could not publish yet. Please check your account details and try again.";

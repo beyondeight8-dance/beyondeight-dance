@@ -199,36 +199,18 @@
   const buildWebsiteContent = (input = {}) => {
     const state = input.business ? stateFromBundle(input) : input;
     const theme = themeProfileFor(state.theme);
-    const styles = (state.styles && state.styles.length ? state.styles : ["Heels", "Hip Hop", "Contemporary", "Bollywood", "Jazz"]).slice(0, 8);
+    const styles = (Array.isArray(state.styles) ? state.styles : []).filter(Boolean).slice(0, 8);
     const brandName = state.businessName || "Beyond Movement";
-    const headline = state.tagline || state.headline || "Move with purpose. Dance with passion.";
-    const whatYouDo =
-      state.whatYouDo ||
-      "A polished home for choreography classes, workshops, intensives, and dancer experiences that feel easy to discover and book.";
-    const mission =
-      state.mission ||
-      "We blend strong technique, expressive performance, and a supportive room where dancers can grow with confidence.";
-    const whyJoin =
-      state.whyJoin ||
-      "Students leave feeling challenged, seen, and excited to keep building their artistry through movement.";
-    const instructorName = state.instructorName || `${brandName} Instructor`;
-    const generatedClasses = styles.slice(0, 5).map((style, index) => {
-      const days = ["Thu", "Sat", "Sun", "Wed", "Fri"];
-      const times = ["7:00 PM", "11:00 AM", "5:30 PM", "6:45 PM", "8:00 PM"];
-      return {
-        title: `${style} ${demoData.classSuffixes[index % demoData.classSuffixes.length]}`,
-        date: `${days[index % days.length]} ${index + 12}`,
-        time: times[index % times.length],
-        location: demoData.locations[index % demoData.locations.length],
-        level: demoData.levels[index % demoData.levels.length],
-        price: demoData.prices[index % demoData.prices.length],
-        spots: `${14 - index * 2} spots left`,
-        instructor: instructorName,
-        style
-      };
-    });
-    const classes = Array.isArray(state.classes) ? state.classes : generatedClasses;
-    const contact = [state.instagram, state.website || state.domain || "", state.showEmail === "No" ? "" : state.email || "hello@beyond8dance.com", state.showPhone === "No" ? "" : state.phone, state.showLocation === "No" ? "" : state.location || "Location shared after registration"].filter(Boolean);
+    const headline = state.tagline || state.headline || brandName;
+    const whatYouDo = state.whatYouDo || "";
+    const mission = state.mission || "";
+    const whyJoin = state.whyJoin || "";
+    const instructorName = state.instructorName || brandName;
+    const classes = Array.isArray(state.classes) ? state.classes : [];
+    const email = state.showEmail === "No" ? "" : state.email || "";
+    const phone = state.showPhone === "No" ? "" : state.phone || "";
+    const location = state.showLocation === "No" ? "" : state.location || "";
+    const contact = [state.website || "", email, phone, location].filter(Boolean);
     return {
       businessId: state.businessId || "",
       theme,
@@ -247,12 +229,12 @@
       logoText: state.logoText || brandName.split(/\s+/).slice(0, 2).join("<br>").toUpperCase(),
       logoFont: state.logoFont || "serif",
       images: {
-        hero: state.heroImage || "assets/starter-hero-dance.jpg",
-        about: state.aboutImage || "assets/starter-instructor-portrait.jpg",
-        gallery: state.galleryImage || "assets/starter-dance-class.jpg",
-        workshop: state.workshopImage || "assets/starter-workshop-teaching.jpg",
-        performance: state.performanceImage || "assets/starter-performance.jpg",
-        instructor: state.instructorImage || state.portraitImage || state.aboutImage || "assets/starter-headshot.jpg"
+        hero: state.heroImage || state.aboutImage || state.instructorImage || "",
+        about: state.aboutImage || state.instructorImage || "",
+        gallery: state.galleryImage || "",
+        workshop: state.workshopImage || "",
+        performance: state.performanceImage || "",
+        instructor: state.instructorImage || state.portraitImage || state.aboutImage || ""
       },
       classes,
       workshop: state.workshop || {
@@ -265,8 +247,8 @@
         description: state.whyJoin || "A focused workshop with choreography, coaching, and space to connect with the movement."
       },
       instructorName,
-      instructorBio: state.instructorBio || `${brandName} helps dancers grow through ${styles.slice(0, 3).join(", ")} with clear coaching, intentional choreography, and a welcoming class experience.`,
-      aboutEyebrow: state.aboutEyebrow || "Meet the choreographer",
+      instructorBio: state.instructorBio || "",
+      aboutEyebrow: state.aboutEyebrow || "About",
       classesEyebrow: state.classesEyebrow || "Upcoming Classes",
       classesHeading: state.classesHeading || "Book your next class.",
       galleryEyebrow: state.galleryEyebrow || "Gallery",
@@ -275,17 +257,19 @@
       faqHeading: state.faqHeading || "Good to know before class.",
       benefitsEyebrow: state.benefitsEyebrow || "Why dance with me",
       benefitsHeading: state.benefitsHeading || "Training that feels clear, expressive, and easy to join.",
-      benefits: Array.isArray(state.benefits) && state.benefits.length ? state.benefits : demoData.benefits,
-      testimonials: Array.isArray(state.testimonials) ? state.testimonials : demoData.testimonials,
-      faqs: Array.isArray(state.faqs) && state.faqs.length ? state.faqs : demoData.faqs,
-      gallery: Array.isArray(state.gallery) && state.gallery.length ? state.gallery : [
-        state.galleryImage || "assets/starter-dance-class.jpg",
-        state.workshopImage || "assets/starter-workshop-teaching.jpg",
-        state.performanceImage || "assets/starter-performance.jpg",
-        state.instructorImage || "assets/starter-headshot.jpg"
-      ].filter(Boolean),
+      benefits: Array.isArray(state.benefits) ? state.benefits.filter(Boolean) : [],
+      testimonials: Array.isArray(state.testimonials) ? state.testimonials.filter(Boolean) : [],
+      faqs: Array.isArray(state.faqs) ? state.faqs.filter(Boolean) : [],
+      gallery: (Array.isArray(state.gallery) && state.gallery.length ? state.gallery : [state.galleryImage, state.workshopImage, state.performanceImage]).filter(Boolean),
       contact,
-      socials: [state.instagram, state.tiktok, state.youtube].filter(Boolean)
+      socials: [state.instagram, state.tiktok, state.youtube].filter(Boolean),
+      instagram: state.instagram || "",
+      tiktok: state.tiktok || "",
+      youtube: state.youtube || "",
+      website: state.website || "",
+      email,
+      phone,
+      location
     };
   };
 
@@ -308,12 +292,12 @@
         </a>`;
       })
       .join("");
-    return `<section class="setup-preview-section setup-preview-instagram">
-      <div class="setup-preview-instagram-heading">
-        <div><small>From the Studio</small><h4>Life in motion.</h4></div>
-        ${cleanUsername ? `<a href="https://www.instagram.com/${esc(cleanUsername)}/" target="_blank" rel="noopener noreferrer">Follow @${esc(cleanUsername)}</a>` : ""}
-      </div>
-      <div class="setup-preview-instagram-grid">${tiles}</div>
+    return `<section class="public-editorial-gallery public-editorial-instagram" aria-labelledby="instagram-heading">
+      <header>
+        <div><h2 id="instagram-heading">From the Studio</h2><p>A glimpse into recent classes and movement.</p></div>
+        ${cleanUsername ? `<a href="https://www.instagram.com/${esc(cleanUsername)}/" target="_blank" rel="noopener noreferrer">Follow on Instagram →</a>` : ""}
+      </header>
+      <div class="public-editorial-gallery-track">${tiles}</div>
     </section>`;
   };
 
@@ -580,7 +564,7 @@
   const heroRenderers = { editorial: heroEditorial, studio: heroStudio, electric: heroElectric, noir: heroNoir, muse: heroMuse, motion: heroMotion };
   const classesRenderers = { editorial: classesEditorial, studio: classesStudio, electric: classesElectric, noir: classesNoir, muse: classesEditorial, motion: classesMotion };
 
-  const renderDesktopPreview = (content, options = {}) => {
+  const renderLegacyDesktopPreview = (content, options = {}) => {
     const primaryAction = content.ctaText || themeActionLabel(content.theme);
     const classThumbs = [content.images.gallery, content.images.workshop, content.images.performance, content.images.hero].filter(Boolean);
     const visibleClasses = content.classes.filter((item) => item.published !== false);
@@ -723,6 +707,94 @@
         </div>
       </footer>`;
   };
+
+  const externalHref = (value = "", platform = "") => {
+    const clean = String(value || "").trim();
+    if (!clean) return "";
+    if (/^(https?:|mailto:|tel:)/i.test(clean)) return clean;
+    const handle = clean.replace(/^@/, "");
+    if (platform === "instagram") return `https://www.instagram.com/${encodeURIComponent(handle)}/`;
+    if (platform === "tiktok") return `https://www.tiktok.com/@${encodeURIComponent(handle)}`;
+    if (platform === "youtube") return `https://www.youtube.com/@${encodeURIComponent(handle)}`;
+    return `https://${clean}`;
+  };
+  const socialRecords = (content) => [
+    ["Instagram", content.instagram, "instagram"],
+    ["TikTok", content.tiktok, "tiktok"],
+    ["YouTube", content.youtube, "youtube"]
+  ].filter(([, value]) => value);
+  const socialLinks = (content, compact = false) => socialRecords(content).map(([label, value, platform]) => `<a href="${esc(externalHref(value, platform))}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)}">${compact ? esc(label.slice(0, 2).toUpperCase()) : esc(label)}</a>`).join("");
+  const editorialHeadline = (headline = "") => {
+    const words = String(headline).trim().split(/\s+/).filter(Boolean);
+    if (!words.length) return "";
+    const last = words.pop();
+    return `${esc(words.join(" "))}${words.length ? " " : ""}<em>${esc(last)}</em>`;
+  };
+  const publicDate = (value = "") => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+    const date = new Date(`${value}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  };
+  const reviewParts = (entry = {}) => Array.isArray(entry)
+    ? { name: entry[0] || "", quote: entry[1] || "" }
+    : typeof entry === "string" ? { name: "", quote: entry } : { name: entry.name || entry.studentName || "", quote: entry.quote || entry.text || entry.review || "" };
+  const faqParts = (entry = {}) => Array.isArray(entry)
+    ? { question: entry[0] || "", answer: entry[1] || "" }
+    : { question: entry.question || "", answer: entry.answer || "" };
+
+  const renderApprovedPublicSite = (content, options = {}) => {
+    const visibleClasses = content.classes.filter((item) => item.published !== false);
+    const gallery = content.gallery.filter(Boolean).slice(0, 8);
+    const reviews = content.testimonials.map(reviewParts).filter((item) => item.quote);
+    const faqs = content.faqs.map(faqParts).filter((item) => item.question && item.answer);
+    const aboutCopy = [...new Set([content.instructorBio, content.whatYouDo, content.mission, content.whyJoin].filter(Boolean))];
+    const navItems = [["Home", "#home"], ["Classes", "#classes"], ["About", "#about"], ...(gallery.length ? [["Gallery", "#gallery"]] : []), ...(faqs.length ? [["FAQ", "#faq"]] : []), ["Contact", "#contact"]];
+    const navLinks = navItems.map(([label, href]) => `<a href="${href}">${label}</a>`).join("");
+    const contactHref = content.email ? `mailto:${content.email}` : externalHref(content.website) || externalHref(content.instagram, "instagram") || "";
+    const classMarkup = visibleClasses.length ? visibleClasses.map((item) => `<article class="public-editorial-class${item.highlighted ? " is-highlighted" : ""}">
+      ${item.image ? `<div class="public-editorial-class-media">${imageTag(item.image, `${item.title} class`)}</div>` : `<div class="public-editorial-class-media is-empty" aria-hidden="true"><span>${esc(String(item.title || "Class").charAt(0))}</span></div>`}
+      <div class="public-editorial-class-copy">
+        <h3>${esc(item.title || "Untitled class")}</h3>
+        <dl>
+          ${item.date ? `<div><dt>Date</dt><dd>${esc(publicDate(item.date))}</dd></div>` : ""}
+          ${item.time ? `<div><dt>Time</dt><dd>${esc(item.time)}</dd></div>` : ""}
+          ${item.venue || item.location ? `<div><dt>Location</dt><dd>${esc(item.venue || item.location)}</dd></div>` : ""}
+        </dl>
+        ${classPrice(item) ? `<strong class="public-editorial-price">${esc(classPrice(item))}</strong>` : ""}
+        ${bookButton(item, item.registrationOpen === false ? "Registration Closed" : "Book Now")}
+      </div>
+    </article>`).join("") : `<div class="public-editorial-empty"><h3>New classes coming soon.</h3><p>Check back for the next class announcement.</p></div>`;
+    const aboutDetails = content.styles.length ? `<ul class="public-editorial-about-details">${content.styles.slice(0, 3).map((style) => `<li><span aria-hidden="true">○</span><strong>${esc(style)}</strong></li>`).join("")}</ul>` : "";
+    const galleryMarkup = gallery.length ? `<section id="gallery" class="public-editorial-gallery" aria-labelledby="gallery-heading"><header><div><h2 id="gallery-heading">From the Studio</h2><p>A glimpse into classes, workshops, and movement.</p></div>${content.instagram ? `<a href="${esc(externalHref(content.instagram, "instagram"))}" target="_blank" rel="noopener noreferrer">Follow on Instagram →</a>` : ""}</header><div class="public-editorial-gallery-track">${gallery.map((src, index) => imageTag(src, `${content.brandName} gallery image ${index + 1}`)).join("")}</div></section>` : "";
+    const reviewsMarkup = reviews.length ? `<section class="public-editorial-reviews" aria-label="Student reviews">${reviews.map(({ name, quote }) => `<blockquote><p>“${esc(quote)}”</p>${name ? `<cite>— ${esc(name)}</cite>` : ""}</blockquote>`).join("")}</section>` : "";
+    const faqMarkup = faqs.length ? `<section id="faq" class="public-editorial-faq" aria-labelledby="faq-heading"><header><small>FAQ</small><h2 id="faq-heading">Good to know before class.</h2></header><div>${faqs.map(({ question, answer }) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("")}</div></section>` : "";
+    return `<header class="public-editorial-header">
+      <a class="public-editorial-brand" href="#home" aria-label="${esc(content.brandName)} home">${logoHTML(content, options.logoHTML)}</a>
+      <nav aria-label="Primary navigation">${navLinks}</nav>
+      <div class="public-editorial-header-actions"><span>${socialLinks(content, true)}</span><a href="#classes">Book a Class</a></div>
+      <details class="public-editorial-menu"><summary aria-label="Open menu">☰</summary><div>${navLinks}<a href="#classes">Book a Class</a>${socialLinks(content)}</div></details>
+    </header>
+    <main>
+      <section id="home" class="public-editorial-hero${content.images.hero ? "" : " is-image-empty"}">
+        ${content.images.hero ? imageTag(content.images.hero, `${content.brandName} dance`) : ""}
+        <div><h1>${editorialHeadline(content.headline)}</h1>${content.whatYouDo ? `<p>${esc(content.whatYouDo)}</p>` : ""}<a href="#classes">Explore Classes →</a></div>
+      </section>
+      <section id="classes" class="public-editorial-classes" aria-labelledby="classes-heading"><header><h2 id="classes-heading">Upcoming Classes</h2>${visibleClasses.length > 3 ? `<a href="#classes-list">View All Classes →</a>` : ""}</header><div id="classes-list">${classMarkup}</div></section>
+      <section id="about" class="public-editorial-about">
+        ${content.images.instructor ? `<div class="public-editorial-about-media">${imageTag(content.images.instructor, `${content.instructorName} portrait`)}</div>` : ""}
+        <div class="public-editorial-about-copy"><small>${esc(content.aboutEyebrow)}</small><h2>Hi, I’m ${esc(content.instructorName)}.</h2>${aboutCopy.map(paragraphHTML).join("")}</div>
+        ${aboutDetails}
+      </section>
+      ${galleryMarkup}
+      <div data-instagram-feed data-edit-section="social" data-business-id="${esc(content.businessId)}"></div>
+      ${reviewsMarkup}
+      ${faqMarkup}
+      <section id="contact" class="public-editorial-contact"><h2>Let’s Move Together</h2><p>Join an upcoming class or get in touch.</p><div><a href="#classes">View Classes</a>${contactHref ? `<a href="${esc(contactHref)}">Contact Me</a>` : ""}</div></section>
+    </main>
+    <footer class="public-editorial-footer"><div><strong>${logoHTML(content, options.logoHTML)}</strong>${content.styles.length ? `<p>${esc(content.styles.slice(0, 3).join(" · "))}</p>` : ""}</div><nav aria-label="Footer navigation">${navLinks}</nav><div class="public-editorial-footer-socials">${socialLinks(content, true)}</div><p>© ${new Date().getFullYear()} ${esc(content.brandName)}. All rights reserved.</p><span>Powered by <strong>BeyondEight</strong></span></footer>`;
+  };
+
+  const renderDesktopPreview = renderApprovedPublicSite;
   const renderPhonePreview = (content, options = {}) => {
     const state = options.state || content;
     const title = `${content.brandName || "Website"} mobile preview`;
@@ -736,7 +808,7 @@
     const publicContent = logoUrl && !content.logoImage ? { ...content, logoImage: logoUrl } : content;
     return `
       ${ownerToolbar}
-      <div class="published-site setup-preview-site" data-theme-key="${esc(content.theme.key)}">
+      <div class="published-site setup-preview-site approved-public-site" data-theme-key="${esc(content.theme.key)}">
         ${renderDesktopPreview(publicContent, { logoHTML: logoHTML(publicContent), publicMode: true })}
       </div>`;
   };
@@ -751,11 +823,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="${esc(baseUrl)}">
   <title>${esc(content.brandName)} | Generated by BeyondEight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css?v=20260919-theme-tokens-fix">
+  <link rel="stylesheet" href="/public-site.css?v=20260920-editorial-public">
 </head>
 <body class="${themeClassFor(content.theme.name)}">
   ${renderSharedPublicSite(content)}
-  <script src="/website-template.js?v=20260919-six-themes"><\/script>
+  <script src="/website-template.js?v=20260920-editorial-public"><\/script>
   <script>
     (() => {
       const businessId = ${businessId};

@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260919-theme-tokens-fix">
   <link rel="stylesheet" href="homepage.css?v=20260918-restyle">
+  <link rel="stylesheet" href="onboarding.css?v=20260918-workspace">
+  <link rel="stylesheet" href="public-site.css?v=20260920-editorial-public">
   <link rel="preload" as="image" href="assets/homepage-dance-studio.png">
 </head>
 <body class="home-restyle">
@@ -154,16 +156,29 @@
       </section>
     </div>
 
-    <div class="setup-modal" id="setup" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+    <div class="setup-modal onboarding-workspace" id="setup" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="setup-title">
       <div class="setup-backdrop" data-close-setup></div>
       <section class="setup-panel website-setup-panel">
         <button class="modal-close setup-close" type="button" aria-label="Skip this setup step" data-setup-skip hidden>Skip</button>
-        <div class="setup-shell-heading">BeyondEight website setup</div>
+        <aside class="onboarding-sidebar">
+          <a class="brand" href="#top" data-close-setup aria-label="BeyondEight home"><span class="brand-mark"><img src="assets/app-logo-3-transparent.png" alt=""></span><span class="brand-name">Beyond<span>Eight</span></span></a>
+          <ol class="onboarding-steps" aria-label="Onboarding progress">
+            <li data-workspace-step="0"><span class="onboarding-step-marker">1</span>About You</li>
+            <li data-workspace-step="1"><span class="onboarding-step-marker">2</span>Your Presence</li>
+            <li data-workspace-step="2"><span class="onboarding-step-marker">3</span>Your Story</li>
+            <li data-workspace-step="3"><span class="onboarding-step-marker">4</span>Create Account</li>
+            <li data-workspace-step="4"><span class="onboarding-step-marker">5</span>Launch</li>
+          </ol>
+          <p class="onboarding-sidebar-footer">You teach.<br>We handle the rest.</p>
+        </aside>
+        <div class="onboarding-main">
+        <div class="onboarding-progress-label" data-workspace-progress>Step 1 of 5 · About You</div>
+        <div class="onboarding-progress-track"><span data-setup-progress></span></div>
         <form class="setup-form" novalidate>
           <fieldset class="setup-step is-active" data-setup-step="0">
             <div class="setup-step-header">
               <span class="setup-number">1</span>
-              <div><h2 id="setup-title">About Your Brand</h2><p>Set up the website for your choreography brand.</p></div>
+              <div><h2 id="setup-title">Let's start with the basics.</h2><p>Your own space on beyond8dance.com.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column">
@@ -185,26 +200,14 @@
                   <div class="specialty-suggestions" id="specialty-suggestions" role="listbox" data-specialty-suggestions></div>
                 </div>
               </div>
-              <aside class="setup-brand-preview setup-home-preview">
-                <div class="preview-nav"><strong data-live-brand>Beyond Movement</strong><span>Home &middot; Classes &middot; About</span></div>
-                <img src="assets/dancer-hero.png" alt="">
-                <blockquote>
-                  <span data-live-headline>Where confidence meets choreography.</span>
-                  <small data-live-specialties>Heels • Hip Hop • Contemporary</small>
-                  <button type="button">View Classes</button>
-                </blockquote>
-                <div class="preview-site-details" aria-hidden="true">
-                  <span><strong>Classes</strong> Workshops, weekly training, and pop-ups.</span>
-                  <span><strong>About</strong> A polished home for your choreography brand.</span>
-                </div>
-              </aside>
+              <aside class="onboarding-site-preview" aria-label="Live website preview"><div class="published-site setup-preview-site" inert></div></aside>
             </div>
           </fieldset>
 
           <fieldset class="setup-step" data-setup-step="1">
             <div class="setup-step-header">
               <span class="setup-number">2</span>
-              <div><h2>Your Presence</h2><p>Add the places students can recognize and follow you.</p></div>
+              <div><h2>Add your socials.</h2><p>Add the places students can recognize and follow you.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column setup-presence-grid">
@@ -245,7 +248,7 @@
           <fieldset class="setup-step" data-setup-step="2">
             <div class="setup-step-header">
               <span class="setup-number">3</span>
-              <div><h2>Tell Us About Your Work</h2><p>This helps us build content that sounds like you.</p></div>
+              <div><h2>Tell us about your work.</h2><p>This helps us build content that sounds like you.</p></div>
             </div>
             <div class="setup-dots" aria-label="Setup progress"></div>
             <div class="setup-two-column setup-content-step">
@@ -261,56 +264,25 @@
                   <textarea name="mission" maxlength="240" placeholder="Example: My classes balance strong technique with a supportive room where dancers can take risks and find their own style."></textarea>
                 </label>
                 <label>
-                  <span>What experience do students have when they train with you?</span>
+                  <span>What should students expect when they train with you?</span>
                   <small>Help students understand the feeling and outcome of joining you.</small>
                   <textarea name="whyJoin" maxlength="240" placeholder="Example: Students leave feeling challenged, seen, and excited to keep growing through movement."></textarea>
                 </label>
               </div>
-              <aside class="setup-ai-preview setup-story-preview">
-                <div class="story-preview-topline">
-                  <span>Live Website Copy</span>
-                  <strong>Updates as you type</strong>
-                </div>
-                <div class="story-preview-browser">
-                  <div class="story-preview-nav"><strong data-live-brand>Beyond Movement</strong><span>Home</span><span>Classes</span><span>About</span></div>
-                  <section class="story-preview-hero">
-                    <p>Homepage headline</p>
-                    <h3 data-live-headline>Move with purpose. Dance with passion.</h3>
-                    <div class="story-preview-copy-block"><h4>Supporting message</h4><div data-live-supporting></div></div>
-                  </section>
-                  <section class="story-preview-about">
-                    <div><p>About</p><div data-live-about></div></div>
-                    <div><p>Student experience</p><div data-live-experience></div></div>
-                  </section>
-                </div>
-              </aside>
+
             </div>
           </fieldset>
 
-          <fieldset class="setup-step" data-setup-step="3">
-            <div class="setup-step-header">
-              <span class="setup-number">4</span>
-              <div><h2>Choose Your Theme</h2><p>Pick a design that matches your brand.</p></div>
-            </div>
-            <div class="setup-dots" aria-label="Setup progress"></div>
-            <div class="setup-theme-picker" data-template-source="pending" aria-live="polite"></div>
-          </fieldset>
+          <!-- Keep the saved final-step index compatible with existing drafts. -->
+          <fieldset class="setup-step" data-setup-step="3" hidden aria-hidden="true"><div class="setup-theme-picker" hidden></div></fieldset>
 
           <div data-setup-ready-mount></div>
           <template id="setup-ready-template">
             <section class="setup-ready" data-setup-ready>
               <div class="setup-ready-copy">
-                <span class="ready-check" aria-hidden="true">&#10003;</span>
-                <h2>Your website is ready to meet the world.</h2>
-                <p>Create your BeyondEight account to save your design, publish your website, and manage future classes and workshops.</p>
-                <div class="ready-domain" data-live-domain>beyondmovement.com</div>
-                <div class="ready-actions">
-                  <a class="secondary-button ready-preview-link" href="#" target="_blank" rel="noopener" data-view-generated-site>View public preview</a>
-                  <button class="secondary-button" type="button" data-ready-keep-editing>Keep Editing</button>
-                </div>
-                <div class="ready-benefits" aria-label="Account benefits">
-                  <span>Save your website</span><span>Publish when ready</span><span>Add and manage classes</span><span>Update content anytime</span>
-                </div>
+                <h2>Create your account.</h2>
+                <p>Your place to manage your website, classes and registrations.</p>
+                <button class="onboarding-back" type="button" data-ready-keep-editing>Back to your story</button>
                 <div class="ready-publish-card">
                   <button class="auth-google ready-google" type="button" data-ready-google>Continue with Google</button>
                   <div class="auth-divider"><span>OR</span></div>
@@ -329,6 +301,22 @@
           </div>
           <p class="setup-message" role="status" aria-live="polite"></p>
         </form>
+        <section class="onboarding-launch" data-workspace-launch hidden>
+          <div>
+            <p class="eyebrow">All set</p>
+            <h2>Your website is ready to meet the world.</h2>
+            <p data-workspace-domain></p>
+            <div class="onboarding-launch-actions">
+              <a class="primary-button" data-workspace-view>View My Website</a>
+              <a class="secondary-button" href="/dashboard/">Go to Dashboard</a>
+            </div>
+          </div>
+          <div class="onboarding-launch-preview" aria-label="Your finished website">
+            <div class="onboarding-site-preview"><div class="published-site setup-preview-site" inert></div></div>
+            <div class="ready-phone" inert></div>
+          </div>
+        </section>
+        </div>
       </section>
     </div>
 
@@ -407,7 +395,7 @@
   <script src="assets/supabase.min.js?v=20260715-footer-color-fix"></script>
   <script src="app-config.js?v=20260829-auth-hostname"></script>
   <script src="app-services.js?v=20260918-dashboard-payments"></script>
-  <script src="website-template.js?v=20260919-six-themes"></script>
+  <script src="website-template.js?v=20260920-editorial-public"></script>
   <script src="script.js?v=20260919-google-account-picker"></script>
 </body>
 </html>
