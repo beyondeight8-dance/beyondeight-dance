@@ -11,6 +11,7 @@ const templates = window.BeyondEightWebsiteTemplates;
 
 const publicSite = fs.readFileSync(path.join(root, "public-site.js"), "utf8");
 const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+const publicStyles = fs.readFileSync(path.join(root, "public-site.css"), "utf8");
 const templateSrc = fs.readFileSync(path.join(root, "website-template.js"), "utf8");
 
 // The six approved themes, exactly - not five, not a seventh added later, and each must own a
@@ -72,12 +73,9 @@ for (const theme of templates.themes) {
 
   const html = templates.renderPublicSite(content, { ownerToolbar: "", logoUrl: "" });
   assert.match(html, new RegExp(`data-theme-key="${theme.key}"`), `${theme.name}: root must carry its own theme key`);
-  assert.match(html, new RegExp(`theme-hero-${theme.key}|theme-hero-noir|theme-hero-editorial`), `${theme.name}: hero must use a theme-specific class`);
-  // Real per-class images must be used, never silently replaced by a demo asset - except
-  // Studio, whose whole point is a numbered list with no thumbnails at all (by design).
-  if (theme.classesLayout !== "list") {
-    assert.match(html, /class1\.jpg/, `${theme.name}: real class image must render`);
-  }
+  assert.match(html, /approved-public-site/, `${theme.name}: public output must use the approved canonical layout`);
+  assert.match(html, /public-editorial-hero/, `${theme.name}: public output must use the approved editorial hero`);
+  assert.match(html, /class1\.jpg/, `${theme.name}: real class image must render`);
   assert.match(html, /real-hero\.jpg|real-instructor\.jpg/, `${theme.name}: real hero/about image must render`);
   // Published classes keep their booking button; the unpublished draft never renders at all.
   assert.match(html, /data-book-class="c1"/, `${theme.name}: published class must keep its booking button`);
@@ -98,12 +96,28 @@ assert.notEqual(classesLayoutByTheme.studio, classesLayoutByTheme.electric);
 assert.notEqual(classesLayoutByTheme.electric, classesLayoutByTheme.noir);
 assert.notEqual(classesLayoutByTheme.noir, classesLayoutByTheme.motion);
 
-// A business with zero real classes must still render (falls back to generated demo classes)
-// rather than crash, in every theme.
+// Theme metadata remains intact for the paused theme picker, while the public path uses one
+// canonical approved design.
+assert.ok(new Set(Object.values(classesLayoutByTheme)).size >= 5, "paused theme architecture must remain available");
+
+// A business with zero real classes renders an honest empty state, never demo classes.
 for (const theme of templates.themes) {
   const content = templates.buildWebsiteContent({ businessName: "New Biz", theme: theme.name });
-  assert.doesNotThrow(() => templates.renderPublicSite(content, {}), `${theme.name}: must render with no saved classes`);
+  assert.equal(content.classes.length, 0, `${theme.name}: no saved classes must stay empty`);
+  const html = templates.renderPublicSite(content, {});
+  assert.match(html, /New classes coming soon/);
+  assert.doesNotMatch(html, /data-book-class=/);
 }
+
+const sparse = templates.buildWebsiteContent({ businessName: "Real Choreographer", classes: [{ id: "one", title: "An Intentionally Very Long Choreography Class Name That Must Wrap Cleanly", published: true, registrationOpen: true }], testimonials: [], faqs: [], gallery: [], heroImage: "", instructorImage: "" });
+const sparseHtml = templates.renderPublicSite(sparse, {});
+assert.match(sparseHtml, /data-book-class="one"/, "a single real class must stay bookable");
+assert.match(sparseHtml, /An Intentionally Very Long Choreography Class Name That Must Wrap Cleanly/);
+assert.doesNotMatch(sparseHtml, /public-editorial-reviews/, "reviews must be hidden when no real reviews exist");
+assert.doesNotMatch(sparseHtml, /id="gallery"/, "gallery must be hidden when no real gallery exists");
+assert.doesNotMatch(sparseHtml, /<img[^>]+src=""/, "missing optional images must not create broken image elements");
+assert.doesNotMatch(sparseHtml, /Maya R\.|Amazing energy|Heels Foundations/, "public output must not contain synthetic sample content");
+assert.match(publicStyles, /@media \(max-width: 640px\)/, "the approved public site must include a deliberate mobile layout");
 
 // Classes are managed exclusively on the Dashboard's Classes tab, not re-introduced here.
 assert.doesNotMatch(publicSite, /data-class-edit|data-add-class|data-class-save/, "theming work must not reintroduce class editing into the public page");
