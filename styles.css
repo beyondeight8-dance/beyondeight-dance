@@ -8107,11 +8107,11 @@ body.generated-motion {
 .owner-toolbar .owner-publish {
   border: 0;
   color: #fff;
-  background: linear-gradient(135deg, #d0185c, #ff714d);
+  background: #a8675f;
 }
 
 .owner-toolbar .owner-publish {
-  box-shadow: 0 10px 28px rgba(208, 24, 92, 0.22);
+  box-shadow: 0 10px 28px rgba(168, 103, 95, 0.22);
 }
 
 .owner-empty-note { margin: 0; padding: 16px; border: 1px dashed #d9c8d2; border-radius: 8px; color: #756679; text-align: center; }
@@ -8138,7 +8138,7 @@ body.generated-motion {
 .owner-photo-upload { position: absolute; right: 10px; bottom: 10px; border: 0; border-radius: 999px; padding: 9px 14px; background: rgba(26, 10, 31, 0.72); color: #fff; font: 800 0.78rem/1 Inter, system-ui, sans-serif; cursor: pointer; backdrop-filter: blur(6px); }
 .owner-photo-upload:hover { background: rgba(26, 10, 31, 0.88); }
 .owner-gallery-add { display: block; width: fit-content; border: 2px dashed #d9c8d2; border-radius: 999px; padding: 11px 18px; background: #fffaf7; color: #a4124d; font-weight: 850; cursor: pointer; }
-.owner-gallery-add:hover { border-color: #d0185c; background: #fff1f6; }
+.owner-gallery-add:hover { border-color: #a8675f; background: #f5e8e3; }
 .owner-instagram { display: grid; gap: 14px; margin-top: 8px; padding: 16px; border: 1px solid #eadde5; border-radius: 8px; background: #fff8fb; }
 .owner-instagram strong, .owner-instagram p { display: block; margin: 5px 0 0; }
 .owner-instagram [data-instagram-settings] { display: grid; grid-template-columns: 1fr 100px; gap: 12px; }
