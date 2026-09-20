@@ -201,4 +201,18 @@ body.home-restyle {
 }
 .home-restyle .demo-form button { background: var(--home-rose); box-shadow: 0 18px 38px rgba(168, 103, 95, 0.24); }
 .home-restyle .form-message { color: #8f5851; }
+
+/* Flatten the auth modal / pricing modal buttons to match the redesign's flat corner language
+   used everywhere else (dashboard buttons are 4px, onboarding buttons are 2px, the homepage's
+   own .restyle-button/.header-cta are already flat) - these were still the old full-pill shape. */
+.home-restyle .primary-button,
+.home-restyle .secondary-button,
+.home-restyle .compare-button,
+.home-restyle .modal-close,
+.home-restyle .price-card a,
+.home-restyle .demo-form button,
+.home-restyle .auth-google {
+  border-radius: 4px;
+}
+.home-restyle .secondary-button { border-color: rgba(168, 103, 95, 0.22); }
 @media (prefers-reduced-motion: reduce) { .restyle-button { transition: none; } }

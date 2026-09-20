@@ -1881,6 +1881,15 @@ const initSupabaseAuth = async () => {
       if (authAction === "publish") {
         window.setTimeout(() => publishCurrentSetup(), 250);
       }
+    } else if (currentUser && window.location.pathname === "/") {
+      // A logged-in visitor landing on the bare marketing homepage (a fresh login that didn't
+      // go through completeAuthFlow's explicit redirect, or simply revisiting "/" with an
+      // existing session) should see their workspace, not the marketing page.
+      const route = await beyondEight.routeForUser?.(currentUser).catch(() => null);
+      if (route && route !== "/") {
+        window.location.replace(route);
+        return;
+      }
     }
 
     supabaseClient.auth.onAuthStateChange((event, session) => {
