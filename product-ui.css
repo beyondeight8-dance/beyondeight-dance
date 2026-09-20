@@ -323,6 +323,7 @@
 .dashboard-route .owner-website-panel > p { color: var(--product-muted); }
 .dashboard-route .owner-photo-preview { border: 1px solid var(--product-line); border-radius: 4px; background: #eee8e3; }
 .dashboard-route .owner-photo-upload { right: 8px; bottom: 8px; border-radius: 3px; background: rgba(46, 41, 39, 0.82); backdrop-filter: none; }
+.dashboard-route .owner-photo-upload:hover { background: rgba(46, 41, 39, 0.95); }
 .dashboard-route .owner-gallery-manager article { border-color: var(--product-line); border-radius: 4px; }
 .dashboard-route .owner-gallery-add { border-color: #cfc5be; border-radius: 3px; background: transparent; color: var(--product-blush-dark); }
 .dashboard-route .owner-instagram { border-color: var(--product-line); border-radius: 4px; background: #f4efeb; }
@@ -372,6 +373,22 @@
 .dashboard-route .route-loading p,
 .product-loading-route .route-loading p { margin: 0; color: var(--product-muted); font: 400 0.86rem/1.5 var(--product-sans); }
 .product-loading-route .brand-mark { border: 0; background: transparent; box-shadow: none; }
+/* The logo wordmark and the Google-retry button here fell through to the old bright-magenta
+   gradient/box-shadow - this page has no .dashboard-route wrapper, so the dashboard's own
+   .primary-button/.brand-name overrides never reached it, even though every Google sign-in
+   passes through this screen. */
+.product-loading-route .brand-name span {
+  background: var(--product-blush);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.product-loading-route .primary-button {
+  background: var(--product-blush);
+  border-color: var(--product-blush);
+  box-shadow: none;
+}
 @keyframes product-loading-line { from { transform: scaleX(0.32); } to { transform: scaleX(1); } }
 @media (prefers-reduced-motion: reduce) { .dashboard-route .route-loading::after, .product-loading-route .route-loading::after { animation: none; } }
 
