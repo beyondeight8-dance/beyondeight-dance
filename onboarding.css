@@ -143,10 +143,13 @@
 #setup.onboarding-workspace .setup-content-step { display: block; max-width: 620px; }
 #setup.onboarding-workspace .setup-content-fields { display: grid; gap: 15px; }
 #setup.onboarding-workspace .setup-content-fields label {
-  display: grid !important; grid-template-columns: 1fr !important; width: 100% !important;
+  display: grid !important; grid-template-columns: 1fr !important; grid-template-areas: none !important; width: 100% !important;
   min-height: 0 !important; padding: 0 !important; border: 0 !important;
   border-radius: 0 !important; background: transparent !important; box-shadow: none !important; gap: 3px !important;
 }
+#setup.onboarding-workspace .setup-content-fields label > span,
+#setup.onboarding-workspace .setup-content-fields label > small,
+#setup.onboarding-workspace .setup-content-fields textarea { grid-area: auto !important; }
 #setup.onboarding-workspace .setup-content-fields label > span { font-size: 14px; font-weight: 500; }
 #setup.onboarding-workspace .setup-content-fields textarea {
   width: 100% !important; min-height: 88px !important; height: 88px !important;
