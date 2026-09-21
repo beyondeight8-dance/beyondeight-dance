@@ -8141,7 +8141,7 @@ body.generated-motion {
 .owner-theme-picker-wrap p, .owner-website-panel > p { margin: 0 0 14px; color: #6f6073; }
 .owner-photo-card { display: grid; gap: 8px; }
 .owner-photo-label { color: #443149; font-weight: 800; font-size: 0.85rem; }
-.owner-photo-preview { position: relative; overflow: hidden; border-radius: 10px; background: #f6eaf0; }
+.owner-photo-preview { position: relative; overflow: hidden; max-width: 320px; border-radius: 10px; background: #f6eaf0; }
 .owner-photo-preview img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .owner-photo-placeholder { display: grid; place-items: center; width: 100%; height: 100%; font-size: 2.2rem; }
 .owner-photo-upload { position: absolute; right: 10px; bottom: 10px; border: 0; border-radius: 999px; padding: 9px 14px; background: rgba(26, 10, 31, 0.72); color: #fff; font: 800 0.78rem/1 Inter, system-ui, sans-serif; cursor: pointer; backdrop-filter: blur(6px); }

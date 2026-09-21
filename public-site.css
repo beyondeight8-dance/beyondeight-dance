@@ -200,18 +200,14 @@
 .public-editorial-empty h3 { margin: 0 0 6px; font: 400 1.6rem "Source Serif 4", Georgia, serif; }
 .public-editorial-empty p { margin: 0; color: var(--public-muted); font-size: 0.82rem; }
 
-.public-editorial-about { display: grid; grid-template-columns: minmax(270px, 0.82fr) minmax(320px, 1fr) minmax(190px, 0.48fr); min-height: 430px; align-items: center; background: var(--public-cream); }
-.public-editorial-about-media { align-self: stretch; min-height: 430px; overflow: hidden; }
+.public-editorial-about { display: grid; grid-template-columns: minmax(260px, 0.85fr) minmax(320px, 1fr); align-items: center; gap: clamp(32px, 5vw, 72px); padding: 56px clamp(28px, 6vw, 96px); background: var(--public-cream); }
+.public-editorial-about-media { align-self: stretch; max-height: 380px; overflow: hidden; border-radius: 3px; }
 .approved-public-site .public-editorial-about-media img { width: 100% !important; height: 100% !important; object-fit: cover !important; object-position: center 20%; }
-.public-editorial-about-copy { padding: 48px clamp(28px, 4vw, 64px); }
+.public-editorial-about-copy { padding: 0; }
 .public-editorial-about-copy > small,
 .public-editorial-faq header small { display: block; margin-bottom: 10px; color: var(--public-muted); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; }
 .public-editorial-about-copy h2 { margin-bottom: 18px; }
 .public-editorial-about-copy p { max-width: 650px; margin: 0 0 10px; color: #5c5551; font-size: 0.76rem; line-height: 1.65; }
-.public-editorial-about-details { display: grid; gap: 0; margin: 42px 36px 42px 0; border-left: 1px solid #bdb5af; padding: 0 0 0 30px; list-style: none; }
-.public-editorial-about-details li { display: grid; grid-template-columns: 34px 1fr; align-items: center; gap: 10px; min-height: 76px; }
-.public-editorial-about-details li span { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 50%; background: var(--public-blush); }
-.public-editorial-about-details strong { font-size: 0.68rem; font-weight: 500; }
 
 .public-editorial-gallery { padding: 28px 0 12px; background: var(--public-paper); }
 .public-editorial-gallery > header { padding: 0 clamp(28px, 6vw, 96px); }
@@ -281,9 +277,7 @@
   .public-editorial-menu > div { position: absolute; top: 42px; right: 0; display: grid; width: min(82vw, 300px); border: 1px solid var(--public-line); padding: 12px; background: var(--public-paper); box-shadow: 0 12px 32px rgba(36, 33, 31, 0.12); }
   .public-editorial-menu > div a { border-bottom: 1px solid var(--public-line); padding: 12px 8px; font-size: 0.76rem; }
   .public-editorial-classes > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .public-editorial-about { grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.2fr); }
-  .public-editorial-about-details { grid-column: 1 / -1; grid-template-columns: repeat(3, 1fr); margin: 0; border-top: 1px solid var(--public-line); border-left: 0; padding: 14px 28px; }
-  .public-editorial-about-details li { min-height: 56px; }
+  .public-editorial-about { grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.2fr); padding: 48px 20px; }
   .public-editorial-footer { grid-template-columns: 1fr auto; }
   .public-editorial-footer > nav { display: none; }
   .public-editorial-footer > p { grid-column: 1; }
@@ -304,11 +298,8 @@
   .public-editorial-class { grid-template-columns: minmax(112px, 0.78fr) minmax(0, 1fr); }
   .public-editorial-class-media,
   .approved-public-site .public-editorial-class-media img { min-height: 180px; }
-  .public-editorial-about { grid-template-columns: 1fr; }
-  .public-editorial-about-media { min-height: 430px; }
-  .public-editorial-about-copy { padding: 38px 20px; }
-  .public-editorial-about-details { grid-template-columns: 1fr; padding: 8px 20px 24px; }
-  .public-editorial-about-details li { border-bottom: 1px solid var(--public-line); }
+  .public-editorial-about { grid-template-columns: 1fr; padding: 38px 20px; gap: 24px; }
+  .public-editorial-about-media { max-height: 320px; }
   .public-editorial-gallery { padding-top: 28px; }
   .public-editorial-gallery > header { padding: 0 20px; }
   .public-editorial-gallery-track { grid-auto-columns: 76vw; padding-left: 20px; }

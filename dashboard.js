@@ -88,8 +88,8 @@
   // look. This panel is intentionally limited to appearance/brand - no section labels, no
   // header/footer controls, no class management. Picking a theme here also restyles class cards
   // on the public site, since setup-preview-class-card is themed by data-theme-key already.
-  const wfield = (label, name, value = "", type = "text") => `<label>${esc(label)}<input type="${type}" name="${esc(name)}" value="${esc(value)}"></label>`;
-  const warea = (label, name, value = "", rows = 4) => `<label>${esc(label)}<textarea name="${esc(name)}" rows="${rows}">${esc(value)}</textarea></label>`;
+  const wfield = (label, name, value = "", type = "text", placeholder = "") => `<label>${esc(label)}<input type="${type}" name="${esc(name)}" value="${esc(value)}"${placeholder ? ` placeholder="${esc(placeholder)}"` : ""}></label>`;
+  const warea = (label, name, value = "", rows = 4, placeholder = "") => `<label>${esc(label)}<textarea name="${esc(name)}" rows="${rows}"${placeholder ? ` placeholder="${esc(placeholder)}"` : ""}>${esc(value)}</textarea></label>`;
   const photoCard = (label, key, current = "", ratio = "16/9") => `<div class="owner-photo-card" data-photo-field><span class="owner-photo-label">${esc(label)}</span><div class="owner-photo-preview" style="aspect-ratio:${esc(ratio)}">${current ? `<img src="${esc(current)}" alt="">` : `<span class="owner-photo-placeholder" aria-hidden="true">🖼️</span>`}<label class="owner-photo-upload">Change photo<input type="file" accept="image/jpeg,image/png,image/webp" data-photo-upload="${esc(key)}" hidden></label></div><input type="hidden" name="${esc(key)}" value="${esc(current)}"><small data-upload-status>JPG, PNG, or WEBP up to 5MB</small></div>`;
   const galleryGrid = (images) => images.length ? `<div class="owner-gallery-manager">${images.map((src, index) => `<article><img src="${esc(src)}" alt="Gallery image ${index + 1}"><div><button type="button" data-gallery-move="${index}" data-direction="-1">Up</button><button type="button" data-gallery-move="${index}" data-direction="1">Down</button><button type="button" data-gallery-remove="${index}">Remove</button></div></article>`).join("")}</div>` : `<div class="owner-empty-state"><strong>No gallery images yet.</strong><p>Upload your first photo below.</p></div>`;
   const instagramControls = () => `<section class="owner-instagram" data-owner-instagram><div><small>Instagram feed</small><strong data-instagram-status>Checking connection...</strong><p data-instagram-help>Connect a Creator or Business account to show recent posts.</p></div><div data-instagram-settings hidden><label><input type="checkbox" data-instagram-visible> Show on website</label><label>Posts<select data-instagram-limit><option value="4">4</option><option value="6">6</option></select></label></div><div class="owner-instagram-actions"><button type="button" data-instagram-connect>Connect Instagram</button><button type="button" data-instagram-refresh hidden>Refresh</button><button type="button" data-instagram-disconnect hidden>Disconnect</button></div><small data-instagram-message></small></section>`;
@@ -118,7 +118,8 @@
       <form class="owner-settings-form" data-website-form="hero">
         <h3>Hero</h3>
         ${photoCard("Hero photo", "heroImage", draftState.heroImage || c.images.hero)}
-        ${wfield("Headline", "tagline", draftState.tagline || c.headline)}
+        ${wfield("Headline", "tagline", draftState.tagline || "", "text", c.headline)}
+        <p>Leave blank to use your business name (set under Look & Theme). Only fill this in if you want different hero text.</p>
         <button type="submit" class="primary-button">Save Changes</button>
       </form>
     </div>`;
@@ -129,8 +130,9 @@
       <form class="owner-settings-form" data-website-form="about">
         <h3>About Me</h3>
         ${photoCard("Your photo", "instructorImage", draftState.instructorImage || c.images.instructor, "1/1")}
-        ${wfield("Your name", "instructorName", draftState.instructorName || c.instructorName)}
-        ${warea("Bio", "instructorBio", draftState.instructorBio || c.instructorBio, 6)}
+        ${wfield("Your name", "instructorName", draftState.instructorName || "", "text", c.instructorName)}
+        <p>Leave blank to use your business name. Only fill this in if the instructor's name differs from the business name.</p>
+        ${warea("Bio", "instructorBio", draftState.instructorBio || "", 6, c.instructorBio)}
         <button type="submit" class="primary-button">Save Changes</button>
       </form>
     </div>`;

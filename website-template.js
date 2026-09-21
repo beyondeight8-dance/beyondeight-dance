@@ -790,7 +790,6 @@
         ${bookButton(item, item.registrationOpen === false ? "Registration Closed" : "Book Now")}
       </div>
     </article>`).join("") : `<div class="public-editorial-empty"><h3>New classes coming soon.</h3><p>Check back for the next class announcement.</p></div>`;
-    const aboutDetails = content.styles.length ? `<ul class="public-editorial-about-details">${content.styles.slice(0, 3).map((style) => `<li><span aria-hidden="true">○</span><strong>${esc(style)}</strong></li>`).join("")}</ul>` : "";
     const galleryMarkup = gallery.length ? `<section id="gallery" class="public-editorial-gallery" aria-labelledby="gallery-heading"><header><div><h2 id="gallery-heading">From the Studio</h2><p>A glimpse into classes, workshops, and movement.</p></div>${content.instagram ? `<a href="${esc(externalHref(content.instagram, "instagram"))}" target="_blank" rel="noopener noreferrer">Follow on Instagram →</a>` : ""}</header><div class="public-editorial-gallery-track">${gallery.map((src, index) => imageTag(src, `${content.brandName} gallery image ${index + 1}`)).join("")}</div></section>` : "";
     const reviewsMarkup = reviews.length ? `<section class="public-editorial-reviews" aria-label="Student reviews">${reviews.map(({ name, quote }) => `<blockquote><p>“${esc(quote)}”</p>${name ? `<cite>— ${esc(name)}</cite>` : ""}</blockquote>`).join("")}</section>` : "";
     const faqMarkup = faqs.length ? `<section id="faq" class="public-editorial-faq" aria-labelledby="faq-heading"><header><small>FAQ</small><h2 id="faq-heading">Good to know before class.</h2></header><div>${faqs.map(({ question, answer }) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("")}</div></section>` : "";
@@ -809,7 +808,6 @@
       <section id="about" class="public-editorial-about">
         ${content.images.instructor ? `<div class="public-editorial-about-media">${imageTag(content.images.instructor, `${content.instructorName} portrait`)}</div>` : ""}
         <div class="public-editorial-about-copy"><small>${esc(content.aboutEyebrow)}</small><h2>Hi, I’m ${esc(content.instructorName)}.</h2>${aboutCopy.map(paragraphHTML).join("")}</div>
-        ${aboutDetails}
       </section>
       ${galleryMarkup}
       <div data-instagram-feed data-edit-section="social" data-business-id="${esc(content.businessId)}"></div>
@@ -852,12 +850,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css?v=20260920-button-flatten">
-  <link rel="stylesheet" href="/public-site.css?v=20260921-header-blend">
+  <link rel="stylesheet" href="/styles.css?v=20260921-editor-fixes">
+  <link rel="stylesheet" href="/public-site.css?v=20260921-about-layout">
 </head>
 <body class="${themeClassFor(content.theme.name)}">
   ${renderSharedPublicSite(content)}
-  <script src="/website-template.js?v=20260921-content-fallbacks"><\/script>
+  <script src="/website-template.js?v=20260921-about-simplify"><\/script>
   <script>
     (() => {
       const businessId = ${businessId};
