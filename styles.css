@@ -8197,18 +8197,6 @@ body.generated-motion {
 .owner-draft-banner div { display: grid; gap: 4px; }
 .owner-draft-banner button { border: 0; border-radius: 999px; padding: 11px 16px; background: #d0185c; color: #fff; font-weight: 850; }
 .owner-published-state { margin: 0; color: #347458; font-weight: 800; }
-.owner-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-.owner-metrics article { display: grid; align-content: start; min-height: 220px; border: 1px solid #eadde5; border-radius: 8px; padding: 22px; background: #fff; box-shadow: 0 14px 34px rgba(40, 19, 49, 0.05); }
-.owner-metrics article > span { color: #78687c; font-size: 0.75rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
-.owner-metrics article > strong { margin-top: 16px; font: 700 2.6rem/1 Georgia, serif; }
-.owner-metrics article p { color: #6f6073; line-height: 1.5; }
-.owner-metrics article a, .owner-metrics article button { margin-top: auto; border: 0; padding: 0; background: transparent; color: #b11250; font: 850 inherit; text-align: left; cursor: pointer; }
-.owner-metrics article.is-pro { background: #281331; color: #fff; }
-.owner-metrics article.is-pro p, .owner-metrics article.is-pro > span { color: #d7cbd9; }
-.owner-metrics article.is-pro a, .owner-metrics article.is-pro button { color: #ff9a78; }
-.owner-metrics article.is-attention { background: #b42342; color: #fff; }
-.owner-metrics article.is-attention p, .owner-metrics article.is-attention > span { color: #f7d7de; }
-.owner-metrics article.is-attention button { color: #fff; }
 .owner-quick-actions { display: grid; grid-template-columns: 180px 1fr; align-items: center; gap: 16px; }
 .owner-quick-actions h2 { margin: 0; font-size: 1.05rem; }
 .owner-quick-actions a { border: 1px solid #eadde5; border-radius: 999px; padding: 10px 14px; background: #fff; color: #4f3f54; font-weight: 800; text-decoration: none; }
@@ -8273,8 +8261,8 @@ body.generated-motion {
 .owner-analytics-mask { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .owner-analytics-mask article { display: grid; gap: 14px; border: 1px solid rgba(40,19,49,.1); border-radius: 8px; padding: 18px; background: rgba(255,255,255,.66); }
 .owner-analytics-mask strong { font-size: 1.8rem; }
-@media (max-width: 980px) { .owner-metrics { grid-template-columns: repeat(2, 1fr); } .owner-class-row { grid-template-columns: 78px 1fr auto; } .owner-class-capacity { display: none; } .owner-class-actions { grid-column: 2 / -1; justify-content: flex-start; } }
-@media (max-width: 680px) { .dashboard-route .dashboard-app { width: min(100% - 24px, 1240px); padding-top: 22px; } .owner-welcome { align-items: start; flex-direction: column; } .owner-welcome h1 { font-size: 2.5rem; } .owner-metrics, .owner-analytics-teaser { grid-template-columns: 1fr; } .owner-metrics article { min-height: 190px; } .owner-quick-actions { grid-template-columns: 1fr; } .owner-dashboard-section > header { align-items: start; flex-direction: column; } .owner-class-row { grid-template-columns: 70px 1fr; } .owner-class-row > img { width: 70px; } .owner-status { grid-column: 1 / 2; justify-self: start; } .owner-class-actions { grid-column: 2 / 3; } .owner-analytics-teaser { padding: 24px; } .owner-form-grid { grid-template-columns: 1fr; padding: 14px; } .owner-modal, .booking-modal { place-items: end center; padding: 0; } .owner-modal > div, .booking-dialog { max-height: 92dvh; border-radius: 8px 8px 0 0; } .booking-summary { grid-template-columns: 1fr; margin: 0 14px; } .owner-registration-list article { grid-template-columns: 1fr; } }
+@media (max-width: 980px) { .owner-class-row { grid-template-columns: 78px 1fr auto; } .owner-class-capacity { display: none; } .owner-class-actions { grid-column: 2 / -1; justify-content: flex-start; } }
+@media (max-width: 680px) { .dashboard-route .dashboard-app { width: min(100% - 24px, 1240px); padding-top: 22px; } .owner-welcome { align-items: start; flex-direction: column; } .owner-welcome h1 { font-size: 2.5rem; } .owner-analytics-teaser { grid-template-columns: 1fr; } .owner-quick-actions { grid-template-columns: 1fr; } .owner-dashboard-section > header { align-items: start; flex-direction: column; } .owner-class-row { grid-template-columns: 70px 1fr; } .owner-class-row > img { width: 70px; } .owner-status { grid-column: 1 / 2; justify-self: start; } .owner-class-actions { grid-column: 2 / 3; } .owner-analytics-teaser { padding: 24px; } .owner-form-grid { grid-template-columns: 1fr; padding: 14px; } .owner-modal, .booking-modal { place-items: end center; padding: 0; } .owner-modal > div, .booking-dialog { max-height: 92dvh; border-radius: 8px 8px 0 0; } .booking-summary { grid-template-columns: 1fr; margin: 0 14px; } .owner-registration-list article { grid-template-columns: 1fr; } }
 
 /* Step 1 refinement pass: preserve layout, polish interaction details. */
 .website-setup-panel .setup-step[data-setup-step="0"] .slug-status {
