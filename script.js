@@ -1851,6 +1851,21 @@ authForgot?.addEventListener("click", async () => {
   }
 });
 
+// Shared by the startup session check and the SIGNED_IN event below, since Google OAuth can
+// resolve either synchronously (session already present when getSession() runs at startup) or
+// asynchronously (session established moments later via the SIGNED_IN event, e.g. when
+// Supabase parses the OAuth redirect fragment after this script has already started running) -
+// both paths need the same "don't leave an authenticated visitor on the bare homepage" check.
+const redirectIfAuthenticatedOnHomepage = async () => {
+  if (!currentUser || window.location.pathname !== "/") return false;
+  const route = await beyondEight.routeForUser?.(currentUser).catch(() => null);
+  if (route && route !== "/") {
+    window.location.replace(route);
+    return true;
+  }
+  return false;
+};
+
 const initSupabaseAuth = async () => {
   if (!supabaseClient) {
     setAuthError("Supabase could not load. Check your connection and refresh.");
@@ -1881,15 +1896,8 @@ const initSupabaseAuth = async () => {
       if (authAction === "publish") {
         window.setTimeout(() => publishCurrentSetup(), 250);
       }
-    } else if (currentUser && window.location.pathname === "/") {
-      // A logged-in visitor landing on the bare marketing homepage (a fresh login that didn't
-      // go through completeAuthFlow's explicit redirect, or simply revisiting "/" with an
-      // existing session) should see their workspace, not the marketing page.
-      const route = await beyondEight.routeForUser?.(currentUser).catch(() => null);
-      if (route && route !== "/") {
-        window.location.replace(route);
-        return;
-      }
+    } else if (await redirectIfAuthenticatedOnHomepage()) {
+      return;
     }
 
     supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -1910,6 +1918,8 @@ const initSupabaseAuth = async () => {
           await updateHeaderForAuth();
           if (pendingSetupAfterAuth && authModal?.classList.contains("is-open")) {
             await completeAuthFlow();
+          } else {
+            await redirectIfAuthenticatedOnHomepage();
           }
         }
       }, 0);

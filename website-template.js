@@ -196,6 +196,32 @@
     ]
   };
 
+  // Generic, style-driven fallbacks so a site never looks bare just because the owner hasn't
+  // written their own bio yet or created a first class - same pattern the workshop fallback
+  // below already uses (${styles[0] || "Dance"} Signature Workshop). Both are clearly editable:
+  // the bio is regenerated from the owner's own selected styles, and placeholder classes are
+  // marked registrationOpen:false (a real, safe, already-supported state - "Registration
+  // Closed") rather than wired to real bookings, since they don't correspond to real classes
+  // until the owner edits or replaces them from their dashboard.
+  const genericInstructorBio = (styles = []) => {
+    if (!styles.length) return "";
+    const list = styles.length > 1 ? `${styles.slice(0, -1).join(", ")} and ${styles[styles.length - 1]}` : styles[0];
+    return `I teach ${list} classes built around confidence, technique, and joy - a welcoming space for dancers of every level to grow.`;
+  };
+  const genericClasses = (styles = []) => {
+    if (!styles.length) return [];
+    return styles.slice(0, 3).map((style, index) => ({
+      id: `placeholder-${index}`,
+      title: `${style} ${demoData.classSuffixes[index % demoData.classSuffixes.length]}`,
+      location: demoData.locations[index % demoData.locations.length],
+      level: demoData.levels[index % demoData.levels.length],
+      price: demoData.prices[index % demoData.prices.length],
+      style,
+      published: true,
+      registrationOpen: false
+    }));
+  };
+
   const buildWebsiteContent = (input = {}) => {
     const state = input.business ? stateFromBundle(input) : input;
     const theme = themeProfileFor(state.theme);
@@ -206,7 +232,7 @@
     const mission = state.mission || "";
     const whyJoin = state.whyJoin || "";
     const instructorName = state.instructorName || brandName;
-    const classes = Array.isArray(state.classes) ? state.classes : [];
+    const classes = Array.isArray(state.classes) && state.classes.length ? state.classes : genericClasses(styles);
     const email = state.showEmail === "No" ? "" : state.email || "";
     const phone = state.showPhone === "No" ? "" : state.phone || "";
     const location = state.showLocation === "No" ? "" : state.location || "";
@@ -247,7 +273,7 @@
         description: state.whyJoin || "A focused workshop with choreography, coaching, and space to connect with the movement."
       },
       instructorName,
-      instructorBio: state.instructorBio || "",
+      instructorBio: state.instructorBio || genericInstructorBio(styles),
       aboutEyebrow: state.aboutEyebrow || "About",
       classesEyebrow: state.classesEyebrow || "Upcoming Classes",
       classesHeading: state.classesHeading || "Book your next class.",
@@ -768,7 +794,7 @@
     const galleryMarkup = gallery.length ? `<section id="gallery" class="public-editorial-gallery" aria-labelledby="gallery-heading"><header><div><h2 id="gallery-heading">From the Studio</h2><p>A glimpse into classes, workshops, and movement.</p></div>${content.instagram ? `<a href="${esc(externalHref(content.instagram, "instagram"))}" target="_blank" rel="noopener noreferrer">Follow on Instagram →</a>` : ""}</header><div class="public-editorial-gallery-track">${gallery.map((src, index) => imageTag(src, `${content.brandName} gallery image ${index + 1}`)).join("")}</div></section>` : "";
     const reviewsMarkup = reviews.length ? `<section class="public-editorial-reviews" aria-label="Student reviews">${reviews.map(({ name, quote }) => `<blockquote><p>“${esc(quote)}”</p>${name ? `<cite>— ${esc(name)}</cite>` : ""}</blockquote>`).join("")}</section>` : "";
     const faqMarkup = faqs.length ? `<section id="faq" class="public-editorial-faq" aria-labelledby="faq-heading"><header><small>FAQ</small><h2 id="faq-heading">Good to know before class.</h2></header><div>${faqs.map(({ question, answer }) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("")}</div></section>` : "";
-    return `<header class="public-editorial-header">
+    return `<header class="public-editorial-header${content.images.hero ? "" : " has-no-hero-image"}">
       <a class="public-editorial-brand" href="#home" aria-label="${esc(content.brandName)} home">${logoHTML(content, options.logoHTML)}</a>
       <nav aria-label="Primary navigation">${navLinks}</nav>
       <div class="public-editorial-header-actions"><span>${socialLinks(content, true)}</span><a href="#classes">Book a Class</a></div>
@@ -827,11 +853,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css?v=20260920-button-flatten">
-  <link rel="stylesheet" href="/public-site.css?v=20260920-editorial-public">
+  <link rel="stylesheet" href="/public-site.css?v=20260921-header-blend">
 </head>
 <body class="${themeClassFor(content.theme.name)}">
   ${renderSharedPublicSite(content)}
-  <script src="/website-template.js?v=20260920-editorial-public"><\/script>
+  <script src="/website-template.js?v=20260921-content-fallbacks"><\/script>
   <script>
     (() => {
       const businessId = ${businessId};
