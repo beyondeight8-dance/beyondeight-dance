@@ -523,12 +523,15 @@
       class_snapshot: registration.classSnapshot || {}
     };
     if (!payload.student_name || !payload.student_email || !payload.student_phone) throw new Error("Please complete your name, email, and phone number.");
-    const { data, error } = await client.from("registrations").insert(payload).select("*").single();
+    // No .select() here: RLS enforces the SELECT policy on any row returned from an
+    // insert, and there's no public SELECT policy on registrations (only the owner can
+    // read them back) - asking for the row would make every anonymous booking fail.
+    const { error } = await client.from("registrations").insert(payload);
     if (error) {
       console.warn("Registration creation failed:", error);
       throw new Error("We couldn't complete your booking. Please try again.");
     }
-    return data;
+    return payload;
   };
 
   const listRegistrations = async ({ user, businessId }) => {
