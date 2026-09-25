@@ -107,6 +107,15 @@
   border: 0; border-radius: 0; background: transparent; color: #8a7d77; box-shadow: none;
   font-size: 11px; text-decoration: underline; text-underline-offset: 3px;
 }
+#setup.onboarding-workspace .setup-exit {
+  position: absolute; z-index: 5; top: 20px; right: 24px; min-width: 0; min-height: 32px;
+  width: 32px; height: 32px; padding: 0; border: 1px solid #ddd4ce; border-radius: 2px;
+  background: #fffdfb; color: #6b615c; box-shadow: none; font-size: 20px; line-height: 1;
+}
+#setup.onboarding-workspace .setup-exit:hover { border-color: #a96663; color: #a96663; }
+@media (max-width: 800px) {
+  #setup.onboarding-workspace .setup-exit { top: 14px; right: 14px; }
+}
 #setup.onboarding-workspace .onboarding-site-preview {
   height: 626px; overflow: hidden; background: white; border: 1px solid #ddd4ce; border-radius: 2px;
 }
