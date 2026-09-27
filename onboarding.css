@@ -202,7 +202,7 @@
   #setup.onboarding-workspace .setup-presence-card { order: 2; }
   #setup.onboarding-workspace h2, #setup.onboarding-workspace .setup-ready h2 { font-size: 32px !important; }
   #setup.onboarding-workspace .setup-close { top: 68px; right: 20px; }
-  #setup.onboarding-workspace .onboarding-site-preview { height: 480px; }
+  #setup.onboarding-workspace .setup-form .onboarding-site-preview { display: none; }
   #setup.onboarding-workspace .onboarding-launch-preview { padding: 0 20px 20px 0; }
   #setup.onboarding-workspace .setup-ready { padding: 0 !important; }
 }
