@@ -72,6 +72,13 @@ assert.match(dashboard, /name="paymentMethod"/);
 assert.match(dashboard, /draftState\.paymentMethod=data\.get\("paymentMethod"\)/, "the chosen payment method must be saved with the rest of the website draft");
 assert.match(dashboard, /\["payments","Payments"\]/, "Payments must be its own top-level nav tab, not folded into a generic Settings tab");
 
+// The Venmo fields and the Stripe connect card must not both sit permanently visible -
+// only the panel matching the selected payment method should show, toggled live.
+assert.match(dashboard, /data-venmo-fields/);
+assert.match(dashboard, /data-stripe-fields/);
+assert.match(dashboard, /data-payment-method-select/);
+assert.match(dashboard, /toggleAttribute\("hidden",isStripe\)/, "switching the payment method dropdown must toggle which panel is visible");
+
 // A studio owner with no way to collect money must not be able to publish bookable
 // classes - adding a class is gated on having at least one payment method configured.
 assert.match(dashboard, /const hasPaymentMethod = \(\) => /);
