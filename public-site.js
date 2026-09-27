@@ -20,7 +20,7 @@
     const website = source.website || {};
     const stored = mode === "public" ? website.published_content : website.draft_content;
     const generated = stored && Object.keys(stored).length ? stored : website.published_content && Object.keys(website.published_content).length ? website.published_content : source.settings?.generated_content || {};
-    return { ...clone(generated), businessId: source.business.id, businessName: generated.businessName || source.business.business_name, slug: source.business.slug, theme: generated.theme || website.theme || source.business.theme, domain: `${window.location.origin}/${source.business.slug}`, logoImage: generated.logoImage || generated.logoUrl || source.business.logo_url || "" };
+    return { ...clone(generated), businessId: source.business.id, businessName: generated.businessName || source.business.business_name, slug: source.business.slug, theme: generated.theme || website.theme || source.business.theme, domain: `${window.location.origin}/${source.business.slug}`, logoImage: generated.logoImage || generated.logoUrl || source.business.logo_url || "", stripeChargesEnabled: Boolean(source.stripeChargesEnabled) };
   };
   const isOwner = () => Boolean(user && bundle?.business?.owner_user_id === user.id);
   const contentForState = () => templates.buildWebsiteContent(state);
@@ -66,14 +66,44 @@
     modal.querySelector("form").addEventListener("submit", (event) => showPayment(event, item));
     modal.querySelector("input")?.focus();
   };
+  const usesStripe = () => state.paymentMethod === "stripe" && state.stripeChargesEnabled;
   const showPayment = (event, item) => {
     event.preventDefault();
     const details = Object.fromEntries(new FormData(event.currentTarget));
     const dialog = document.querySelector("[data-booking-modal] .booking-dialog");
+    if (usesStripe()) return showStripePayment(dialog, item, details);
     const destination = venmoDestination();
     dialog.innerHTML = `<header><div><small>Step 2 of 2</small><h2>Payment</h2></div><button type="button" data-close-booking aria-label="Close">×</button></header>${bookingSummary(item)}<section class="booking-payment"><strong>Venmo</strong><p>Pay the instructor directly, then return here to record your registration. Payment will remain pending verification.</p>${destination ? `<a class="primary-button" href="${esc(destination)}" target="_blank" rel="noopener">Pay ${esc(item.price || "the instructor")} with Venmo</a>` : `<p class="booking-warning">The instructor has not configured a Venmo destination. Contact them before confirming payment.</p>`}<button type="button" data-confirm-booking>I’ve completed payment</button><small data-booking-error></small></section>`;
     dialog.querySelector("[data-close-booking]").addEventListener("click", closeBooking);
     dialog.querySelector("[data-confirm-booking]").addEventListener("click", () => completeBooking(item, details));
+  };
+  const showStripePayment = (dialog, item, details) => {
+    dialog.innerHTML = `<header><div><small>Step 2 of 2</small><h2>Payment</h2></div><button type="button" data-close-booking aria-label="Close">×</button></header>${bookingSummary(item)}<section class="booking-payment"><strong>Card Payment</strong><p>You’ll be taken to a secure Stripe checkout page to complete payment. Your spot is confirmed automatically once payment succeeds.</p><button type="button" data-stripe-checkout>Continue to Payment</button><small data-booking-error></small></section>`;
+    dialog.querySelector("[data-close-booking]").addEventListener("click", closeBooking);
+    dialog.querySelector("[data-stripe-checkout]").addEventListener("click", () => startStripeCheckout(item, details));
+  };
+  const startStripeCheckout = async (item, details) => {
+    const button = document.querySelector("[data-stripe-checkout]"); const errorNode = document.querySelector("[data-booking-error]");
+    if (!button || button.disabled) return; button.disabled = true; button.textContent = "Redirecting…";
+    try {
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          businessId: bundle.business.id, websiteId: bundle.website.id, classId: item.id || item.title,
+          classTitle: item.title, classInstructor: item.instructor || contentForState().instructorName,
+          classDate: item.date, classTime: item.time, classDuration: item.duration, classVenue: item.venue || item.location, classPrice: item.price,
+          studentName: details.studentName, studentEmail: details.studentEmail, studentPhone: details.studentPhone, notes: details.notes
+        })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.url) throw new Error(payload.error || "We couldn't start card payment. Please try again.");
+      window.location.href = payload.url;
+    } catch (error) {
+      console.warn("Stripe checkout failed:", error);
+      errorNode.textContent = error.message || "We couldn't start card payment. Please try again.";
+      button.disabled = false; button.textContent = "Continue to Payment";
+    }
   };
   const completeBooking = async (item, details) => {
     const button = document.querySelector("[data-confirm-booking]"); const errorNode = document.querySelector("[data-booking-error]");
@@ -89,6 +119,18 @@
   function bindOwnerEvents() {
     root.querySelectorAll("[data-book-class]").forEach((button) => button.addEventListener("click", () => openBooking(button.dataset.bookClass)));
   }
+  const bookingReturnBanner = () => {
+    const status = params.get("booking");
+    const messages = {
+      stripe_success: ["You’re registered!", "Payment received — the instructor has your booking details."],
+      stripe_cancelled: ["Payment cancelled", "Your booking wasn’t completed. You can try again anytime."]
+    };
+    const copy = messages[status];
+    if (!copy) return;
+    document.body.insertAdjacentHTML("beforeend", `<div class="booking-return-banner" data-booking-return-banner role="status"><strong>${esc(copy[0])}</strong><p>${esc(copy[1])}</p><button type="button" data-close-banner aria-label="Close">×</button></div>`);
+    document.querySelector("[data-close-banner]")?.addEventListener("click", () => document.querySelector("[data-booking-return-banner]")?.remove());
+    window.history.replaceState({}, "", window.location.pathname);
+  };
   try {
     if (!slug || app.reservedSlugs?.has(slug)) return publicError("Page not found.", "This BeyondEight page does not exist.");
     if (querySlug && window.location.pathname.includes("404.html")) window.history.replaceState({}, "", `/${slug}`);
@@ -102,6 +144,7 @@
     state = stateForBundle(bundle, ownsPublicBundle ? "owner" : "public");
     if (!templates) return publicError("We could not load this website.", "The shared BeyondEight template system did not load.");
     render();
+    bookingReturnBanner();
   } catch (error) {
     console.warn("Public site failed:", error);
     publicError("We could not load this website.", "Please try again soon.");

@@ -40,8 +40,9 @@ assert.match(dashboard, /data-class-search/);
 assert.match(dashboard, /data-registration-search/);
 
 // Style Your Website: reachable directly via ?view=website (the live page's "Edit Website"
-// link, and website-editor.js, both depend on this to land owners on the right tab).
-assert.match(dashboard, /new URLSearchParams\(window\.location\.search\)\.get\("view"\) === "website" \? "website" : "overview"/, "?view=website must open directly on the Website tab");
+// link, and website-editor.js, both depend on this to land owners on the right tab). The
+// Stripe Connect return redirect depends on ?view=settings landing on Settings the same way.
+assert.match(dashboard, /initialView === "website" \|\| initialView === "settings" \? initialView : "overview"/, "?view=website and ?view=settings must open directly on their tabs");
 assert.match(dashboard, /uploadWebsiteImage/, "website photos must be uploadable from the dashboard, not just classes");
 assert.match(dashboard, /selectTheme/, "the theme picker must be wired to an immediate save");
 assert.match(dashboard, /owner-nav-footer/, "the product shell must expose the website and owner profile in its sidebar");
