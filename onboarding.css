@@ -37,21 +37,21 @@
 #setup.onboarding-workspace .onboarding-step-marker { width: 22px; flex: 0 0 22px; text-align: center; }
 #setup.onboarding-workspace .is-complete .onboarding-step-marker { color: #a96663; }
 #setup.onboarding-workspace .onboarding-sidebar-footer { margin: auto 12px 0; font-size: 12px; line-height: 1.8; color: #756d69; }
-#setup.onboarding-workspace .onboarding-main { min-width: 0; min-height: 100dvh; padding: 16px 34px 20px; overflow-y: auto; }
-#setup.onboarding-workspace .onboarding-progress-label { font-size: 10px; color: #756d69; margin-bottom: 6px; text-transform: uppercase; }
-#setup.onboarding-workspace .onboarding-progress-track { width: min(430px, 42%); height: 2px; background: #e7dfd9; margin-bottom: 14px; }
+#setup.onboarding-workspace .onboarding-main { min-width: 0; height: 100dvh; padding: clamp(10px, 2.4vh, 20px) 34px; overflow-y: auto; }
+#setup.onboarding-workspace .onboarding-progress-label { font-size: 10px; color: #756d69; margin-bottom: clamp(4px, 1vh, 7px); text-transform: uppercase; }
+#setup.onboarding-workspace .onboarding-progress-track { width: min(430px, 42%); height: 2px; background: #e7dfd9; margin-bottom: clamp(8px, 1.8vh, 14px); }
 #setup.onboarding-workspace [data-setup-progress] { display: block; height: 100%; background: #a96663; transition: width .2s ease; }
-#setup.onboarding-workspace .setup-form { display: flex; flex-direction: column; width: 100%; max-width: 1280px; margin: 0 auto; }
+#setup.onboarding-workspace .setup-form { width: 100%; max-width: 1280px; margin: 0 auto; }
 #setup.onboarding-workspace .setup-step { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-#setup.onboarding-workspace .setup-step-header { margin: 0 0 10px; padding: 0; display: block; }
+#setup.onboarding-workspace .setup-step-header { margin: 0 0 clamp(6px, 1.2vh, 10px); padding: 0; display: block; }
 #setup.onboarding-workspace .setup-number, #setup.onboarding-workspace .setup-dots { display: none; }
 #setup.onboarding-workspace h2, #setup.onboarding-workspace .setup-ready h2 {
-  font-family: "Source Serif 4", Georgia, serif; font-size: 28px !important;
+  font-family: "Source Serif 4", Georgia, serif; font-size: clamp(22px, 3.2vh, 30px) !important;
   font-weight: 400; line-height: 1.15 !important; letter-spacing: 0;
-  color: #302c2b; margin: 0 0 8px;
+  color: #302c2b; margin: 0 0 clamp(4px, 1vh, 8px);
 }
-#setup.onboarding-workspace p { color: #756d69; line-height: 1.7; }
-#setup.onboarding-workspace .setup-step-header p { font-size: 12px; margin: 0; line-height: 1.45; }
+#setup.onboarding-workspace p { color: #756d69; line-height: 1.5; }
+#setup.onboarding-workspace .setup-step-header p { font-size: 12px; margin: 0; line-height: 1.4; }
 #setup.onboarding-workspace .setup-two-column,
 #setup.onboarding-workspace .setup-step[data-setup-step="0"] .setup-two-column {
   display: grid; grid-template-columns: minmax(330px, .72fr) minmax(520px, 1.28fr);
@@ -60,7 +60,7 @@
 #setup.onboarding-workspace .setup-fields,
 #setup.onboarding-workspace .setup-stack,
 #setup.onboarding-workspace .setup-step[data-setup-step="0"] .setup-stack {
-  gap: 10px !important; padding: 0; max-width: none;
+  gap: clamp(6px, 1.3vh, 10px) !important; padding: 0; max-width: none;
 }
 #setup.onboarding-workspace label,
 #setup.onboarding-workspace .setup-fields label {
@@ -91,7 +91,12 @@
 }
 #setup.onboarding-workspace .specialty-tags > * { border-radius: 3px; background: #eadbd6; color: #704c46; }
 #setup.onboarding-workspace .specialty-tags > * strong { color: #704c46; }
-#setup.onboarding-workspace .setup-actions { order: -1; position: static; width: 100%; margin: 0 0 16px; padding: 0 0 14px; background: transparent; border-top: 0; border-bottom: 1px solid #e4dcd5; display: flex; justify-content: flex-start; gap: 10px; }
+#setup.onboarding-workspace .setup-label { margin-bottom: 4px !important; }
+#setup.onboarding-workspace .slug-status { min-height: 1.3em !important; margin-top: 3px !important; font-size: 11px !important; }
+#setup.onboarding-workspace .specialty-control { gap: 6px !important; padding: 6px !important; margin-top: 3px !important; }
+#setup.onboarding-workspace .specialty-suggestions { gap: 6px !important; margin-top: 4px !important; }
+#setup.onboarding-workspace .specialty-tag, #setup.onboarding-workspace .specialty-suggestions button { padding: 6px 9px !important; font-size: 11px !important; }
+#setup.onboarding-workspace .setup-actions { position: static; width: 100%; margin: clamp(8px, 1.5vh, 12px) 0 0; padding: clamp(6px, 1.2vh, 10px) 0 0; background: transparent; border-top: 1px solid #e4dcd5; display: flex; justify-content: flex-start; gap: 10px; }
 #setup.onboarding-workspace .primary-button, #setup.onboarding-workspace .ready-google,
 #setup.onboarding-workspace [data-ready-publish], #setup.onboarding-workspace [data-setup-next] {
   min-height: 40px; padding: 9px 24px; border-radius: 2px; box-shadow: none;
@@ -117,7 +122,7 @@
   #setup.onboarding-workspace .setup-exit { top: 14px; right: 14px; }
 }
 #setup.onboarding-workspace .onboarding-site-preview {
-  height: 626px; overflow: hidden; background: white; border: 1px solid #ddd4ce; border-radius: 2px;
+  height: clamp(460px, 66vh, 626px); overflow: hidden; background: white; border: 1px solid #ddd4ce; border-radius: 2px;
 }
 #setup.onboarding-workspace .onboarding-site-preview .setup-preview-site { width: 100%; max-width: none; min-height: 100%; zoom: .5; box-shadow: none; border: 0; border-radius: 0 !important; }
 #setup.onboarding-workspace .specialty-field { display: block; }
