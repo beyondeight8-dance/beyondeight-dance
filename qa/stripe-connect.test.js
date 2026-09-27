@@ -38,7 +38,7 @@ assert.match(connect, /assertBusinessAccess/);
 assert.match(connect, /type: "express"/);
 assert.match(connect, /account_onboarding/);
 assert.match(callback, /charges_enabled: Boolean\(account\.charges_enabled\)/);
-assert.match(callback, /view=settings/, "the callback must return the owner to the Settings tab");
+assert.match(callback, /view=payments/, "the callback must return the owner to the Payments tab");
 assert.match(manage, /assertBusinessAccess/);
 assert.match(manage, /action === "disconnect"/);
 
@@ -64,12 +64,19 @@ assert.match(schema, /owner_user_id = auth\.uid\(\)/);
 assert.doesNotMatch(schema, /for insert/i, "there must be no public/browser insert policy - only the service-role webhook writes stripe_connections");
 assert.match(schema, /create unique index if not exists registrations_stripe_session_idx/);
 
-// dashboard.js: Settings tab gets a Stripe card and a payment-method selector
+// dashboard.js: Payments tab gets a Stripe card and a payment-method selector
 assert.match(dashboard, /data-owner-stripe/);
 assert.match(dashboard, /const bindStripeSettings = /);
 assert.match(dashboard, /bindStripeSettings\(root\)/, "bindStripeSettings must actually be wired up in bind()");
 assert.match(dashboard, /name="paymentMethod"/);
 assert.match(dashboard, /draftState\.paymentMethod=data\.get\("paymentMethod"\)/, "the chosen payment method must be saved with the rest of the website draft");
+assert.match(dashboard, /\["payments","Payments"\]/, "Payments must be its own top-level nav tab, not folded into a generic Settings tab");
+
+// A studio owner with no way to collect money must not be able to publish bookable
+// classes - adding a class is gated on having at least one payment method configured.
+assert.match(dashboard, /const hasPaymentMethod = \(\) => /);
+assert.match(dashboard, /if \(index < 0 && !hasPaymentMethod\(\)\)/, "creating a new class must be blocked until Venmo or Stripe is configured");
+assert.match(dashboard, /stripeChargesEnabled=Boolean\(bundle\.stripeChargesEnabled\)/, "the payment gate must reflect live Stripe status from the bundle on load");
 
 // app-services.js: both bundle fetchers must expose live Stripe status so the public
 // booking flow can decide whether "Pay with Card" is actually usable.

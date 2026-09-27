@@ -4,7 +4,7 @@ const { stripeRequest } = require("../_lib/stripe");
 const appOrigin = () => (process.env.PUBLIC_APP_URL || "https://beyond8dance.com").replace(/\/$/, "");
 
 module.exports = async (request, response) => {
-  const redirect = (status) => response.redirect(302, `${appOrigin()}/dashboard/?view=settings&stripe=${encodeURIComponent(status)}`);
+  const redirect = (status) => response.redirect(302, `${appOrigin()}/dashboard/?view=payments&stripe=${encodeURIComponent(status)}`);
   try {
     const businessId = request.query?.businessId;
     if (!businessId) return redirect("invalid");

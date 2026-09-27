@@ -41,8 +41,8 @@ assert.match(dashboard, /data-registration-search/);
 
 // Style Your Website: reachable directly via ?view=website (the live page's "Edit Website"
 // link, and website-editor.js, both depend on this to land owners on the right tab). The
-// Stripe Connect return redirect depends on ?view=settings landing on Settings the same way.
-assert.match(dashboard, /initialView === "website" \|\| initialView === "settings" \? initialView : "overview"/, "?view=website and ?view=settings must open directly on their tabs");
+// Stripe Connect return redirect depends on ?view=payments landing on Payments the same way.
+assert.match(dashboard, /initialView === "website" \|\| initialView === "payments" \? initialView : "overview"/, "?view=website and ?view=payments must open directly on their tabs");
 assert.match(dashboard, /uploadWebsiteImage/, "website photos must be uploadable from the dashboard, not just classes");
 assert.match(dashboard, /selectTheme/, "the theme picker must be wired to an immediate save");
 assert.match(dashboard, /owner-nav-footer/, "the product shell must expose the website and owner profile in its sidebar");
@@ -50,4 +50,7 @@ assert.match(dashboard, /owner-overview-grid/, "the overview must include the op
 assert.match(dashboard, /Upcoming Classes/);
 assert.match(dashboard, /Recent Activity/);
 assert.match(dashboard, /Create New Class/);
+// The overview's "Quick Actions" rail card duplicated buttons already available elsewhere
+// on the page (Create Class, View Registrations, Edit My Website) - removed as clutter.
+assert.doesNotMatch(dashboard, /owner-rail-actions/, "the redundant Quick Actions card must not come back");
 console.log("owner dashboard regression tests passed");
