@@ -37,18 +37,18 @@
 #setup.onboarding-workspace .onboarding-step-marker { width: 22px; flex: 0 0 22px; text-align: center; }
 #setup.onboarding-workspace .is-complete .onboarding-step-marker { color: #a96663; }
 #setup.onboarding-workspace .onboarding-sidebar-footer { margin: auto 12px 0; font-size: 12px; line-height: 1.8; color: #756d69; }
-#setup.onboarding-workspace .onboarding-main { min-width: 0; min-height: 100dvh; padding: 20px 34px; overflow-y: auto; }
-#setup.onboarding-workspace .onboarding-progress-label { font-size: 10px; color: #756d69; margin-bottom: 7px; text-transform: uppercase; }
-#setup.onboarding-workspace .onboarding-progress-track { width: min(430px, 42%); height: 2px; background: #e7dfd9; margin-bottom: 20px; }
+#setup.onboarding-workspace .onboarding-main { min-width: 0; min-height: 100dvh; padding: 16px 34px 20px; overflow-y: auto; }
+#setup.onboarding-workspace .onboarding-progress-label { font-size: 10px; color: #756d69; margin-bottom: 6px; text-transform: uppercase; }
+#setup.onboarding-workspace .onboarding-progress-track { width: min(430px, 42%); height: 2px; background: #e7dfd9; margin-bottom: 14px; }
 #setup.onboarding-workspace [data-setup-progress] { display: block; height: 100%; background: #a96663; transition: width .2s ease; }
-#setup.onboarding-workspace .setup-form { width: 100%; max-width: 1280px; margin: 0 auto; }
+#setup.onboarding-workspace .setup-form { display: flex; flex-direction: column; width: 100%; max-width: 1280px; margin: 0 auto; }
 #setup.onboarding-workspace .setup-step { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-#setup.onboarding-workspace .setup-step-header { margin: 0 0 14px; padding: 0; display: block; }
+#setup.onboarding-workspace .setup-step-header { margin: 0 0 10px; padding: 0; display: block; }
 #setup.onboarding-workspace .setup-number, #setup.onboarding-workspace .setup-dots { display: none; }
 #setup.onboarding-workspace h2, #setup.onboarding-workspace .setup-ready h2 {
-  font-family: "Source Serif 4", Georgia, serif; font-size: 36px !important;
-  font-weight: 400; line-height: 1.12 !important; letter-spacing: 0;
-  color: #302c2b; margin: 0 0 14px;
+  font-family: "Source Serif 4", Georgia, serif; font-size: 28px !important;
+  font-weight: 400; line-height: 1.15 !important; letter-spacing: 0;
+  color: #302c2b; margin: 0 0 8px;
 }
 #setup.onboarding-workspace p { color: #756d69; line-height: 1.7; }
 #setup.onboarding-workspace .setup-step-header p { font-size: 12px; margin: 0; line-height: 1.45; }
@@ -91,7 +91,7 @@
 }
 #setup.onboarding-workspace .specialty-tags > * { border-radius: 3px; background: #eadbd6; color: #704c46; }
 #setup.onboarding-workspace .specialty-tags > * strong { color: #704c46; }
-#setup.onboarding-workspace .setup-actions { position: static; width: 100%; margin: 12px 0 0; padding: 10px 0 0; background: transparent; border-top: 1px solid #e4dcd5; display: flex; justify-content: flex-start; gap: 10px; }
+#setup.onboarding-workspace .setup-actions { order: -1; position: static; width: 100%; margin: 0 0 16px; padding: 0 0 14px; background: transparent; border-top: 0; border-bottom: 1px solid #e4dcd5; display: flex; justify-content: flex-start; gap: 10px; }
 #setup.onboarding-workspace .primary-button, #setup.onboarding-workspace .ready-google,
 #setup.onboarding-workspace [data-ready-publish], #setup.onboarding-workspace [data-setup-next] {
   min-height: 40px; padding: 9px 24px; border-radius: 2px; box-shadow: none;
