@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260928-embedded-checkout">
-  <link rel="stylesheet" href="homepage.css?v=20260928-brand-consistency">
+  <link rel="stylesheet" href="homepage.css?v=20260928-editorial-redesign">
   <link rel="stylesheet" href="onboarding.css?v=20260928-brand-consistency">
   <link rel="stylesheet" href="public-site.css?v=20260921-about-layout">
   <link rel="preload" as="image" href="assets/homepage-dance-studio.png?v=20260928-rooftop-hero">
@@ -43,75 +43,150 @@
   </header>
 
   <main id="top">
-    <section class="restyle-hero" aria-labelledby="hero-title">
-      <img class="restyle-hero-image" src="assets/homepage-dance-studio.png?v=20260928-rooftop-hero" alt="A group of dancers on a rooftop, arms raised, silhouetted against a city sunset" width="1672" height="941" fetchpriority="high">
-      <div class="restyle-hero-copy">
-        <h1 class="restyle-eyebrow">BeyondEight &middot; Built for dancepreneurs</h1>
-        <h2 id="hero-title">You teach.<br><em>We handle the rest.</em></h2>
-        <p>Spend less time checking payments, managing rosters, and sending reminders. BeyondEight keeps your classes running smoothly, so you can focus on what you love: teaching.</p>
-        <a class="restyle-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
+
+    <!-- 01 — HERO -->
+    <section class="ed-hero" aria-labelledby="hero-title">
+      <img class="ed-hero-image" src="assets/homepage-dance-studio.png?v=20260928-rooftop-hero" alt="A group of dancers on a rooftop, arms raised, silhouetted against a city sunset" width="1672" height="941" fetchpriority="high">
+      <div class="ed-hero-copy">
+        <p class="ed-eyebrow">BeyondEight &middot; built for dancepreneurs</p>
+        <h1 id="hero-title">You teach.<br><em>We handle the rest.</em></h1>
+        <p class="ed-hero-sub">No more checking Venmo between combos. No more roster spreadsheets. Just the class — and everything that has to happen around it, handled.</p>
+        <a class="ed-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
+      </div>
+      <div class="ed-hero-chip" aria-hidden="true">
+        <span class="ed-hero-chip-dot"></span>
+        <div><strong>Saturday Heels</strong><span>24 registered &middot; $600 collected</span></div>
       </div>
     </section>
 
-    <section class="restyle-workflow" id="how-it-works" aria-labelledby="workflow-title">
-      <div class="restyle-section-heading">
-        <p class="restyle-eyebrow">How it works</p>
-        <h2 id="workflow-title">You create the class. <em>BeyondEight takes it from there.</em></h2>
+    <p class="ed-count" aria-hidden="true"><span>5</span><span>6</span><span>7</span><span>8</span></p>
+
+    <!-- 02 — THE REALITY -->
+    <section class="ed-reality" aria-labelledby="reality-title">
+      <div class="ed-reality-text">
+        <p class="ed-eyebrow">Right now, without BeyondEight</p>
+        <h2 id="reality-title">Posting the class.<br>Collecting payment.<br>Checking Venmo.<br>Answering the same DM twice.<br>Updating a spreadsheet.<br><em>Then somehow still teaching.</em></h2>
       </div>
-      <ol class="restyle-steps" id="features">
-        <li>
-          <div class="restyle-step-heading"><span class="restyle-step-number">1</span><h3>Create your class</h3></div>
-          <div class="restyle-example restyle-class-form" aria-label="Example class details">
+      <div class="ed-chaos" aria-hidden="true">
+        <div class="ed-chaos-item ed-chaos-venmo ed-reveal" data-reveal-delay="0"><span class="ed-chaos-app">Venmo</span><strong>+$25.00</strong><span>from Maya S.</span></div>
+        <div class="ed-chaos-item ed-chaos-dm ed-reveal" data-reveal-delay="120"><span class="ed-chaos-app">Instagram</span><p>hii is there still space in the 4pm class tmrw??</p></div>
+        <div class="ed-chaos-item ed-chaos-sheet ed-reveal" data-reveal-delay="240"><span class="ed-chaos-app">Roster — Sheet1</span><table><tr><td>Ava P.</td><td>paid</td></tr><tr><td>Rohan M.</td><td>?</td></tr><tr><td>Priya S.</td><td>paid</td></tr></table></div>
+        <div class="ed-chaos-item ed-chaos-note ed-reveal" data-reveal-delay="360"><span class="ed-chaos-app">Notes</span><p>text everyone abt sat class 2 more times</p></div>
+      </div>
+    </section>
+
+    <!-- 03/04 — HOW BEYONDEIGHT WORKS + PAYOFF -->
+    <section class="ed-story" id="how-it-works" aria-labelledby="story-title">
+      <div class="ed-section-heading">
+        <p class="ed-eyebrow">How it works</p>
+        <h2 id="story-title">You create the class.<br class="ed-story-break"> <em>BeyondEight takes it from there.</em></h2>
+      </div>
+
+      <ol class="ed-steps" id="features">
+        <li class="ed-step">
+          <div class="ed-step-text"><span class="ed-step-count">5</span><h3>Create your class</h3><p>Title, date, price, capacity. It's on your site in a minute.</p></div>
+          <div class="ed-mock ed-mock-form ed-reveal" aria-label="Example class details">
             <strong>Create New Class</strong>
-            <span>Class Title</span><div class="restyle-example-field">Heels Workshop</div>
-            <span>Date &amp; Time</span><div class="restyle-example-date"><div class="restyle-example-field">Oct 12, 2026</div><div class="restyle-example-field">4:00 PM</div></div>
-            <span>Location</span><div class="restyle-example-field">The Movement Lab, NY</div>
-            <span>Price</span><div class="restyle-example-field">$25</div>
-            <a href="#setup" data-open-setup class="restyle-mini-cta">Create a Class</a>
+            <span>Class Title</span><div class="ed-mock-field">Heels Workshop</div>
+            <span>Date &amp; Time</span><div class="ed-mock-row"><div class="ed-mock-field">Oct 12, 2026</div><div class="ed-mock-field">4:00 PM</div></div>
+            <span>Location</span><div class="ed-mock-field">The Movement Lab, NY</div>
+            <span>Price</span><div class="ed-mock-field">$25</div>
+            <a href="#setup" data-open-setup class="ed-mock-cta">Create a Class</a>
           </div>
         </li>
-        <li>
-          <div class="restyle-step-heading"><span class="restyle-step-number">2</span><h3>Students register and pay</h3></div>
-          <div class="restyle-example restyle-confirmation" aria-label="Example registration confirmation">
-            <span class="restyle-check" aria-hidden="true">&#10003;</span>
-            <strong>You're Registered!</strong><p>A confirmation email has been sent.</p>
-            <span class="restyle-example-outline">View Details</span>
+        <li class="ed-step ed-step-reverse">
+          <div class="ed-step-text"><span class="ed-step-count">6</span><h3>People register — and pay</h3><p>Card or Venmo, right on your page. No separate link to chase.</p></div>
+          <div class="ed-mock ed-mock-confirm ed-reveal" aria-label="Example registration confirmation">
+            <span class="ed-mock-check" aria-hidden="true">&#10003;</span>
+            <strong>You're registered!</strong><p>Heels Workshop &middot; Oct 12, 4:00 PM</p>
+            <span class="ed-mock-outline">Payment confirmed</span>
           </div>
         </li>
-        <li>
-          <div class="restyle-step-heading"><span class="restyle-step-number">3</span><h3>Your roster builds itself</h3></div>
-          <div class="restyle-example restyle-roster" aria-label="Example class roster">
+        <li class="ed-step">
+          <div class="ed-step-text"><span class="ed-step-count">7</span><h3>Your roster builds itself</h3><p>Every name, every payment status, updated the second it happens.</p></div>
+          <div class="ed-mock ed-mock-roster ed-reveal" aria-label="Example class roster">
             <strong>Class Roster (24)</strong>
-            <div><span class="restyle-initial">A</span><span>Ava Patel</span><small>Paid</small></div>
-            <div><span class="restyle-initial">R</span><span>Rohan Mehta</span><small>Paid</small></div>
-            <div><span class="restyle-initial">M</span><span>Maya Singh</span><small>Paid</small></div>
-            <div><span class="restyle-initial">P</span><span>Priya Shah</span><small>Paid</small></div>
-            <div><span class="restyle-initial">D</span><span>Daniel Kim</span><small>Paid</small></div>
+            <div><span class="ed-mock-initial">A</span><span>Ava Patel</span><small>Paid</small></div>
+            <div><span class="ed-mock-initial">R</span><span>Rohan Mehta</span><small>Paid</small></div>
+            <div><span class="ed-mock-initial">M</span><span>Maya Singh</span><small>Paid</small></div>
+            <div><span class="ed-mock-initial">P</span><span>Priya Shah</span><small>Paid</small></div>
           </div>
-        </li>
-        <li>
-          <div class="restyle-step-heading"><span class="restyle-step-number">4</span><h3>Students stay informed</h3></div>
-          <div class="restyle-notifications" aria-label="Example class notifications">
-            <div><span class="restyle-mail-icon" aria-hidden="true">&#9993;</span><p><strong>Registration confirmed</strong><small>Instant after signup</small></p></div>
-            <div><span class="restyle-reminder-icon" aria-hidden="true">&#9719;</span><p><strong>Class reminder</strong><small>24 hours before class</small></p></div>
-            <div><span class="restyle-mail-icon" aria-hidden="true">&#9993;</span><p><strong>Class updates</strong><small>Sent to all registered students</small></p></div>
-          </div>
-        </li>
-        <li>
-          <div class="restyle-step-heading"><span class="restyle-step-number">5</span><h3>You teach.</h3></div>
-          <img class="restyle-teach-photo" src="assets/homepage-dance-studio.png?v=20260928-rooftop-hero" alt="Dancers on a rooftop at sunset" width="210" height="280" loading="lazy">
         </li>
       </ol>
+
+      <!-- Placeholder photography note: swap for a candid, in-studio shot of a full class
+           mid-combo (mirror, water bottles, real energy) once available - reusing the hero
+           photo here as a bookend in the meantime, since it's the only high-resolution,
+           on-brand asset currently in assets/. -->
+      <figure class="ed-payoff">
+        <img src="assets/homepage-dance-studio.png?v=20260928-rooftop-hero" alt="Dancers on a rooftop at sunset, mid-movement" width="1672" height="941" loading="lazy">
+        <figcaption>Now go teach.</figcaption>
+      </figure>
     </section>
 
-    <section class="restyle-about" id="about" aria-labelledby="restyle-about-title">
-      <img src="assets/homepage-teaching-studio.png" alt="A dance teacher connecting with her students after class" width="1536" height="1024" loading="lazy">
-      <div class="restyle-about-copy">
-        <h2 id="restyle-about-title">Your class shouldn't<br>come with a second job.</h2>
-        <p>You became a dancepreneur to teach, create and build a community. Not to spend your nights checking Venmo, updating spreadsheets and sending the same reminder twenty times.</p>
-        <p>BeyondEight handles the work around the class,<br>so you can focus on the class itself.</p>
-        <a class="restyle-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
+    <!-- 05 — SECOND JOB -->
+    <section class="ed-secondjob" id="about" aria-labelledby="secondjob-title">
+      <img class="ed-secondjob-image" src="assets/homepage-teaching-studio.png" alt="An instructor talking with students seated on the studio floor after class" width="1536" height="1024" loading="lazy">
+      <div class="ed-secondjob-copy">
+        <h2 id="secondjob-title">Your class shouldn't<br>come with a second job.</h2>
+        <p class="ed-secondjob-list">Venmo. Spreadsheets. Rosters. DMs at midnight. Repeat.</p>
+        <p>You started teaching to build something with your students — not to spend your nights reconciling payments. BeyondEight handles the work around the class, so you can stay focused on the class itself.</p>
+        <a class="ed-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
       </div>
+    </section>
+
+    <!-- 06 — YOUR BUSINESS -->
+    <section class="ed-business" aria-labelledby="business-title">
+      <div class="ed-business-text">
+        <p class="ed-eyebrow">Your business, at a glance</p>
+        <h2 id="business-title">See what's actually happening with your classes.</h2>
+        <p>Every registration, every payment, every class — in one place you actually check, instead of three you don't.</p>
+      </div>
+      <div class="ed-business-card ed-reveal" aria-hidden="true">
+        <strong>Saturday Heels</strong>
+        <div class="ed-business-stats">
+          <div><span>24</span><small>dancers</small></div>
+          <div><span>$600</span><small>collected</small></div>
+        </div>
+        <p class="ed-business-next">Next class &middot; Oct 19, 4:00 PM</p>
+        <span class="ed-business-link">View roster &rarr;</span>
+      </div>
+    </section>
+
+    <!-- 08 — PRICING -->
+    <section class="ed-pricing" aria-labelledby="pricing-title">
+      <div class="ed-section-heading">
+        <p class="ed-eyebrow">Pricing</p>
+        <h2 id="pricing-title">Start free. Upgrade when your classes do.</h2>
+      </div>
+      <div class="ed-pricing-grid">
+        <div class="ed-pricing-tier">
+          <p class="ed-pricing-name">Starter</p>
+          <p class="ed-pricing-price">$0<span>/mo</span></p>
+          <p class="ed-pricing-detail">Unlimited dancers, registration, payments, rosters and waivers.</p>
+          <a class="ed-button ed-button-outline" href="#setup" data-open-setup>Get Started Free</a>
+        </div>
+        <div class="ed-pricing-tier ed-pricing-tier-featured">
+          <p class="ed-pricing-name">Growth</p>
+          <p class="ed-pricing-price">$20<span>/mo</span></p>
+          <p class="ed-pricing-detail">Everything in Starter, plus analytics, waitlists and payment plans.</p>
+          <a class="ed-button" href="#setup" data-open-setup>Get Started Free</a>
+        </div>
+        <div class="ed-pricing-tier">
+          <p class="ed-pricing-name">Scale</p>
+          <p class="ed-pricing-price">$50<span>/mo</span></p>
+          <p class="ed-pricing-detail">Everything in Growth, plus marketing tools and a custom domain.</p>
+          <a class="ed-button ed-button-outline" href="#setup" data-open-setup>Get Started Free</a>
+        </div>
+      </div>
+      <button type="button" class="ed-pricing-compare" data-open-comparison>Compare every feature &rarr;</button>
+    </section>
+
+    <!-- 09 — FINAL CTA -->
+    <section class="ed-launch" aria-labelledby="launch-title">
+      <p class="ed-eyebrow">Ready for less admin?</p>
+      <h2 id="launch-title">You teach.<br><em>We'll handle the rest.</em></h2>
+      <a class="ed-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
     </section>
 
     <div class="theme-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
@@ -123,12 +198,6 @@
         <div class="theme-modal-preview"></div>
       </section>
     </div>
-
-    <section class="restyle-launch" aria-labelledby="launch-title">
-      <h2 id="launch-title">Ready for less admin?</h2>
-      <p>Create your next class and let BeyondEight handle what comes after.</p>
-      <a class="restyle-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
-    </section>
 
     <div class="auth-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="auth-title">
       <div class="auth-backdrop" data-close-auth></div>
@@ -397,6 +466,6 @@
   <script src="app-config.js?v=20260928-embedded-checkout"></script>
   <script src="app-services.js?v=20260928-embedded-checkout"></script>
   <script src="website-template.js?v=20260921-about-simplify"></script>
-  <script src="script.js?v=20260921-async-redirect-fix"></script>
+  <script src="script.js?v=20260928-editorial-redesign"></script>
 </body>
 </html>
