@@ -60,7 +60,14 @@ module.exports = async (request, response) => {
     rawBody = await readRawBody(request);
     verifyWebhookSignature(rawBody, request.headers["stripe-signature"], required("STRIPE_WEBHOOK_SECRET"));
   } catch (error) {
-    console.warn("Stripe webhook signature verification failed:", error.message);
+    console.warn("Stripe webhook signature verification failed:", error.message, {
+      rawBodyLength: rawBody?.length ?? null,
+      requestBodyAlreadyParsed: typeof request.body !== "undefined" && request.body !== null,
+      requestBodyType: typeof request.body,
+      hasSignatureHeader: Boolean(request.headers["stripe-signature"]),
+      signatureHeaderPreview: String(request.headers["stripe-signature"] || "").slice(0, 30),
+      secretPreview: `${String(process.env.STRIPE_WEBHOOK_SECRET || "").slice(0, 8)}...(len ${String(process.env.STRIPE_WEBHOOK_SECRET || "").length})`
+    });
     return response.status(400).json({ error: "Invalid signature." });
   }
   try {
