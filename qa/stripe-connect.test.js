@@ -16,6 +16,7 @@ const dashboard = read("dashboard.js");
 const publicSite = read("public-site.js");
 const services = read("app-services.js");
 const schema = read("supabase-stripe-connect.sql");
+const styles = read("styles.css");
 
 // _lib/shared.js must exist so instagram.js and stripe.js aren't duplicating
 // getUser/assertBusinessAccess/db/sendError between themselves.
@@ -116,5 +117,11 @@ assert.match(services, /getBusinessBundleBySlug = async \(slug\) => \{[\s\S]*?st
 assert.match(publicSite, /const usesStripe = \(\) => state\.paymentMethod === "stripe" && state\.stripeChargesEnabled/);
 assert.match(publicSite, /\/api\/stripe\/checkout/);
 assert.match(publicSite, /bookingReturnBanner/);
+
+// A bare numeric price ("1") next to formatted date/duration text in the booking summary
+// reads as a typo, not a price - a digit-led value must be prefixed with "$" for display.
+assert.match(publicSite, /const formatPrice = \(value\) => \{/, "public-site.js must format prices before displaying them, not print the raw stored value");
+assert.match(publicSite, /formatPrice\(item\.price\)/, "the booking summary's Price row must go through formatPrice");
+assert.doesNotMatch(styles, /\.booking-summary \{[^}]*gap: 1px;/, "the booking summary must not use the old 1px-seam bordered-cell (spreadsheet) layout");
 
 console.log("stripe connect regression tests passed");

@@ -53,4 +53,24 @@ assert.match(dashboard, /Create New Class/);
 // The overview's "Quick Actions" rail card duplicated buttons already available elsewhere
 // on the page (Create Class, View Registrations, Edit My Website) - removed as clutter.
 assert.doesNotMatch(dashboard, /owner-rail-actions/, "the redundant Quick Actions card must not come back");
+
+// Import from Instagram: lets an owner start a class from a recent post's photo/caption
+// instead of typing from scratch. Must reuse the existing public feed endpoint (no new
+// API route), stay gated behind having a payment method configured like any other new
+// class, and never auto-publish - it only prefills the same review-before-save form.
+assert.match(dashboard, /data-import-instagram/);
+assert.match(dashboard, /const openInstagramPicker = async \(\) => \{/);
+assert.match(dashboard, /\/api\/instagram\/feed\?businessId=/, "the picker must reuse the existing Instagram feed endpoint, not a new one");
+assert.match(dashboard, /const openForm = \(index = -1, prefill = \{\}\) => /, "openForm must accept a prefill object so the picker can hand off into the normal class form");
+assert.match(dashboard, /openForm\(-1, \{ description: String\(item\.caption/, "picking a post must open the normal editable class form, not publish directly");
+assert.match(dashboard, /data-import-instagram.*hasPaymentMethod\(\)/, "importing from Instagram must respect the same payment-method gate as any other new class");
+
+// A Stripe payment is confirmed automatically by the webhook - offering the manual
+// "Mark as Pending" toggle (built for self-reported Venmo payments) on a Stripe-paid row
+// implies the owner can revert a real, already-settled card charge, which isn't true.
+assert.match(dashboard, /const isStripePaid = status === "paid" && item\.payment_method === "stripe"/, "Stripe-paid rows must be identified so the manual pending toggle can be hidden for them");
+assert.match(dashboard, /status === "paid" && !isStripePaid/, "Mark as Pending must not render for a Stripe-paid registration");
+// The status badge and its action button must share one grid cell so the row stays
+// vertically centered instead of the button wrapping onto its own full-width row.
+assert.match(dashboard, /class="owner-registration-status"/, "the status badge and action button must be grouped into a single column");
 console.log("owner dashboard regression tests passed");

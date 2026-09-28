@@ -55,7 +55,16 @@
     const username = String(state.venmoUsername || "").replace(/^@/, "");
     return username ? `https://venmo.com/u/${encodeURIComponent(username)}` : "";
   };
-  const bookingSummary = (item) => `<dl class="booking-summary"><div><dt>Class</dt><dd>${esc(item.title)}</dd></div><div><dt>Instructor</dt><dd>${esc(item.instructor || contentForState().instructorName)}</dd></div><div><dt>Date & time</dt><dd>${esc(item.date || "TBA")} • ${esc(item.time || "TBA")}</dd></div><div><dt>Duration</dt><dd>${esc(item.duration || "60 minutes")}</dd></div><div><dt>Location</dt><dd>${esc(item.venue || item.location || "Details coming soon")}</dd></div><div><dt>Price</dt><dd>${esc(item.price ?? "$0")}</dd></div></dl>`;
+  // Mirrors website-template.js's classPrice: a bare numeric price ("1") reads as a typo next
+  // to formatted date/duration text, so a digit-led value gets a "$" prefix; anything already
+  // carrying its own symbol/word ("$25", "Free") passes through untouched.
+  const formatPrice = (value) => {
+    if (typeof value === "number") return `$${value.toFixed(2)}`;
+    const raw = String(value ?? "").trim();
+    if (!raw) return "$0";
+    return /^\d/.test(raw) ? `$${raw}` : raw;
+  };
+  const bookingSummary = (item) => `<dl class="booking-summary"><div><dt>Class</dt><dd>${esc(item.title)}</dd></div><div><dt>Instructor</dt><dd>${esc(item.instructor || contentForState().instructorName)}</dd></div><div><dt>Date & time</dt><dd>${esc(item.date || "TBA")} • ${esc(item.time || "TBA")}</dd></div><div><dt>Duration</dt><dd>${esc(item.duration || "60 minutes")}</dd></div><div><dt>Location</dt><dd>${esc(item.venue || item.location || "Details coming soon")}</dd></div><div><dt>Price</dt><dd>${esc(formatPrice(item.price))}</dd></div></dl>`;
   const openBooking = (classId) => {
     const item = bookingClass(classId);
     if (!item || item.registrationOpen === false) return;
@@ -73,7 +82,7 @@
     const dialog = document.querySelector("[data-booking-modal] .booking-dialog");
     if (usesStripe()) return showStripePayment(dialog, item, details);
     const destination = venmoDestination();
-    dialog.innerHTML = `<header><div><small>Step 2 of 2</small><h2>Payment</h2></div><button type="button" data-close-booking aria-label="Close">×</button></header>${bookingSummary(item)}<section class="booking-payment"><strong>Venmo</strong><p>Pay the instructor directly, then return here to record your registration. Payment will remain pending verification.</p>${destination ? `<a class="primary-button" href="${esc(destination)}" target="_blank" rel="noopener">Pay ${esc(item.price || "the instructor")} with Venmo</a>` : `<p class="booking-warning">The instructor has not configured a Venmo destination. Contact them before confirming payment.</p>`}<button type="button" data-confirm-booking>I’ve completed payment</button><small data-booking-error></small></section>`;
+    dialog.innerHTML = `<header><div><small>Step 2 of 2</small><h2>Payment</h2></div><button type="button" data-close-booking aria-label="Close">×</button></header>${bookingSummary(item)}<section class="booking-payment"><strong>Venmo</strong><p>Pay the instructor directly, then return here to record your registration. Payment will remain pending verification.</p>${destination ? `<a class="primary-button" href="${esc(destination)}" target="_blank" rel="noopener">Pay ${item.price ? esc(formatPrice(item.price)) : "the instructor"} with Venmo</a>` : `<p class="booking-warning">The instructor has not configured a Venmo destination. Contact them before confirming payment.</p>`}<button type="button" data-confirm-booking>I’ve completed payment</button><small data-booking-error></small></section>`;
     dialog.querySelector("[data-close-booking]").addEventListener("click", closeBooking);
     dialog.querySelector("[data-confirm-booking]").addEventListener("click", () => completeBooking(item, details));
   };
