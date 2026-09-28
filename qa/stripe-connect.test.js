@@ -37,6 +37,12 @@ assert.match(stripeLib, /timingSafeEqual/, "webhook signature comparison must be
 assert.match(connect, /assertBusinessAccess/);
 assert.match(connect, /type: "express"/);
 assert.match(connect, /account_onboarding/);
+// Without explicitly requesting these, an Express account can end up "charges_enabled"
+// yet still reject real charges with "card_payments capability enabled" - this was hit
+// live during testing, so both the initial creation and existing-account healing path
+// must request them.
+const capabilityRequests = connect.match(/capabilities: \{ card_payments: \{ requested: true \}, transfers: \{ requested: true \} \}/g) || [];
+assert.equal(capabilityRequests.length, 2, "card_payments/transfers must be requested both when creating a new account and when healing an existing one");
 assert.match(callback, /charges_enabled: Boolean\(account\.charges_enabled\)/);
 assert.match(callback, /view=payments/, "the callback must return the owner to the Payments tab");
 assert.match(manage, /assertBusinessAccess/);

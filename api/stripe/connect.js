@@ -12,13 +12,28 @@ module.exports = async (request, response) => {
     const existing = await db(`stripe_connections?select=stripe_account_id&business_id=eq.${encodeURIComponent(businessId)}&limit=1`);
     let accountId = existing?.[0]?.stripe_account_id;
     if (!accountId) {
-      const account = await stripeRequest("/accounts", { method: "POST", body: { type: "express", email: user.email || undefined } });
+      const account = await stripeRequest("/accounts", {
+        method: "POST",
+        body: {
+          type: "express",
+          email: user.email || undefined,
+          capabilities: { card_payments: { requested: true }, transfers: { requested: true } }
+        }
+      });
       accountId = account.id;
       await db("stripe_connections?on_conflict=business_id", {
         method: "POST",
         headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
         body: JSON.stringify({ business_id: businessId, stripe_account_id: accountId, connected_at: new Date().toISOString() })
       });
+    } else {
+      // Self-heals accounts connected before capabilities were explicitly requested at
+      // creation time - a harmless no-op if they're already active. Without this, an
+      // existing connection can look "charges_enabled" yet still reject real charges.
+      await stripeRequest(`/accounts/${encodeURIComponent(accountId)}`, {
+        method: "POST",
+        body: { capabilities: { card_payments: { requested: true }, transfers: { requested: true } } }
+      }).catch((error) => console.warn("Stripe capability re-request failed:", error.message));
     }
     const returnUrl = `${appOrigin()}/api/stripe/callback?businessId=${encodeURIComponent(businessId)}`;
     const link = await stripeRequest("/account_links", {
