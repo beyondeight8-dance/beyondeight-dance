@@ -34,14 +34,11 @@ against either. Before this replaces the working redirect flow in production:
 
 ## Values to Replace
 
-The following value is a placeholder and must be updated before going live.
-
-**Files containing placeholders:**
-- [app-config.js](app-config.js)
-
-| Field | Current Value | What to Set |
-|-------|--------------|-------------|
-| `STRIPE_PUBLISHABLE_KEY` | `pk_test_...` | Your platform account's publishable key from the Stripe Dashboard (https://dashboard.stripe.com/test/apikeys). This is safe to expose client-side — it is not the secret key. |
+✅ Done — `STRIPE_PUBLISHABLE_KEY` in [app-config.js](app-config.js) has been set to the
+real **test-mode** publishable key. No placeholders remain. When this integration
+moves to live payments, that value needs to be swapped for the **live-mode**
+publishable key (Stripe Dashboard → toggle out of Test mode → API keys) — test and
+live keys are different values, and this one is still `pk_test_...`.
 
 Everything else the Checkout Session already sent (`mode: "payment"`, the dynamic
 `line_items` built from each class's real price/title, `metadata`, `customer_email`)
