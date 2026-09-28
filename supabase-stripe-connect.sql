@@ -46,8 +46,14 @@ create policy "stripe connections published read" on public.stripe_connections f
 -- registration was already created), so checkout.session.completed handling
 -- needs to be idempotent. This column plus its unique index let the webhook
 -- upsert on conflict instead of risking a duplicate booking.
+-- A partial index (WHERE stripe_checkout_session_id IS NOT NULL) can't be used as an
+-- ON CONFLICT target - Postgres requires an unconditional unique index/constraint for
+-- that. A plain unique index still allows unlimited NULLs (every non-Stripe
+-- registration), since Postgres never treats NULLs as duplicates of each other; it's
+-- only the non-null Stripe session IDs that get the uniqueness/upsert behavior.
 alter table public.registrations add column if not exists stripe_checkout_session_id text;
+drop index if exists registrations_stripe_session_idx;
 create unique index if not exists registrations_stripe_session_idx
-  on public.registrations(stripe_checkout_session_id) where stripe_checkout_session_id is not null;
+  on public.registrations(stripe_checkout_session_id);
 
 notify pgrst, 'reload schema';

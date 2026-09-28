@@ -74,6 +74,10 @@ assert.match(webhook, /payment_status: "paid"/);
 assert.match(schema, /owner_user_id = auth\.uid\(\)/);
 assert.doesNotMatch(schema, /for insert/i, "there must be no public/browser insert policy - only the service-role webhook writes stripe_connections");
 assert.match(schema, /create unique index if not exists registrations_stripe_session_idx/);
+// A partial index can't serve as an ON CONFLICT target - Postgres rejects it with
+// "there is no unique or exclusion constraint matching the ON CONFLICT specification",
+// which broke every webhook-created registration live. The index must be unconditional.
+assert.doesNotMatch(schema, /registrations_stripe_session_idx[\s\S]*?where stripe_checkout_session_id is not null/i, "the unique index must not be partial - Postgres can't use a partial index as an ON CONFLICT target");
 
 // dashboard.js: Payments tab gets a Stripe card and a payment-method selector
 assert.match(dashboard, /data-owner-stripe/);
