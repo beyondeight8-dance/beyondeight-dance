@@ -56,7 +56,12 @@ assert.match(checkout, /charges_enabled/);
 assert.match(checkout, /mode: "payment"/);
 
 // webhook.js: raw body for signature verification, idempotent registration creation
-assert.match(webhook, /bodyParser: false \}/, "the webhook must disable Vercel's JSON body parser to verify the raw signature");
+// Must be the literal `module.exports.config` form, not assigned via an intermediate
+// variable - Vercel's build-time detection for disabling the body parser looks for this
+// exact pattern, and an indirect assignment silently leaves JSON parsing on, which
+// breaks signature verification since the raw body is no longer available. Hit this
+// live: every webhook delivery failed with "Invalid signature" until this was fixed.
+assert.match(webhook, /module\.exports\.config = \{ api: \{ bodyParser: false \} \};/, "bodyParser must be disabled via the literal module.exports.config form");
 assert.match(webhook, /verifyWebhookSignature/);
 assert.match(webhook, /checkout\.session\.completed/);
 assert.match(webhook, /account\.updated/);

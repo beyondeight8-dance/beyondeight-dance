@@ -53,7 +53,7 @@ const handleAccountUpdated = async (account) => {
   }).catch((error) => console.warn("Stripe account.updated sync failed (account may not be connected yet):", error.message));
 };
 
-const handler = async (request, response) => {
+module.exports = async (request, response) => {
   if (request.method !== "POST") return response.status(405).json({ error: "Method not allowed." });
   let rawBody;
   try {
@@ -80,7 +80,7 @@ const handler = async (request, response) => {
 };
 
 // Vercel's Node runtime parses JSON bodies by default; the raw bytes are
-// needed here to verify Stripe's signature, so parsing is disabled.
-handler.config = { api: { bodyParser: false } };
-
-module.exports = handler;
+// needed here to verify Stripe's signature, so parsing is disabled. This must be the
+// literal `module.exports.config` form - Vercel's build-time detection for this looks
+// for that exact pattern and won't recognize it assigned via an intermediate variable.
+module.exports.config = { api: { bodyParser: false } };
