@@ -487,7 +487,7 @@ h3 {
 }
 
 .brand-name {
-  color: var(--ink);
+  color: #3d0525;
   font-family: var(--display);
   font-size: 1.78rem;
   font-weight: 700;
@@ -495,7 +495,7 @@ h3 {
 }
 
 .brand-name span {
-  color: var(--accent);
+  color: #ca716a;
 }
 
 .site-nav {
@@ -2740,13 +2740,17 @@ h1 {
   line-height: 0.95;
 }
 
-h1 span,
-.brand-name span {
+h1 span {
   background: var(--accent-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   font-style: normal;
+}
+
+.brand-name span {
+  background: none;
+  color: #ca716a;
 }
 
 .site-header {
