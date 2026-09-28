@@ -467,7 +467,7 @@ h3 {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 11px;
+  gap: 6px;
   min-width: max-content;
 }
 
@@ -3113,7 +3113,7 @@ h1 span {
 
 /* Theme correction: keep the original message while using the new palette. */
 .brand {
-  gap: 12px;
+  gap: 6px;
 }
 
 .brand-mark {
@@ -5063,20 +5063,20 @@ summary {
 }
 
 .brand {
-  gap: 12px;
+  gap: 6px;
 }
 
 .brand-mark {
   display: grid;
   width: 54px;
-  height: 54px;
+  height: 41px;
   place-items: center;
   overflow: visible;
 }
 
 .brand-mark img {
   width: 54px;
-  height: 54px;
+  height: 41px;
   max-width: 54px;
   object-fit: contain;
   transform: none;
@@ -5357,7 +5357,7 @@ summary {
   .brand-mark,
   .brand-mark img {
     width: 44px;
-    height: 44px;
+    height: 33px;
     max-width: 44px;
   }
 

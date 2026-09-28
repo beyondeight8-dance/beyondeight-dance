@@ -17,8 +17,8 @@ body.home-restyle {
   max-width: none; height: 86px; margin: 0 auto; padding: 0; display: flex; align-items: center;
   gap: 36px; border: 0; border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none;
 }
-.home-restyle .brand { flex-shrink: 0; gap: 10px; }
-.home-restyle .brand-mark { width: 60px; height: 60px; margin: 0; padding: 0; background: none; box-shadow: none; }
+.home-restyle .brand { flex-shrink: 0; gap: 6px; }
+.home-restyle .brand-mark { width: 60px; height: 46px; margin: 0; padding: 0; background: none; box-shadow: none; }
 .home-restyle .brand-mark img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
 .home-restyle .brand-lockup { display: grid; gap: 2px; }
 .home-restyle .brand-name { color: #111b2b; font-family: var(--home-display); font-size: 27px; line-height: 1.1; font-weight: 600; }
@@ -138,10 +138,10 @@ body.home-restyle {
 }
 @media (max-width: 480px) {
   .home-restyle .site-header { width: calc(100% - 32px); gap: 12px; }
-  .home-restyle .brand { gap: 5px; }
+  .home-restyle .brand { gap: 4px; }
   .home-restyle .brand-name { font-size: 21px; }
   .home-restyle .brand-tagline { font-size: 8px; }
-  .home-restyle .brand-mark { width: 46px; height: 46px; }
+  .home-restyle .brand-mark { width: 46px; height: 35px; }
   .home-restyle .header-login { font-size: 12px; }
   .home-restyle .header-avatar { display: none; }
   .home-restyle .header-account { gap: 9px; }

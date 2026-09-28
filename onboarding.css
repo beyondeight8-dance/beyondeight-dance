@@ -24,7 +24,7 @@
   background: #f2ede7;
 }
 #setup.onboarding-workspace .brand { gap: 6px; margin: 0 0 64px; color: #302c2b; }
-#setup.onboarding-workspace .brand-mark { width: 32px; height: 42px; overflow: hidden; flex: 0 0 32px; }
+#setup.onboarding-workspace .brand-mark { width: 42px; height: 32px; overflow: hidden; flex: 0 0 42px; }
 #setup.onboarding-workspace .brand-mark img { width: 100%; height: 100%; object-fit: contain; }
 #setup.onboarding-workspace .brand-name { font-size: 22px; }
 #setup.onboarding-workspace .onboarding-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
