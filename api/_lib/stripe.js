@@ -22,7 +22,12 @@ const encodeForm = (value, prefix = "", pairs = []) => {
 const stripeRequest = async (path, { method = "GET", body, account, query } = {}) => {
   const url = new URL(`${apiBase()}${path}`);
   if (query) Object.entries(query).forEach(([key, value]) => value !== undefined && url.searchParams.set(key, String(value)));
-  const headers = { Authorization: `Basic ${Buffer.from(`${required("STRIPE_SECRET_KEY")}:`).toString("base64")}` };
+  const headers = {
+    Authorization: `Basic ${Buffer.from(`${required("STRIPE_SECRET_KEY")}:`).toString("base64")}`,
+    // Required by the embedded Checkout Form (custom_checkout_payment_form_preview) - see
+    // STRIPE_INTEGRATION_TODO.md for why this is pinned account-wide via this shared helper.
+    "Stripe-Version": "2026-03-25.dahlia; custom_checkout_payment_form_preview=v1"
+  };
   if (account) headers["Stripe-Account"] = account;
   let requestBody;
   if (body) {

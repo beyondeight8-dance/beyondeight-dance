@@ -1,8 +1,6 @@
 const { db } = require("../_lib/shared");
 const { stripeRequest } = require("../_lib/stripe");
 
-const appOrigin = () => (process.env.PUBLIC_APP_URL || "https://beyond8dance.com").replace(/\/$/, "");
-
 const priceInCents = (raw) => {
   const num = typeof raw === "number" ? raw : Number(String(raw ?? "").replace(/[^0-9.]/g, ""));
   return Number.isFinite(num) && num > 0 ? Math.round(num * 100) : 0;
@@ -36,16 +34,19 @@ module.exports = async (request, response) => {
     const amount = priceInCents(body.classPrice);
     if (!amount) return response.status(400).json({ error: "This class does not have a valid price for card payment." });
 
-    const successUrl = `${appOrigin()}/${business.slug}?booking=stripe_success`;
-    const cancelUrl = `${appOrigin()}/${business.slug}?booking=stripe_cancelled`;
-
     const session = await stripeRequest("/checkout/sessions", {
       method: "POST",
       account: connection.stripe_account_id,
       body: {
+        // Configured in Checkout Studio - see STRIPE_INTEGRATION_TODO.md.
+        ui_mode: "form",
+        billing_address_collection: "auto",
+        phone_number_collection: { enabled: false },
+        automatic_tax: { enabled: false },
+        submit_type: "auto",
+        name_collection: { individual: { enabled: true, optional: true } },
+        integration_identifier: "custom_embedded_web_0001",
         mode: "payment",
-        success_url: successUrl,
-        cancel_url: cancelUrl,
         customer_email: studentEmail,
         line_items: [{
           quantity: 1,
@@ -73,7 +74,7 @@ module.exports = async (request, response) => {
         }
       }
     });
-    response.status(200).json({ url: session.url });
+    response.status(200).json({ client_secret: session.client_secret });
   } catch (error) {
     console.error("Stripe checkout session failed:", error);
     response.status(400).json({ error: "We couldn't start card payment. Please try again." });

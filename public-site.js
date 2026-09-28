@@ -20,7 +20,7 @@
     const website = source.website || {};
     const stored = mode === "public" ? website.published_content : website.draft_content;
     const generated = stored && Object.keys(stored).length ? stored : website.published_content && Object.keys(website.published_content).length ? website.published_content : source.settings?.generated_content || {};
-    return { ...clone(generated), businessId: source.business.id, businessName: generated.businessName || source.business.business_name, slug: source.business.slug, theme: generated.theme || website.theme || source.business.theme, domain: `${window.location.origin}/${source.business.slug}`, logoImage: generated.logoImage || generated.logoUrl || source.business.logo_url || "", stripeChargesEnabled: Boolean(source.stripeChargesEnabled) };
+    return { ...clone(generated), businessId: source.business.id, businessName: generated.businessName || source.business.business_name, slug: source.business.slug, theme: generated.theme || website.theme || source.business.theme, domain: `${window.location.origin}/${source.business.slug}`, logoImage: generated.logoImage || generated.logoUrl || source.business.logo_url || "", stripeChargesEnabled: Boolean(source.stripeChargesEnabled), stripeAccountId: source.stripeAccountId || "" };
   };
   const isOwner = () => Boolean(user && bundle?.business?.owner_user_id === user.id);
   const contentForState = () => templates.buildWebsiteContent(state);
@@ -86,14 +86,31 @@
     dialog.querySelector("[data-close-booking]").addEventListener("click", closeBooking);
     dialog.querySelector("[data-confirm-booking]").addEventListener("click", () => completeBooking(item, details));
   };
-  const showStripePayment = (dialog, item, details) => {
-    dialog.innerHTML = `<header><div><small>Step 2 of 2</small><h2>Payment</h2></div><button type="button" data-close-booking aria-label="Close">×</button></header>${bookingSummary(item)}<section class="booking-payment"><strong>Card Payment</strong><p>You’ll be taken to a secure Stripe checkout page to complete payment. Your spot is confirmed automatically once payment succeeds.</p><button type="button" data-stripe-checkout>Continue to Payment</button><small data-booking-error></small></section>`;
-    dialog.querySelector("[data-close-booking]").addEventListener("click", closeBooking);
-    dialog.querySelector("[data-stripe-checkout]").addEventListener("click", () => startStripeCheckout(item, details));
+  // Configured in Checkout Studio - see STRIPE_INTEGRATION_TODO.md.
+  const STRIPE_FORM_APPEARANCE = {
+    theme: "stripe",
+    labels: "auto",
+    inputs: "spaced",
+    variables: {
+      borderRadius: "4px",
+      colorBackground: "#ffffff",
+      colorDanger: "#df1b41",
+      colorPrimary: "#0570de",
+      colorSuccess: "#00c853",
+      colorText: "#30313d",
+      fontFamily: "default",
+      fontSizeBase: "16px",
+      spacingUnit: "4px"
+    }
   };
-  const startStripeCheckout = async (item, details) => {
-    const button = document.querySelector("[data-stripe-checkout]"); const errorNode = document.querySelector("[data-booking-error]");
-    if (!button || button.disabled) return; button.disabled = true; button.textContent = "Redirecting…";
+  const showStripePayment = (dialog, item, details) => {
+    dialog.innerHTML = `<header><div><small>Step 2 of 2</small><h2>Payment</h2></div><button type="button" data-close-booking aria-label="Close">×</button></header>${bookingSummary(item)}<section class="booking-payment"><strong>Card Payment</strong><div id="checkout-form" data-checkout-form><p class="booking-checkout-loading">Loading secure payment form…</p></div><small data-booking-error></small></section>`;
+    dialog.querySelector("[data-close-booking]").addEventListener("click", closeBooking);
+    mountStripeCheckoutForm(item, details);
+  };
+  const mountStripeCheckoutForm = async (item, details) => {
+    const container = document.querySelector("[data-checkout-form]");
+    const errorNode = document.querySelector("[data-booking-error]");
     try {
       const response = await fetch("/api/stripe/checkout", {
         method: "POST",
@@ -106,12 +123,36 @@
         })
       });
       const payload = await response.json().catch(() => ({}));
-      if (!response.ok || !payload.url) throw new Error(payload.error || "We couldn't start card payment. Please try again.");
-      window.location.href = payload.url;
+      if (!response.ok || !payload.client_secret) throw new Error(payload.error || "We couldn't start card payment. Please try again.");
+      if (!window.Stripe) throw new Error("Payment form failed to load. Please refresh and try again.");
+      if (!window.BeyondEightConfig?.STRIPE_PUBLISHABLE_KEY) throw new Error("Card payment isn't configured yet. Please try Venmo, or contact the instructor.");
+      // stripeAccount scopes Stripe.js to the instructor's own connected account -
+      // this is a Connect (multi-account) integration, not a single-account one.
+      const stripe = window.Stripe(window.BeyondEightConfig.STRIPE_PUBLISHABLE_KEY, {
+        stripeAccount: state.stripeAccountId,
+        betas: ["custom_checkout_payment_form_1"]
+      });
+      const checkout = await stripe.initCheckoutFormSdk({ clientSecret: payload.client_secret, appearance: STRIPE_FORM_APPEARANCE });
+      container.innerHTML = "";
+      const form = checkout.createForm({ layout: "expanded" });
+      form.mount(container);
+      const loadActionsResult = await checkout.loadActions();
+      if (loadActionsResult.type === "success") {
+        form.on("confirm", async (event) => {
+          errorNode.textContent = "";
+          try {
+            await loadActionsResult.actions.confirm({ formConfirmEvent: event });
+            container.innerHTML = `<p class="booking-checkout-loading">Payment submitted — confirming your booking…</p>`;
+          } catch (error) {
+            console.warn("Stripe payment confirmation failed:", error);
+            errorNode.textContent = error.message || "We couldn't confirm your payment. Please try again.";
+          }
+        });
+      }
     } catch (error) {
       console.warn("Stripe checkout failed:", error);
+      container.innerHTML = "";
       errorNode.textContent = error.message || "We couldn't start card payment. Please try again.";
-      button.disabled = false; button.textContent = "Continue to Payment";
     }
   };
   const completeBooking = async (item, details) => {

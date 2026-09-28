@@ -17,6 +17,8 @@ const publicSite = read("public-site.js");
 const services = read("app-services.js");
 const schema = read("supabase-stripe-connect.sql");
 const styles = read("styles.css");
+const notFound = read("404.html");
+const appConfig = read("app-config.js");
 
 // _lib/shared.js must exist so instagram.js and stripe.js aren't duplicating
 // getUser/assertBusinessAccess/db/sendError between themselves.
@@ -33,6 +35,9 @@ assert.match(stripeLib, /const stripeRequest = async/);
 assert.match(stripeLib, /const verifyWebhookSignature = /);
 assert.match(stripeLib, /Authorization: `Basic \$\{Buffer\.from/, "Stripe auth must use Basic auth with the secret key, matching the REST-only (no SDK) pattern");
 assert.match(stripeLib, /timingSafeEqual/, "webhook signature comparison must be constant-time");
+// The embedded Checkout Form (custom_checkout_payment_form_preview) requires this exact
+// pinned API version/beta on every request made through the shared helper.
+assert.match(stripeLib, /"Stripe-Version": "2026-03-25\.dahlia; custom_checkout_payment_form_preview=v1"/, "the Checkout Form preview API version must be set on every Stripe request");
 
 // connect.js / callback.js / manage.js: owner-authed Connect onboarding flow
 assert.match(connect, /assertBusinessAccess/);
@@ -62,6 +67,18 @@ assert.match(checkout, /status=eq\.published/);
 assert.match(checkout, /websites\.published=eq\.true/);
 assert.match(checkout, /charges_enabled/);
 assert.match(checkout, /mode: "payment"/);
+
+// Embedded Checkout Form (Checkout Studio integration): the session is rendered in-page
+// via a Stripe-hosted iframe instead of redirecting to a Stripe-hosted page, so the
+// server must return client_secret (not a redirect url) and set the UI-mode params
+// Checkout Studio configured. payment_method_collection is a subscription-only param and
+// must NOT be sent for this one-time-payment ("mode: payment") integration.
+assert.match(checkout, /ui_mode: "form"/, "ui_mode must be set for the embedded Checkout Form");
+assert.match(checkout, /client_secret: session\.client_secret/, "the endpoint must return client_secret for the embedded form, not session.url");
+assert.doesNotMatch(checkout, /\burl: session\.url\b/, "the old redirect-to-Stripe response shape must not come back");
+assert.doesNotMatch(checkout, /payment_method_collection/, "payment_method_collection only applies to mode: \"subscription\" - this integration is mode: \"payment\"");
+assert.match(checkout, /billing_address_collection: "auto"/);
+assert.match(checkout, /integration_identifier: "custom_embedded_web_0001"/);
 
 // webhook.js: raw body for signature verification, idempotent registration creation
 // Must be the literal `module.exports.config` form, not assigned via an intermediate
@@ -112,11 +129,34 @@ assert.match(dashboard, /stripeChargesEnabled=Boolean\(bundle\.stripeChargesEnab
 // booking flow can decide whether "Pay with Card" is actually usable.
 assert.match(services, /getBusinessBundle = async \(businessId\) => \{[\s\S]*?stripeChargesEnabled: Boolean\(stripeConnection\?\.charges_enabled\)/);
 assert.match(services, /getBusinessBundleBySlug = async \(slug\) => \{[\s\S]*?stripeChargesEnabled: Boolean\(stripeConnection\?\.charges_enabled\)/);
+// The embedded form scopes Stripe.js to the instructor's own connected account
+// (Stripe.js `stripeAccount` option), so the public bundle must also expose that account id.
+assert.match(services, /getBusinessBundle = async \(businessId\) => \{[\s\S]*?stripeAccountId: stripeConnection\?\.stripe_account_id \|\| ""/);
+assert.match(services, /getBusinessBundleBySlug = async \(slug\) => \{[\s\S]*?stripeAccountId: stripeConnection\?\.stripe_account_id \|\| ""/);
 
 // public-site.js: the choreographer's chosen method decides Venmo vs. Stripe, not the student
 assert.match(publicSite, /const usesStripe = \(\) => state\.paymentMethod === "stripe" && state\.stripeChargesEnabled/);
 assert.match(publicSite, /\/api\/stripe\/checkout/);
 assert.match(publicSite, /bookingReturnBanner/);
+
+// Embedded Checkout Form client-side: must init the Checkout Form SDK with the beta flag,
+// scope it to the instructor's connected account, and mount a form into the page instead
+// of redirecting to a Stripe-hosted page (window.location.href = payload.url).
+assert.match(publicSite, /initCheckoutFormSdk/, "the client must initialize the embedded Checkout Form SDK");
+assert.match(publicSite, /betas: \["custom_checkout_payment_form_1"\]/);
+assert.match(publicSite, /stripeAccount: state\.stripeAccountId/, "Stripe.js must be scoped to the instructor's own connected account");
+assert.match(publicSite, /payload\.client_secret/, "the client must read client_secret from the checkout endpoint");
+assert.doesNotMatch(publicSite, /window\.location\.href = payload\.url/, "booking must no longer redirect to a Stripe-hosted checkout page");
+assert.match(publicSite, /data-checkout-form/, "a container must exist for the embedded form to mount into");
+
+// 404.html (the public-site shell): Stripe.js must load directly from Stripe's own domain,
+// never bundled/self-hosted - a PCI requirement - and must be the dahlia build the
+// embedded Checkout Form SDK depends on.
+assert.match(notFound, /https:\/\/js\.stripe\.com\/dahlia\/stripe\.js/, "Stripe.js must be loaded directly from js.stripe.com, not bundled");
+
+// The publishable key is safe to ship client-side (unlike the secret key) and follows the
+// same window.BeyondEightConfig pattern already used for the Supabase anon key.
+assert.match(appConfig, /STRIPE_PUBLISHABLE_KEY/);
 
 // A bare numeric price ("1") next to formatted date/duration text in the booking summary
 // reads as a typo, not a price - a digit-led value must be prefixed with "$" for display.

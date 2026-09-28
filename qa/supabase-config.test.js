@@ -18,8 +18,8 @@ assert.match(services, /payload\.ref/);
 assert.match(services, /configuration does not match its project/);
 htmlFiles.forEach((file) => {
   const html = fs.readFileSync(require.resolve(file), "utf8");
-  assert.match(html, /app-config\.js\?v=20260829-auth-hostname/);
-  assert.match(html, /app-services\.js\?v=20260927-stripe-connect/);
+  assert.match(html, /app-config\.js\?v=20260928-embedded-checkout/);
+  assert.match(html, /app-services\.js\?v=20260928-embedded-checkout/);
 });
 
 console.log("Supabase configuration regression tests passed");

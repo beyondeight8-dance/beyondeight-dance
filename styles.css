@@ -8265,6 +8265,8 @@ body.generated-motion {
 .booking-summary dd { margin: 0; font-weight: 800; font-size: .98rem; }
 .booking-payment > a, .booking-payment > button, .booking-success > button { justify-self: start; }
 .booking-warning, [data-booking-error] { color: #a8233d; font-weight: 750; }
+[data-checkout-form] { min-height: 220px; }
+.booking-checkout-loading { margin: 0; padding: 40px 0; color: var(--site-muted, #756679); text-align: center; }
 .booking-success { place-items: center; padding: 44px 24px; text-align: center; }
 .booking-success > span { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: #e2f4ea; color: #256849; font-size: 1.7rem; }
 .booking-return-banner { position: fixed; z-index: 4000; left: 50%; bottom: 24px; transform: translateX(-50%); width: min(calc(100% - 32px), 440px); display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; border-radius: 8px; background: #fff; color: #281331; box-shadow: 0 12px 35px rgba(0,0,0,.2); }

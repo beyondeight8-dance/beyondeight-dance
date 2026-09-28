@@ -372,8 +372,8 @@
     const { data: pages } = website
       ? await client.from("website_pages").select("*").eq("website_id", website.id).order("display_order")
       : { data: [] };
-    const { data: stripeConnection } = await client.from("stripe_connections").select("charges_enabled").eq("business_id", businessId).maybeSingle();
-    return { business, settings, website: website ? { ...website, draft_content: draft?.content || {} } : website, pages: pages || [], stripeChargesEnabled: Boolean(stripeConnection?.charges_enabled) };
+    const { data: stripeConnection } = await client.from("stripe_connections").select("charges_enabled, stripe_account_id").eq("business_id", businessId).maybeSingle();
+    return { business, settings, website: website ? { ...website, draft_content: draft?.content || {} } : website, pages: pages || [], stripeChargesEnabled: Boolean(stripeConnection?.charges_enabled), stripeAccountId: stripeConnection?.stripe_account_id || "" };
   };
 
   const getBusinessBundleBySlug = async (slug) => {
@@ -395,8 +395,8 @@
     if (!website) return null;
     const { data: settings } = await client.from("business_settings").select("*").eq("business_id", business.id).maybeSingle();
     const { data: pages } = await client.from("website_pages").select("*").eq("website_id", website.id).eq("enabled", true).order("display_order");
-    const { data: stripeConnection } = await client.from("stripe_connections").select("charges_enabled").eq("business_id", business.id).maybeSingle();
-    return { business, settings, website, pages: pages || [], mode: "public", stripeChargesEnabled: Boolean(stripeConnection?.charges_enabled) };
+    const { data: stripeConnection } = await client.from("stripe_connections").select("charges_enabled, stripe_account_id").eq("business_id", business.id).maybeSingle();
+    return { business, settings, website, pages: pages || [], mode: "public", stripeChargesEnabled: Boolean(stripeConnection?.charges_enabled), stripeAccountId: stripeConnection?.stripe_account_id || "" };
   };
 
   const assertBusinessOwner = async (user, businessId) => {
