@@ -35,7 +35,7 @@ const getUser = async (request) => {
 };
 
 const assertBusinessAccess = async (userId, businessId) => {
-  const businesses = await db(`businesses?select=id,slug,owner_user_id&id=eq.${encodeURIComponent(businessId)}&limit=1`);
+  const businesses = await db(`businesses?select=id,slug,owner_user_id,theme&id=eq.${encodeURIComponent(businessId)}&limit=1`);
   const business = businesses?.[0];
   if (!business) throw new Error("BUSINESS_NOT_FOUND");
   if (business.owner_user_id === userId) return business;

@@ -43,6 +43,13 @@ assert.match(connect, /account_onboarding/);
 // must request them.
 const capabilityRequests = connect.match(/capabilities: \{ card_payments: \{ requested: true \}, transfers: \{ requested: true \} \}/g) || [];
 assert.equal(capabilityRequests.length, 2, "card_payments/transfers must be requested both when creating a new account and when healing an existing one");
+// Stripe's hosted Checkout/onboarding pages default to a generic blue button unless the
+// connected account's branding is set - a jarring hand-off from a themed public site.
+// Each theme's accent color must be mapped and applied on both the create and heal paths.
+assert.match(connect, /THEME_ACCENT_COLORS/);
+assert.match(connect, /editorial: "#6b1f34"/);
+const brandingApplications = connect.match(/settings: \{ branding \}/g) || [];
+assert.equal(brandingApplications.length, 2, "branding must be applied both when creating a new account and when healing an existing one");
 assert.match(callback, /charges_enabled: Boolean\(account\.charges_enabled\)/);
 assert.match(callback, /view=payments/, "the callback must return the owner to the Payments tab");
 assert.match(manage, /assertBusinessAccess/);
