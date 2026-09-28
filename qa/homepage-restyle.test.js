@@ -25,4 +25,10 @@ for (const filename of ['homepage-dance-studio.png', 'homepage-teaching-studio.p
 assert.match(css, /@media \(max-width: 480px\)/);
 assert.match(css, /prefers-reduced-motion/);
 assert.ok(!css.includes('font-size: clamp('), 'Typography uses fixed responsive sizes');
+
+// The logo <img> was swapped for a tightly-cropped mark with almost no internal padding.
+// A leftover transform: scale(2.6) here (tuned to zoom into the OLD logo's large padding)
+// over-crops the new artwork and chops off the raised arm - hit live in the onboarding
+// modal, which shares this same .home-restyle header markup.
+assert.doesNotMatch(css, /\.home-restyle \.brand-mark img \{[^}]*transform:\s*scale\(2\.6\)/, "the old padding-compensation zoom on the logo must not come back");
 console.log('Homepage restyle assets, structure and existing entry points passed');
