@@ -9,10 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260928-embedded-checkout">
-  <link rel="stylesheet" href="homepage.css?v=20260929-flow-pass">
+  <link rel="stylesheet" href="homepage.css?v=20260929-product-first">
   <link rel="stylesheet" href="onboarding.css?v=20260928-brand-consistency">
   <link rel="stylesheet" href="public-site.css?v=20260921-about-layout">
-  <link rel="preload" as="image" href="assets/homepage-dance-studio.png?v=20260928-rooftop-hero">
 </head>
 <body class="home-restyle">
   <header class="site-header">
@@ -44,18 +43,22 @@
 
   <main id="top">
 
-    <!-- 01 — HERO -->
+    <!-- 01 — HERO: product-first, no photography. The panel is the actual booking/roster
+         data the platform tracks, presented straight-on like a product shot. -->
     <section class="ed-hero" aria-labelledby="hero-title">
-      <img class="ed-hero-image" src="assets/homepage-dance-studio.png?v=20260928-rooftop-hero" alt="A group of dancers on a rooftop, arms raised, silhouetted against a city sunset" width="1672" height="941" fetchpriority="high">
       <div class="ed-hero-copy">
         <p class="ed-eyebrow">BeyondEight &middot; built for dancepreneurs</p>
         <h1 id="hero-title">You teach.<br><em>We handle the rest.</em></h1>
         <p class="ed-hero-sub">No more checking Venmo between combos. No more roster spreadsheets. Just the class — and everything that has to happen around it, handled.</p>
         <a class="ed-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
       </div>
-      <div class="ed-hero-chip" aria-hidden="true">
-        <span class="ed-hero-chip-dot"></span>
-        <div><strong>Saturday Heels</strong><span>24 registered &middot; $600 collected</span></div>
+      <div class="ed-hero-visual ed-reveal" aria-hidden="true">
+        <div class="ed-hero-panel">
+          <div class="ed-hero-panel-row"><span>Class</span><strong>Saturday Heels</strong></div>
+          <div class="ed-hero-panel-row"><span>Registered</span><strong>24</strong></div>
+          <div class="ed-hero-panel-row"><span>Collected</span><strong class="ed-hero-panel-accent">$600</strong></div>
+          <p class="ed-hero-panel-status">Payments confirmed automatically</p>
+        </div>
       </div>
     </section>
 
@@ -136,14 +139,12 @@
       <p class="ed-payoff">Now go teach.</p>
     </section>
 
-    <!-- 05 — SECOND JOB: kept short since The Reality already established the problem -->
+    <!-- 05 — SECOND JOB: a color-and-type statement, not a photo - kept short since
+         The Reality already established the problem. -->
     <section class="ed-secondjob" id="about" aria-labelledby="secondjob-title">
-      <img class="ed-secondjob-image" src="assets/homepage-teaching-studio.png" alt="An instructor talking with students seated on the studio floor after class" width="1536" height="1024" loading="lazy">
-      <div class="ed-secondjob-copy">
-        <h2 id="secondjob-title">Your class shouldn't<br>come with a second job.</h2>
-        <p>BeyondEight handles the work around the class, so you can stay focused on the class itself.</p>
-        <a class="ed-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
-      </div>
+      <h2 id="secondjob-title">Your class shouldn't<br><em>come with a second job.</em></h2>
+      <p>BeyondEight handles the work around the class, so you can stay focused on the class itself.</p>
+      <a class="ed-button ed-button-light" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
     </section>
 
     <!-- 06 — YOUR BUSINESS -->
