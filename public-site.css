@@ -249,19 +249,22 @@
 .public-site-route .booking-modal { background: rgba(36, 33, 31, 0.62); }
 .public-site-route .booking-dialog {
   border: 1px solid #d9d2cc;
-  border-radius: 3px;
+  border-radius: 10px;
   background: #f8f5f1;
   color: #24211f;
   box-shadow: 0 20px 60px rgba(36, 33, 31, 0.18);
 }
 .public-site-route .booking-dialog > header { border-color: #d9d2cc; background: #f8f5f1; }
 .public-site-route .booking-dialog h2 { color: #24211f; font-family: "Source Serif 4", Georgia, serif; font-weight: 400; letter-spacing: 0; }
-.public-site-route .booking-summary { border-color: #d9d2cc; border-radius: 2px; }
-.public-site-route .booking-summary div { background: #fffdfb; }
+.public-site-route .booking-dialog > header small { color: #a8675f; }
+.public-site-route .booking-visual { border-color: #d9d2cc; }
+.public-site-route .booking-visual-media { background: #fffdfb; }
+.public-site-route .booking-facts { border-color: #d9d2cc; }
+.public-site-route .booking-fact-icon { background: rgba(168, 103, 95, 0.14); color: #a8675f; }
 .public-site-route .booking-dialog input,
-.public-site-route .booking-dialog textarea { border-color: #d9d2cc; border-radius: 2px; background: #fffdfb; }
+.public-site-route .booking-dialog textarea { border-color: #d9d2cc; border-radius: 6px; background: #fffdfb; }
 .public-site-route .booking-dialog button,
-.public-site-route .booking-payment > a { border: 1px solid #24211f; border-radius: 2px; background: #24211f; color: #fff; box-shadow: none; }
+.public-site-route .booking-payment > a { border: 1px solid #a8675f; border-radius: 8px; background: #a8675f; color: #fff; box-shadow: none; }
 .public-site-route .booking-dialog header > button { border: 0; background: transparent; color: #24211f; }
 .public-site-route .booking-success > span { background: #eadbd6; color: #78473f; }
 
