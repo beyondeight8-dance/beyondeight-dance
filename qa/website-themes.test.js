@@ -119,6 +119,22 @@ assert.doesNotMatch(sparseHtml, /<img[^>]+src=""/, "missing optional images must
 assert.doesNotMatch(sparseHtml, /Maya R\.|Amazing energy|Heels Foundations/, "public output must not contain synthetic sample content");
 assert.match(publicStyles, /@media \(max-width: 640px\)/, "the approved public site must include a deliberate mobile layout");
 
+// Class card redesign: the live public class card now uses the same icon-badged fact-row
+// language as the booking modal it opens into (calendar/clock/pin), a per-class eyebrow
+// label sourced from the class's own real "Dance Style" field, and a price+button footer,
+// instead of the old bare dt/dd summary with no icons or eyebrow.
+const styledClass = templates.buildWebsiteContent({
+  businessName: "Style Test", classes: [{ id: "s1", title: "Heels Workshop", style: "Heels", date: "2026-09-28", time: "7:00 PM", duration: "60 minutes", venue: "Newport", price: "$1.00", registrationOpen: true }]
+});
+const styledHtml = templates.renderPublicSite(styledClass, {});
+assert.match(styledHtml, /public-editorial-class-fact/, "class facts must use the icon-badged fact-row treatment");
+assert.match(styledHtml, /public-editorial-class-icon/, "each fact row must have an icon badge");
+assert.match(styledHtml, /public-editorial-class-eyebrow">Heels</, "the eyebrow must show the class's own real Dance Style field, not an invented label");
+assert.match(styledHtml, /Date &amp; Time/, "date and time must be combined into one fact row, matching the booking modal");
+assert.match(styledHtml, /public-editorial-class-price/, "price must sit in its own labeled block in the footer");
+const noStyleClass = templates.buildWebsiteContent({ businessName: "No Style Test", classes: [{ id: "s2", title: "Untitled Session", registrationOpen: true }] });
+assert.match(templates.renderPublicSite(noStyleClass, {}), /public-editorial-class-eyebrow">Dance Class</, "a class with no configured style must fall back to a generic eyebrow, not an empty one");
+
 // Classes are managed exclusively on the Dashboard's Classes tab, not re-introduced here.
 assert.doesNotMatch(publicSite, /data-class-edit|data-add-class|data-class-save/, "theming work must not reintroduce class editing into the public page");
 
