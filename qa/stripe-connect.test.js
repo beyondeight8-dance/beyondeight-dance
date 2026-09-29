@@ -110,7 +110,7 @@ assert.match(dashboard, /const bindStripeSettings = /);
 assert.match(dashboard, /bindStripeSettings\(root\)/, "bindStripeSettings must actually be wired up in bind()");
 assert.match(dashboard, /name="paymentMethod"/);
 assert.match(dashboard, /draftState\.paymentMethod=data\.get\("paymentMethod"\)/, "the chosen payment method must be saved with the rest of the website draft");
-assert.match(dashboard, /\["payments","Payments"\]/, "Payments must be its own top-level nav tab, not folded into a generic Settings tab");
+assert.match(dashboard, /\["payments","Payments",/, "Payments must be its own top-level nav tab, not folded into a generic Settings tab");
 
 // The Venmo fields and the Stripe connect card must not both sit permanently visible -
 // only the panel matching the selected payment method should show, toggled live.
