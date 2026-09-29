@@ -5,6 +5,9 @@ const root = path.resolve(__dirname, "..");
 const dashboard = fs.readFileSync(path.join(root, "dashboard.js"), "utf8");
 const editor = fs.readFileSync(path.join(root, "public-site.js"), "utf8");
 const template = fs.readFileSync(path.join(root, "website-template.js"), "utf8");
+const productUi = fs.readFileSync(path.join(root, "product-ui.css"), "utf8");
+const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+const dashboardIndex = fs.readFileSync(path.join(root, "dashboard", "index.html"), "utf8");
 assert.match(dashboard, /templates\.buildWebsiteContent/);
 assert.match(dashboard, /saveWebsiteDraft/);
 assert.match(dashboard, /publishWebsiteDraft/);
@@ -73,4 +76,33 @@ assert.match(dashboard, /status === "paid" && !isStripePaid/, "Mark as Pending m
 // The status badge and its action button must share one grid cell so the row stays
 // vertically centered instead of the button wrapping onto its own full-width row.
 assert.match(dashboard, /class="owner-registration-status"/, "the status badge and action button must be grouped into a single column");
+
+// Overview redesign: the brand logo and logout control moved from a static top header
+// (dashboard/index.html) into the dynamically-rendered sidebar (nav()), so the logout
+// button now only exists after dashboard.js renders - it must be bound inside bind()
+// (re-queried on every render), not once at module load against a static element that no
+// longer exists.
+assert.doesNotMatch(dashboardIndex, /<header class="route-header">/, "the standalone top header must not come back now that the brand+logout live in the sidebar");
+assert.doesNotMatch(dashboard, /const logout = document\.querySelector\("\[data-dashboard-logout\]"\)/, "logout must not be queried once at module load against a static element");
+assert.match(dashboard, /root\.querySelector\("\[data-dashboard-logout\]"\)\?\.addEventListener\("click"/, "logout must be bound inside bind(), re-queried after every render");
+assert.match(dashboard, /class="owner-nav-brand"/, "the sidebar must render its own brand logo");
+assert.match(dashboard, /\["payments","Payments","card"\],\["website","Website","globe"\]/, "nav order must match the approved design (Payments before Website)");
+
+// Two real naming collisions with older, unrelated CSS were found live while building this
+// redesign: (1) a legacy `.owner-nav span` rule (styles.css, written for the old Soon badge
+// span) matched every span inside the new sidebar - icons, the brand mark, the brand name -
+// painting them as dark 999px pills; (2) a completely different pre-existing
+// `.owner-quick-actions` rule (styles.css, `grid-template-columns: 180px 1fr`) silently forced
+// the new Quick Actions card into a broken 2-column layout. Locks in both fixes.
+assert.doesNotMatch(styles, /\.owner-nav span,/, "the legacy .owner-nav span badge rule must not come back and clobber the new sidebar's icons/brand spans");
+assert.doesNotMatch(dashboard, /class="owner-quick-actions"/, "must not reuse the .owner-quick-actions class name - it collides with an older, unrelated 180px/1fr grid rule in styles.css");
+assert.match(dashboard, /class="owner-quick-panel"/, "the Quick Actions card must use its own non-colliding class name");
+assert.match(productUi, /\.owner-quick-panel \{ display: grid;/, "the Quick Actions card's own grid rule must exist under its non-colliding name");
+
+// The "Your Website" card's photo overlay text must be the business's own real headline,
+// never an invented tagline - and it must render above the darkening gradient (both are
+// position: absolute with no natural stacking order without an explicit z-index).
+assert.match(dashboard, /siteContent\.headline/, "the site card's overlay text must be the business's real headline, not invented copy");
+assert.match(productUi, /\.owner-site-tagline \{ position: absolute; z-index: 1;/, "the tagline must sit above the darkening gradient overlay via z-index, not rely on paint order");
+
 console.log("owner dashboard regression tests passed");

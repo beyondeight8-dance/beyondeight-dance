@@ -8192,7 +8192,7 @@ body.generated-motion {
 .owner-nav { display: flex; gap: 8px; overflow-x: auto; border-bottom: 1px solid #eadde5; padding-bottom: 12px; }
 .owner-nav a, .owner-nav button { flex: 0 0 auto; border: 0; border-radius: 6px; padding: 10px 13px; background: transparent; color: #6f6073; font: 800 0.9rem/1 Inter, sans-serif; text-decoration: none; }
 .owner-nav a:hover, .owner-nav a.is-active, .owner-nav button:hover, .owner-nav button.is-active { background: #f6eaf0; color: #a4124d; }
-.owner-nav span, .owner-analytics-teaser .eyebrow span { border-radius: 999px; padding: 3px 6px; background: #281331; color: #fff; font-size: 0.62rem; }
+.owner-analytics-teaser .eyebrow span { border-radius: 999px; padding: 3px 6px; background: #281331; color: #fff; font-size: 0.62rem; }
 .owner-welcome { display: flex; align-items: end; justify-content: space-between; gap: 28px; }
 .owner-welcome h1 { max-width: 760px; margin: 6px 0 8px; font: 700 clamp(2.2rem, 5vw, 4.4rem)/0.98 Georgia, serif; letter-spacing: 0; }
 .owner-welcome p { margin: 0; color: #6f6073; }

@@ -20,6 +20,7 @@ const markBoxes = [
   { label: 'homepage.css .home-restyle .brand-mark', text: homepage, pattern: /\.home-restyle \.brand-mark \{ width: (\d+)px; height: (\d+)px;/ },
   { label: 'onboarding.css #setup .brand-mark', text: onboarding, pattern: /#setup\.onboarding-workspace \.brand-mark \{ width: (\d+)px; height: (\d+)px;/ },
   { label: 'product-ui.css .dashboard-route .brand-mark', text: productUi, pattern: /\.dashboard-route \.route-header \.brand-mark \{\s*\n\s*width: (\d+)px;\s*\n\s*height: (\d+)px;/ },
+  { label: 'product-ui.css .owner-nav-brand .brand-mark', text: productUi, pattern: /\.owner-nav-brand \.brand-mark \{ width: (\d+)px; height: (\d+)px; \}/ },
 ];
 for (const { label, text, pattern } of markBoxes) {
   const match = text.match(pattern);
@@ -38,6 +39,7 @@ for (const [label, text, pattern] of [
   ['homepage.css .home-restyle .brand', homepage, /\.home-restyle \.brand \{ flex-shrink: 0; gap: (\d+px); \}/],
   ['onboarding.css #setup .brand', onboarding, /#setup\.onboarding-workspace \.brand \{ gap: (\d+px);/],
   ['product-ui.css .dashboard-route .brand', productUi, /\.dashboard-route \.route-header \.brand \{\s*\n\s*align-items: center;\s*\n\s*gap: (\d+px);/],
+  ['product-ui.css .owner-nav-brand', productUi, /\.owner-nav-brand \{ display: flex; flex-shrink: 0; align-items: center; gap: (\d+px);/],
 ]) {
   const match = text.match(pattern);
   assert.ok(match, `${label}: could not find its gap declaration`);
