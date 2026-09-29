@@ -33,7 +33,11 @@
     person: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.3" r="3.6"></circle><path d="M5 20c0-3.6 3.1-6.3 7-6.3s7 2.7 7 6.3"></path></svg>`,
     star: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 4 2.4 5.1 5.6.6-4.2 3.8 1.2 5.5L12 16.2l-5 2.8 1.2-5.5-4.2-3.8 5.6-.6L12 4Z"></path></svg>`,
     chart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-8"></path><path d="M3 20h18"></path></svg>`,
-    people: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3"></circle><path d="M3.5 19c0-3 2.5-5.3 5.5-5.3s5.5 2.3 5.5 5.3"></path><circle cx="17" cy="9" r="2.3"></circle><path d="M15.3 13.4c2.3.3 4.2 2.2 4.2 4.7"></path></svg>`
+    people: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3"></circle><path d="M3.5 19c0-3 2.5-5.3 5.5-5.3s5.5 2.3 5.5 5.3"></path><circle cx="17" cy="9" r="2.3"></circle><path d="M15.3 13.4c2.3.3 4.2 2.2 4.2 4.7"></path></svg>`,
+    phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="3" width="11" height="18" rx="2.2"></rect><path d="M10.5 18h3"></path></svg>`,
+    check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5 9 17l10.5-11"></path></svg>`,
+    bank: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5 12 4l8.5 5.5"></path><path d="M4.5 9.5h15v1.5h-15z"></path><path d="M6 11v7.5M10 11v7.5M14 11v7.5M18 11v7.5"></path><path d="M3.5 20.5h17"></path></svg>`,
+    lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.2"></rect><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"></path></svg>`
   };
   const navIcon = (key) => `<span class="owner-nav-icon" aria-hidden="true">${ICONS[key]}</span>`;
   const nav = () => {
@@ -208,8 +212,57 @@
     </div>`;
   const websiteTabBody = () => ({ look: websiteLookTab, hero: websiteHeroTab, about: websiteAboutTab, gallery: websiteGalleryTab, socials: websiteSocialsTab })[websiteTab]();
   const websiteView = () => `<section class="owner-dashboard-section"><header><div><p class="eyebrow">Style your website</p><h1>Look, feel, and story.</h1><p>Classes are managed from the Classes tab. This is just how your website looks.</p></div><a class="secondary-button" href="/${encodeURIComponent(business.slug)}" target="_blank">View Public Site</a></header>${websiteBanner()}${websiteTabNav()}${websiteTabBody()}</section>`;
-  const stripeControls = () => `<section class="owner-instagram owner-stripe" data-owner-stripe><div><small>Card payments</small><strong data-stripe-status>Checking connection...</strong><p data-stripe-help>Connect Stripe to accept card payments directly to your bank account.</p></div><div class="owner-instagram-actions"><button type="button" data-stripe-connect>Connect Stripe</button><button type="button" data-stripe-refresh hidden>Refresh status</button><button type="button" data-stripe-disconnect hidden>Disconnect</button></div><small data-stripe-message></small></section>`;
-  const paymentsView = () => { const method = draftState.paymentMethod === "stripe" ? "stripe" : "venmo"; return `<section class="owner-dashboard-section"><header><div><p class="eyebrow">Payments</p><h1>Get paid</h1><p>Set up at least one payment method before you can add classes.</p></div></header><form class="owner-settings-form" data-payment><label>Payment Method Shown to Students<select name="paymentMethod" data-payment-method-select><option value="venmo"${method === "venmo" ? " selected" : ""}>Venmo</option><option value="stripe"${method === "stripe" ? " selected" : ""}>Card (Stripe)</option></select></label><div data-venmo-fields${method === "stripe" ? " hidden" : ""}><label>Venmo Username<input name="venmoUsername" value="${esc(draftState.venmoUsername || "")}" placeholder="@yourname"></label><label>Venmo Payment URL<input name="venmoUrl" type="url" value="${esc(draftState.venmoUrl || "")}" placeholder="https://venmo.com/u/yourname"></label><small>Venmo payments remain pending verification until you confirm them manually.</small></div><button class="primary-button">Save payment settings</button></form><div data-stripe-fields${method === "venmo" ? " hidden" : ""}>${stripeControls()}</div></section>`; };
+  const stripeControls = () => `<section class="owner-payment-status" data-owner-stripe>
+    <div class="owner-payment-status-head">
+      <div><strong>Card payments (Stripe)</strong> <span class="owner-payment-badge" data-stripe-badge>Checking…</span></div>
+      <button type="button" data-stripe-connect>Connect Stripe</button>
+    </div>
+    <p data-stripe-help>Connect Stripe to accept card payments directly to your bank account.</p>
+    <div class="owner-payment-status-grid" data-stripe-grid hidden>
+      <div>
+        <small>Account Status</small>
+        <div class="owner-payment-status-row"><span class="owner-payment-status-icon is-good" aria-hidden="true">${ICONS.check}</span><strong data-stripe-account-label>Ready to accept payments</strong></div>
+        <p data-stripe-account-detail>Your account is connected and active.</p>
+      </div>
+      <div>
+        <small>Payouts</small>
+        <div class="owner-payment-status-row"><span class="owner-payment-status-icon" aria-hidden="true">${ICONS.bank}</span><strong>Go directly to your bank account</strong></div>
+        <p>Managed securely by Stripe.</p>
+      </div>
+      <div class="owner-payment-status-actions">
+        <small>Actions</small>
+        <button type="button" data-stripe-refresh hidden>Refresh status</button>
+        <button type="button" data-stripe-disconnect hidden>Disconnect</button>
+      </div>
+    </div>
+    <small data-stripe-message></small>
+  </section>`;
+  const venmoControls = () => `<section class="owner-payment-status">
+    <div class="owner-payment-status-head"><strong>Venmo</strong></div>
+    <p>Students pay you directly through Venmo and self-report the payment - you'll confirm each one manually in Registrations.</p>
+    <form class="owner-payment-venmo-form" data-payment>
+      <input type="hidden" name="paymentMethod" value="venmo">
+      <label>Venmo Username<input name="venmoUsername" value="${esc(draftState.venmoUsername || "")}" placeholder="@yourname"></label>
+      <label>Venmo Payment URL<input name="venmoUrl" type="url" value="${esc(draftState.venmoUrl || "")}" placeholder="https://venmo.com/u/yourname"></label>
+      <button class="primary-button">Save Venmo details</button>
+    </form>
+  </section>`;
+  const paymentOption = (value, icon, badge, title, description, brands, selected) => `<label class="owner-payment-option${selected ? " is-selected" : ""}"><input type="radio" name="paymentMethodChoice" value="${value}"${selected ? " checked" : ""} data-payment-method-radio>${badge ? `<span class="owner-payment-option-badge">${badge}</span>` : ""}<span class="owner-payment-option-icon" aria-hidden="true">${ICONS[icon]}</span><strong>${title}</strong><p>${description}</p><div class="owner-payment-option-brands">${brands}</div></label>`;
+  const paymentsView = () => {
+    const method = draftState.paymentMethod === "stripe" ? "stripe" : "venmo";
+    const options = paymentOption("stripe", "card", "Recommended", "Card payments (Stripe)", "Accept credit and debit cards securely. Payments go directly to your bank account via Stripe.", `<span>Visa</span><span>Mastercard</span><span>Amex</span><span>Discover</span>`, method === "stripe")
+      + paymentOption("venmo", "phone", "", "Venmo", "Let students pay you directly via Venmo. Great for smaller classes and in-person workshops.", `<span class="owner-payment-venmo-word">Venmo</span>`, method === "venmo");
+    return `<section class="owner-dashboard-section owner-payments"><header><div><p class="eyebrow">Payments</p><h1>Get paid for your classes</h1><p>Set up at least one payment method before you can add classes. You can always update this later.</p></div></header>
+      <div class="owner-payment-picker">
+        <h2>Choose a payment method</h2>
+        <p>Select how you'd like to accept payments from your students.</p>
+        <div class="owner-payment-options">${options}</div>
+      </div>
+      <div data-payment-panel="stripe"${method === "venmo" ? " hidden" : ""}>${stripeControls()}</div>
+      <div data-payment-panel="venmo"${method === "stripe" ? " hidden" : ""}>${venmoControls()}</div>
+      <div class="owner-payment-security"><span aria-hidden="true">${ICONS.lock}</span><div><strong>Your payments are secure</strong><p>We use Stripe, a trusted and secure payment processor. We never store your bank or card details on BeyondEight.</p></div></div>
+    </section>`;
+  };
   const comingSoon = (title, copy) => `<section class="owner-dashboard-section"><header><div><p class="eyebrow">Coming soon</p><h1>${title}</h1><p>${esc(copy)}</p></div></header><div class="owner-empty-state"><strong>${esc(title)} isn't available yet.</strong><p>We'll let you know as soon as it ships.</p></div></section>`;
   const render = () => { const views = { overview, classes: classView, registrations: registrationView, website: websiteView, payments: paymentsView, instructors: () => comingSoon("Instructors", "Add co-teachers and let visitors see who's running each class."), reviews: () => comingSoon("Reviews", "Collect and showcase student reviews on your public site."), analytics: () => comingSoon("Analytics", "Visitor traffic and booking insights for your website.") }; root.innerHTML = `<div class="owner-shell">${nav()}${views[activeView]()}</div>`; bind(); };
   const persist = async (publish, message) => { if (saving) return; saving = true; try { draftState.classes = classes(); await app.saveWebsiteDraft({ user, businessId: business.id, state: draftState }); if (publish) { await app.publishWebsiteDraft({ user, businessId: business.id, state: draftState }); publishedState = clone(draftState); } toast(message); } catch (error) { console.warn(error); toast("We couldn't save your changes. Please try again.", true); } finally { saving = false; render(); } };
@@ -299,18 +352,25 @@
   const bindStripeSettings = (scope) => {
     const card = scope.querySelector("[data-owner-stripe]");
     if (!card) return;
-    const statusNode = card.querySelector("[data-stripe-status]");
+    const badge = card.querySelector("[data-stripe-badge]");
     const help = card.querySelector("[data-stripe-help]");
     const connect = card.querySelector("[data-stripe-connect]");
     const refresh = card.querySelector("[data-stripe-refresh]");
     const disconnect = card.querySelector("[data-stripe-disconnect]");
     const message = card.querySelector("[data-stripe-message]");
+    const grid = card.querySelector("[data-stripe-grid]");
+    const accountLabel = card.querySelector("[data-stripe-account-label]");
+    const accountDetail = card.querySelector("[data-stripe-account-detail]");
     const showStatus = (result = {}) => {
       const active = Boolean(result.connected && result.chargesEnabled);
       stripeChargesEnabled = active;
-      statusNode.textContent = active ? "Connected and accepting payments" : result.connected ? "Connected — finish setup in Stripe" : "Not connected";
-      help.textContent = active ? "Card payments go directly to your bank account via Stripe." : result.connected ? "Finish onboarding in Stripe to start accepting card payments." : "Connect a Stripe account to accept card payments.";
-      connect.textContent = result.connected ? (active ? "Manage in Stripe" : "Continue Setup") : "Connect Stripe";
+      badge.textContent = active ? "Connected" : result.connected ? "Action needed" : "Not connected";
+      badge.className = `owner-payment-badge${active ? " is-connected" : result.connected ? " is-pending" : ""}`;
+      help.textContent = active ? "You're all set! You can accept payments through Stripe." : result.connected ? "Finish onboarding in Stripe to start accepting card payments." : "Connect a Stripe account to accept card payments.";
+      connect.innerHTML = result.connected ? (active ? `Manage in Stripe <span aria-hidden="true">↗</span>` : "Continue Setup") : "Connect Stripe";
+      grid.hidden = !result.connected;
+      accountLabel.textContent = active ? "Ready to accept payments" : "Action needed";
+      accountDetail.textContent = active ? "Your account is connected and active." : "Finish onboarding in Stripe to start accepting payments.";
       refresh.hidden = !result.connected; disconnect.hidden = !result.connected;
     };
     const requestStatus = () => ownerApiRequest(`/api/stripe/manage?businessId=${encodeURIComponent(business.id)}`).then(showStatus).catch((error) => { statusNode.textContent = "Connection unavailable"; message.textContent = error.message; });
@@ -425,6 +485,6 @@
       document.querySelector("[data-delete]").onclick = () => runClassMutation(() => app.deleteClass(target), "Class deleted.", close);
     }
   };
-  const bind = () => { root.querySelectorAll("[data-view]").forEach((button)=>button.onclick=()=>{activeView=button.dataset.view;render();}); root.querySelectorAll("[data-add-class]").forEach((button)=>button.onclick=()=>openForm()); root.querySelector("[data-import-instagram]")?.addEventListener("click",()=>{ if(!hasPaymentMethod()){toast("Set up Venmo or Stripe before adding classes.",true);activeView="payments";return render();} openInstagramPicker(); }); root.querySelectorAll("[data-class-action]").forEach((button)=>button.onclick=()=>action(button.dataset.classAction,Number(button.dataset.index))); root.querySelectorAll("[data-publish]").forEach((button)=>button.onclick=()=>persist(true,"Changes published.")); root.querySelector("[data-payment]")?.addEventListener("submit",async(event)=>{event.preventDefault();const data=new FormData(event.currentTarget);draftState.venmoUsername=String(data.get("venmoUsername")||"").replace(/^@/,"");draftState.venmoUrl=data.get("venmoUrl");draftState.paymentMethod=data.get("paymentMethod")==="stripe"?"stripe":"venmo";await persist(false,"Payment settings saved.");}); root.querySelector("[data-payment-method-select]")?.addEventListener("change",(event)=>{const isStripe=event.target.value==="stripe";root.querySelector("[data-venmo-fields]")?.toggleAttribute("hidden",isStripe);root.querySelector("[data-stripe-fields]")?.toggleAttribute("hidden",!isStripe);}); root.querySelector("[data-class-search]")?.addEventListener("input",(event)=>{classFilter.search=event.target.value;updateClassList();}); root.querySelector("[data-class-status-filter]")?.addEventListener("change",(event)=>{classFilter.status=event.target.value;updateClassList();}); root.querySelector("[data-registration-search]")?.addEventListener("input",(event)=>{registrationFilter.search=event.target.value;updateRegistrationList();}); root.querySelector("[data-registration-status-filter]")?.addEventListener("change",(event)=>{registrationFilter.status=event.target.value;updateRegistrationList();}); bindRegistrationList(); root.querySelector("[data-pending-payments]")?.addEventListener("click",()=>{registrationFilter.status="payment_pending_verification";activeView="registrations";render();}); root.querySelectorAll("[data-website-tab]").forEach((button) => button.onclick = () => { websiteTab = button.dataset.websiteTab; render(); }); root.querySelector("[data-theme-picker]")?.addEventListener("change", (event) => { if (event.target.name === "setupTheme") selectTheme(event.target.value); }); root.querySelectorAll("[data-website-form]").forEach((form) => form.addEventListener("submit", (event) => saveWebsiteForm(event, "Website updated."))); root.querySelectorAll("[data-photo-upload]").forEach((input) => input.addEventListener("change", () => uploadWebsiteImage(input))); root.querySelectorAll("[data-gallery-move]").forEach((button) => button.onclick = () => moveGalleryImage(Number(button.dataset.galleryMove), Number(button.dataset.direction))); root.querySelectorAll("[data-gallery-remove]").forEach((button) => button.onclick = () => removeGalleryImage(Number(button.dataset.galleryRemove))); bindInstagramEditor(root); bindStripeSettings(root); root.querySelector("[data-dashboard-logout]")?.addEventListener("click", async () => { await app.signOut(); location.replace("/"); }); };
+  const bind = () => { root.querySelectorAll("[data-view]").forEach((button)=>button.onclick=()=>{activeView=button.dataset.view;render();}); root.querySelectorAll("[data-add-class]").forEach((button)=>button.onclick=()=>openForm()); root.querySelector("[data-import-instagram]")?.addEventListener("click",()=>{ if(!hasPaymentMethod()){toast("Set up Venmo or Stripe before adding classes.",true);activeView="payments";return render();} openInstagramPicker(); }); root.querySelectorAll("[data-class-action]").forEach((button)=>button.onclick=()=>action(button.dataset.classAction,Number(button.dataset.index))); root.querySelectorAll("[data-publish]").forEach((button)=>button.onclick=()=>persist(true,"Changes published.")); root.querySelector("[data-payment]")?.addEventListener("submit",async(event)=>{event.preventDefault();const data=new FormData(event.currentTarget);draftState.venmoUsername=String(data.get("venmoUsername")||"").replace(/^@/,"");draftState.venmoUrl=data.get("venmoUrl");draftState.paymentMethod=data.get("paymentMethod")==="stripe"?"stripe":"venmo";await persist(false,"Payment settings saved.");}); root.querySelectorAll("[data-payment-method-radio]").forEach((input)=>input.addEventListener("change",()=>{draftState.paymentMethod=input.value;if(input.value==="stripe")return persist(false,"Payment method saved.");render();})); root.querySelector("[data-class-search]")?.addEventListener("input",(event)=>{classFilter.search=event.target.value;updateClassList();}); root.querySelector("[data-class-status-filter]")?.addEventListener("change",(event)=>{classFilter.status=event.target.value;updateClassList();}); root.querySelector("[data-registration-search]")?.addEventListener("input",(event)=>{registrationFilter.search=event.target.value;updateRegistrationList();}); root.querySelector("[data-registration-status-filter]")?.addEventListener("change",(event)=>{registrationFilter.status=event.target.value;updateRegistrationList();}); bindRegistrationList(); root.querySelector("[data-pending-payments]")?.addEventListener("click",()=>{registrationFilter.status="payment_pending_verification";activeView="registrations";render();}); root.querySelectorAll("[data-website-tab]").forEach((button) => button.onclick = () => { websiteTab = button.dataset.websiteTab; render(); }); root.querySelector("[data-theme-picker]")?.addEventListener("change", (event) => { if (event.target.name === "setupTheme") selectTheme(event.target.value); }); root.querySelectorAll("[data-website-form]").forEach((form) => form.addEventListener("submit", (event) => saveWebsiteForm(event, "Website updated."))); root.querySelectorAll("[data-photo-upload]").forEach((input) => input.addEventListener("change", () => uploadWebsiteImage(input))); root.querySelectorAll("[data-gallery-move]").forEach((button) => button.onclick = () => moveGalleryImage(Number(button.dataset.galleryMove), Number(button.dataset.direction))); root.querySelectorAll("[data-gallery-remove]").forEach((button) => button.onclick = () => removeGalleryImage(Number(button.dataset.galleryRemove))); bindInstagramEditor(root); bindStripeSettings(root); root.querySelector("[data-dashboard-logout]")?.addEventListener("click", async () => { await app.signOut(); location.replace("/"); }); };
   try { if (!app?.client) throw new Error(); user=await app.getSessionUser(); if (!user) return location.replace("/?login=1"); const result=await app.getPrimaryBusiness(user.id); business=result.business; if (!business) return location.replace("/?onboarding=1&app=1"); await app.assertBusinessOwner(user,business.id); bundle=await app.getBusinessBundle(business.id); stripeChargesEnabled=Boolean(bundle.stripeChargesEnabled); draftState=clone(Object.keys(bundle.website?.draft_content||{}).length?bundle.website.draft_content:bundle.website?.published_content||bundle.settings?.generated_content||{}); publishedState=clone(bundle.website?.published_content||{}); draftState.classes=classes(); try{registrations=await app.listRegistrations({user,businessId:business.id});}catch(error){console.warn(error);} render(); const stripeStatus=new URLSearchParams(window.location.search).get("stripe"); if(stripeStatus){const messages={connected:"Stripe connected — you're ready to accept card payments.",pending:"Stripe connected. Finish onboarding in Stripe to start accepting payments.",failed:"Stripe connection failed. Please try again.",invalid:"Stripe connection could not be verified. Please try again."}; toast(messages[stripeStatus]||"Stripe status updated.",stripeStatus==="failed"||stripeStatus==="invalid"); window.history.replaceState({},"",window.location.pathname+"?view=payments");} } catch(error){console.warn(error);root.innerHTML=`<section class="route-loading"><h1>We couldn't load your dashboard.</h1><p>Please refresh or sign in again.</p><a class="primary-button" href="/?login=1">Sign in</a></section>`;}
 })();
