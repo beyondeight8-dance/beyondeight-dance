@@ -93,6 +93,15 @@ assert.doesNotMatch(css, /"Source Serif 4"|"Inter"/, "the old generic font pairi
 assert.match(html, /family=Fraunces/, "the Fraunces font file must actually be loaded");
 assert.match(html, /family=Plus\+Jakarta\+Sans/, "the Plus Jakarta Sans font file must actually be loaded");
 
+// Flow pass: the hero photo and the dark Reality section used to meet at a flat, hard-edged
+// line (solid black overlay butting directly against solid navy), which read as stacked
+// slides rather than one continuous page. Both edges now dissolve into the adjoining
+// section's exact color instead of stopping abruptly. Locks in the fix so it can't regress
+// back to a flat two-tone overlay/background.
+assert.match(css, /\.ed-hero::before \{[^}]*var\(--home-ink\) 0%/, "the hero's bottom edge must fade into the exact ink color the Reality section uses, not stop as flat black");
+assert.match(css, /\.ed-reality \{[^}]*linear-gradient\(180deg, var\(--home-ink\)[^}]*#fffcfc 100%/, "the Reality section's bottom edge must fade into the page's cream background instead of ending as a flat navy block");
+assert.doesNotMatch(css, /\.ed-secondjob \{[^}]*background: #fdf5f2/, "the second-job section must not reintroduce an off-tone cream that creates seams against the sections around it");
+
 // The redesign adds a second "Compare every feature" trigger inside the new pricing
 // section, alongside the existing nav Pricing button - both share [data-open-comparison].
 // script.js must wire up every matching button (querySelectorAll), not just the first
