@@ -194,7 +194,6 @@
   font: 400 clamp(2rem, 3.2vw, 3.05rem)/1.02 var(--product-serif);
   letter-spacing: 0;
 }
-.dashboard-route .owner-welcome h1 .owner-welcome-emoji { display: inline-block; margin-left: 6px; font-size: 0.72em; vertical-align: 0.05em; }
 
 .dashboard-route .eyebrow { margin: 0 0 5px; color: var(--product-blush-dark); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .dashboard-route .owner-welcome p,
