@@ -79,6 +79,20 @@ assert.doesNotMatch(css, /\.ed-hero \{[^}]*92svh/, "the hero must not regress to
 assert.match(css, /\.ed-hero \{[^}]*max-height: 600px/, "the hero's compact max-height must be in place");
 assert.doesNotMatch(css, /clamp\(320px, 44vw, 560px\)/, "the payoff image must not regress to its old tall height");
 
+// Design-identity pass: the homepage previously repeated the same rooftop photo twice
+// (hero + "Now go teach" payoff), reused the same floating white card device even for the
+// hero's on-image stat chip, and paired generic Source Serif 4 + Inter - three things that
+// made it read as a template rather than an independent brand. Must not regress.
+assert.doesNotMatch(html, /<figure class="ed-payoff">/, "the payoff must not go back to reusing the hero photo in a second image frame");
+assert.match(html, /<p class="ed-payoff">Now go teach\.<\/p>/, "the payoff is now a typographic-only closing statement");
+assert.doesNotMatch(css, /\.ed-payoff img \{/, "no payoff image styles should remain once the image is gone");
+assert.doesNotMatch(css, /\.ed-hero-chip \{[^}]*background: white/, "the hero chip must not regress to a floating white card - it should sit directly on the photo");
+assert.match(css, /"Fraunces"/, "the display typeface should be Fraunces, not the generic Source Serif 4");
+assert.match(css, /"Plus Jakarta Sans"/, "the sans typeface should be Plus Jakarta Sans, not the generic Inter");
+assert.doesNotMatch(css, /"Source Serif 4"|"Inter"/, "the old generic font pairing must not remain in the homepage's own variables");
+assert.match(html, /family=Fraunces/, "the Fraunces font file must actually be loaded");
+assert.match(html, /family=Plus\+Jakarta\+Sans/, "the Plus Jakarta Sans font file must actually be loaded");
+
 // The redesign adds a second "Compare every feature" trigger inside the new pricing
 // section, alongside the existing nav Pricing button - both share [data-open-comparison].
 // script.js must wire up every matching button (querySelectorAll), not just the first
