@@ -132,6 +132,12 @@ assert.match(styledHtml, /public-editorial-class-icon/, "each fact row must have
 assert.match(styledHtml, /public-editorial-class-eyebrow">Heels</, "the eyebrow must show the class's own real Dance Style field, not an invented label");
 assert.match(styledHtml, /Date &amp; Time/, "date and time must be combined into one fact row, matching the booking modal");
 assert.match(styledHtml, /public-editorial-class-price/, "price must sit in its own labeled block in the footer");
+
+// Sizing regression guard: cards must stay compact enough to fit three across on desktop -
+// they were briefly redesigned as one large full-width card per row (photo + copy side by
+// side), which only fit a single class per row and was explicitly rejected.
+assert.match(publicStyles, /\.public-editorial-classes > div \{ display: grid; grid-template-columns: repeat\(3,/, "the classes grid must fit three cards per row on desktop, not one");
+assert.doesNotMatch(publicStyles, /\.public-editorial-class \{ display: grid; grid-template-columns: minmax\(0, 1fr\) minmax\(0, 1\.15fr\)/, "the class card must not regress to the large side-by-side photo+copy layout");
 const noStyleClass = templates.buildWebsiteContent({ businessName: "No Style Test", classes: [{ id: "s2", title: "Untitled Session", registrationOpen: true }] });
 assert.match(templates.renderPublicSite(noStyleClass, {}), /public-editorial-class-eyebrow">Dance Class</, "a class with no configured style must fall back to a generic eyebrow, not an empty one");
 
