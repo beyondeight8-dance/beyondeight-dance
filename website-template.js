@@ -399,6 +399,15 @@
   const classesEmptyHTML = `<p class="theme-classes-empty">New classes coming soon. Follow along or get in touch for the next class announcement.</p>`;
   const bookButton = (item, label = "Book a Spot", className = "") =>
     `<button type="button"${className ? ` class="${className}"` : ""} data-book-class="${esc(item.id || slugify(item.title))}"${item.registrationOpen === false ? " disabled" : ""}>${item.registrationOpen === false ? "Registration Closed" : label}</button>`;
+  // Same minimal line icons and fact-row treatment as the booking modal (public-site.js's
+  // BOOKING_ICONS/bookingFact), reused here so the class card and the booking dialog it
+  // opens into feel like one continuous flow rather than two different designs.
+  const CLASS_FACT_ICONS = {
+    calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M8 3v4M16 3v4M3.5 9.5h17"></path></svg>`,
+    clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>`,
+    pin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"></path><circle cx="12" cy="9.5" r="2.4"></circle></svg>`
+  };
+  const classFact = (icon, label, value) => `<div class="public-editorial-class-fact"><span class="public-editorial-class-icon" aria-hidden="true">${CLASS_FACT_ICONS[icon]}</span><div><dt>${label}</dt><dd>${value}</dd></div></div>`;
 
   const heroEditorial = (content, ctx) => `
     <section id="home" class="theme-hero theme-hero-editorial" data-edit-section="hero">
@@ -777,19 +786,25 @@
     const navItems = [["Home", "#home"], ["Classes", "#classes"], ["About", "#about"], ...(gallery.length ? [["Gallery", "#gallery"]] : []), ...(faqs.length ? [["FAQ", "#faq"]] : []), ["Contact", "#contact"]];
     const navLinks = navItems.map(([label, href]) => `<a href="${href}">${label}</a>`).join("");
     const contactHref = content.email ? `mailto:${content.email}` : externalHref(content.website) || externalHref(content.instagram, "instagram") || "";
-    const classMarkup = visibleClasses.length ? visibleClasses.map((item) => `<article class="public-editorial-class${item.highlighted ? " is-highlighted" : ""}">
+    const classMarkup = visibleClasses.length ? visibleClasses.map((item) => {
+      const dateTime = [item.date ? publicDate(item.date) : "", item.time].filter(Boolean).join(" • ");
+      const facts = (dateTime ? classFact("calendar", "Date &amp; Time", esc(dateTime)) : "")
+        + (item.duration ? classFact("clock", "Duration", esc(item.duration)) : "")
+        + (item.venue || item.location ? classFact("pin", "Location", esc(item.venue || item.location)) : "");
+      const price = classPrice(item);
+      return `<article class="public-editorial-class${item.highlighted ? " is-highlighted" : ""}">
       ${item.image ? `<div class="public-editorial-class-media">${imageTag(item.image, `${item.title} class`)}</div>` : `<div class="public-editorial-class-media is-empty" aria-hidden="true"><span>${esc(String(item.title || "Class").charAt(0))}</span></div>`}
       <div class="public-editorial-class-copy">
+        <p class="public-editorial-class-eyebrow">${esc(item.style || "Dance Class")}</p>
         <h3>${esc(item.title || "Untitled class")}</h3>
-        <dl>
-          ${item.date ? `<div><dt>Date</dt><dd>${esc(publicDate(item.date))}</dd></div>` : ""}
-          ${item.time ? `<div><dt>Time</dt><dd>${esc(item.time)}</dd></div>` : ""}
-          ${item.venue || item.location ? `<div><dt>Location</dt><dd>${esc(item.venue || item.location)}</dd></div>` : ""}
-        </dl>
-        ${classPrice(item) ? `<strong class="public-editorial-price">${esc(classPrice(item))}</strong>` : ""}
-        ${bookButton(item, item.registrationOpen === false ? "Registration Closed" : "Book Now")}
+        <dl class="public-editorial-class-facts">${facts}</dl>
+        <div class="public-editorial-class-footer">
+          ${price ? `<div class="public-editorial-class-price"><small>Price</small><strong>${esc(price)}</strong></div>` : "<span></span>"}
+          ${bookButton(item, item.registrationOpen === false ? "Registration Closed" : "Book Now →")}
+        </div>
       </div>
-    </article>`).join("") : `<div class="public-editorial-empty"><h3>New classes coming soon.</h3><p>Check back for the next class announcement.</p></div>`;
+    </article>`;
+    }).join("") : `<div class="public-editorial-empty"><h3>New classes coming soon.</h3><p>Check back for the next class announcement.</p></div>`;
     const galleryMarkup = gallery.length ? `<section id="gallery" class="public-editorial-gallery" aria-labelledby="gallery-heading"><header><div><h2 id="gallery-heading">From the Studio</h2><p>A glimpse into classes, workshops, and movement.</p></div>${content.instagram ? `<a href="${esc(externalHref(content.instagram, "instagram"))}" target="_blank" rel="noopener noreferrer">Follow on Instagram →</a>` : ""}</header><div class="public-editorial-gallery-track">${gallery.map((src, index) => imageTag(src, `${content.brandName} gallery image ${index + 1}`)).join("")}</div></section>` : "";
     const reviewsMarkup = reviews.length ? `<section class="public-editorial-reviews" aria-label="Student reviews">${reviews.map(({ name, quote }) => `<blockquote><p>“${esc(quote)}”</p>${name ? `<cite>— ${esc(name)}</cite>` : ""}</blockquote>`).join("")}</section>` : "";
     const faqMarkup = faqs.length ? `<section id="faq" class="public-editorial-faq" aria-labelledby="faq-heading"><header><small>FAQ</small><h2 id="faq-heading">Good to know before class.</h2></header><div>${faqs.map(({ question, answer }) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("")}</div></section>` : "";
