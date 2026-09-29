@@ -64,11 +64,36 @@
     if (!raw) return "$0";
     return /^\d/.test(raw) ? `$${raw}` : raw;
   };
-  const bookingSummary = (item) => `<dl class="booking-summary"><div><dt>Class</dt><dd>${esc(item.title)}</dd></div><div><dt>Instructor</dt><dd>${esc(item.instructor || contentForState().instructorName)}</dd></div><div><dt>Date & time</dt><dd>${esc(item.date || "TBA")} • ${esc(item.time || "TBA")}</dd></div><div><dt>Duration</dt><dd>${esc(item.duration || "60 minutes")}</dd></div><div><dt>Location</dt><dd>${esc(item.venue || item.location || "Details coming soon")}</dd></div><div><dt>Price</dt><dd>${esc(formatPrice(item.price))}</dd></div></dl>`;
+  // Minimal line icons for the booking card's fact rows - no icon library in this
+  // dependency-free codebase, so these are hand-rolled inline to match.
+  const BOOKING_ICONS = {
+    calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M8 3v4M16 3v4M3.5 9.5h17"></path></svg>`,
+    clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>`,
+    pin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"></path><circle cx="12" cy="9.5" r="2.4"></circle></svg>`,
+    tag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12.5 12 4h7.5v7.5L11 20 3.5 12.5Z"></path><circle cx="15.5" cy="8.5" r="1.3" fill="currentColor" stroke="none"></circle></svg>`
+  };
+  const bookingFact = (icon, label, value) => `<div class="booking-fact"><span class="booking-fact-icon" aria-hidden="true">${BOOKING_ICONS[icon]}</span><div><dt>${esc(label)}</dt><dd>${value}</dd></div></div>`;
+  // The class card's photo reuses the same real, already-configured content images the
+  // public site itself falls back through for a class thumbnail (see website-template.js's
+  // classThumbs) - never a stock/invented photo, and gracefully empty when none exist yet.
+  const bookingVisual = (item) => {
+    const content = contentForState();
+    const thumb = item.image || [content.images?.gallery, content.images?.workshop, content.images?.performance, content.images?.hero].filter(Boolean)[0];
+    const media = thumb
+      ? `<div class="booking-visual-media"><img src="${esc(thumb)}" alt="" loading="lazy"></div>`
+      : `<div class="booking-visual-media is-empty" aria-hidden="true"><span>${esc(String(item.title || "Class").charAt(0))}</span></div>`;
+    const facts = bookingFact("calendar", "Date & Time", `${esc(item.date || "TBA")} &middot; ${esc(item.time || "TBA")}`)
+      + bookingFact("clock", "Duration", esc(item.duration || "60 minutes"))
+      + bookingFact("pin", "Location", esc(item.venue || item.location || "Details coming soon"))
+      + bookingFact("tag", "Price", esc(formatPrice(item.price)));
+    return `<aside class="booking-visual">${media}<div class="booking-visual-body"><h3>${esc(item.title)}</h3><p>with ${esc(item.instructor || content.instructorName)}</p><dl class="booking-facts">${facts}</dl></div></aside>`;
+  };
+  const bookingLayout = (item, title, panel) => `<header><div><small>Complete your booking</small><h2 id="booking-title">${esc(title)}</h2></div><button type="button" data-close-booking aria-label="Close">×</button></header><div class="booking-layout">${bookingVisual(item)}<div class="booking-form-panel">${panel}</div></div>`;
   const openBooking = (classId) => {
     const item = bookingClass(classId);
     if (!item || item.registrationOpen === false) return;
-    document.body.insertAdjacentHTML("beforeend", `<div class="booking-modal" data-booking-modal role="dialog" aria-modal="true" aria-labelledby="booking-title"><div class="booking-dialog"><header><div><small>Book a spot</small><h2 id="booking-title">${esc(item.title)}</h2></div><button type="button" data-close-booking aria-label="Close">×</button></header>${bookingSummary(item)}<form data-booking-details><h3>Your Details</h3><label>Full Name<input required autocomplete="name" name="studentName"></label><label>Email<input required type="email" autocomplete="email" name="studentEmail"></label><label>Phone Number<input required type="tel" autocomplete="tel" name="studentPhone"></label><label>Notes (optional)<textarea name="notes" rows="3"></textarea></label><button type="submit">Continue to Payment</button></form></div></div>`);
+    const panel = `<form data-booking-details><label>Full Name<input required autocomplete="name" name="studentName"></label><label>Email<input required type="email" autocomplete="email" name="studentEmail"></label><label>Phone Number<input required type="tel" autocomplete="tel" name="studentPhone"></label><label>Notes (optional)<textarea name="notes" rows="3"></textarea></label><button type="submit">Continue to Payment</button></form>`;
+    document.body.insertAdjacentHTML("beforeend", `<div class="booking-modal" data-booking-modal role="dialog" aria-modal="true" aria-labelledby="booking-title"><div class="booking-dialog">${bookingLayout(item, "Your Details", panel)}</div></div>`);
     const modal = document.querySelector("[data-booking-modal]");
     modal.querySelector("[data-close-booking]").addEventListener("click", closeBooking);
     modal.addEventListener("click", (event) => { if (event.target === modal) closeBooking(); });
@@ -82,29 +107,34 @@
     const dialog = document.querySelector("[data-booking-modal] .booking-dialog");
     if (usesStripe()) return showStripePayment(dialog, item, details);
     const destination = venmoDestination();
-    dialog.innerHTML = `<header><div><small>Step 2 of 2</small><h2>Payment</h2></div><button type="button" data-close-booking aria-label="Close">×</button></header>${bookingSummary(item)}<section class="booking-payment"><strong>Venmo</strong><p>Pay the instructor directly, then return here to record your registration. Payment will remain pending verification.</p>${destination ? `<a class="primary-button" href="${esc(destination)}" target="_blank" rel="noopener">Pay ${item.price ? esc(formatPrice(item.price)) : "the instructor"} with Venmo</a>` : `<p class="booking-warning">The instructor has not configured a Venmo destination. Contact them before confirming payment.</p>`}<button type="button" data-confirm-booking>I’ve completed payment</button><small data-booking-error></small></section>`;
+    const panel = `<section class="booking-payment"><p class="booking-payment-label">Pay with Venmo</p><p>Pay the instructor directly, then return here to record your registration. Payment will remain pending verification.</p>${destination ? `<a class="primary-button" href="${esc(destination)}" target="_blank" rel="noopener">Pay ${item.price ? esc(formatPrice(item.price)) : "the instructor"} with Venmo</a>` : `<p class="booking-warning">The instructor has not configured a Venmo destination. Contact them before confirming payment.</p>`}<button type="button" data-confirm-booking>I’ve completed payment</button><small data-booking-error></small></section>`;
+    dialog.innerHTML = bookingLayout(item, "Payment", panel);
     dialog.querySelector("[data-close-booking]").addEventListener("click", closeBooking);
     dialog.querySelector("[data-confirm-booking]").addEventListener("click", () => completeBooking(item, details));
   };
-  // Configured in Checkout Studio - see STRIPE_INTEGRATION_TODO.md.
+  // Configured in Checkout Studio - see STRIPE_INTEGRATION_TODO.md. Colors match the
+  // booking dialog's own rose/cream palette (see .public-site-route's booking-dialog
+  // overrides in public-site.css) rather than Stripe's default blue, since this form is
+  // mounted directly inside our own styled card, not a separate Stripe-hosted page.
   const STRIPE_FORM_APPEARANCE = {
     theme: "stripe",
     labels: "auto",
     inputs: "spaced",
     variables: {
-      borderRadius: "4px",
+      borderRadius: "8px",
       colorBackground: "#ffffff",
       colorDanger: "#df1b41",
-      colorPrimary: "#0570de",
+      colorPrimary: "#a8675f",
       colorSuccess: "#00c853",
-      colorText: "#30313d",
+      colorText: "#24211f",
       fontFamily: "default",
       fontSizeBase: "16px",
       spacingUnit: "4px"
     }
   };
   const showStripePayment = (dialog, item, details) => {
-    dialog.innerHTML = `<header><div><small>Step 2 of 2</small><h2>Payment</h2></div><button type="button" data-close-booking aria-label="Close">×</button></header>${bookingSummary(item)}<section class="booking-payment"><strong>Card Payment</strong><div id="checkout-form" data-checkout-form><p class="booking-checkout-loading">Loading secure payment form…</p></div><small data-booking-error></small></section>`;
+    const panel = `<section class="booking-payment"><p class="booking-payment-label">Card details</p><div id="checkout-form" data-checkout-form><p class="booking-checkout-loading">Loading secure payment form…</p></div><small data-booking-error></small></section>`;
+    dialog.innerHTML = bookingLayout(item, "Payment", panel);
     dialog.querySelector("[data-close-booking]").addEventListener("click", closeBooking);
     mountStripeCheckoutForm(item, details);
   };

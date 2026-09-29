@@ -162,6 +162,24 @@ assert.match(appConfig, /STRIPE_PUBLISHABLE_KEY/);
 // reads as a typo, not a price - a digit-led value must be prefixed with "$" for display.
 assert.match(publicSite, /const formatPrice = \(value\) => \{/, "public-site.js must format prices before displaying them, not print the raw stored value");
 assert.match(publicSite, /formatPrice\(item\.price\)/, "the booking summary's Price row must go through formatPrice");
-assert.doesNotMatch(styles, /\.booking-summary \{[^}]*gap: 1px;/, "the booking summary must not use the old 1px-seam bordered-cell (spreadsheet) layout");
+
+// Payment experience redesign: a two-column layout (class photo + icon fact rows on the
+// left, the step's form/payment content on the right) shared across both booking steps via
+// one bookingLayout()/bookingVisual() helper, instead of the old plain two-column dt/dd
+// summary grid.
+assert.doesNotMatch(styles, /\.booking-summary \{/, "the old dt/dd booking-summary grid must not come back");
+assert.match(publicSite, /const bookingVisual = \(item\) => \{/, "the class photo + fact rows must be built by one shared helper, not duplicated per step");
+assert.match(publicSite, /const bookingLayout = \(item, title, panel\) => /, "both booking steps must share one two-column layout helper");
+assert.match(styles, /\.booking-layout \{ display: grid;/, "the booking dialog must be a two-column layout");
+assert.match(styles, /\.booking-fact-icon \{/, "the fact rows must use icon badges, not a bare dt/dd grid");
+// The class thumbnail must reuse the business's own real, already-configured images (the
+// same fallback chain the public site itself uses for a class thumbnail) - never a stock
+// or invented photo - and degrade gracefully to an initial when none exist yet.
+assert.match(publicSite, /item\.image \|\| \[content\.images\?\.gallery, content\.images\?\.workshop, content\.images\?\.performance, content\.images\?\.hero\]/, "the booking card's photo must come from the business's real configured images");
+assert.match(publicSite, /booking-visual-media is-empty/, "must degrade gracefully to an initial when no class image is configured");
+// The embedded Stripe form previously used Stripe's generic default blue button, which
+// clashed inside our own rose/cream-styled card. Must stay on-brand.
+assert.doesNotMatch(publicSite, /colorPrimary: "#0570de"/, "the Stripe form's primary color must not regress to Stripe's generic default blue");
+assert.match(publicSite, /colorPrimary: "#a8675f"/, "the Stripe form's primary color must match the booking dialog's own rose brand color");
 
 console.log("stripe connect regression tests passed");
