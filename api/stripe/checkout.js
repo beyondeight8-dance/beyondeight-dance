@@ -1,6 +1,11 @@
 const { db } = require("../_lib/shared");
 const { stripeRequest } = require("../_lib/stripe");
 
+// Same pattern as api/stripe/connect.js - required even for the embedded Checkout Form:
+// Stripe needs somewhere to send the browser back to for payment methods that require an
+// authentication redirect (e.g. 3D Secure), which the confirm() call alone can't cover.
+const appOrigin = () => (process.env.PUBLIC_APP_URL || "https://beyond8dance.com").replace(/\/$/, "");
+
 const priceInCents = (raw) => {
   const num = typeof raw === "number" ? raw : Number(String(raw ?? "").replace(/[^0-9.]/g, ""));
   return Number.isFinite(num) && num > 0 ? Math.round(num * 100) : 0;
@@ -46,6 +51,7 @@ module.exports = async (request, response) => {
         submit_type: "auto",
         name_collection: { individual: { enabled: true, optional: true } },
         integration_identifier: "custom_embedded_web_0001",
+        return_url: `${appOrigin()}/${business.slug}?booking=stripe_success`,
         mode: "payment",
         customer_email: studentEmail,
         line_items: [{

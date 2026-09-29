@@ -92,7 +92,7 @@
   const openBooking = (classId) => {
     const item = bookingClass(classId);
     if (!item || item.registrationOpen === false) return;
-    const panel = `<form data-booking-details><label>Full Name<input required autocomplete="name" name="studentName"></label><label>Email<input required type="email" autocomplete="email" name="studentEmail"></label><label>Phone Number<input required type="tel" autocomplete="tel" name="studentPhone"></label><label>Notes (optional)<textarea name="notes" rows="3"></textarea></label><button type="submit">Continue to Payment</button></form>`;
+    const panel = `<form data-booking-details><label>Full Name<input required autocomplete="name" name="studentName"></label><label>Email<input required type="email" autocomplete="email" name="studentEmail"></label><label>Phone Number<input required type="tel" autocomplete="tel" name="studentPhone"></label><button type="submit">Continue to Payment</button></form>`;
     document.body.insertAdjacentHTML("beforeend", `<div class="booking-modal" data-booking-modal role="dialog" aria-modal="true" aria-labelledby="booking-title"><div class="booking-dialog">${bookingLayout(item, "Your Details", panel)}</div></div>`);
     const modal = document.querySelector("[data-booking-modal]");
     modal.querySelector("[data-close-booking]").addEventListener("click", closeBooking);

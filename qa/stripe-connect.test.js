@@ -182,4 +182,14 @@ assert.match(publicSite, /booking-visual-media is-empty/, "must degrade graceful
 assert.doesNotMatch(publicSite, /colorPrimary: "#0570de"/, "the Stripe form's primary color must not regress to Stripe's generic default blue");
 assert.match(publicSite, /colorPrimary: "#a8675f"/, "the Stripe form's primary color must match the booking dialog's own rose brand color");
 
+// Live bug: Stripe rejected the embedded Checkout Session with "You must provide a
+// `returnUrl` on confirm() or `return_url` when initializing the Checkout Session" - needed
+// even though the embedded form doesn't normally navigate away, because some cards require
+// a 3D Secure redirect the confirm() call alone can't handle.
+assert.match(checkout, /return_url: `\$\{appOrigin\(\)\}\/\$\{business\.slug\}\?booking=stripe_success`/, "the Checkout Session must set a return_url or Stripe rejects session creation");
+
+// The optional Notes field was removed from the booking details step.
+assert.doesNotMatch(publicSite, /Notes \(optional\)/, "the booking form must not have a Notes field");
+assert.doesNotMatch(publicSite, /name="notes"/, "the booking form must not have a notes input");
+
 console.log("stripe connect regression tests passed");
