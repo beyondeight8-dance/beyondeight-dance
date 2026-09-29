@@ -112,12 +112,16 @@ assert.match(dashboard, /name="paymentMethod"/);
 assert.match(dashboard, /draftState\.paymentMethod=data\.get\("paymentMethod"\)/, "the chosen payment method must be saved with the rest of the website draft");
 assert.match(dashboard, /\["payments","Payments",/, "Payments must be its own top-level nav tab, not folded into a generic Settings tab");
 
-// The Venmo fields and the Stripe connect card must not both sit permanently visible -
-// only the panel matching the selected payment method should show, toggled live.
-assert.match(dashboard, /data-venmo-fields/);
-assert.match(dashboard, /data-stripe-fields/);
-assert.match(dashboard, /data-payment-method-select/);
-assert.match(dashboard, /toggleAttribute\("hidden",isStripe\)/, "switching the payment method dropdown must toggle which panel is visible");
+// Payments page redesign: a dropdown became two selectable radio cards. The Venmo fields
+// and the Stripe connect card must not both sit permanently visible - only the panel
+// matching the selected payment method should show, toggled live. Selecting Stripe has no
+// visible save button (matching the approved design), so it must auto-save immediately;
+// selecting Venmo just reveals its fields for the user to fill in and save explicitly.
+assert.match(dashboard, /data-payment-panel="stripe"/);
+assert.match(dashboard, /data-payment-panel="venmo"/);
+assert.match(dashboard, /data-payment-method-radio/);
+assert.match(dashboard, /input\.value==="stripe"\)return persist\(false,"Payment method saved\."\);/, "selecting the Stripe card must auto-save the payment method immediately, since that state has no visible save button");
+assert.doesNotMatch(dashboard, /data-payment-method-select|data-venmo-fields|data-stripe-fields/, "the old dropdown-based payment method picker must not come back");
 
 // A studio owner with no way to collect money must not be able to publish bookable
 // classes - adding a class is gated on having at least one payment method configured.
