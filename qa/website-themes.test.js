@@ -165,4 +165,14 @@ assert.match(styles, /background: color-mix\(in srgb, var\(--footer-bg, var\(--s
 // intended, dwarfing every other section on the page).
 assert.match(styles, /\.theme-hero-noir\s*\{[^}]*max-height: 720px/, "the Noir hero must have a hard max-height cap, not just a vh-based min-height");
 
+// Regression guard: the class card's photo box used min-height instead of a fixed height, so
+// a card with a real (portrait-oriented) photo rendered visibly taller than its siblings with
+// placeholder initials in the same grid row - confirmed live via screenshot ("all of them
+// should look even. I can tell in the screenshot they are not"). A fixed height (not
+// min-height) on the media box, with the <img> filling it via object-fit: cover, keeps every
+// card in a row the same height regardless of whether it has a photo.
+assert.match(publicStyles, /\.public-editorial-class-media \{ height: 190px;/, "the class photo box must use a fixed height, not min-height, so real photos don't grow the card taller than its siblings");
+assert.doesNotMatch(publicStyles, /\.public-editorial-class-media \{ min-height:/, "must not regress to min-height on the photo box");
+assert.match(publicStyles, /\.public-editorial-class-footer \{[^}]*margin-top: auto;/, "the price/button footer must be pinned to the card's bottom so footers stay aligned across a row even when title/copy lengths differ");
+
 console.log("website theme system regression tests passed");
