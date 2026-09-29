@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260928-embedded-checkout">
-  <link rel="stylesheet" href="homepage.css?v=20260928-editorial-redesign">
+  <link rel="stylesheet" href="homepage.css?v=20260929-compact-pass">
   <link rel="stylesheet" href="onboarding.css?v=20260928-brand-consistency">
   <link rel="stylesheet" href="public-site.css?v=20260921-about-layout">
   <link rel="preload" as="image" href="assets/homepage-dance-studio.png?v=20260928-rooftop-hero">
@@ -59,8 +59,6 @@
       </div>
     </section>
 
-    <p class="ed-count" aria-hidden="true"><span>5</span><span>6</span><span>7</span><span>8</span></p>
-
     <!-- 02 — THE REALITY -->
     <section class="ed-reality" aria-labelledby="reality-title">
       <div class="ed-reality-text">
@@ -75,6 +73,31 @@
       </div>
     </section>
 
+    <!-- 02.5 — YOUR OWN WEBSITE: one strong visual moment, not a feature card. -->
+    <section class="ed-site" aria-labelledby="site-title">
+      <div class="ed-site-text">
+        <p class="ed-eyebrow">Build your presence</p>
+        <h2 id="site-title">Your class has<br>a home, too.</h2>
+        <p>Your classes, story, photos and registration — on a site that actually looks like you.</p>
+        <a class="ed-button ed-button-outline" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
+      </div>
+      <div class="ed-site-frames ed-reveal" aria-hidden="true">
+        <div class="ed-site-browser">
+          <div class="ed-site-browser-bar"><span></span><span></span><span></span><em>beyond8dance.com/maya-flores</em></div>
+          <div class="ed-site-browser-body">
+            <div class="ed-site-nav"><strong>Maya Flores</strong><span>Classes</span><span>Gallery</span><span>Register</span></div>
+            <div class="ed-site-hero"><span>Heels &amp; Sharp Lines</span><small>Weekly classes in Brooklyn</small></div>
+            <div class="ed-site-card"><div></div><p>Saturday Heels<br><strong>$25</strong></p></div>
+          </div>
+        </div>
+        <div class="ed-site-phone">
+          <div class="ed-site-phone-notch"></div>
+          <div class="ed-site-nav"><strong>Maya Flores</strong><span>&#9776;</span></div>
+          <div class="ed-site-hero"><span>Heels &amp; Sharp Lines</span></div>
+        </div>
+      </div>
+    </section>
+
     <!-- 03/04 — HOW BEYONDEIGHT WORKS + PAYOFF -->
     <section class="ed-story" id="how-it-works" aria-labelledby="story-title">
       <div class="ed-section-heading">
@@ -84,33 +107,29 @@
 
       <ol class="ed-steps" id="features">
         <li class="ed-step">
-          <div class="ed-step-text"><span class="ed-step-count">5</span><h3>Create your class</h3><p>Title, date, price, capacity. It's on your site in a minute.</p></div>
           <div class="ed-mock ed-mock-form ed-reveal" aria-label="Example class details">
             <strong>Create New Class</strong>
             <span>Class Title</span><div class="ed-mock-field">Heels Workshop</div>
-            <span>Date &amp; Time</span><div class="ed-mock-row"><div class="ed-mock-field">Oct 12, 2026</div><div class="ed-mock-field">4:00 PM</div></div>
-            <span>Location</span><div class="ed-mock-field">The Movement Lab, NY</div>
             <span>Price</span><div class="ed-mock-field">$25</div>
-            <a href="#setup" data-open-setup class="ed-mock-cta">Create a Class</a>
           </div>
-        </li>
-        <li class="ed-step ed-step-reverse">
-          <div class="ed-step-text"><span class="ed-step-count">6</span><h3>People register — and pay</h3><p>Card or Venmo, right on your page. No separate link to chase.</p></div>
-          <div class="ed-mock ed-mock-confirm ed-reveal" aria-label="Example registration confirmation">
-            <span class="ed-mock-check" aria-hidden="true">&#10003;</span>
-            <strong>You're registered!</strong><p>Heels Workshop &middot; Oct 12, 4:00 PM</p>
-            <span class="ed-mock-outline">Payment confirmed</span>
-          </div>
+          <div class="ed-step-text"><h3>Create your class</h3><p>Title, date, price. Live on your new site in a minute.</p></div>
         </li>
         <li class="ed-step">
-          <div class="ed-step-text"><span class="ed-step-count">7</span><h3>Your roster builds itself</h3><p>Every name, every payment status, updated the second it happens.</p></div>
+          <div class="ed-mock ed-mock-confirm ed-reveal" aria-label="Example registration confirmation">
+            <span class="ed-mock-check" aria-hidden="true">&#10003;</span>
+            <strong>You're registered!</strong>
+            <span class="ed-mock-outline">Payment confirmed</span>
+          </div>
+          <div class="ed-step-text"><h3>People register — and pay</h3><p>Card, confirmed automatically. Venmo works too.</p></div>
+        </li>
+        <li class="ed-step">
           <div class="ed-mock ed-mock-roster ed-reveal" aria-label="Example class roster">
-            <strong>Class Roster (24)</strong>
+            <strong>Roster (24)</strong>
             <div><span class="ed-mock-initial">A</span><span>Ava Patel</span><small>Paid</small></div>
             <div><span class="ed-mock-initial">R</span><span>Rohan Mehta</span><small>Paid</small></div>
             <div><span class="ed-mock-initial">M</span><span>Maya Singh</span><small>Paid</small></div>
-            <div><span class="ed-mock-initial">P</span><span>Priya Shah</span><small>Paid</small></div>
           </div>
+          <div class="ed-step-text"><h3>Your roster builds itself</h3><p>Every name, every status, updated the second it happens.</p></div>
         </li>
       </ol>
 
@@ -124,13 +143,12 @@
       </figure>
     </section>
 
-    <!-- 05 — SECOND JOB -->
+    <!-- 05 — SECOND JOB: kept short since The Reality already established the problem -->
     <section class="ed-secondjob" id="about" aria-labelledby="secondjob-title">
       <img class="ed-secondjob-image" src="assets/homepage-teaching-studio.png" alt="An instructor talking with students seated on the studio floor after class" width="1536" height="1024" loading="lazy">
       <div class="ed-secondjob-copy">
         <h2 id="secondjob-title">Your class shouldn't<br>come with a second job.</h2>
-        <p class="ed-secondjob-list">Venmo. Spreadsheets. Rosters. DMs at midnight. Repeat.</p>
-        <p>You started teaching to build something with your students — not to spend your nights reconciling payments. BeyondEight handles the work around the class, so you can stay focused on the class itself.</p>
+        <p>BeyondEight handles the work around the class, so you can stay focused on the class itself.</p>
         <a class="ed-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
       </div>
     </section>
@@ -138,18 +156,19 @@
     <!-- 06 — YOUR BUSINESS -->
     <section class="ed-business" aria-labelledby="business-title">
       <div class="ed-business-text">
-        <p class="ed-eyebrow">Your business, at a glance</p>
-        <h2 id="business-title">See what's actually happening with your classes.</h2>
-        <p>Every registration, every payment, every class — in one place you actually check, instead of three you don't.</p>
+        <p class="ed-eyebrow">Grow</p>
+        <h2 id="business-title">See how your dance business is actually doing.</h2>
+        <p>Not a spreadsheet you build yourself — what's selling, who's coming back, and what to teach again.</p>
       </div>
       <div class="ed-business-card ed-reveal" aria-hidden="true">
-        <strong>Saturday Heels</strong>
+        <p class="ed-business-month">This month</p>
+        <div class="ed-business-revenue"><span>$2,480</span><small class="ed-business-trend">&#8593; 18% from last month</small></div>
+        <div class="ed-business-spark" aria-hidden="true"><i style="--h:38%"></i><i style="--h:52%"></i><i style="--h:44%"></i><i style="--h:66%"></i><i style="--h:58%"></i><i style="--h:80%"></i><i style="--h:100%"></i></div>
         <div class="ed-business-stats">
-          <div><span>24</span><small>dancers</small></div>
-          <div><span>$600</span><small>collected</small></div>
+          <div><span>68</span><small>dancers</small></div>
+          <div><span>42%</span><small>returning</small></div>
         </div>
-        <p class="ed-business-next">Next class &middot; Oct 19, 4:00 PM</p>
-        <span class="ed-business-link">View roster &rarr;</span>
+        <p class="ed-business-next">Best performing &middot; Saturday Heels</p>
       </div>
     </section>
 

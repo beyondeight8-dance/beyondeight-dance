@@ -10,16 +10,27 @@ assert.match(html, /class="home-restyle"/);
 assert.match(html, /homepage\.css/);
 assert.match(html, /id="how-it-works"/);
 assert.match(html, /id="about"/);
-// Editorial redesign: "How it works" is 3 asymmetric steps (create, register+pay, roster)
-// rather than the old 5-card grid - the reminder/notifications step was dropped since no
-// automated reminder feature actually exists (see STRIPE_INTEGRATION_TODO.md-style honesty
-// requirement from the redesign brief: don't claim functionality that isn't real).
+// Editorial redesign: "How it works" is 3 compact steps (create, register+pay, roster) in
+// one row, rather than the old 5-card grid - the reminder/notifications step was dropped
+// since no automated reminder feature actually exists (no email sending exists anywhere in
+// this codebase - don't claim functionality that isn't real).
 assert.equal((html.match(/<li class="ed-step/g) || []).length, 3);
-assert.match(html, /class="ed-step-count">5</);
-assert.match(html, /class="ed-step-count">6</);
-assert.match(html, /class="ed-step-count">7</);
 assert.doesNotMatch(html, /confirmation email has been sent/i, "no fake email-confirmation claim - no email sending exists in this codebase");
 assert.doesNotMatch(html, /class reminder/i, "no fake automated-reminder claim - no reminder feature exists in this codebase");
+
+// The Venmo flow is a real external link the student must click, then self-report - it is
+// NOT confirmed automatically like card payment. The original copy ("Card or Venmo, right
+// on your page. No separate link to chase.") overclaimed this; must not regress.
+assert.doesNotMatch(html, /Card or Venmo, right on your page/i, "must not overclaim that Venmo is inline/automatic like card payment");
+assert.doesNotMatch(html, /No separate link to chase/i, "Venmo genuinely is a separate external link - this claim was inaccurate");
+assert.match(html, /confirmed automatically/i, "card payment's real automatic confirmation should still be called out");
+
+// Brand motif removed entirely per explicit direction: it read as too conceptual, and
+// numbering the journey 5,6,7 implied steps 1-4 were missing. Must not resurface, and must
+// not be replaced by a plain 1,2,3 numbering system either unless deliberately reintroduced.
+assert.doesNotMatch(html, /class="ed-count"/, "the 5-6-7-8 count-off divider must not come back");
+assert.doesNotMatch(html, /ed-step-count/, "step numbering must not come back");
+assert.doesNotMatch(css, /content: "8"/, "the oversized background '8' watermark (part of the same motif system) must not come back either");
 assert.ok((html.match(/data-open-setup/g) || []).length >= 4);
 for (const hook of ['data-open-auth-login', 'data-open-comparison', 'auth-modal', 'setup-modal', 'comparison-modal']) {
   assert.ok(html.includes(hook), `Existing ${hook} flow remains available`);
@@ -47,11 +58,26 @@ assert.doesNotMatch(css, /\.home-restyle \.brand-mark img \{[^}]*transform:\s*sc
 // viewport's right edge (confirmed live: rect.right = 398 on a 390px-wide viewport).
 assert.match(css, /\.ed-chaos-item \{ position: relative; inset: auto;/, "the chaos items' absolute-positioning offsets must be reset on mobile, not just their position value");
 
-// Brand motif: the "5·6·7·8" count-off must appear as a deliberate, restrained transition
-// beat plus the how-it-works step numbering - not sprinkled everywhere (the brief explicitly
-// warns that overusing this becomes gimmicky rather than designed).
-assert.match(html, /class="ed-count"/);
-assert.equal((html.match(/class="ed-count"/g) || []).length, 1, "the count-off divider must appear once, not repeatedly");
+// 02.5 — Your own website: one compact visual moment (browser + phone frame), not a
+// feature card, and not another giant section. Must use a real business-site URL pattern
+// (beyond8dance.com/<slug>) rather than inventing new capability.
+assert.match(html, /class="ed-site"/, "the website-builder moment must exist");
+assert.match(html, /beyond8dance\.com\/maya-flores/, "the mockup must show the real URL pattern the product actually publishes to");
+assert.match(html, /class="ed-site-phone"/, "desktop + mobile should be shown together per the brief");
+
+// 06 — Your business: a compact mini-dashboard (revenue + trend + dancers + returning),
+// not the old bare "$600 collected" card.
+assert.match(html, /ed-business-revenue/);
+assert.match(html, /ed-business-spark/, "a small trend visual should accompany the revenue figure");
+assert.match(html, /returning/i);
+
+// Compactness regression guards: the hero and other sections were cut from near-fullscreen
+// heights (e.g. 92svh/880px hero, 320-560px payoff, 420px second-job image) down to modest
+// ones as part of an explicit "reduce vertical length ~25-35%" pass. Locks in the smaller
+// values so a future edit can't silently re-inflate them.
+assert.doesNotMatch(css, /\.ed-hero \{[^}]*92svh/, "the hero must not regress to its old near-fullscreen height");
+assert.match(css, /\.ed-hero \{[^}]*max-height: 600px/, "the hero's compact max-height must be in place");
+assert.doesNotMatch(css, /clamp\(320px, 44vw, 560px\)/, "the payoff image must not regress to its old tall height");
 
 // The redesign adds a second "Compare every feature" trigger inside the new pricing
 // section, alongside the existing nav Pricing button - both share [data-open-comparison].
