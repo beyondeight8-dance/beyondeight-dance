@@ -105,4 +105,9 @@ assert.match(productUi, /\.owner-quick-panel \{ display: grid;/, "the Quick Acti
 assert.match(dashboard, /siteContent\.headline/, "the site card's overlay text must be the business's real headline, not invented copy");
 assert.match(productUi, /\.owner-site-tagline \{ position: absolute; z-index: 1;/, "the tagline must sit above the darkening gradient overlay via z-index, not rely on paint order");
 
+// The time-of-day emoji next to the greeting ("Good evening 🌙") was removed at the
+// user's request - must not come back.
+assert.doesNotMatch(dashboard, /greetingEmoji/, "the time-of-day greeting emoji must not come back");
+assert.doesNotMatch(dashboard, /owner-welcome-emoji/, "the greeting emoji wrapper span must not come back");
+
 console.log("owner dashboard regression tests passed");
