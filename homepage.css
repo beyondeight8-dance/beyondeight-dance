@@ -26,9 +26,9 @@ body.home-restyle {
 .home-restyle *, .home-restyle *::before, .home-restyle *::after { box-sizing: border-box; letter-spacing: 0; }
 .home-restyle main { width: 100%; max-width: none; margin: 0; overflow: clip; padding: 0; }
 .home-restyle .site-header {
-  position: absolute; inset: 0 0 auto; z-index: 20; width: min(1180px, calc(100% - 80px));
-  max-width: none; height: 86px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center;
-  gap: 36px; border: 0; border-radius: 0 0 14px 14px; background: rgba(255,255,255,.86); box-shadow: 0 1px 0 rgba(17,27,43,.05); backdrop-filter: blur(16px);
+  position: absolute; inset: 0 0 auto; z-index: 20; width: 100%;
+  max-width: none; height: 86px; margin: 0; padding: 0 max(20px, calc((100% - 1180px)/2 + 20px)); display: flex; align-items: center;
+  gap: 36px; border: 0; border-radius: 0; background: linear-gradient(180deg, rgba(255, 252, 252, .55) 0%, rgba(255, 252, 252, .55) 65%, rgba(255, 252, 252, 0) 100%); backdrop-filter: blur(8px); -webkit-mask-image: linear-gradient(180deg, black 0%, black 65%, transparent 100%); mask-image: linear-gradient(180deg, black 0%, black 65%, transparent 100%);
 }
 .home-restyle .brand { flex-shrink: 0; gap: 6px; }
 .home-restyle .brand-mark { width: 60px; height: 46px; margin: 0; padding: 0; background: none; box-shadow: none; }

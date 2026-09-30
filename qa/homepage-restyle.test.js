@@ -111,6 +111,15 @@ assert.match(html, /class="ed-hero-visual/, "the hero's foreground visual must s
 assert.match(html, /class="ed-hero-panel"/, "the hero must still show real product data (class/registered/collected) as its foreground content");
 assert.doesNotMatch(css, /\.home-restyle \.site-header \{[^}]*background: transparent/, "the header must stay a solid/translucent background, not fully transparent, so it reads clearly over the watermark");
 
+// Header blend pass: the header used to be an inset, rounded, drop-shadowed white pill
+// floating over the hero - a distinct card rather than part of the watermarked page. Per
+// explicit direction it now spans full width with no border-radius/shadow, and both its
+// background and its backdrop-filter blur fade to nothing via a shared mask-image, so it
+// dissolves smoothly into the hero below instead of cutting off as a hard line.
+assert.doesNotMatch(css, /\.home-restyle \.site-header \{[^}]*border-radius: 0 0 \d+px \d+px/, "the header must not regress to a rounded floating-pill shape");
+assert.doesNotMatch(css, /\.home-restyle \.site-header \{[^}]*box-shadow: 0 1px 0/, "the header must not regress to a hard shadow line separating it from the hero");
+assert.match(css, /\.home-restyle \.site-header \{[^}]*mask-image: linear-gradient/, "the header must fade out via mask-image so its blur/background dissolve into the hero with no hard seam");
+
 // Precision pass: mockups now sit straight-on like real product shots, not tilted like a
 // scrapbook - the rotate() transforms that were on the business card, website mockup frames,
 // and the alternating 3-step mocks must not come back.
