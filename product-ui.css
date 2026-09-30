@@ -166,6 +166,9 @@
 .owner-profile strong { overflow: hidden; color: var(--product-ink); font-size: 0.75rem; text-overflow: ellipsis; white-space: nowrap; }
 .owner-profile small { color: var(--product-muted); font-size: 0.66rem; }
 .dashboard-route .owner-nav-footer > button[data-dashboard-logout] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   min-height: 32px;
   border: 0;
   border-radius: 6px;
@@ -177,6 +180,7 @@
   cursor: pointer;
 }
 .dashboard-route .owner-nav-footer > button[data-dashboard-logout]:hover { background: var(--product-blush-soft); color: #542a25; }
+.dashboard-route .owner-nav-footer > button[data-dashboard-logout]:hover .owner-nav-icon { color: #542a25; }
 
 .dashboard-route .owner-welcome {
   display: flex;

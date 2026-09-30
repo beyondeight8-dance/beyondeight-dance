@@ -172,4 +172,11 @@ assert.doesNotMatch(styles, /\.owner-reg-row \{|\.owner-reg-student \{|\.owner-r
 assert.doesNotMatch(productUi, /\.owner-reg-student span,\s*\n\.dashboard-route \.owner-reg-class span/, "the email/meta span rule must not broaden back to match the avatar span too");
 assert.match(productUi, /\.owner-reg-student > div > span/, "the email span rule must stay scoped to the nested text div, not every span in the row");
 
+// The sidebar's "Log out" control must carry the same icon+label treatment as every other
+// sidebar link (View My Website, the nav tabs) - plain text with an icon, no button chrome at
+// rest. A filled pink box was only ever its :hover state, never a resting-state bug, but the
+// icon itself was genuinely missing until this pass.
+assert.match(dashboard, /data-dashboard-logout>\$\{navIcon\("logout"\)\}<span>Log out<\/span>/, "the logout control must show the door/arrow icon alongside its label");
+assert.match(dashboard, /logout: `<svg viewBox="0 0 24 24"/, "a dedicated logout icon must exist in the shared ICONS set");
+
 console.log("owner dashboard regression tests passed");
