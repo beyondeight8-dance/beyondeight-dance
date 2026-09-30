@@ -26,9 +26,20 @@ body.home-restyle {
 .home-restyle *, .home-restyle *::before, .home-restyle *::after { box-sizing: border-box; letter-spacing: 0; }
 .home-restyle main { width: 100%; max-width: none; margin: 0; overflow: clip; padding: 0; }
 .home-restyle .site-header {
-  position: absolute; inset: 0 0 auto; z-index: 20; width: 100%;
+  /* The real cause of the "not blended" seam (confirmed by bisecting with an unstyled div,
+     then diffing against every legacy .site-header rule in styles.css): five older, lower-
+     specificity `.site-header` rules elsewhere in styles.css set backdrop-filter and
+     box-shadow on the bare class name. This rule's higher specificity (.home-restyle
+     .site-header) only overrides properties it actually declares - it never declared
+     backdrop-filter or box-shadow at all, so those legacy declarations kept applying
+     regardless of anything else changed here, quietly blurring/shadowing a strip of the
+     watermark right at the header's edge. Explicit `none` resets below fix it for real -
+     position is normal flow, not absolute/overlaid, matching every other section on the page
+     that already blends with zero special-casing. position: relative only anchors the mobile
+     nav dropdown, which is positioned relative to this element. */
+  position: relative; width: 100%;
   max-width: none; height: 86px; margin: 0; padding: 0 max(20px, calc((100% - 1180px)/2 + 20px)); display: flex; align-items: center;
-  gap: 36px; border: 0; border-radius: 0; background: linear-gradient(180deg, rgba(255, 252, 252, .55) 0%, rgba(255, 252, 252, .55) 65%, rgba(255, 252, 252, 0) 100%); backdrop-filter: blur(8px); -webkit-mask-image: linear-gradient(180deg, black 0%, black 65%, transparent 100%); mask-image: linear-gradient(180deg, black 0%, black 65%, transparent 100%);
+  gap: 36px; border: 0; border-radius: 0; background: none; backdrop-filter: none; box-shadow: none;
 }
 .home-restyle .brand { flex-shrink: 0; gap: 6px; }
 .home-restyle .brand-mark { width: 60px; height: 46px; margin: 0; padding: 0; background: none; box-shadow: none; }
@@ -65,7 +76,7 @@ body.home-restyle {
 /* 01 — Hero: no photography - a dark, confident type statement with the actual product
    data (not a lifestyle photo) as the hero visual, presented straight-on like a product
    shot rather than a tilted scrapbook card. */
-.ed-hero { position: relative; padding: clamp(128px, 15vw, 168px) clamp(24px, 6vw, 88px) clamp(64px, 8vw, 96px); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(32px, 5vw, 64px); align-items: center; }
+.ed-hero { position: relative; padding: clamp(56px, 7vw, 88px) clamp(24px, 6vw, 88px) clamp(64px, 8vw, 96px); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(32px, 5vw, 64px); align-items: center; }
 .ed-hero-copy { max-width: 560px; color: var(--home-ink); }
 .ed-hero-copy h1 { margin: 0; font: 400 clamp(2.6rem, 5.6vw, 4.4rem)/1.02 var(--home-display); color: var(--home-ink); }
 .ed-hero-copy h1 em { color: var(--home-rose); font-style: italic; font-weight: 400; }
@@ -191,7 +202,7 @@ body.home-restyle {
 .restyle-footer a { color: inherit; text-decoration: none; }
 
 @media (max-width: 1050px) {
-  .home-restyle .site-header { width: calc(100% - 48px); gap: 22px; }
+  .home-restyle .site-header { gap: 22px; }
   .home-restyle .site-nav { gap: 18px; }
   .home-restyle .header-account { gap: 15px; }
   .home-restyle .brand-name { font-size: 24px; }

@@ -109,16 +109,26 @@ assert.doesNotMatch(css, /\.ed-hero-image \{|\.ed-hero::before \{|\.ed-secondjob
 assert.match(css, /body\.home-restyle \{[\s\S]*?background-image:[^;]*!important/, "the watermark's background-image must carry !important to win over the legacy body {...!important} rule in styles.css");
 assert.match(html, /class="ed-hero-visual/, "the hero's foreground visual must still be the product panel, not the photo");
 assert.match(html, /class="ed-hero-panel"/, "the hero must still show real product data (class/registered/collected) as its foreground content");
-assert.doesNotMatch(css, /\.home-restyle \.site-header \{[^}]*background: transparent/, "the header must stay a solid/translucent background, not fully transparent, so it reads clearly over the watermark");
-
 // Header blend pass: the header used to be an inset, rounded, drop-shadowed white pill
-// floating over the hero - a distinct card rather than part of the watermarked page. Per
-// explicit direction it now spans full width with no border-radius/shadow, and both its
-// background and its backdrop-filter blur fade to nothing via a shared mask-image, so it
-// dissolves smoothly into the hero below instead of cutting off as a hard line.
+// floating over the hero as an absolutely-positioned overlay - a distinct card rather than
+// part of the watermarked page. Per explicit direction it's now a normal in-flow element
+// (no border-radius/shadow/position:absolute) with no background of its own at all, relying
+// on the body's own watermark wash - already strongest at the top of the page - for nav text
+// legibility, exactly like every other section that already blends with zero special-casing.
 assert.doesNotMatch(css, /\.home-restyle \.site-header \{[^}]*border-radius: 0 0 \d+px \d+px/, "the header must not regress to a rounded floating-pill shape");
-assert.doesNotMatch(css, /\.home-restyle \.site-header \{[^}]*box-shadow: 0 1px 0/, "the header must not regress to a hard shadow line separating it from the hero");
-assert.match(css, /\.home-restyle \.site-header \{[^}]*mask-image: linear-gradient/, "the header must fade out via mask-image so its blur/background dissolve into the hero with no hard seam");
+assert.doesNotMatch(css, /\.home-restyle \.site-header \{[^}]*position: absolute/, "the header must not regress to an absolutely-positioned overlay - see the compositing-seam bug below");
+// Real bug found live, the hard way: the seam survived every change to the header's own
+// background/blur/position because the actual leak was elsewhere - five different legacy
+// `.site-header` rules in styles.css (unrelated to the homepage) set backdrop-filter and
+// box-shadow on the bare class name. This rule's higher specificity only overrides properties
+// it actually declares, so a property this rule never mentioned kept applying regardless of
+// anything else changed here. Isolated by bisecting: hid the header (seam gone), emptied its
+// children (seam stayed), swapped in a plain unstyled div (seam gone), which pointed at the
+// class's own CSS rather than the element or its content - then diffed every .site-header
+// rule in styles.css for properties this rule doesn't set. Locks in the explicit resets so
+// this can't silently regress if they're ever "cleaned up" as apparently redundant.
+assert.match(css, /\.home-restyle \.site-header \{[^}]*backdrop-filter: none/, "the header must explicitly reset backdrop-filter to none - legacy .site-header rules in styles.css set backdrop-filter and this is the only thing stopping them from leaking through");
+assert.match(css, /\.home-restyle \.site-header \{[^}]*box-shadow: none/, "the header must explicitly reset box-shadow to none - legacy .site-header rules in styles.css set box-shadow and this is the only thing stopping them from leaking through");
 
 // Precision pass: mockups now sit straight-on like real product shots, not tilted like a
 // scrapbook - the rotate() transforms that were on the business card, website mockup frames,
