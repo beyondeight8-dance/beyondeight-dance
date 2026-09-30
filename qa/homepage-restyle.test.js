@@ -99,8 +99,14 @@ assert.doesNotMatch(css, /\.ed-reality \{[^}]*background:[^;]*var\(--home-ink\)/
 assert.doesNotMatch(html, /<img[^>]*homepage-dance-studio|class="ed-hero-image"|class="ed-secondjob-image"/, "the rooftop photo must not come back as a foreground <img> - only as the page's background watermark");
 assert.match(css, /body\.home-restyle \{[\s\S]*?url\("assets\/homepage-dance-studio\.png/, "the rooftop photo must be wired in as the body's background watermark");
 assert.match(css, /background-attachment: scroll, fixed/, "the watermark must use background-attachment: fixed so it reads as one continuous backdrop while scrolling, not a photo confined to the hero box");
-assert.match(css, /rgba\(255, 252, 252, \.9[0-9]\)/, "the photo must stay behind a heavy (~90%+) cream wash so it reads as a faint watermark, never a punchy foreground photo");
+assert.match(css, /rgba\(255, 252, 252, \.[78][0-9]\)/, "the photo must stay behind a heavy (~78-86%) cream wash so it reads as a faint watermark, never a punchy foreground photo");
 assert.doesNotMatch(css, /\.ed-hero-image \{|\.ed-hero::before \{|\.ed-secondjob-image \{/, "no leftover photo-era foreground-image styles should exist for the watermark treatment");
+// Real bug found live: styles.css has a legacy `body { background: ... !important }` rule
+// (a shared decorative background meant for other pages) that silently wins over the more-
+// specific body.home-restyle selector and replaces the watermark outright - every opacity
+// tweak had zero visible effect until this was found and fixed. Locks in the fix so it can't
+// silently regress if the watermark rule's !important is ever "cleaned up" without checking.
+assert.match(css, /body\.home-restyle \{[\s\S]*?background-image:[^;]*!important/, "the watermark's background-image must carry !important to win over the legacy body {...!important} rule in styles.css");
 assert.match(html, /class="ed-hero-visual/, "the hero's foreground visual must still be the product panel, not the photo");
 assert.match(html, /class="ed-hero-panel"/, "the hero must still show real product data (class/registered/collected) as its foreground content");
 assert.doesNotMatch(css, /\.home-restyle \.site-header \{[^}]*background: transparent/, "the header must stay a solid/translucent background, not fully transparent, so it reads clearly over the watermark");

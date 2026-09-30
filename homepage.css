@@ -9,13 +9,17 @@ body.home-restyle {
   /* The rooftop photo lives here as the page's own backdrop, not as foreground photography -
      a semi-transparent cream wash sits on top of it (first layer paints over the second),
      leaving only a faint, fixed watermark visible wherever a section has no opaque background
-     of its own (the hero, the reality section, and the gaps between later sections). */
-  background-color: #fffcfc;
-  background-image: linear-gradient(180deg, rgba(255, 252, 252, .91) 0%, rgba(255, 252, 252, .95) 100%), url("assets/homepage-dance-studio.png?v=20260930-watermark");
-  background-position: center, top center;
-  background-size: cover, cover;
-  background-repeat: no-repeat, no-repeat;
-  background-attachment: scroll, fixed;
+     of its own (the hero, the reality section, and the gaps between later sections).
+     !important is required here: styles.css has a legacy `body { background: ... !important }`
+     rule (a shared decorative background meant for other pages) that otherwise silently wins
+     over this more-specific body.home-restyle selector and replaces the watermark outright -
+     found live when adjusting the wash opacity had zero visible effect. */
+  background-color: #fffcfc !important;
+  background-image: linear-gradient(180deg, rgba(255, 252, 252, .78) 0%, rgba(255, 252, 252, .86) 100%), url("assets/homepage-dance-studio.png?v=20260930-watermark") !important;
+  background-position: center, top center !important;
+  background-size: cover, cover !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-attachment: scroll, fixed !important;
   color: var(--home-ink);
   font-family: var(--home-sans);
 }
