@@ -18,7 +18,7 @@ assert.doesNotMatch(dashboard, /Website Views/, "the fake PRO stat placeholder m
 assert.match(dashboard, /Pending Payments/);
 assert.match(dashboard, /updateRegistrationStatus/, "registrations must be confirmable, not just listed");
 assert.match(dashboard, /\["duplicate","Duplicate"\]/);
-assert.match(dashboard, /\["toggle",item\.published/);
+assert.match(dashboard, /\["toggle",isDraft \? "Publish" : "Unpublish"\]/);
 assert.match(dashboard, /\["delete","Delete"\]/);
 assert.match(dashboard, /data-class-form/);
 assert.match(dashboard, /uploadBusinessMedia/);
@@ -37,7 +37,7 @@ assert.match(dashboard, /comingSoon\("Analytics"/);
 assert.doesNotMatch(dashboard, /\["social","Social"\]/, "Social must not resurface as its own top-level nav tab");
 // Class/registration search+filter must preserve the class's real array index, or actions
 // (edit/duplicate/toggle/delete) target the wrong class once the list is filtered.
-assert.match(dashboard, /const filteredClasses = \(\) => classes\(\)\.map\(\(item, index\) => \(\{ item, index \}\)\)/);
+assert.match(dashboard, /const filteredClasses = \(\) => \{.*classes\(\)\.map\(\(item, index\) => \(\{ item, index \}\)\)/);
 assert.match(dashboard, /list\.map\(\(\{ item, index \}\) => row\(item, index\)\)/);
 assert.match(dashboard, /data-class-search/);
 assert.match(dashboard, /data-registration-search/);
@@ -109,5 +109,33 @@ assert.match(productUi, /\.owner-site-tagline \{ position: absolute; z-index: 1;
 // user's request - must not come back.
 assert.doesNotMatch(dashboard, /greetingEmoji/, "the time-of-day greeting emoji must not come back");
 assert.doesNotMatch(dashboard, /owner-welcome-emoji/, "the greeting emoji wrapper span must not come back");
+
+// Classes redesign: card-based rows (photo, icon fact row, tag pills, big registered count,
+// status pill, primary action, kebab menu) replacing the old thin owner-class-row list.
+assert.match(dashboard, /class="owner-class-card\$\{item\.highlighted/, "class rows must use the new card layout, not the old thin owner-class-row");
+assert.match(dashboard, /class="owner-class-media"/);
+assert.match(dashboard, /class="owner-class-facts"/);
+assert.match(dashboard, /class="owner-class-tags"/);
+assert.match(dashboard, /class="owner-class-count"/);
+assert.match(dashboard, /class="owner-class-primary/);
+assert.match(dashboard, /class="owner-class-menu" name="class-menu"/, "kebab menus must share a name so opening one closes any other open menu (native <details> exclusivity)");
+// Placeholder-image system: never falls back to a generic unrelated stock photo. Empty until
+// real, style-matched photos are wired into CLASS_STYLE_IMAGES; until then the card shows the
+// same clean initial-letter placeholder used elsewhere in the product, never a stock photo.
+assert.match(dashboard, /const classFallbackImage = \(style\) => \{/);
+assert.match(dashboard, /const classImage = \(item\) => imageUrl\(item\.image\) \|\| classFallbackImage\(item\.style\)/);
+assert.match(dashboard, /owner-class-media-empty/, "no real photo must fall back to the initial-letter placeholder, not a generic stock image");
+// Upcoming/Past/All-dates and class-type (style) filters, built from the owner's real class
+// styles - never a hardcoded style taxonomy.
+assert.match(dashboard, /const classStyleOptions = \(\) => \{/);
+assert.match(dashboard, /data-class-time-filter/);
+assert.match(dashboard, /data-class-style-filter/);
+assert.match(dashboard, /classFilter\.time=event\.target\.value/, "the time filter select must be wired in bind()");
+assert.match(dashboard, /classFilter\.style=event\.target\.value/, "the style filter select must be wired in bind()");
+// Proactive collision check (established after two real bugs this session where a new class
+// name silently inherited an older, unrelated rule from styles.css) - the old thin-row classes
+// must be fully retired from both stylesheets, not left as dead/colliding rules.
+assert.doesNotMatch(productUi, /\.owner-class-row \{/, "the old thin owner-class-row grid rule must be fully replaced by owner-class-card, not left dead");
+assert.doesNotMatch(styles, /\.owner-class-card \{|\.owner-class-media \{|\.owner-class-facts \{|\.owner-class-menu \{/, "none of the new Classes-card class names may collide with older rules in styles.css");
 
 console.log("owner dashboard regression tests passed");
