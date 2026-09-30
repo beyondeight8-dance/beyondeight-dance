@@ -84,22 +84,26 @@ assert.doesNotMatch(css, /"Source Serif 4"|"Inter"/, "the old generic font pairi
 assert.match(html, /family=Fraunces/, "the Fraunces font file must actually be loaded");
 assert.match(html, /family=Plus\+Jakarta\+Sans/, "the Plus Jakarta Sans font file must actually be loaded");
 
-// Flow pass: the Reality section's bottom edge still needs to dissolve into the page's cream
-// rather than ending as a flat navy block.
-assert.match(css, /\.ed-reality \{[^}]*linear-gradient\(180deg, var\(--home-ink\)[^}]*#fffcfc 100%/, "the Reality section's bottom edge must fade into the page's cream background instead of ending as a flat navy block");
+// Navy pass (supersedes the old "Flow pass"/"Product-first pass" below): per explicit later
+// direction, the navy hero/reality color blocking was dropped entirely in favor of one
+// continuous cream background - there's no navy-to-cream seam left to fade, because there's
+// no navy left at all.
+assert.doesNotMatch(css, /\.ed-hero \{[^}]*background: var\(--home-ink\)/, "the hero must not regress to a solid navy background - navy was dropped for the cream watermark treatment");
+assert.doesNotMatch(css, /\.ed-reality \{[^}]*background:[^;]*var\(--home-ink\)/, "the reality section must not regress to a navy or navy-gradient background");
 
-// Product-first pass: the hero and second-job photos read as generic/AI-ish stock imagery,
-// which undercut authenticity more than it added. Both were replaced with no-photography
-// treatments - a dark type-and-product-panel hero, and a solid-color type statement for the
-// second-job section - and the hero now shares the Reality section's exact ink color, so the
-// two meet with no seam at all rather than needing a blended edge. Must not regress back to
-// lifestyle/stock photography anywhere on the homepage.
-assert.doesNotMatch(html, /class="ed-hero-image"|class="ed-secondjob-image"|homepage-dance-studio|homepage-teaching-studio/, "the homepage must not reintroduce lifestyle/stock photography");
-assert.doesNotMatch(css, /\.ed-hero-image \{|\.ed-hero::before \{|\.ed-secondjob-image \{/, "no leftover photo-era styles should remain for the removed images");
-assert.match(html, /class="ed-hero-visual/, "the hero's visual must be the product panel, not a photo");
-assert.match(html, /class="ed-hero-panel"/, "the hero must show real product data (class/registered/collected), not a lifestyle photo");
-assert.match(css, /\.ed-hero \{[^}]*background: var\(--home-ink\)/, "the hero must share the Reality section's exact background color so the two meet without a seam");
-assert.doesNotMatch(css, /\.home-restyle \.site-header \{[^}]*background: transparent/, "the header must not go back to a transparent background now that the hero behind it is permanently dark, not a bright photo");
+// Watermark pass: the rooftop photo returns, but not as foreground photography - per explicit
+// direction it's now the page's own backdrop, fixed behind the whole scroll so it "extends
+// throughout the website" rather than being confined to a hero image box. A heavy cream wash
+// keeps it as a faint texture, never a punchy foreground photo, and it must never come back as
+// an <img> tag or a section-scoped foreground image.
+assert.doesNotMatch(html, /<img[^>]*homepage-dance-studio|class="ed-hero-image"|class="ed-secondjob-image"/, "the rooftop photo must not come back as a foreground <img> - only as the page's background watermark");
+assert.match(css, /body\.home-restyle \{[\s\S]*?url\("assets\/homepage-dance-studio\.png/, "the rooftop photo must be wired in as the body's background watermark");
+assert.match(css, /background-attachment: scroll, fixed/, "the watermark must use background-attachment: fixed so it reads as one continuous backdrop while scrolling, not a photo confined to the hero box");
+assert.match(css, /rgba\(255, 252, 252, \.9[0-9]\)/, "the photo must stay behind a heavy (~90%+) cream wash so it reads as a faint watermark, never a punchy foreground photo");
+assert.doesNotMatch(css, /\.ed-hero-image \{|\.ed-hero::before \{|\.ed-secondjob-image \{/, "no leftover photo-era foreground-image styles should exist for the watermark treatment");
+assert.match(html, /class="ed-hero-visual/, "the hero's foreground visual must still be the product panel, not the photo");
+assert.match(html, /class="ed-hero-panel"/, "the hero must still show real product data (class/registered/collected) as its foreground content");
+assert.doesNotMatch(css, /\.home-restyle \.site-header \{[^}]*background: transparent/, "the header must stay a solid/translucent background, not fully transparent, so it reads clearly over the watermark");
 
 // Precision pass: mockups now sit straight-on like real product shots, not tilted like a
 // scrapbook - the rotate() transforms that were on the business card, website mockup frames,
