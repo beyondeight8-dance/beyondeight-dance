@@ -73,9 +73,10 @@ assert.match(dashboard, /data-import-instagram.*hasPaymentMethod\(\)/, "importin
 // implies the owner can revert a real, already-settled card charge, which isn't true.
 assert.match(dashboard, /const isStripePaid = status === "paid" && item\.payment_method === "stripe"/, "Stripe-paid rows must be identified so the manual pending toggle can be hidden for them");
 assert.match(dashboard, /status === "paid" && !isStripePaid/, "Mark as Pending must not render for a Stripe-paid registration");
-// The status badge and its action button must share one grid cell so the row stays
-// vertically centered instead of the button wrapping onto its own full-width row.
-assert.match(dashboard, /class="owner-registration-status"/, "the status badge and action button must be grouped into a single column");
+// Registrations redesign: the Mark as Paid/Pending action moved out of an always-visible
+// inline button into the same kebab-menu pattern used on the Classes page, so the row stays
+// a clean fixed-height table row instead of wrapping when the action button is present.
+assert.match(dashboard, /<details class="owner-class-menu" name="reg-menu">/, "the registration row action must live in the shared kebab-menu pattern");
 
 // Overview redesign: the brand logo and logout control moved from a static top header
 // (dashboard/index.html) into the dynamically-rendered sidebar (nav()), so the logout
@@ -137,5 +138,38 @@ assert.match(dashboard, /classFilter\.style=event\.target\.value/, "the style fi
 // must be fully retired from both stylesheets, not left as dead/colliding rules.
 assert.doesNotMatch(productUi, /\.owner-class-row \{/, "the old thin owner-class-row grid rule must be fully replaced by owner-class-card, not left dead");
 assert.doesNotMatch(styles, /\.owner-class-card \{|\.owner-class-media \{|\.owner-class-facts \{|\.owner-class-menu \{/, "none of the new Classes-card class names may collide with older rules in styles.css");
+
+// Registrations redesign: stat cards (reusing the same statCard()/owner-stat-cards pattern as
+// the Overview page), a table-style list (student/class/date/status/amount/actions), and
+// class-type + sort filters alongside the existing search/status filters.
+assert.match(dashboard, /const registrationClassOptions = \(\) => \{/, "the class filter must be built from the owner's real registrations, never a hardcoded list");
+assert.match(dashboard, /data-registration-class-filter/);
+assert.match(dashboard, /data-registration-sort/);
+assert.match(dashboard, /registrationFilter\.classId=event\.target\.value/, "the class filter select must be wired in bind()");
+assert.match(dashboard, /registrationFilter\.sort=event\.target\.value/, "the sort select must be wired in bind()");
+assert.match(dashboard, /class="owner-reg-row"/);
+assert.match(dashboard, /class="owner-reg-student"/);
+assert.match(dashboard, /class="owner-reg-avatar"/);
+assert.match(dashboard, /class="owner-reg-class"/);
+assert.match(dashboard, /class="owner-reg-status /);
+assert.match(dashboard, /class="owner-reg-amount"/);
+assert.match(dashboard, /statCard\("dollar", `\$\$\{totalRevenue\.toFixed\(2\)\}`, "Total Revenue", "all time"\)/, "the revenue stat must be a real computed sum, not a placeholder");
+// Revenue must only count registrations actually confirmed paid - counting pending/unpaid
+// registrations would overstate real revenue.
+assert.match(dashboard, /registrations\.filter\(\(item\) => item\.payment_status === "paid"\)\.reduce/, "Total Revenue must only sum confirmed-paid registrations");
+// Export must be a real client-side CSV of what's currently filtered/sorted (what the owner is
+// looking at), never a fake/disabled button.
+assert.match(dashboard, /data-export-registrations/);
+assert.match(dashboard, /const exportRegistrations = \(\) => \{/);
+assert.match(dashboard, /new Blob\(\[csv\], \{ type: "text\/csv/, "export must produce a real CSV file, not a stubbed action");
+// Collision guard, same discipline as the Classes redesign: none of the new owner-reg-* class
+// names may collide with older rules in styles.css.
+assert.doesNotMatch(styles, /\.owner-reg-row \{|\.owner-reg-student \{|\.owner-reg-class \{|\.owner-reg-status \{|\.owner-reg-avatar \{/, "none of the new Registrations-table class names may collide with older rules in styles.css");
+// Real bug found live while building this redesign: `.owner-reg-student span` (meant to style
+// only the email line) also matched the avatar span, since the avatar is a <span> too - it
+// silently overrode the avatar's centered-grid layout and blush color with the email's
+// block/muted-gray style, making the initial letter invisible. Locks in the scoped fix.
+assert.doesNotMatch(productUi, /\.owner-reg-student span,\s*\n\.dashboard-route \.owner-reg-class span/, "the email/meta span rule must not broaden back to match the avatar span too");
+assert.match(productUi, /\.owner-reg-student > div > span/, "the email span rule must stay scoped to the nested text div, not every span in the row");
 
 console.log("owner dashboard regression tests passed");
