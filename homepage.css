@@ -48,17 +48,18 @@ body.home-restyle {
 .home-restyle .brand-name { color: #111b2b; font-family: var(--home-display); font-size: 27px; line-height: 1.1; font-weight: 600; }
 .home-restyle .brand-name span { color: var(--home-rose); background: none; -webkit-text-fill-color: currentColor; }
 .home-restyle .brand-tagline { color: #27313e; font-size: 9px; text-transform: uppercase; }
-.home-restyle .site-nav { display: flex; position: static; margin-left: auto; gap: 28px; align-items: center; background: none; border: 0; box-shadow: none; padding: 0; }
-.home-restyle .site-nav a, .home-restyle .site-nav button, .home-restyle .header-login {
+.home-restyle .header-login {
   font: 500 13px var(--home-sans); color: var(--home-ink); white-space: nowrap; text-decoration: none;
   background: none; border: 0; padding: 10px 0; cursor: pointer; text-transform: none; letter-spacing: 0;
 }
-.home-restyle .site-nav a::after { display: none; }
-.home-restyle .site-nav a:hover, .home-restyle .site-nav button:hover, .home-restyle .header-login:hover { color: var(--home-rose); }
-.home-restyle .header-account { display: flex; align-items: center; gap: 22px; }
+.home-restyle .header-login:hover { color: var(--home-rose); }
+.home-restyle .header-account { display: flex; align-items: center; gap: 22px; margin-left: auto; }
 .home-restyle .header-account[hidden] { display: none; }
-.home-restyle .header-cta { min-height: 40px; padding: 10px 24px; border: 0; border-radius: 3px; background: var(--home-rose); color: white; box-shadow: none; font: 600 13px var(--home-sans); }
-.home-restyle .nav-toggle { display: none; }
+/* display: inline-flex is required, not cosmetic - a legacy, unscoped `@media (max-width:
+   920px) { .header-cta { display: none; } }` rule in styles.css otherwise leaks through
+   below 920px, since this higher-specificity rule never previously declared its own
+   `display` for that property to override. */
+.home-restyle .header-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 10px 24px; border: 0; border-radius: 3px; background: var(--home-rose); color: white; box-shadow: none; font: 600 13px var(--home-sans); }
 .home-restyle a:focus-visible, .home-restyle button:focus-visible { outline: 3px solid var(--home-rose); outline-offset: 4px; }
 .ed-eyebrow { margin: 0 0 10px; font: 500 12px/1.5 var(--home-sans); text-transform: uppercase; letter-spacing: .04em; color: var(--home-muted); }
 .ed-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; min-width: 210px; max-width: 100%; padding: 13px 26px; background: var(--home-rose); color: white; border: 1px solid var(--home-rose); border-radius: 4px; font: 500 15px/1.3 var(--home-sans); text-decoration: none; transition: background .18s, transform .18s; }
@@ -277,7 +278,6 @@ body.home-restyle {
 
 @media (max-width: 1050px) {
   .home-restyle .site-header { gap: 22px; }
-  .home-restyle .site-nav { gap: 18px; }
   .home-restyle .header-account { gap: 15px; }
   .home-restyle .brand-name { font-size: 24px; }
   .ed-reality { grid-template-columns: 1fr; }
@@ -287,13 +287,6 @@ body.home-restyle {
 }
 @media (max-width: 800px) {
   .home-restyle .site-header { height: 76px; gap: 14px; }
-  .home-restyle .site-nav { display: none; position: absolute; top: 70px; right: 0; min-width: 210px; padding: 20px; background: #fffafa; border: 1px solid #ead7dd; border-radius: 4px; box-shadow: 0 12px 30px #0001; }
-  .home-restyle .site-nav.is-open { display: grid; gap: 12px; }
-  .home-restyle .site-nav button { text-align: left; }
-  .home-restyle .nav-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 40px; height: 40px; order: 3; margin-left: 0; border: 0; border-radius: 4px; background: #ffffffa6; }
-  .home-restyle .nav-toggle span { width: 19px; height: 2px; background: var(--home-ink); }
-  .home-restyle .header-account { margin-left: auto; }
-  .home-restyle .header-account .header-cta { display: none; }
   .ed-pricing-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
@@ -304,6 +297,18 @@ body.home-restyle {
   .home-restyle .header-login { font-size: 12px; }
   .home-restyle .header-avatar { display: none; }
   .home-restyle .header-account { gap: 9px; }
+  /* Real bug found live: with only "Log In" + "Get Started" left in the header (the nav links
+     and hamburger toggle were removed), there's nothing left to collapse at narrow phone
+     widths - and body has a legacy overflow-x: hidden rule, so once the button's min-content
+     width (even wrapped to two lines) outgrows the remaining space next to the brand mark, it
+     doesn't scroll or wrap the row, it gets silently clipped off the right edge. Tightening
+     the header's side padding and the CTA's own padding/font-size below 420px buys back enough
+     room that the button stays fully on-screen down to a 320px viewport. */
+}
+@media (max-width: 420px) {
+  .home-restyle .site-header { padding: 0 14px; gap: 10px; }
+  .home-restyle .header-account { gap: 7px; }
+  .home-restyle .header-cta { padding: 8px 13px; font-size: 11px; }
   .ed-hero { padding: 108px 20px 40px; }
   .ed-hero-copy { max-width: none; }
   .ed-hero-sub { max-width: none; }

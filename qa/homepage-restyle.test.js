@@ -282,15 +282,30 @@ assert.doesNotMatch(css, /\.ed-business-card \{[^}]*rotate\(/, "the business das
 assert.doesNotMatch(css, /\.ed-mock-site \{[^}]*rotate\(|\.ed-site-browser-bar \{[^}]*rotate\(/, "the website-builder step mock must sit straight, not tilted");
 assert.doesNotMatch(css, /nth-child\(odd\) \.ed-mock|nth-child\(even\) \.ed-mock/, "the step mockups must not alternate tilt");
 
-// The redesign adds a second "Compare every feature" trigger inside the new pricing
-// section, alongside the existing nav Pricing button - both share [data-open-comparison].
-// script.js must wire up every matching button (querySelectorAll), not just the first
-// (querySelector) - confirmed live: the pricing section's own link silently did nothing
-// until this was fixed.
+// script.js must wire up every matching [data-open-comparison] button (querySelectorAll),
+// not just the first (querySelector) - confirmed live: the pricing section's own link
+// silently did nothing until this was fixed.
 const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
 assert.match(script, /const openComparisonButtons = document\.querySelectorAll\("\[data-open-comparison\]"\)/, "every [data-open-comparison] trigger must be wired up, not just the first");
 assert.doesNotMatch(script, /document\.querySelector\("\[data-open-comparison\]"\)/, "must not regress to querySelector (singular), which only wires up the first matching button");
-assert.equal((html.match(/data-open-comparison/g) || []).length, 2, "expected exactly the nav button and the pricing section's compare link");
+// The header nav (Features/How It Works/Pricing/About, plus the hamburger toggle) was
+// removed per explicit direction - only Log In and the header's own Get Started button
+// stay. The pricing section's own "Compare every feature" link is now the sole
+// [data-open-comparison] trigger.
+assert.doesNotMatch(html, /class="site-nav"/, "the header nav links (Features/How It Works/Pricing/About) must not come back");
+assert.doesNotMatch(html, /class="nav-toggle"/, "the mobile hamburger toggle must not come back - there's no nav left to toggle");
+assert.equal((html.match(/data-open-comparison/g) || []).length, 1, "expected exactly the pricing section's compare link, now that the nav Pricing button is gone");
+
+// Real bug found live, twice, after the nav links/toggle were removed and only Log In +
+// Get Started were left in the header: (1) a legacy, unscoped `@media (max-width: 920px) {
+// .header-cta { display: none; } }` rule in styles.css was leaking through below 920px,
+// since .home-restyle .header-cta never declared its own `display` for that property to
+// override - the same specificity-leak pattern hit repeatedly elsewhere on this page. (2)
+// once visible again, the button had nothing left to make room for it at narrow phone
+// widths, and body's own legacy overflow-x: hidden rule meant it didn't scroll or wrap, it
+// silently clipped off the right edge below ~390px.
+assert.match(css, /\.home-restyle \.header-cta \{[^}]*display: inline-flex/, "the header CTA must declare its own display, or the legacy 920px-breakpoint display:none rule in styles.css leaks through and hides it");
+assert.match(css, /@media \(max-width: 420px\) \{[\s\S]*?\.home-restyle \.header-cta \{[^}]*padding: 8px 13px/, "narrow phones need a tighter CTA so it doesn't get clipped by body's overflow-x: hidden");
 
 // Closing CTA: the brand's "8 counts" wordplay replaces the old closing line per explicit
 // direction - "You focus on everything between the 8 counts. We handle everything beyond."
