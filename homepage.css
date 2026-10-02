@@ -212,21 +212,33 @@ body.home-restyle {
 .ed-mock-roster-list > div { display: flex; gap: 10px; align-items: center; font-size: 12px; }
 .ed-mock-initial { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #ecddd8; color: #8b4d45; flex-shrink: 0; font: 700 10px Inter, Arial, sans-serif; }
 .ed-mock-roster small { margin-left: auto; padding: 3px 7px; border-radius: 999px; font: 700 9px Inter, Arial, sans-serif; color: #47765c; background: #edf4ef; }
-/* 06 — Your business: one compact mini-dashboard, not a features list. */
+/* 06 — Your business: one compact mini-dashboard, not a features list. Per explicit direction
+   to make this "realistic" and "actually helpful" like the other step mocks, it now uses the
+   same real product tokens/fonts (Inter, the --product-* palette) instead of the homepage's
+   own rose styling, and adds two things it was missing: a month-over-month trend (the core
+   thing "analytics" actually means - not just a snapshot) and a "most requested class" line,
+   which closes a gap this section's own copy already promised ("...and what to teach again")
+   but the visual never actually showed. Still framed as representative, not live data - see
+   the HTML comment above this section; the real Analytics tab remains unbuilt. */
 .ed-business { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .85fr); gap: clamp(24px, 5vw, 56px); align-items: center; max-width: 1180px; margin: 0 auto; padding: clamp(40px, 6vw, 64px) clamp(24px, 6vw, 40px); }
 .ed-business-text h2 { margin: 8px 0 10px; font: 400 clamp(1.7rem, 2.9vw, 2.3rem)/1.2 var(--home-display); color: var(--home-ink); text-wrap: balance; }
 .ed-business-text p { margin: 0; max-width: 400px; font-size: 15px; line-height: 1.55; color: var(--home-muted); }
-.ed-business-card { padding: 22px 24px; background: white; border-radius: 10px; box-shadow: 0 20px 50px rgba(79,40,48,.12); }
-.ed-business-month { margin: 0 0 14px; font: 700 10px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--home-muted); }
+.ed-business-card { padding: 22px 24px; background: white; border-radius: 10px; box-shadow: 0 20px 50px rgba(79,40,48,.12); font-family: Inter, Arial, sans-serif; }
+.ed-business-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.ed-business-month { margin: 0; font: 700 10px Inter, Arial, sans-serif; text-transform: uppercase; letter-spacing: .05em; color: #766d68; }
+.ed-business-trend { display: inline-flex; align-items: center; gap: 3px; color: #47765c; font: 700 11px Inter, Arial, sans-serif; }
 .ed-business-days { display: flex; align-items: flex-end; gap: 8px; height: 72px; margin-bottom: 12px; }
 .ed-business-days > div { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
 .ed-business-days i { display: block; width: 100%; height: var(--h); border-radius: 2px 2px 0 0; background: #ecddd8; font-style: normal; }
-.ed-business-days > div:nth-child(6) i { background: var(--home-rose); }
-.ed-business-days small { font-size: 9px; text-transform: uppercase; letter-spacing: .03em; color: var(--home-muted); }
-.ed-business-next { margin: 0 0 14px; padding-top: 12px; border-top: 1px solid #f0e3de; font-size: 12px; color: var(--home-muted); }
-.ed-business-stats { display: flex; gap: 28px; margin: 0; }
-.ed-business-stats span { display: block; font: 400 1.5rem/1 var(--home-display); color: var(--home-ink); }
-.ed-business-stats small { display: block; margin-top: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--home-muted); }
+.ed-business-days > div:nth-child(6) i { background: #b5746a; }
+.ed-business-days small { font-size: 9px; text-transform: uppercase; letter-spacing: .03em; color: #766d68; }
+.ed-business-next { margin: 0 0 14px; padding-top: 12px; border-top: 1px solid #ece6e1; font-size: 12px; color: #766d68; }
+.ed-business-stats { display: flex; gap: 28px; margin: 0 0 14px; padding-bottom: 14px; border-bottom: 1px solid #ece6e1; }
+.ed-business-stats span { display: block; font: 600 1.4rem/1 Inter, Arial, sans-serif; color: #201d1b; }
+.ed-business-stats small { display: block; margin-top: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: #766d68; }
+.ed-business-popular { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ed-business-popular small { color: #766d68; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
+.ed-business-popular strong { color: #201d1b; font: 400 13px Georgia, serif; }
 
 /* 08 — Pricing: easy to scan, no unnecessary vertical space. */
 .ed-pricing { padding: clamp(40px, 5vw, 64px) clamp(24px, 6vw, 40px); max-width: 1080px; margin: 0 auto; }
@@ -244,7 +256,7 @@ body.home-restyle {
 .ed-launch { text-align: center; padding: clamp(48px, 6vw, 72px) 24px clamp(56px, 7vw, 84px); }
 .ed-launch h2 { margin: 12px 0 22px; font: 400 clamp(2rem, 4.2vw, 3rem)/1.08 var(--home-display); color: var(--home-ink); }
 .ed-launch h2 em { color: var(--home-rose); font-style: italic; }
-.restyle-footer { display: flex; justify-content: space-between; gap: 16px; padding: 20px max(24px, calc((100% - 1180px)/2)); border-top: 1px solid #eee1e5; color: #667080; font-size: 11px; }
+.restyle-footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 32px; padding: 20px max(24px, calc((100% - 1180px)/2)); border-top: 1px solid #eee1e5; color: #667080; font-size: 11px; }
 .restyle-footer nav { display: flex; gap: 24px; }
 .restyle-footer a { color: inherit; text-decoration: none; }
 
@@ -292,7 +304,7 @@ body.home-restyle {
      mock width, so the badge itself is just dropped here rather than fought for room. */
   .ed-mock-form .ed-mock-ig-import { display: none; }
   .ed-business-stats { gap: 24px; }
-  .restyle-footer { flex-wrap: wrap; justify-content: center; font-size: 10px; }
+  .restyle-footer { font-size: 10px; }
 }
 
 /* The auth modal (Log In / Create Account) and the comparison/pricing modal aren't part of the

@@ -126,6 +126,25 @@ assert.match(css, /\.ed-mock-payment-options \{[^}]*justify-content: center/, "t
 assert.doesNotMatch(html, /Payment confirmed/, "the confirmation mock must not repeat the step text's own \"confirmed automatically\" wording");
 assert.match(html, /class="ed-mock-confirm-receipt"/, "the confirmation mock should show the actual amount paid instead of a redundant status pill");
 
+// Grow/analytics pass, per explicit direction to make it "realistic" and "actually helpful":
+// restyled onto the same real product tokens (Inter, the --product-* palette) as the other
+// mocks instead of the homepage's own rose styling, and given a month-over-month trend (the
+// part that actually makes a chart "analytics" rather than a snapshot) plus a "most requested
+// class" line - the latter closes a gap the section's own copy already promised ("...and what
+// to teach again") but the visual never showed. Must stay framed as representative, not live
+// data, since the real Analytics tab remains unbuilt (see the HTML comment above this card).
+assert.match(html, /class="ed-business-trend"/, "the analytics card needs a trend, not just a static snapshot, to read as real analytics");
+assert.match(html, /vs last month/, "the trend must be a real comparison, not a bare percentage");
+assert.match(html, /class="ed-business-popular"/, "the analytics card must show the 'most requested class' insight its own copy promises (\"...and what to teach again\")");
+assert.match(css, /\.ed-business-card \{[^}]*font-family: Inter/, "the analytics card must use the real product's font, matching the other product-accurate mocks, not the homepage's own sans");
+
+// Footer-centering pass: per explicit feedback, the footer was the one element on this heavily
+// centered page using a traditional left/right justify-content: space-between split (mobile
+// already centered it at the 640px breakpoint - only desktop was inconsistent). Centered to
+// match.
+assert.match(css, /\.restyle-footer \{[^}]*justify-content: center/, "the footer must be centered, matching every other centered block on this page");
+assert.doesNotMatch(css, /\.restyle-footer \{[^}]*justify-content: space-between/, "the footer must not regress to a left/right split");
+
 // Site-mock pass: per explicit feedback the website step's visual read as a flat gradient
 // block, not an actual website - rebuilt to match the real published Editorial theme
 // (public-site.css: .public-editorial-hero) - a full-bleed photo hero with a dark scrim, an
