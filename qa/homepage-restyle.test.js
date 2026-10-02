@@ -179,7 +179,10 @@ assert.equal((html.match(/data-open-comparison/g) || []).length, 2, "expected ex
 
 // Closing CTA: the brand's "8 counts" wordplay replaces the old closing line per explicit
 // direction - "You focus on everything between the 8 counts. We handle everything beyond."
+// Per the same one-line-headline direction as the hero, the black line must be one
+// unbroken run (no internal <br>), only breaking before the rose <em> line.
 assert.match(html, /between the 8 counts/i, "the closing CTA should use the brand's 8-counts wordplay");
 assert.match(html, /<em>We handle everything beyond\.<\/em>/, "the closing CTA's payoff line must still exist");
+assert.match(html, /<h2 id="launch-title">You focus on everything between the 8 counts\.<br><em>/, "the closing CTA's black line must be one unbroken run, matching the hero's one-line-per-color treatment");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');
