@@ -111,9 +111,16 @@ body.home-restyle {
 .ed-site-browser-bar { display: flex; align-items: center; gap: 5px; padding: 8px 10px; background: #f2e9e6; }
 .ed-site-browser-bar span { width: 6px; height: 6px; border-radius: 50%; background: #d9c4bf; }
 .ed-site-browser-bar em { margin-left: 8px; font: 400 9px var(--home-sans); font-style: normal; color: #756a68; }
-.ed-site-hero { padding: 20px 16px; background: linear-gradient(135deg, #f4e3dd, #e9c9be); }
-.ed-site-hero span { display: block; font: 400 15px var(--home-display); color: var(--home-ink); }
-.ed-site-hero small { display: block; margin-top: 4px; font-size: 10px; color: #6b5a55; }
+/* The published site's real "Editorial" theme (public-site.css: .public-editorial-hero) is a
+   full-bleed photo with a dark scrim, an uppercase letter-spaced serif wordmark, and a solid
+   dark "Book a Class" button - reused here (same photo already loaded for the page's own
+   watermark, so no extra asset) instead of the earlier flat gradient block, which didn't read
+   as an actual website. */
+.ed-site-hero { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px; padding: 12px; background-image: linear-gradient(180deg, rgba(20,18,17,.55) 0%, rgba(20,18,17,.15) 45%, rgba(20,18,17,.55) 100%), url("assets/homepage-dance-studio.png?v=20260930-watermark"); background-size: cover; background-position: center 30%; }
+.ed-site-wordmark { align-self: flex-start; color: #fff; font: 500 10px var(--home-display); letter-spacing: .14em; text-transform: uppercase; }
+.ed-site-hero-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.ed-site-hero-foot span { color: #fff; font: 400 16px var(--home-display); line-height: 1.1; text-shadow: 0 2px 10px rgba(0,0,0,.3); }
+.ed-site-cta { flex-shrink: 0; padding: 6px 10px; border-radius: 2px; background: #24211f; color: #fff; font: 600 8px var(--home-sans); white-space: nowrap; }
 
 /* 03/04 — How it works: ONE compact 3-across row (not stacked large sections) + a short
    payoff image break. */

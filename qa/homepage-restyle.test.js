@@ -83,6 +83,22 @@ assert.match(html, /Accepted cards go straight to your bank/, "the payment mock 
 // moving the radio dot down to match. Locks in the clearance so it can't silently shrink back.
 assert.match(css, /\.ed-mock-payment-option \{[^}]*padding: 24px/, "the payment option needs enough top padding to clear the absolutely-positioned badge even when its title wraps to two lines on mobile");
 
+// Site-mock pass: per explicit feedback the website step's visual read as a flat gradient
+// block, not an actual website - rebuilt to match the real published Editorial theme
+// (public-site.css: .public-editorial-hero) - a full-bleed photo hero with a dark scrim, an
+// uppercase serif wordmark, and a real "Book a Class" button - reusing the page's own
+// watermark photo rather than a plain color gradient.
+assert.match(html, /class="ed-site-wordmark"/, "the site mock needs the uppercase wordmark the real Editorial theme shows over its hero photo");
+assert.match(html, />Book a Class</, "the site mock needs the real theme's actual CTA copy");
+assert.match(css, /\.ed-site-hero \{[^}]*url\("assets\/homepage-dance-studio\.png/, "the site mock's hero must use a real photo background, not a flat color gradient");
+// Real bug found live: at the 128px mobile mock width, the headline wraps to several lines
+// and the CTA button - laid out side-by-side with it via justify-content: space-between -
+// got pushed past the card's right edge and clipped by the mock's overflow: hidden ("Book a
+// Class" rendered as "Book a Clas"). Fine on desktop (headline stays short enough there),
+// broken on mobile. Fixed by letting the footer wrap so the button drops to its own line
+// instead of being squeezed and clipped.
+assert.match(css, /\.ed-site-hero-foot \{[^}]*flex-wrap: wrap/, "the site mock's hero footer must wrap so the CTA button isn't clipped when the headline wraps to multiple lines on mobile");
+
 // 06 — Your business: per explicit direction this is now a representative analytics
 // visual (day-of-week registration trend + returning vs. first-time split) rather than a
 // revenue figure - the real Analytics tab in the product doesn't exist yet, so this is an
