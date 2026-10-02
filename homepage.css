@@ -57,7 +57,6 @@ body.home-restyle {
 .home-restyle .site-nav a:hover, .home-restyle .site-nav button:hover, .home-restyle .header-login:hover { color: var(--home-rose); }
 .home-restyle .header-account { display: flex; align-items: center; gap: 22px; }
 .home-restyle .header-account[hidden] { display: none; }
-.home-restyle .header-cta { min-height: 40px; padding: 10px 24px; border: 0; border-radius: 3px; background: var(--home-rose); color: white; box-shadow: none; font: 600 13px var(--home-sans); }
 .home-restyle .nav-toggle { display: none; }
 .home-restyle a:focus-visible, .home-restyle button:focus-visible { outline: 3px solid var(--home-rose); outline-offset: 4px; }
 .ed-eyebrow { margin: 0 0 10px; font: 500 12px/1.5 var(--home-sans); text-transform: uppercase; letter-spacing: .04em; color: var(--home-muted); }
@@ -278,7 +277,6 @@ body.home-restyle {
   .home-restyle .nav-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 40px; height: 40px; order: 3; margin-left: 0; border: 0; border-radius: 4px; background: #ffffffa6; }
   .home-restyle .nav-toggle span { width: 19px; height: 2px; background: var(--home-ink); }
   .home-restyle .header-account { margin-left: auto; }
-  .home-restyle .header-account .header-cta { display: none; }
   .ed-pricing-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
@@ -335,6 +333,13 @@ body.home-restyle {
 }
 .home-restyle .demo-form button { background: var(--home-rose); box-shadow: 0 18px 38px rgba(168, 103, 95, 0.24); }
 .home-restyle .form-message { color: #8f5851; }
+/* The per-plan "Request a demo" modal (opened by the pricing tiers' "Book a demo" buttons)
+   is the same story - it previously fell through to the old orange-glow panel background,
+   magenta/orange gradient button, and pink focus ring since nothing scoped it to this page. */
+.home-restyle .plan-demo-panel { background: radial-gradient(circle at 100% 0%, rgba(168, 103, 95, 0.14), transparent 14rem), linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 248, 0.94)); }
+.home-restyle .plan-demo-form input:focus { border-color: var(--home-rose); outline: 3px solid rgba(168, 103, 95, 0.16); }
+.home-restyle .plan-demo-form button { background: var(--home-rose); box-shadow: 0 18px 38px rgba(168, 103, 95, 0.24); }
+.home-restyle .plan-demo-message { color: #8f5851 !important; }
 
 /* Flatten the auth modal / pricing modal buttons to match the redesign's flat corner language
    used everywhere else (dashboard buttons are 4px, onboarding buttons are 2px, the homepage's
@@ -345,6 +350,7 @@ body.home-restyle {
 .home-restyle .modal-close,
 .home-restyle .price-card a,
 .home-restyle .demo-form button,
+.home-restyle .plan-demo-form button,
 .home-restyle .auth-google {
   border-radius: 4px;
 }

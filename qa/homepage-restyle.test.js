@@ -35,7 +35,23 @@ assert.match(html, /confirmed automatically/i, "card payment's real automatic co
 assert.doesNotMatch(html, /class="ed-count"/, "the 5-6-7-8 count-off divider must not come back");
 assert.doesNotMatch(html, /ed-step-count/, "step numbering must not come back");
 assert.doesNotMatch(css, /content: "8"/, "the oversized background '8' watermark (part of the same motif system) must not come back either");
-assert.ok((html.match(/data-open-setup/g) || []).length >= 4);
+// Per explicit direction: the header's own "Get Started" button was dropped (the nav now
+// just ends with "Log In" - there are still plenty of other self-serve CTAs on the page), and
+// the Growth/Scale pricing tiers route to "Book a demo" (data-request-demo-plan) instead of
+// instant self-serve signup, since they're paid plans. Only the free Starter tier, the hero,
+// and the closing CTA still use data-open-setup - 3, not the earlier 4+.
+assert.ok((html.match(/data-open-setup/g) || []).length >= 3);
+assert.doesNotMatch(html, /header-cta/, "the header's own Get Started button must stay removed");
+assert.equal((html.match(/data-request-demo-plan/g) || []).length, 2, "Growth and Scale should both route to Book a demo");
+assert.equal((html.match(/>Book a demo</g) || []).length, 2, "both paid tiers must show the real 'Book a demo' label");
+assert.equal((html.match(/>Get Started Free</g) || []).length, 1, "only the free Starter tier (plus the hero/launch CTAs, which use the longer 'Get Started Free →' form) should offer self-serve signup");
+// Real bug found live: the per-plan "Request a demo" modal (.plan-demo-modal/.plan-demo-form)
+// is reached from this homepage for the first time now that the pricing tiers open it, and -
+// same as the auth modal and comparison modal before they got scoped overrides - it fell
+// straight through to the old bright orange-glow panel background, magenta/orange gradient
+// submit button, and pink focus ring, since nothing scoped its colors to this page.
+assert.match(css, /\.home-restyle \.plan-demo-form button \{[^}]*background: var\(--home-rose\)/, "the demo-request button must use the redesign's rose, not the legacy orange/magenta gradient");
+assert.match(css, /\.home-restyle \.plan-demo-form input:focus/, "the demo-request email field must get a rose focus ring, not the legacy pink one");
 for (const hook of ['data-open-auth-login', 'data-open-comparison', 'auth-modal', 'setup-modal', 'comparison-modal']) {
   assert.ok(html.includes(hook), `Existing ${hook} flow remains available`);
 }

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260928-embedded-checkout">
-  <link rel="stylesheet" href="homepage.css?v=20261002-analytics-footer">
+  <link rel="stylesheet" href="homepage.css?v=20261002-book-demo">
   <link rel="stylesheet" href="onboarding.css?v=20260928-brand-consistency">
   <link rel="stylesheet" href="public-site.css?v=20260921-about-layout">
 </head>
@@ -32,7 +32,6 @@
     </nav>
     <div class="header-account" data-auth-state="logged-out" hidden>
       <button class="header-login" type="button" data-open-auth-login>Log In</button>
-      <button class="header-cta" type="button" data-open-setup>Get Started</button>
     </div>
     <div class="header-account header-account-user" data-auth-state="logged-in" hidden>
       <a class="header-login" href="/dashboard/" data-dashboard-link>Dashboard</a>
@@ -196,13 +195,13 @@
           <p class="ed-pricing-name">Growth</p>
           <p class="ed-pricing-price">$20<span>/mo</span></p>
           <p class="ed-pricing-detail">Everything in Starter, plus analytics, waitlists and payment plans.</p>
-          <a class="ed-button" href="#setup" data-open-setup>Get Started Free</a>
+          <button type="button" class="ed-button" data-request-demo-plan="Growth">Book a demo</button>
         </div>
         <div class="ed-pricing-tier">
           <p class="ed-pricing-name">Scale</p>
           <p class="ed-pricing-price">$50<span>/mo</span></p>
           <p class="ed-pricing-detail">Everything in Growth, plus marketing tools and a custom domain.</p>
-          <a class="ed-button ed-button-outline" href="#setup" data-open-setup>Get Started Free</a>
+          <button type="button" class="ed-button ed-button-outline" data-request-demo-plan="Scale">Book a demo</button>
         </div>
       </div>
       <button type="button" class="ed-pricing-compare" data-open-comparison>Compare every feature &rarr;</button>
