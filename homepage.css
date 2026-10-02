@@ -100,13 +100,33 @@ body.home-restyle {
 .ed-reality-bridge { margin: 20px 0 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
 .ed-chaos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .ed-chaos-item { padding: 14px 16px; background: white; border: 1px solid #f3e9e4; border-radius: 8px; box-shadow: 0 14px 34px rgba(17, 27, 43, .1); color: var(--home-ink); font: 500 12px/1.35 var(--home-sans); }
-.ed-chaos-app { display: block; margin-bottom: 4px; font: 700 9px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--home-muted); }
-.ed-chaos-venmo strong { display: block; font: 700 17px var(--home-display); color: #2e7d4f; }
-.ed-chaos-dm p { margin: 0; }
+.ed-chaos-app { display: flex; align-items: center; gap: 6px; margin-bottom: 9px; font: 700 9px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--home-muted); }
+.ed-chaos-icon { display: inline-flex; width: 15px; height: 15px; flex-shrink: 0; }
+.ed-chaos-icon svg { width: 100%; height: 100%; }
+/* Each card borrows its real app's brand color for the icon + label, rather than the same
+   neutral gray for all four - this is what actually reads as "Venmo" vs "a spreadsheet" at a
+   glance, the way real app notifications/screenshots do. */
+.ed-chaos-venmo .ed-chaos-app { color: #008cff; }
+.ed-chaos-icon-ig { color: #c13584; }
+.ed-chaos-icon-sheet { color: #0f9d58; }
+.ed-chaos-venmo-row, .ed-chaos-dm-row { display: flex; align-items: center; gap: 10px; }
+.ed-chaos-avatar { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: #e8f3ff; color: #008cff; font: 700 13px var(--home-sans); }
+.ed-chaos-avatar-ig { background: linear-gradient(135deg, #f58529, #dd2a7b 55%, #515bd4); color: white; }
+.ed-chaos-venmo strong { display: block; font: 700 17px var(--home-display); color: #0a8a5f; }
+.ed-chaos-venmo span { color: var(--home-muted); }
+.ed-chaos-dm p { margin: 0; padding: 8px 11px; background: #f5f3f1; border-radius: 14px 14px 14px 3px; }
 .ed-chaos-sheet table { width: 100%; border-collapse: collapse; font-size: 10px; }
-.ed-chaos-sheet td { padding: 2px 4px; border: 1px solid #eee3e0; }
-.ed-chaos-note { background: #fff6cf; }
-.ed-chaos-note p { margin: 0; font-style: italic; }
+.ed-chaos-sheet td { padding: 4px 6px; border: 1px solid #eee3e0; }
+.ed-chaos-sheet td.is-paid { color: #0a8a5f; font-weight: 700; }
+.ed-chaos-sheet td.is-pending { color: #b5762f; font-weight: 700; background: #fff6e6; }
+/* A real sticky note is just a scrap of paper with handwriting on it - no app chrome, no
+   label row - so this one drops the ed-chaos-app row the other three cards use. Caveat (a
+   handwriting webfont) plus a flatter shadow than the other cards (paper lying on a surface,
+   not a UI panel floating above one) sell the "actual sticky note" read. No rotation - per
+   explicit earlier direction the chaos cards are a precise, aligned grid now, not a tilted
+   scrapbook, and that must hold for every card including this one. */
+.ed-chaos-note { background: #fff6cf; box-shadow: 0 6px 16px rgba(17, 27, 43, .14); }
+.ed-chaos-note p { margin: 0; font: 600 19px/1.3 "Caveat", cursive; color: #4a3f1f; }
 
 /* 02.5 — Build your site: folded into the "How it works" step grid as the first (and
    most important) step, rather than its own standalone section - reuses the real browser-
@@ -268,12 +288,15 @@ body.home-restyle {
    specificity only overrides properties it actually declares, so a property it never mentions
    (max-width) keeps leaking through. Fixed with an explicit reset. */
 .ed-launch h2 { margin: 12px 0 22px; max-width: none; font: 400 clamp(2rem, 4.2vw, 3rem)/1.08 var(--home-display); color: var(--home-ink); }
-/* A prior pass swapped the "8" into the sans face, reasoning that Fraunces' own glyph (bigger
-   top bowl than bottom) reads upside-down. Confirmed live, side by side at full size in
-   context: the font-mismatch that creates - a visibly different typeface sitting mid-sentence
-   in an otherwise all-serif headline - reads far more wrong than the native digit's bowl
-   proportions ever did. Reverted; the "8" is plain text again, inheriting the serif headline
-   font like every other character in it. */
+/* Real bug, confirmed twice: Fraunces' own "8" has roughly equal-sized top and bottom bowls,
+   instead of the bottom-heavy taper every other serif (Georgia, Times, Playfair, Lora,
+   Merriweather - checked all five side by side) uses for visual stability - that's what reads
+   as "upside-down" here, not a one-off rendering glitch. A first attempt swapped it into the
+   homepage's sans face, which fixed the bowl shape but created a worse problem: a visibly
+   different TYPEFACE sitting mid-sentence in an all-serif headline. Georgia is the right fix -
+   it's already Fraunces' own fallback in --home-display, so it reads as "the same serif, just
+   rendered" rather than a foreign font, while its numeral has the normal bottom-heavy shape. */
+.ed-launch-digit { font-family: Georgia, serif; }
 .ed-launch h2 em { color: var(--home-rose); font-style: italic; }
 .restyle-footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 32px; padding: 20px max(24px, calc((100% - 1180px)/2)); border-top: 1px solid #eee1e5; color: #667080; font-size: 11px; }
 .restyle-footer nav { display: flex; gap: 24px; }
