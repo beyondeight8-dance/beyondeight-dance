@@ -72,6 +72,17 @@ assert.match(css, /\.ed-chaos \{ display: grid;/, "the chaos cards must be a pla
 assert.doesNotMatch(css, /\.ed-chaos-item \{[^}]*position: absolute/, "chaos cards must not go back to absolute positioning");
 assert.doesNotMatch(css, /\.ed-chaos-venmo \{[^}]*rotate\(|\.ed-chaos-dm \{[^}]*rotate\(|\.ed-chaos-sheet \{[^}]*rotate\(|\.ed-chaos-note \{[^}]*rotate\(/, "individual chaos cards must not be tilted");
 
+// Realism pass: the four "chaos" cards all used the same neutral gray label + generic white
+// card treatment, which didn't actually read as Venmo/Instagram/Sheets/a sticky note at a
+// glance. Each now borrows real brand color + a small brand-shaped icon, and the note card
+// drops the app-chrome label entirely (a real sticky note doesn't have one) in favor of a
+// handwriting webfont - all without reintroducing the rotation banned above.
+assert.match(css, /\.ed-chaos-venmo \.ed-chaos-app \{ color: #008cff/, "the Venmo card should use Venmo's actual brand blue for its icon/label");
+assert.match(css, /\.ed-chaos-icon-ig \{ color: #c13584/, "the Instagram card should use Instagram's actual brand color for its icon");
+assert.match(css, /\.ed-chaos-icon-sheet \{ color: #0f9d58/, "the roster card should use Google Sheets' actual brand green for its icon");
+assert.doesNotMatch(html, /ed-chaos-note ed-reveal" data-reveal-delay="360"><span class="ed-chaos-app"/, "a real sticky note has no app-chrome label row - must not regress to one");
+assert.match(css, /\.ed-chaos-note p \{[^}]*"Caveat"/, "the sticky note's text should use a handwriting webfont, not the UI sans-serif every other card uses");
+
 // Build your site: per explicit feedback this is no longer its own standalone section ahead
 // of "How it works" - it's the first step inside that grid, using the same real browser-chrome
 // + hero-block visual language (not a generic mock) so it still reads as the actual product.
@@ -317,16 +328,19 @@ assert.match(css, /@media \(max-width: 420px\) \{[\s\S]*?\.home-restyle \.header
 // direction - "You focus on everything between the 8 counts. We handle everything beyond."
 // Per the same one-line-headline direction as the hero, the black line must be one
 // unbroken run (no internal <br>), only breaking before the rose <em> line.
-assert.match(html, /between the 8 counts/i, "the closing CTA should use the brand's 8-counts wordplay");
+assert.match(html, /between the <span class="ed-launch-digit">8<\/span> counts/i, "the closing CTA should use the brand's 8-counts wordplay");
 assert.match(html, /<em>We handle everything beyond\.<\/em>/, "the closing CTA's payoff line must still exist");
-assert.match(html, /<h2 id="launch-title">You focus on everything between the 8 counts\.<br><em>/, "the closing CTA's black line must be one unbroken run, matching the hero's one-line-per-color treatment");
-// A prior pass wrapped the "8" in a sans-face span, reasoning that Fraunces' own glyph (a
-// visibly larger top bowl than bottom bowl at this size) reads upside-down. Reverted after
-// live side-by-side comparison: the font-mismatch that creates - one visibly different
-// typeface sitting mid-sentence in an otherwise all-serif headline - read far more wrong in
-// context than the native digit's bowl proportions ever did. Must not come back as a span.
-assert.doesNotMatch(html, /class="ed-launch-digit"/, "the '8' must be plain text inheriting the serif headline font, not wrapped in a sans-face span - the font mismatch reads worse than Fraunces' own glyph");
-assert.doesNotMatch(css, /\.ed-launch-digit/, "no leftover CSS for the removed sans-face digit span");
+assert.match(html, /<h2 id="launch-title">You focus on everything between the <span class="ed-launch-digit">8<\/span> counts\.<br><em>/, "the closing CTA's black line must be one unbroken run, matching the hero's one-line-per-color treatment");
+// Real bug, confirmed twice over: Fraunces' own "8" has roughly equal-sized top and bottom
+// bowls, not the bottom-heavy taper every other serif uses (checked Georgia, Times, Playfair,
+// Lora, Merriweather side by side - all five taper the same way) - that's what reads as
+// upside-down, confirmed live on the actual published page, twice. A first attempt swapped it
+// into the homepage's sans face, which fixed the bowl shape but created a worse problem live:
+// a visibly different typeface sitting mid-sentence in an all-serif headline. Georgia is the
+// fix that stuck - it's already Fraunces' own fallback in --home-display, so it reads as the
+// same serif family rather than a foreign font, while its numeral tapers correctly.
+assert.match(html, /class="ed-launch-digit"/, "the '8' must stay wrapped in its own span so it can render in a different (but still serif) font than the rest of the headline");
+assert.match(css, /\.ed-launch-digit \{[^}]*font-family: Georgia, serif/, "the '8' must render in Georgia - Fraunces' own glyph reads upside-down at this size, confirmed live twice, and a same-family serif swap reads far less jarring than the sans-face swap tried first");
 // Real bug found live: same pattern as the hero h1 fix earlier - styles.css has a bare
 // `h2 { max-width: 1320px; }` rule (unscoped, meant for other pages) that silently capped
 // this h2's own box width without an auto margin to re-center it, so the box sat flush-left
