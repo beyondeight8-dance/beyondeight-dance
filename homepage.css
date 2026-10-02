@@ -86,7 +86,11 @@ body.home-restyle {
    earlier in this redesign. */
 .ed-hero-copy h1 { margin: 0; max-width: none; letter-spacing: normal; font: 400 clamp(2.6rem, 5.6vw, 4.4rem)/1.02 var(--home-display); color: var(--home-ink); }
 .ed-hero-copy h1 em { color: var(--home-rose); font-style: italic; font-weight: 400; }
-.ed-hero-sub { max-width: 440px; margin: 18px auto 26px; font-size: 16px; line-height: 1.55; color: var(--home-muted); text-wrap: pretty; }
+.ed-hero-sub { max-width: 620px; margin: 18px auto 26px; font-size: 16px; line-height: 1.55; color: var(--home-muted); white-space: nowrap; }
+/* white-space: nowrap keeps this on one line down to 640px, where the line (~505px) still
+   comfortably clears the hero's own side padding. Below that it has to wrap again (reset in
+   the @media (max-width: 640px) block) or it would get silently clipped by body's legacy
+   overflow-x: hidden rule - the same failure mode as the header CTA bug. */
 
 /* 02 — The reality: editorial, scattered "chaos" UI fragments on the same light watermark
    backdrop as the hero - compact, makes its point quickly rather than becoming its own
@@ -264,13 +268,12 @@ body.home-restyle {
    specificity only overrides properties it actually declares, so a property it never mentions
    (max-width) keeps leaking through. Fixed with an explicit reset. */
 .ed-launch h2 { margin: 12px 0 22px; max-width: none; font: 400 clamp(2rem, 4.2vw, 3rem)/1.08 var(--home-display); color: var(--home-ink); }
-/* Fraunces' default "8" at this size has a visibly larger top bowl than bottom bowl - the
-   opposite of the usual numeral proportions - which reads as upside-down. Confirmed live:
-   font-variant-numeric: oldstyle-nums produced no visible change (Fraunces doesn't expose a
-   different figure set here), so the numeral is rendered in the homepage's sans face instead,
-   which uses conventional proportions; sized and nudged to sit on the same baseline as the
-   serif text around it. */
-.ed-launch-digit { font-family: var(--home-sans); font-weight: 400; }
+/* A prior pass swapped the "8" into the sans face, reasoning that Fraunces' own glyph (bigger
+   top bowl than bottom) reads upside-down. Confirmed live, side by side at full size in
+   context: the font-mismatch that creates - a visibly different typeface sitting mid-sentence
+   in an otherwise all-serif headline - reads far more wrong than the native digit's bowl
+   proportions ever did. Reverted; the "8" is plain text again, inheriting the serif headline
+   font like every other character in it. */
 .ed-launch h2 em { color: var(--home-rose); font-style: italic; }
 .restyle-footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 32px; padding: 20px max(24px, calc((100% - 1180px)/2)); border-top: 1px solid #eee1e5; color: #667080; font-size: 11px; }
 .restyle-footer nav { display: flex; gap: 24px; }
@@ -304,6 +307,7 @@ body.home-restyle {
      doesn't scroll or wrap the row, it gets silently clipped off the right edge. Tightening
      the header's side padding and the CTA's own padding/font-size below 420px buys back enough
      room that the button stays fully on-screen down to a 320px viewport. */
+  .ed-hero-sub { white-space: normal; max-width: 460px; text-wrap: pretty; }
 }
 @media (max-width: 420px) {
   .home-restyle .site-header { padding: 0 14px; gap: 10px; }

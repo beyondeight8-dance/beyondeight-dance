@@ -212,6 +212,12 @@ assert.match(html, /<h1 id="hero-title">Starting your own dance class\?<br><em>/
 assert.match(css, /\.ed-hero-copy h1 \{[^}]*max-width: none/, "the hero h1 must explicitly reset max-width to none - the legacy bare h1 rule in styles.css caps it at 840px and this is the only thing stopping that from leaking through");
 assert.match(css, /\.ed-hero-copy h1 \{[^}]*letter-spacing: normal/, "the hero h1 must explicitly reset letter-spacing to normal - the legacy bare h1 rule in styles.css tightens it and this is the only thing stopping that from leaking through");
 
+// The hero subhead originally used an em dash and wrapped to two lines on desktop. Per
+// explicit direction it must read as one line, with no em dash.
+assert.doesNotMatch(html, /ed-hero-sub">[^<]*—/, "the hero subhead must not use an em dash");
+assert.match(css, /\.ed-hero-sub \{[^}]*white-space: nowrap/, "the hero subhead needs white-space: nowrap to actually render as one line above 640px, not just a wider max-width");
+assert.match(css, /@media \(max-width: 640px\) \{[\s\S]*?\.ed-hero-sub \{[^}]*white-space: normal/, "the subhead's nowrap must be reset back to normal by 640px, or body's legacy overflow-x: hidden silently clips it on phones instead of letting it wrap");
+
 // Simplification pass: per explicit direction, the hero's product-panel visual (the
 // Class/Registered/Collected card) was dropped and the hero copy centered instead - the
 // hero is now type-only, relying on the body's watermark photo for visual texture. The
@@ -311,16 +317,16 @@ assert.match(css, /@media \(max-width: 420px\) \{[\s\S]*?\.home-restyle \.header
 // direction - "You focus on everything between the 8 counts. We handle everything beyond."
 // Per the same one-line-headline direction as the hero, the black line must be one
 // unbroken run (no internal <br>), only breaking before the rose <em> line.
-assert.match(html, /between the <span class="ed-launch-digit">8<\/span> counts/i, "the closing CTA should use the brand's 8-counts wordplay");
+assert.match(html, /between the 8 counts/i, "the closing CTA should use the brand's 8-counts wordplay");
 assert.match(html, /<em>We handle everything beyond\.<\/em>/, "the closing CTA's payoff line must still exist");
-assert.match(html, /<h2 id="launch-title">You focus on everything between the <span class="ed-launch-digit">8<\/span> counts\.<br><em>/, "the closing CTA's black line must be one unbroken run, matching the hero's one-line-per-color treatment");
-// Real bug found live: Fraunces' default "8" at this headline size has a visibly larger top
-// bowl than bottom bowl (confirmed by pixel-sampling a screenshot) - the opposite of normal
-// numeral proportions, reading as upside-down. font-variant-numeric: oldstyle-nums produced
-// no visible change (Fraunces doesn't expose a different figure set here), so the digit
-// renders in the homepage's sans face instead, which uses conventional proportions. Locks in
-// both the wrapper and the font swap so this can't silently regress.
-assert.match(css, /\.ed-launch-digit \{[^}]*font-family: var\(--home-sans\)/, "the '8' in the closing CTA must render in the sans face - Fraunces' own glyph reads upside-down at this size");
+assert.match(html, /<h2 id="launch-title">You focus on everything between the 8 counts\.<br><em>/, "the closing CTA's black line must be one unbroken run, matching the hero's one-line-per-color treatment");
+// A prior pass wrapped the "8" in a sans-face span, reasoning that Fraunces' own glyph (a
+// visibly larger top bowl than bottom bowl at this size) reads upside-down. Reverted after
+// live side-by-side comparison: the font-mismatch that creates - one visibly different
+// typeface sitting mid-sentence in an otherwise all-serif headline - read far more wrong in
+// context than the native digit's bowl proportions ever did. Must not come back as a span.
+assert.doesNotMatch(html, /class="ed-launch-digit"/, "the '8' must be plain text inheriting the serif headline font, not wrapped in a sans-face span - the font mismatch reads worse than Fraunces' own glyph");
+assert.doesNotMatch(css, /\.ed-launch-digit/, "no leftover CSS for the removed sans-face digit span");
 // Real bug found live: same pattern as the hero h1 fix earlier - styles.css has a bare
 // `h2 { max-width: 1320px; }` rule (unscoped, meant for other pages) that silently capped
 // this h2's own box width without an auto margin to re-center it, so the box sat flush-left
