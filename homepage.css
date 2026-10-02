@@ -57,6 +57,7 @@ body.home-restyle {
 .home-restyle .site-nav a:hover, .home-restyle .site-nav button:hover, .home-restyle .header-login:hover { color: var(--home-rose); }
 .home-restyle .header-account { display: flex; align-items: center; gap: 22px; }
 .home-restyle .header-account[hidden] { display: none; }
+.home-restyle .header-cta { min-height: 40px; padding: 10px 24px; border: 0; border-radius: 3px; background: var(--home-rose); color: white; box-shadow: none; font: 600 13px var(--home-sans); }
 .home-restyle .nav-toggle { display: none; }
 .home-restyle a:focus-visible, .home-restyle button:focus-visible { outline: 3px solid var(--home-rose); outline-offset: 4px; }
 .ed-eyebrow { margin: 0 0 10px; font: 500 12px/1.5 var(--home-sans); text-transform: uppercase; letter-spacing: .04em; color: var(--home-muted); }
@@ -253,7 +254,22 @@ body.home-restyle {
 
 /* 09 — Final CTA */
 .ed-launch { text-align: center; padding: clamp(48px, 6vw, 72px) 24px clamp(56px, 7vw, 84px); }
-.ed-launch h2 { margin: 12px 0 22px; font: 400 clamp(2rem, 4.2vw, 3rem)/1.08 var(--home-display); color: var(--home-ink); }
+/* Real bug found live: styles.css has a bare `h2 { max-width: 1320px; }` rule (unscoped,
+   meant for other pages) that silently capped this h2's own box width without an auto margin
+   to re-center it - the box sat flush-left within the section, so text-align: center on
+   .ed-launch only centered the text WITHIN that off-center box, not against the full section.
+   Confirmed live: computed max-width was exactly 1320px, margin-left/right both 0px. Same
+   specificity-leak pattern as the hero h1 bug earlier in this redesign - this rule's higher
+   specificity only overrides properties it actually declares, so a property it never mentions
+   (max-width) keeps leaking through. Fixed with an explicit reset. */
+.ed-launch h2 { margin: 12px 0 22px; max-width: none; font: 400 clamp(2rem, 4.2vw, 3rem)/1.08 var(--home-display); color: var(--home-ink); }
+/* Fraunces' default "8" at this size has a visibly larger top bowl than bottom bowl - the
+   opposite of the usual numeral proportions - which reads as upside-down. Confirmed live:
+   font-variant-numeric: oldstyle-nums produced no visible change (Fraunces doesn't expose a
+   different figure set here), so the numeral is rendered in the homepage's sans face instead,
+   which uses conventional proportions; sized and nudged to sit on the same baseline as the
+   serif text around it. */
+.ed-launch-digit { font-family: var(--home-sans); font-weight: 600; }
 .ed-launch h2 em { color: var(--home-rose); font-style: italic; }
 .restyle-footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 32px; padding: 20px max(24px, calc((100% - 1180px)/2)); border-top: 1px solid #eee1e5; color: #667080; font-size: 11px; }
 .restyle-footer nav { display: flex; gap: 24px; }
@@ -277,6 +293,7 @@ body.home-restyle {
   .home-restyle .nav-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 40px; height: 40px; order: 3; margin-left: 0; border: 0; border-radius: 4px; background: #ffffffa6; }
   .home-restyle .nav-toggle span { width: 19px; height: 2px; background: var(--home-ink); }
   .home-restyle .header-account { margin-left: auto; }
+  .home-restyle .header-account .header-cta { display: none; }
   .ed-pricing-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {

@@ -35,13 +35,13 @@ assert.match(html, /confirmed automatically/i, "card payment's real automatic co
 assert.doesNotMatch(html, /class="ed-count"/, "the 5-6-7-8 count-off divider must not come back");
 assert.doesNotMatch(html, /ed-step-count/, "step numbering must not come back");
 assert.doesNotMatch(css, /content: "8"/, "the oversized background '8' watermark (part of the same motif system) must not come back either");
-// Per explicit direction: the header's own "Get Started" button was dropped (the nav now
-// just ends with "Log In" - there are still plenty of other self-serve CTAs on the page), and
-// the Growth/Scale pricing tiers route to "Book a demo" (data-request-demo-plan) instead of
-// instant self-serve signup, since they're paid plans. Only the free Starter tier, the hero,
-// and the closing CTA still use data-open-setup - 3, not the earlier 4+.
-assert.ok((html.match(/data-open-setup/g) || []).length >= 3);
-assert.doesNotMatch(html, /header-cta/, "the header's own Get Started button must stay removed");
+// The header keeps both "Log In" and its own "Get Started" button - a first pass dropped the
+// latter, but that wasn't actually what was asked for, so it's back. Separately, the
+// Growth/Scale pricing tiers route to "Book a demo" (data-request-demo-plan) instead of
+// instant self-serve signup, since they're paid plans. The free Starter tier, the header, the
+// hero, and the closing CTA all still use data-open-setup.
+assert.ok((html.match(/data-open-setup/g) || []).length >= 4);
+assert.match(html, /header-cta/, "the header's own Get Started button must exist");
 assert.equal((html.match(/data-request-demo-plan/g) || []).length, 2, "Growth and Scale should both route to Book a demo");
 assert.equal((html.match(/>Book a demo</g) || []).length, 2, "both paid tiers must show the real 'Book a demo' label");
 assert.equal((html.match(/>Get Started Free</g) || []).length, 1, "only the free Starter tier (plus the hero/launch CTAs, which use the longer 'Get Started Free →' form) should offer self-serve signup");
@@ -296,8 +296,22 @@ assert.equal((html.match(/data-open-comparison/g) || []).length, 2, "expected ex
 // direction - "You focus on everything between the 8 counts. We handle everything beyond."
 // Per the same one-line-headline direction as the hero, the black line must be one
 // unbroken run (no internal <br>), only breaking before the rose <em> line.
-assert.match(html, /between the 8 counts/i, "the closing CTA should use the brand's 8-counts wordplay");
+assert.match(html, /between the <span class="ed-launch-digit">8<\/span> counts/i, "the closing CTA should use the brand's 8-counts wordplay");
 assert.match(html, /<em>We handle everything beyond\.<\/em>/, "the closing CTA's payoff line must still exist");
-assert.match(html, /<h2 id="launch-title">You focus on everything between the 8 counts\.<br><em>/, "the closing CTA's black line must be one unbroken run, matching the hero's one-line-per-color treatment");
+assert.match(html, /<h2 id="launch-title">You focus on everything between the <span class="ed-launch-digit">8<\/span> counts\.<br><em>/, "the closing CTA's black line must be one unbroken run, matching the hero's one-line-per-color treatment");
+// Real bug found live: Fraunces' default "8" at this headline size has a visibly larger top
+// bowl than bottom bowl (confirmed by pixel-sampling a screenshot) - the opposite of normal
+// numeral proportions, reading as upside-down. font-variant-numeric: oldstyle-nums produced
+// no visible change (Fraunces doesn't expose a different figure set here), so the digit
+// renders in the homepage's sans face instead, which uses conventional proportions. Locks in
+// both the wrapper and the font swap so this can't silently regress.
+assert.match(css, /\.ed-launch-digit \{[^}]*font-family: var\(--home-sans\)/, "the '8' in the closing CTA must render in the sans face - Fraunces' own glyph reads upside-down at this size");
+// Real bug found live: same pattern as the hero h1 fix earlier - styles.css has a bare
+// `h2 { max-width: 1320px; }` rule (unscoped, meant for other pages) that silently capped
+// this h2's own box width without an auto margin to re-center it, so the box sat flush-left
+// within .ed-launch and text-align: center only centered text WITHIN that off-center box, not
+// against the full section. Confirmed live: computed max-width was exactly 1320px, margin-
+// left/right both 0px, h2 center 36px off from the section/eyebrow/button center.
+assert.match(css, /\.ed-launch h2 \{[^}]*max-width: none/, "the closing CTA's h2 must explicitly reset max-width to none - the legacy bare h2 rule in styles.css caps it at 1320px with no auto margin, pulling the text off-center");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');
