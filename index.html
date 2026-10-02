@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260928-embedded-checkout">
-  <link rel="stylesheet" href="homepage.css?v=20261002-hero-centered">
+  <link rel="stylesheet" href="homepage.css?v=20261002-site-step-first">
   <link rel="stylesheet" href="onboarding.css?v=20260928-brand-consistency">
   <link rel="stylesheet" href="public-site.css?v=20260921-about-layout">
 </head>
@@ -69,31 +69,6 @@
       </div>
     </section>
 
-    <!-- 02.5 — YOUR OWN WEBSITE: one strong visual moment, not a feature card. -->
-    <section class="ed-site" aria-labelledby="site-title">
-      <div class="ed-site-text">
-        <p class="ed-eyebrow">Build your presence</p>
-        <h2 id="site-title">Your class has<br>a home, too.</h2>
-        <p>Your classes, story, photos and registration — on a site that actually looks like you.</p>
-        <a class="ed-button ed-button-outline" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
-      </div>
-      <div class="ed-site-frames ed-reveal" aria-hidden="true">
-        <div class="ed-site-browser">
-          <div class="ed-site-browser-bar"><span></span><span></span><span></span><em>beyond8dance.com/maya-flores</em></div>
-          <div class="ed-site-browser-body">
-            <div class="ed-site-nav"><strong>Maya Flores</strong><span>Classes</span><span>Gallery</span><span>Register</span></div>
-            <div class="ed-site-hero"><span>Heels &amp; Sharp Lines</span><small>Weekly classes in Brooklyn</small></div>
-            <div class="ed-site-card"><div></div><p>Saturday Heels<br><strong>$25</strong></p></div>
-          </div>
-        </div>
-        <div class="ed-site-phone">
-          <div class="ed-site-phone-notch"></div>
-          <div class="ed-site-nav"><strong>Maya Flores</strong><span>&#9776;</span></div>
-          <div class="ed-site-hero"><span>Heels &amp; Sharp Lines</span></div>
-        </div>
-      </div>
-    </section>
-
     <!-- 03/04 — HOW BEYONDEIGHT WORKS + PAYOFF -->
     <section class="ed-story" id="how-it-works" aria-labelledby="story-title">
       <div class="ed-section-heading">
@@ -102,6 +77,13 @@
       </div>
 
       <ol class="ed-steps" id="features">
+        <li class="ed-step">
+          <div class="ed-mock ed-mock-site ed-reveal" aria-label="Example business website">
+            <div class="ed-site-browser-bar"><span></span><span></span><span></span><em>beyond8dance.com/maya-flores</em></div>
+            <div class="ed-site-hero"><span>Heels &amp; Sharp Lines</span><small>Weekly classes in Brooklyn</small></div>
+          </div>
+          <div class="ed-step-text"><h3>Build your site</h3><p>Your classes, story, and photos — live on your own page in minutes.</p></div>
+        </li>
         <li class="ed-step">
           <div class="ed-mock ed-mock-dashboard ed-reveal" aria-label="Example dashboard overview">
             <strong>Overview</strong>
@@ -112,20 +94,20 @@
           <div class="ed-step-text"><h3>Your own dashboard</h3><p>Classes, registrations, and payments — one place to run it all.</p></div>
         </li>
         <li class="ed-step">
-          <div class="ed-mock ed-mock-payment ed-reveal" aria-label="Example payment method choice">
-            <strong>Choose how you get paid</strong>
-            <div class="ed-mock-payment-option is-selected"><span class="ed-mock-radio"></span>Card payments (Stripe)</div>
-            <div class="ed-mock-payment-option"><span class="ed-mock-radio"></span>Venmo</div>
-          </div>
-          <div class="ed-step-text"><h3>Venmo or Stripe — your call</h3><p>Pick whichever fits your business. Switch anytime.</p></div>
-        </li>
-        <li class="ed-step">
           <div class="ed-mock ed-mock-form ed-reveal" aria-label="Example class details">
             <strong>Create New Class</strong>
             <span>Class Title</span><div class="ed-mock-field">Heels Workshop</div>
             <span>Price</span><div class="ed-mock-field">$25</div>
           </div>
           <div class="ed-step-text"><h3>Add a class</h3><p>Title, date, price. Live on your new site in a minute.</p></div>
+        </li>
+        <li class="ed-step">
+          <div class="ed-mock ed-mock-payment ed-reveal" aria-label="Example payment method choice">
+            <strong>Choose how you get paid</strong>
+            <div class="ed-mock-payment-option is-selected"><span class="ed-mock-radio"></span>Card payments (Stripe)</div>
+            <div class="ed-mock-payment-option"><span class="ed-mock-radio"></span>Venmo</div>
+          </div>
+          <div class="ed-step-text"><h3>Venmo or Stripe — your call</h3><p>Pick whichever fits your business. Switch anytime.</p></div>
         </li>
         <li class="ed-step">
           <div class="ed-mock ed-mock-confirm ed-reveal" aria-label="Example registration confirmation">

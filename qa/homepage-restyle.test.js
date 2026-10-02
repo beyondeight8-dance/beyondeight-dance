@@ -10,13 +10,15 @@ assert.match(html, /class="home-restyle"/);
 assert.match(html, /homepage\.css/);
 assert.match(html, /id="how-it-works"/);
 assert.match(html, /id="about"/);
-// Content-restructuring pass: "How it works" now walks the full product journey end to end
-// (dashboard -> choose Venmo/Stripe -> add a class -> people register & pay -> roster builds
-// itself) per explicit direction to "walk through visuals through the whole process" - 5
-// steps, not the earlier 3-step trimmed version. The reminder/notifications step still must
-// not come back since no automated reminder feature actually exists (no email sending exists
-// anywhere in this codebase - don't claim functionality that isn't real).
-assert.equal((html.match(/<li class="ed-step/g) || []).length, 5);
+// Content-restructuring pass: "How it works" now walks the full product journey end to end,
+// starting with the website - per explicit feedback, the site-builder visual used to live in
+// its own standalone section ahead of this one, which read as "the most important step is
+// missing" once a reader landed on this section specifically. Folded in as the first step so
+// the whole journey (site -> dashboard -> add a class -> choose Venmo/Stripe -> register & pay
+// -> roster builds itself) lives in one place - 6 steps, not 5. The reminder/notifications
+// step still must not come back since no automated reminder feature actually exists (no email
+// sending exists anywhere in this codebase - don't claim functionality that isn't real).
+assert.equal((html.match(/<li class="ed-step/g) || []).length, 6);
 assert.doesNotMatch(html, /confirmation email has been sent/i, "no fake email-confirmation claim - no email sending exists in this codebase");
 assert.doesNotMatch(html, /class reminder/i, "no fake automated-reminder claim - no reminder feature exists in this codebase");
 
@@ -54,12 +56,15 @@ assert.match(css, /\.ed-chaos \{ display: grid;/, "the chaos cards must be a pla
 assert.doesNotMatch(css, /\.ed-chaos-item \{[^}]*position: absolute/, "chaos cards must not go back to absolute positioning");
 assert.doesNotMatch(css, /\.ed-chaos-venmo \{[^}]*rotate\(|\.ed-chaos-dm \{[^}]*rotate\(|\.ed-chaos-sheet \{[^}]*rotate\(|\.ed-chaos-note \{[^}]*rotate\(/, "individual chaos cards must not be tilted");
 
-// 02.5 — Your own website: one compact visual moment (browser + phone frame), not a
-// feature card, and not another giant section. Must use a real business-site URL pattern
-// (beyond8dance.com/<slug>) rather than inventing new capability.
-assert.match(html, /class="ed-site"/, "the website-builder moment must exist");
+// Build your site: per explicit feedback this is no longer its own standalone section ahead
+// of "How it works" - it's the first step inside that grid, using the same real browser-chrome
+// + hero-block visual language (not a generic mock) so it still reads as the actual product.
+// Must use a real business-site URL pattern (beyond8dance.com/<slug>) rather than inventing a
+// new capability, and must not regress to the old separate two-column section with its own
+// desktop+phone frame pairing.
+assert.match(html, /class="ed-mock ed-mock-site/, "the website-builder step must exist inside the steps grid");
 assert.match(html, /beyond8dance\.com\/maya-flores/, "the mockup must show the real URL pattern the product actually publishes to");
-assert.match(html, /class="ed-site-phone"/, "desktop + mobile should be shown together per the brief");
+assert.doesNotMatch(html, /class="ed-site"[ >]|class="ed-site-phone"/, "the website moment must not regress to its own standalone section with a separate phone frame");
 
 // 06 — Your business: per explicit direction this is now a representative analytics
 // visual (day-of-week registration trend + returning vs. first-time split) rather than a
@@ -141,8 +146,8 @@ assert.match(css, /\.home-restyle \.site-header \{[^}]*box-shadow: none/, "the h
 // scrapbook - the rotate() transforms that were on the business card, website mockup frames,
 // and the alternating 3-step mocks must not come back.
 assert.doesNotMatch(css, /\.ed-business-card \{[^}]*rotate\(/, "the business dashboard card must sit straight, not tilted");
-assert.doesNotMatch(css, /\.ed-site-browser \{[^}]*rotate\(|\.ed-site-phone \{[^}]*rotate\(/, "the website-builder mockup frames must sit straight, not tilted");
-assert.doesNotMatch(css, /nth-child\(odd\) \.ed-mock|nth-child\(even\) \.ed-mock/, "the 3-step mockups must not alternate tilt");
+assert.doesNotMatch(css, /\.ed-mock-site \{[^}]*rotate\(|\.ed-site-browser-bar \{[^}]*rotate\(/, "the website-builder step mock must sit straight, not tilted");
+assert.doesNotMatch(css, /nth-child\(odd\) \.ed-mock|nth-child\(even\) \.ed-mock/, "the step mockups must not alternate tilt");
 
 // The redesign adds a second "Compare every feature" trigger inside the new pricing
 // section, alongside the existing nav Pricing button - both share [data-open-comparison].
