@@ -74,17 +74,19 @@ assert.match(html, /first-time/i);
 
 // Compactness regression guard: the hero must stay content-driven (padding, not a forced
 // viewport-height box) - both the old photo-era near-fullscreen height and the old
-// image-era fixed max-height must not come back now that it's type + a product panel.
+// image-era fixed max-height must not come back now that it's a centered type statement.
 assert.doesNotMatch(css, /\.ed-hero \{[^}]*92svh|\.ed-hero \{[^}]*height: 62vh|\.ed-hero \{[^}]*max-height: 600px/, "the hero must not regress to a forced viewport-height box");
 assert.doesNotMatch(css, /clamp\(320px, 44vw, 560px\)/, "the payoff image must not regress to its old tall height");
 
-// Design-identity pass: the homepage previously repeated the same rooftop photo twice
-// (hero + "Now go teach" payoff), reused the same floating white card device even for the
-// hero's on-image stat chip, and paired generic Source Serif 4 + Inter - three things that
-// made it read as a template rather than an independent brand. Must not regress.
-assert.doesNotMatch(html, /<figure class="ed-payoff">/, "the payoff must not go back to reusing the hero photo in a second image frame");
-assert.match(html, /<p class="ed-payoff">Now go teach\.<\/p>/, "the payoff is now a typographic-only closing statement");
-assert.doesNotMatch(css, /\.ed-payoff img \{/, "no payoff image styles should remain once the image is gone");
+// Simplification pass: per explicit direction, the hero's product-panel visual (the
+// Class/Registered/Collected card) was dropped and the hero copy centered instead - the
+// hero is now type-only, relying on the body's watermark photo for visual texture. The
+// "Now go teach." payoff line and the whole rose "second job" color-block section were
+// also dropped outright (not just restyled) since they repeated ground the reality section
+// and the new bridge/closing lines already cover. Must not resurface.
+assert.doesNotMatch(html, /class="ed-hero-visual|class="ed-hero-panel/, "the hero must not regress to showing a product-panel visual - it's centered type only now");
+assert.doesNotMatch(html, /class="ed-payoff"|class="ed-secondjob"|Now go teach/, "the payoff line and the rose second-job section were both removed, not just restyled");
+assert.doesNotMatch(css, /\.ed-payoff \{|\.ed-secondjob \{|\.ed-button-light \{/, "no leftover payoff/second-job styles should remain once those sections are gone");
 assert.match(css, /"Fraunces"/, "the display typeface should be Fraunces, not the generic Source Serif 4");
 assert.match(css, /"Plus Jakarta Sans"/, "the sans typeface should be Plus Jakarta Sans, not the generic Inter");
 assert.doesNotMatch(css, /"Source Serif 4"|"Inter"/, "the old generic font pairing must not remain in the homepage's own variables");
@@ -114,8 +116,6 @@ assert.doesNotMatch(css, /\.ed-hero-image \{|\.ed-hero::before \{|\.ed-secondjob
 // tweak had zero visible effect until this was found and fixed. Locks in the fix so it can't
 // silently regress if the watermark rule's !important is ever "cleaned up" without checking.
 assert.match(css, /body\.home-restyle \{[\s\S]*?background-image:[^;]*!important/, "the watermark's background-image must carry !important to win over the legacy body {...!important} rule in styles.css");
-assert.match(html, /class="ed-hero-visual/, "the hero's foreground visual must still be the product panel, not the photo");
-assert.match(html, /class="ed-hero-panel"/, "the hero must still show real product data (class/registered/collected) as its foreground content");
 // Header blend pass: the header used to be an inset, rounded, drop-shadowed white pill
 // floating over the hero as an absolutely-positioned overlay - a distinct card rather than
 // part of the watermarked page. Per explicit direction it's now a normal in-flow element
