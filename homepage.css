@@ -269,7 +269,7 @@ body.home-restyle {
    different figure set here), so the numeral is rendered in the homepage's sans face instead,
    which uses conventional proportions; sized and nudged to sit on the same baseline as the
    serif text around it. */
-.ed-launch-digit { font-family: var(--home-sans); font-weight: 600; }
+.ed-launch-digit { font-family: var(--home-sans); font-weight: 400; }
 .ed-launch h2 em { color: var(--home-rose); font-style: italic; }
 .restyle-footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 32px; padding: 20px max(24px, calc((100% - 1180px)/2)); border-top: 1px solid #eee1e5; color: #667080; font-size: 11px; }
 .restyle-footer nav { display: flex; gap: 24px; }
