@@ -10,11 +10,13 @@ assert.match(html, /class="home-restyle"/);
 assert.match(html, /homepage\.css/);
 assert.match(html, /id="how-it-works"/);
 assert.match(html, /id="about"/);
-// Editorial redesign: "How it works" is 3 compact steps (create, register+pay, roster) in
-// one row, rather than the old 5-card grid - the reminder/notifications step was dropped
-// since no automated reminder feature actually exists (no email sending exists anywhere in
-// this codebase - don't claim functionality that isn't real).
-assert.equal((html.match(/<li class="ed-step/g) || []).length, 3);
+// Content-restructuring pass: "How it works" now walks the full product journey end to end
+// (dashboard -> choose Venmo/Stripe -> add a class -> people register & pay -> roster builds
+// itself) per explicit direction to "walk through visuals through the whole process" - 5
+// steps, not the earlier 3-step trimmed version. The reminder/notifications step still must
+// not come back since no automated reminder feature actually exists (no email sending exists
+// anywhere in this codebase - don't claim functionality that isn't real).
+assert.equal((html.match(/<li class="ed-step/g) || []).length, 5);
 assert.doesNotMatch(html, /confirmation email has been sent/i, "no fake email-confirmation claim - no email sending exists in this codebase");
 assert.doesNotMatch(html, /class reminder/i, "no fake automated-reminder claim - no reminder feature exists in this codebase");
 
@@ -59,11 +61,16 @@ assert.match(html, /class="ed-site"/, "the website-builder moment must exist");
 assert.match(html, /beyond8dance\.com\/maya-flores/, "the mockup must show the real URL pattern the product actually publishes to");
 assert.match(html, /class="ed-site-phone"/, "desktop + mobile should be shown together per the brief");
 
-// 06 — Your business: a compact mini-dashboard (revenue + trend + dancers + returning),
-// not the old bare "$600 collected" card.
-assert.match(html, /ed-business-revenue/);
-assert.match(html, /ed-business-spark/, "a small trend visual should accompany the revenue figure");
+// 06 — Your business: per explicit direction this is now a representative analytics
+// visual (day-of-week registration trend + returning vs. first-time split) rather than a
+// revenue figure - the real Analytics tab in the product doesn't exist yet, so this is an
+// honest "here's the kind of insight it'll show" mock, not a built feature being claimed as
+// real. The old revenue/sparkline card must not come back.
+assert.doesNotMatch(html, /ed-business-revenue/, "the revenue figure card was replaced by the day-of-week trend visual");
+assert.doesNotMatch(html, /ed-business-spark/, "the sparkline trend accompanying revenue was replaced by the bar chart");
+assert.match(html, /class="ed-business-days"/, "the day-of-week registration bar chart must exist");
 assert.match(html, /returning/i);
+assert.match(html, /first-time/i);
 
 // Compactness regression guard: the hero must stay content-driven (padding, not a forced
 // viewport-height box) - both the old photo-era near-fullscreen height and the old
@@ -146,5 +153,10 @@ const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
 assert.match(script, /const openComparisonButtons = document\.querySelectorAll\("\[data-open-comparison\]"\)/, "every [data-open-comparison] trigger must be wired up, not just the first");
 assert.doesNotMatch(script, /document\.querySelector\("\[data-open-comparison\]"\)/, "must not regress to querySelector (singular), which only wires up the first matching button");
 assert.equal((html.match(/data-open-comparison/g) || []).length, 2, "expected exactly the nav button and the pricing section's compare link");
+
+// Closing CTA: the brand's "8 counts" wordplay replaces the old closing line per explicit
+// direction - "You focus on everything between the 8 counts. We handle everything beyond."
+assert.match(html, /between the 8 counts/i, "the closing CTA should use the brand's 8-counts wordplay");
+assert.match(html, /<em>We handle everything beyond\.<\/em>/, "the closing CTA's payoff line must still exist");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');

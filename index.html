@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260928-embedded-checkout">
-  <link rel="stylesheet" href="homepage.css?v=20260930-header-seam-fix">
+  <link rel="stylesheet" href="homepage.css?v=20261002-content-flow">
   <link rel="stylesheet" href="onboarding.css?v=20260928-brand-consistency">
   <link rel="stylesheet" href="public-site.css?v=20260921-about-layout">
 </head>
@@ -48,8 +48,8 @@
     <section class="ed-hero" aria-labelledby="hero-title">
       <div class="ed-hero-copy">
         <p class="ed-eyebrow">BeyondEight &middot; built for dancepreneurs</p>
-        <h1 id="hero-title">You teach.<br><em>We handle the rest.</em></h1>
-        <p class="ed-hero-sub">No more checking Venmo between combos. No more roster spreadsheets. Just the class — and everything that has to happen around it, handled.</p>
+        <h1 id="hero-title">Starting your own<br>dance class?<br><em>BeyondEight is where you start.</em></h1>
+        <p class="ed-hero-sub">Build your website, manage registrations, and get paid — all in one place, from your very first class.</p>
         <a class="ed-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
       </div>
       <div class="ed-hero-visual ed-reveal" aria-hidden="true">
@@ -67,6 +67,7 @@
       <div class="ed-reality-text">
         <p class="ed-eyebrow">Right now, without BeyondEight</p>
         <h2 id="reality-title">Posting the class.<br>Collecting payment.<br>Checking Venmo.<br>Answering the same DM twice.<br>Updating a spreadsheet.<br><em>Then somehow still teaching.</em></h2>
+        <p class="ed-reality-bridge">BeyondEight brings it all together — and does more.</p>
       </div>
       <div class="ed-chaos" aria-hidden="true">
         <div class="ed-chaos-item ed-chaos-venmo ed-reveal" data-reveal-delay="0"><span class="ed-chaos-app">Venmo</span><strong>+$25.00</strong><span>from Maya S.</span></div>
@@ -110,12 +111,29 @@
 
       <ol class="ed-steps" id="features">
         <li class="ed-step">
+          <div class="ed-mock ed-mock-dashboard ed-reveal" aria-label="Example dashboard overview">
+            <strong>Overview</strong>
+            <div class="ed-mock-stat"><span>Registrations</span><b>24</b></div>
+            <div class="ed-mock-stat"><span>Upcoming Classes</span><b>3</b></div>
+            <div class="ed-mock-stat"><span>Pending Payments</span><b>1</b></div>
+          </div>
+          <div class="ed-step-text"><h3>Your own dashboard</h3><p>Classes, registrations, and payments — one place to run it all.</p></div>
+        </li>
+        <li class="ed-step">
+          <div class="ed-mock ed-mock-payment ed-reveal" aria-label="Example payment method choice">
+            <strong>Choose how you get paid</strong>
+            <div class="ed-mock-payment-option is-selected"><span class="ed-mock-radio"></span>Card payments (Stripe)</div>
+            <div class="ed-mock-payment-option"><span class="ed-mock-radio"></span>Venmo</div>
+          </div>
+          <div class="ed-step-text"><h3>Venmo or Stripe — your call</h3><p>Pick whichever fits your business. Switch anytime.</p></div>
+        </li>
+        <li class="ed-step">
           <div class="ed-mock ed-mock-form ed-reveal" aria-label="Example class details">
             <strong>Create New Class</strong>
             <span>Class Title</span><div class="ed-mock-field">Heels Workshop</div>
             <span>Price</span><div class="ed-mock-field">$25</div>
           </div>
-          <div class="ed-step-text"><h3>Create your class</h3><p>Title, date, price. Live on your new site in a minute.</p></div>
+          <div class="ed-step-text"><h3>Add a class</h3><p>Title, date, price. Live on your new site in a minute.</p></div>
         </li>
         <li class="ed-step">
           <div class="ed-mock ed-mock-confirm ed-reveal" aria-label="Example registration confirmation">
@@ -147,22 +165,31 @@
       <a class="ed-button ed-button-light" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
     </section>
 
-    <!-- 06 — YOUR BUSINESS -->
+    <!-- 06 — ANALYTICS: a representative example visual, not live data yet - the dashboard's
+         own Analytics tab is still unbuilt ("Soon"). Shows what owners will be able to see:
+         which day fills up fastest, and how many dancers keep coming back. -->
     <section class="ed-business" aria-labelledby="business-title">
       <div class="ed-business-text">
         <p class="ed-eyebrow">Grow</p>
         <h2 id="business-title">See how your dance business is actually doing.</h2>
-        <p>Not a spreadsheet you build yourself — what's selling, who's coming back, and what to teach again.</p>
+        <p>Not a spreadsheet you build yourself — which days fill up, who's coming back, and what to teach again.</p>
       </div>
       <div class="ed-business-card ed-reveal" aria-hidden="true">
-        <p class="ed-business-month">This month</p>
-        <div class="ed-business-revenue"><span>$2,480</span><small class="ed-business-trend">&#8593; 18% from last month</small></div>
-        <div class="ed-business-spark" aria-hidden="true"><i style="--h:38%"></i><i style="--h:52%"></i><i style="--h:44%"></i><i style="--h:66%"></i><i style="--h:58%"></i><i style="--h:80%"></i><i style="--h:100%"></i></div>
-        <div class="ed-business-stats">
-          <div><span>68</span><small>dancers</small></div>
-          <div><span>42%</span><small>returning</small></div>
+        <p class="ed-business-month">Registrations by day</p>
+        <div class="ed-business-days" aria-hidden="true">
+          <div><i style="--h:32%"></i><small>Mon</small></div>
+          <div><i style="--h:46%"></i><small>Tue</small></div>
+          <div><i style="--h:38%"></i><small>Wed</small></div>
+          <div><i style="--h:54%"></i><small>Thu</small></div>
+          <div><i style="--h:68%"></i><small>Fri</small></div>
+          <div><i style="--h:100%"></i><small>Sat</small></div>
+          <div><i style="--h:40%"></i><small>Sun</small></div>
         </div>
-        <p class="ed-business-next">Best performing &middot; Saturday Heels</p>
+        <p class="ed-business-next">Saturday is your best day &middot; 28% of registrations</p>
+        <div class="ed-business-stats">
+          <div><span>58%</span><small>returning</small></div>
+          <div><span>42%</span><small>first-time</small></div>
+        </div>
       </div>
     </section>
 
@@ -197,8 +224,8 @@
 
     <!-- 09 — FINAL CTA -->
     <section class="ed-launch" aria-labelledby="launch-title">
-      <p class="ed-eyebrow">Ready for less admin?</p>
-      <h2 id="launch-title">You teach.<br><em>We'll handle the rest.</em></h2>
+      <p class="ed-eyebrow">Ready to get started?</p>
+      <h2 id="launch-title">You focus on everything<br>between the 8 counts.<br><em>We handle everything beyond.</em></h2>
       <a class="ed-button" href="#setup" data-open-setup>Get Started Free <span aria-hidden="true">&rarr;</span></a>
     </section>
 

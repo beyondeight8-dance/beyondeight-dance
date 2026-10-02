@@ -97,6 +97,7 @@ body.home-restyle {
 .ed-reality { position: relative; padding: clamp(36px, 5vw, 56px) clamp(24px, 6vw, 88px); color: var(--home-ink); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(24px, 4vw, 48px); align-items: center; }
 .ed-reality-text h2 { margin: 0; color: inherit; font: 400 clamp(1.35rem, 2.6vw, 2rem)/1.32 var(--home-display); text-wrap: pretty; }
 .ed-reality-text h2 em { display: block; margin-top: 12px; color: var(--home-rose); font-style: italic; }
+.ed-reality-bridge { margin: 20px 0 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
 .ed-chaos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .ed-chaos-item { padding: 14px 16px; background: white; border: 1px solid #f3e9e4; border-radius: 8px; box-shadow: 0 14px 34px rgba(17, 27, 43, .1); color: var(--home-ink); font: 500 12px/1.35 var(--home-sans); }
 .ed-chaos-app { display: block; margin-bottom: 4px; font: 700 9px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--home-muted); }
@@ -152,6 +153,14 @@ body.home-restyle {
 .ed-mock-roster > div { display: flex; gap: 10px; align-items: center; padding: 5px 0; font-size: 12px; }
 .ed-mock-initial { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #ecddd8; color: #8f5851; flex-shrink: 0; font-size: 10px; }
 .ed-mock-roster small { margin-left: auto; padding: 3px 6px; font-size: 9px; color: #396847; background: #e1eedf; border-radius: 3px; }
+.ed-mock-stat { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #f3e9e4; font-size: 11px; }
+.ed-mock-stat:last-child { border-bottom: 0; }
+.ed-mock-stat span { color: var(--home-muted); }
+.ed-mock-stat b { font: 600 13px var(--home-sans); color: var(--home-ink); }
+.ed-mock-payment-option { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 9px 10px; border: 1px solid #efdee2; border-radius: 4px; font-size: 11px; color: var(--home-muted); }
+.ed-mock-payment-option.is-selected { border-color: var(--home-rose); background: #fdf3f1; color: var(--home-ink); font-weight: 600; }
+.ed-mock-radio { display: inline-block; width: 12px; height: 12px; flex-shrink: 0; border: 1.5px solid #d9c4bf; border-radius: 50%; }
+.ed-mock-payment-option.is-selected .ed-mock-radio { border-color: var(--home-rose); background: radial-gradient(circle, var(--home-rose) 0 40%, transparent 42%); }
 .ed-payoff { max-width: 1080px; margin: 8px auto 0; padding: clamp(10px, 2vw, 18px) 0 0; text-align: center; font: 400 italic clamp(1.8rem, 4vw, 2.8rem)/1 var(--home-display); color: var(--home-rose); }
 
 /* 05 — Second job: a color-and-type statement (no photo) - kept short since The Reality
@@ -169,17 +178,16 @@ body.home-restyle {
 .ed-business-text h2 { margin: 8px 0 10px; font: 400 clamp(1.7rem, 2.9vw, 2.3rem)/1.2 var(--home-display); color: var(--home-ink); text-wrap: balance; }
 .ed-business-text p { margin: 0; max-width: 400px; font-size: 15px; line-height: 1.55; color: var(--home-muted); }
 .ed-business-card { padding: 22px 24px; background: white; border-radius: 10px; box-shadow: 0 20px 50px rgba(79,40,48,.12); }
-.ed-business-month { margin: 0 0 4px; font: 700 10px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--home-muted); }
-.ed-business-revenue { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
-.ed-business-revenue span { font: 400 2.1rem/1 var(--home-display); color: var(--home-ink); }
-.ed-business-trend { font: 600 12px var(--home-sans); color: #2e7d4f; }
-.ed-business-spark { display: flex; align-items: flex-end; gap: 4px; height: 34px; margin-bottom: 16px; }
-.ed-business-spark i { flex: 1; height: var(--h); border-radius: 2px 2px 0 0; background: #ecddd8; }
-.ed-business-spark i:last-child { background: var(--home-rose); }
-.ed-business-stats { display: flex; gap: 28px; margin: 0 0 14px; padding-top: 14px; border-top: 1px solid #f0e3de; }
+.ed-business-month { margin: 0 0 14px; font: 700 10px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--home-muted); }
+.ed-business-days { display: flex; align-items: flex-end; gap: 8px; height: 72px; margin-bottom: 12px; }
+.ed-business-days > div { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.ed-business-days i { display: block; width: 100%; height: var(--h); border-radius: 2px 2px 0 0; background: #ecddd8; font-style: normal; }
+.ed-business-days > div:nth-child(6) i { background: var(--home-rose); }
+.ed-business-days small { font-size: 9px; text-transform: uppercase; letter-spacing: .03em; color: var(--home-muted); }
+.ed-business-next { margin: 0 0 14px; padding-top: 12px; border-top: 1px solid #f0e3de; font-size: 12px; color: var(--home-muted); }
+.ed-business-stats { display: flex; gap: 28px; margin: 0; }
 .ed-business-stats span { display: block; font: 400 1.5rem/1 var(--home-display); color: var(--home-ink); }
 .ed-business-stats small { display: block; margin-top: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--home-muted); }
-.ed-business-next { margin: 0; font-size: 12px; color: var(--home-muted); }
 
 /* 08 — Pricing: easy to scan, no unnecessary vertical space. */
 .ed-pricing { padding: clamp(40px, 5vw, 64px) clamp(24px, 6vw, 40px); max-width: 1080px; margin: 0 auto; }
