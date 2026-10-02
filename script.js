@@ -3,7 +3,7 @@ const siteNav = document.querySelector(".site-nav");
 const demoForm = document.querySelector(".demo-form");
 const formMessage = document.querySelector(".form-message");
 const comparisonModal = document.querySelector(".comparison-modal");
-const openComparisonButton = document.querySelector("[data-open-comparison]");
+const openComparisonButtons = document.querySelectorAll("[data-open-comparison]");
 const closeComparisonButtons = document.querySelectorAll("[data-close-comparison]");
 const planDemoModal = document.querySelector(".plan-demo-modal");
 const planDemoForm = document.querySelector(".plan-demo-form");
@@ -341,7 +341,7 @@ const closeComparison = () => {
   document.body.classList.remove("modal-open");
 };
 
-openComparisonButton?.addEventListener("click", openComparison);
+openComparisonButtons.forEach((button) => button.addEventListener("click", openComparison));
 closeComparisonButtons.forEach((button) => button.addEventListener("click", closeComparison));
 
 const openPlanDemo = (plan = "Growth") => {
@@ -2228,3 +2228,26 @@ window.addEventListener("scroll", revealVisibleItems, { passive: true });
 window.addEventListener("resize", revealVisibleItems);
 window.addEventListener("load", revealVisibleItems);
 requestAnimationFrame(revealVisibleItems);
+
+// Homepage redesign: a small, self-contained fade-in for the new .ed-* sections (chaos
+// snippets, product-UI mocks, the business card) - separate from revealVisibleItems above,
+// which targets older section classes this redesign doesn't use.
+const edRevealItems = document.querySelectorAll(".ed-reveal");
+if (edRevealItems.length) {
+  if (prefersReducedMotion.matches || !("IntersectionObserver" in window)) {
+    edRevealItems.forEach((item) => item.classList.add("is-in"));
+  } else {
+    const edObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const delay = Number(entry.target.dataset.revealDelay) || 0;
+          setTimeout(() => entry.target.classList.add("is-in"), delay);
+          edObserver.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -8% 0px" }
+    );
+    edRevealItems.forEach((item) => edObserver.observe(item));
+  }
+}

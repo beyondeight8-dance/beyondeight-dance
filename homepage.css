@@ -3,19 +3,43 @@ body.home-restyle {
   --home-ink: #111b2b;
   --home-muted: #4e5767;
   --home-rose: #a8675f;
-  --home-display: "Source Serif 4", Georgia, serif;
-  --home-sans: "Inter", Arial, sans-serif;
+  --home-display: "Fraunces", Georgia, serif;
+  --home-sans: "Plus Jakarta Sans", Arial, sans-serif;
   margin: 0;
-  background: #fffcfc;
+  /* The rooftop photo lives here as the page's own backdrop, not as foreground photography -
+     a semi-transparent cream wash sits on top of it (first layer paints over the second),
+     leaving only a faint, fixed watermark visible wherever a section has no opaque background
+     of its own (the hero, the reality section, and the gaps between later sections).
+     !important is required here: styles.css has a legacy `body { background: ... !important }`
+     rule (a shared decorative background meant for other pages) that otherwise silently wins
+     over this more-specific body.home-restyle selector and replaces the watermark outright -
+     found live when adjusting the wash opacity had zero visible effect. */
+  background-color: #fffcfc !important;
+  background-image: linear-gradient(180deg, rgba(255, 252, 252, .78) 0%, rgba(255, 252, 252, .86) 100%), url("assets/homepage-dance-studio.png?v=20260930-watermark") !important;
+  background-position: center, top center !important;
+  background-size: cover, cover !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-attachment: scroll, fixed !important;
   color: var(--home-ink);
   font-family: var(--home-sans);
 }
 .home-restyle *, .home-restyle *::before, .home-restyle *::after { box-sizing: border-box; letter-spacing: 0; }
 .home-restyle main { width: 100%; max-width: none; margin: 0; overflow: clip; padding: 0; }
 .home-restyle .site-header {
-  position: absolute; inset: 0 0 auto; z-index: 20; width: min(1180px, calc(100% - 80px));
-  max-width: none; height: 86px; margin: 0 auto; padding: 0; display: flex; align-items: center;
-  gap: 36px; border: 0; border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none;
+  /* The real cause of the "not blended" seam (confirmed by bisecting with an unstyled div,
+     then diffing against every legacy .site-header rule in styles.css): five older, lower-
+     specificity `.site-header` rules elsewhere in styles.css set backdrop-filter and
+     box-shadow on the bare class name. This rule's higher specificity (.home-restyle
+     .site-header) only overrides properties it actually declares - it never declared
+     backdrop-filter or box-shadow at all, so those legacy declarations kept applying
+     regardless of anything else changed here, quietly blurring/shadowing a strip of the
+     watermark right at the header's edge. Explicit `none` resets below fix it for real -
+     position is normal flow, not absolute/overlaid, matching every other section on the page
+     that already blends with zero special-casing. position: relative only anchors the mobile
+     nav dropdown, which is positioned relative to this element. */
+  position: relative; width: 100%;
+  max-width: none; height: 86px; margin: 0; padding: 0 max(20px, calc((100% - 1180px)/2 + 20px)); display: flex; align-items: center;
+  gap: 36px; border: 0; border-radius: 0; background: none; backdrop-filter: none; box-shadow: none;
 }
 .home-restyle .brand { flex-shrink: 0; gap: 6px; }
 .home-restyle .brand-mark { width: 60px; height: 46px; margin: 0; padding: 0; background: none; box-shadow: none; }
@@ -24,120 +48,251 @@ body.home-restyle {
 .home-restyle .brand-name { color: #111b2b; font-family: var(--home-display); font-size: 27px; line-height: 1.1; font-weight: 600; }
 .home-restyle .brand-name span { color: var(--home-rose); background: none; -webkit-text-fill-color: currentColor; }
 .home-restyle .brand-tagline { color: #27313e; font-size: 9px; text-transform: uppercase; }
-.home-restyle .site-nav { display: flex; position: static; margin-left: auto; gap: 28px; align-items: center; background: none; border: 0; box-shadow: none; padding: 0; }
-.home-restyle .site-nav a, .home-restyle .site-nav button, .home-restyle .header-login {
+.home-restyle .header-login {
   font: 500 13px var(--home-sans); color: var(--home-ink); white-space: nowrap; text-decoration: none;
   background: none; border: 0; padding: 10px 0; cursor: pointer; text-transform: none; letter-spacing: 0;
 }
-.home-restyle .site-nav a::after { display: none; }
-.home-restyle .site-nav a:hover, .home-restyle .site-nav button:hover, .home-restyle .header-login:hover { color: var(--home-rose); }
-.home-restyle .header-account { display: flex; align-items: center; gap: 22px; }
+.home-restyle .header-login:hover { color: var(--home-rose); }
+.home-restyle .header-account { display: flex; align-items: center; gap: 22px; margin-left: auto; }
 .home-restyle .header-account[hidden] { display: none; }
-.home-restyle .header-cta { min-height: 40px; padding: 10px 24px; border: 0; border-radius: 3px; background: var(--home-rose); color: white; box-shadow: none; font: 600 13px var(--home-sans); }
-.home-restyle .nav-toggle { display: none; }
-.restyle-hero { position: relative; isolation: isolate; min-height: 610px; height: min(720px, 86svh); display: grid; place-items: end center; padding: 150px 24px 44px; }
-.restyle-hero-image { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: center 38%; }
-.restyle-hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(255,255,255,.36) 0%, transparent 25%, rgba(0,0,0,.22) 50%, rgba(0,0,0,.44) 100%); }
-.restyle-hero-copy { width: min(650px, 100%); text-align: center; color: white; }
-.restyle-eyebrow { margin: 0 0 16px; font: 500 13px/1.5 var(--home-sans); text-transform: uppercase; }
-.restyle-hero .restyle-eyebrow { color: white; }
-.restyle-hero h2 { margin: 0; font: 400 68px/.98 var(--home-display); color: white; text-shadow: 0 2px 15px #0003; }
-.restyle-hero h2 em { color: #f6d0d4; font-weight: 400; }
-.restyle-hero-copy > p { max-width: 560px; margin: 22px auto 24px; font-size: 17px; line-height: 1.55; text-wrap: pretty; }
-.restyle-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 54px; min-width: 230px; max-width: 100%; padding: 15px 28px; background: var(--home-rose); color: white; border: 1px solid var(--home-rose); border-radius: 4px; font: 500 16px/1.3 var(--home-sans); text-decoration: none; transition: background .18s, transform .18s; }
-.restyle-button:hover { background: #8f5851; color: white; transform: translateY(-2px); }
+/* display: inline-flex is required, not cosmetic - a legacy, unscoped `@media (max-width:
+   920px) { .header-cta { display: none; } }` rule in styles.css otherwise leaks through
+   below 920px, since this higher-specificity rule never previously declared its own
+   `display` for that property to override. */
+.home-restyle .header-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 10px 24px; border: 0; border-radius: 3px; background: var(--home-rose); color: white; box-shadow: none; font: 600 13px var(--home-sans); }
 .home-restyle a:focus-visible, .home-restyle button:focus-visible { outline: 3px solid var(--home-rose); outline-offset: 4px; }
-.restyle-workflow { padding: 38px 40px 42px; background: #fffcfc; scroll-margin-top: 20px; }
-.restyle-section-heading { text-align: center; max-width: 1200px; margin: 0 auto 32px; }
-.restyle-section-heading .restyle-eyebrow { color: var(--home-muted); font-size: 12px; margin-bottom: 15px; }
-.restyle-section-heading h2 { margin: 0; color: var(--home-ink); font: 400 36px/1.25 var(--home-display); text-wrap: balance; }
-.restyle-section-heading em { color: var(--home-rose); font-weight: 400; }
-.restyle-steps { list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; max-width: 1220px; margin: 0 auto; padding: 0; }
-.restyle-steps > li { min-width: 0; }
-.restyle-step-heading { position: relative; min-height: 90px; display: flex; align-items: center; flex-direction: column; text-align: center; }
-.restyle-step-number { display: grid; place-items: center; width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%; background: #ecddd8; color: #8f5851; font-size: 20px; font-weight: 600; }
-.restyle-step-heading h3 { margin: 12px 0 16px; font: 600 13px/1.4 var(--home-sans); }
-.restyle-steps > li:not(:last-child) .restyle-step-heading::after { content: "\2192"; position: absolute; top: 10px; right: -22px; color: #617083; font-size: 22px; }
-.restyle-example { height: 280px; border-radius: 6px; background: white; box-shadow: 0 5px 24px #4f28300b; padding: 18px; font-size: 11px; }
-.restyle-example > strong { display: block; margin-bottom: 12px; font-size: 12px; font-weight: 600; }
-.restyle-class-form > span { display: block; font-size: 10px; line-height: 1.2; margin: 7px 0 3px; color: #354052; }
-.restyle-example-field { border: 1px solid #efdee2; background: #fbf8f9; border-radius: 3px; padding: 4px 6px; font-size: 10px; line-height: 1.2; color: #4e5767; white-space: nowrap; }
-.restyle-example-date { display: grid; grid-template-columns: 1.2fr 1fr; gap: 5px; }
-.restyle-mini-cta { display: block; margin-top: 9px; background: var(--home-rose); color: white; border-radius: 3px; padding: 7px 4px; text-align: center; text-decoration: none; font-size: 11px; }
-.restyle-confirmation { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.restyle-check { display: grid; place-items: center; width: 49px; height: 49px; border-radius: 50%; color: white; background: var(--home-rose); font-size: 30px; margin-bottom: 15px; }
-.restyle-confirmation > strong { font-size: 17px; font-weight: 400; margin: 0; }
-.restyle-confirmation p { font-size: 12px; color: var(--home-muted); line-height: 1.6; margin: 12px 0 20px; }
-.restyle-example-outline { border: 1px solid var(--home-rose); color: var(--home-rose); padding: 8px; width: 100%; border-radius: 3px; font-weight: 600; }
-.restyle-roster { padding: 19px 16px; }
-.restyle-roster > div { display: flex; gap: 10px; align-items: center; min-height: 37px; font-size: 11px; }
-.restyle-initial { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #ecddd8; color: #8f5851; flex-shrink: 0; }
-.restyle-roster small { margin-left: auto; padding: 4px; font-size: 9px; color: #396847; background: #e1eedf; border-radius: 3px; }
-.restyle-notifications { height: 280px; display: grid; align-content: center; }
-.restyle-notifications > div { display: flex; gap: 12px; align-items: center; padding: 20px 0; border-bottom: 1px solid #f0e6e9; }
-.restyle-notifications > div:last-child { border-bottom: 0; }
-.restyle-notifications > div > span { font-size: 30px; color: var(--home-rose); width: 32px; text-align: center; flex-shrink: 0; }
-.restyle-notifications p { margin: 0; font-size: 11px; line-height: 1.5; }
-.restyle-notifications strong { display: block; font-weight: 500; }
-.restyle-notifications small { display: block; font-size: 10px; color: var(--home-muted); margin-top: 4px; }
-.restyle-teach-photo { width: 100%; height: 280px; object-fit: cover; object-position: 49% center; border-radius: 6px; }
-.restyle-about { position: relative; isolation: isolate; min-height: 560px; display: grid; justify-items: center; align-content: start; padding: 50px 24px 80px; }
-.restyle-about > img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
-.restyle-about-copy { width: min(560px, 100%); text-align: center; }
-.restyle-about h2 { margin: 0 0 22px; color: var(--home-ink); font: 400 47px/1.08 var(--home-display); text-wrap: balance; }
-.restyle-about p { margin: 0 0 12px; font: 400 16px/1.55 var(--home-sans); color: #3e4757; text-wrap: pretty; }
-.restyle-about .restyle-button { margin-top: 12px; }
-.restyle-launch { position: relative; isolation: isolate; overflow: hidden; text-align: center; padding: 42px 24px 54px; background: #fffcfc; }
-.restyle-launch h2 { margin: 0 0 10px; color: var(--home-ink); font: 400 42px/1.15 var(--home-display); }
-.restyle-launch p { margin: 0 0 24px; font-size: 16px; line-height: 1.5; color: var(--home-muted); }
-.restyle-launch::before, .restyle-launch::after { content: ""; position: absolute; z-index: -1; pointer-events: none; width: 650px; height: 140px; border: 1px solid #efc4cb; border-radius: 50%; transform: rotate(-27deg); }
-.restyle-launch::before { left: -380px; top: 45px; box-shadow: 0 -12px 0 -11px #efc4cb, 0 14px 0 -13px #efc4cb; }
-.restyle-launch::after { right: -380px; bottom: 65px; box-shadow: 0 -16px 0 -15px #efc4cb, 0 12px 0 -11px #efc4cb; }
-.restyle-footer { display: flex; justify-content: space-between; gap: 16px; padding: 20px max(24px, calc((100% - 1180px)/2)); border-top: 1px solid #eee1e5; color: #667080; background: #fffcfc; font-size: 11px; }
+.ed-eyebrow { margin: 0 0 10px; font: 500 12px/1.5 var(--home-sans); text-transform: uppercase; letter-spacing: .04em; color: var(--home-muted); }
+.ed-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; min-width: 210px; max-width: 100%; padding: 13px 26px; background: var(--home-rose); color: white; border: 1px solid var(--home-rose); border-radius: 4px; font: 500 15px/1.3 var(--home-sans); text-decoration: none; transition: background .18s, transform .18s; }
+.ed-button:hover { background: #8f5851; color: white; transform: translateY(-2px); }
+.ed-button-outline { background: transparent; color: var(--home-rose); }
+.ed-button-outline:hover { background: rgba(168, 103, 95, .08); color: #8f5851; transform: translateY(-2px); }
+.ed-section-heading { text-align: center; max-width: 760px; margin: 0 auto 32px; }
+.ed-section-heading h2 { margin: 0; color: var(--home-ink); font: 400 clamp(1.7rem, 2.9vw, 2.3rem)/1.2 var(--home-display); text-wrap: balance; }
+.ed-section-heading em { color: var(--home-rose); font-style: italic; }
+
+.ed-reveal { opacity: 0; transition: opacity .7s ease; }
+.ed-reveal.is-in { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .ed-reveal { opacity: 1; transition: none; } }
+
+/* 01 — Hero: no photography, no product-panel visual - a dark, confident type statement
+   centered on its own, letting the body's watermark photo carry the visual weight. */
+.ed-hero { position: relative; padding: clamp(56px, 7vw, 88px) clamp(24px, 6vw, 88px) clamp(64px, 8vw, 96px); display: flex; flex-direction: column; align-items: center; text-align: center; }
+.ed-hero-copy { max-width: 1000px; margin: 0 auto; color: var(--home-ink); }
+/* Real bug found live: styles.css has a bare `h1 { max-width: 840px; letter-spacing:
+   -0.045em; }` rule (unscoped "Creative typography pass") that silently capped this
+   headline's width and tightened its tracking - this rule's higher specificity only
+   overrides properties it actually declares, so those two properties kept leaking through
+   until explicitly reset here, the same way the header's backdrop-filter/box-shadow leaked
+   earlier in this redesign. */
+.ed-hero-copy h1 { margin: 0; max-width: none; letter-spacing: normal; font: 400 clamp(2.6rem, 5.6vw, 4.4rem)/1.02 var(--home-display); color: var(--home-ink); }
+.ed-hero-copy h1 em { color: var(--home-rose); font-style: italic; font-weight: 400; }
+.ed-hero-sub { max-width: 620px; margin: 18px auto 26px; font-size: 16px; line-height: 1.55; color: var(--home-muted); white-space: nowrap; }
+/* white-space: nowrap keeps this on one line down to 640px, where the line (~505px) still
+   comfortably clears the hero's own side padding. Below that it has to wrap again (reset in
+   the @media (max-width: 640px) block) or it would get silently clipped by body's legacy
+   overflow-x: hidden rule - the same failure mode as the header CTA bug. */
+
+/* 02 — The reality: editorial, scattered "chaos" UI fragments on the same light watermark
+   backdrop as the hero - compact, makes its point quickly rather than becoming its own
+   standalone experience. */
+.ed-reality { position: relative; padding: clamp(36px, 5vw, 56px) clamp(24px, 6vw, 88px); color: var(--home-ink); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(24px, 4vw, 48px); align-items: center; }
+.ed-reality-text h2 { margin: 0; color: inherit; font: 400 clamp(1.35rem, 2.6vw, 2rem)/1.32 var(--home-display); text-wrap: pretty; }
+.ed-reality-bridge { margin: 20px 0 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
+.ed-chaos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ed-chaos-item { padding: 14px 16px; background: white; border: 1px solid #f3e9e4; border-radius: 8px; box-shadow: 0 14px 34px rgba(17, 27, 43, .1); color: var(--home-ink); font: 500 12px/1.35 var(--home-sans); }
+.ed-chaos-app { display: block; margin-bottom: 4px; font: 700 9px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--home-muted); }
+.ed-chaos-venmo strong { display: block; font: 700 17px var(--home-display); color: #2e7d4f; }
+.ed-chaos-dm p { margin: 0; }
+.ed-chaos-sheet table { width: 100%; border-collapse: collapse; font-size: 10px; }
+.ed-chaos-sheet td { padding: 2px 4px; border: 1px solid #eee3e0; }
+.ed-chaos-note { background: #fff6cf; }
+.ed-chaos-note p { margin: 0; font-style: italic; }
+
+/* 02.5 — Build your site: folded into the "How it works" step grid as the first (and
+   most important) step, rather than its own standalone section - reuses the real browser-
+   chrome + hero-block visual language so it still reads as the actual product, just sized
+   to match the other step mocks. */
+.ed-mock-site { padding: 0; overflow: hidden; }
+.ed-site-browser-bar { display: flex; align-items: center; gap: 5px; padding: 8px 10px; background: #f2e9e6; }
+.ed-site-browser-bar span { width: 6px; height: 6px; border-radius: 50%; background: #d9c4bf; }
+.ed-site-browser-bar em { margin-left: 8px; font: 400 9px var(--home-sans); font-style: normal; color: #756a68; }
+/* The published site's real "Editorial" theme (public-site.css: .public-editorial-hero) is a
+   full-bleed photo with a dark scrim, an uppercase letter-spaced serif wordmark, and a solid
+   dark "Book a Class" button - reused here (same photo already loaded for the page's own
+   watermark, so no extra asset) instead of the earlier flat gradient block, which didn't read
+   as an actual website. */
+.ed-site-hero { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 12px; background-image: linear-gradient(180deg, rgba(20,18,17,.55) 0%, rgba(20,18,17,.15) 45%, rgba(20,18,17,.55) 100%), url("assets/homepage-dance-studio.png?v=20260930-watermark"); background-size: cover; background-position: center 30%; }
+.ed-site-wordmark { align-self: flex-start; color: #fff; font: 500 10px var(--home-display); letter-spacing: .14em; text-transform: uppercase; }
+.ed-site-hero-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.ed-site-hero-foot span { color: #fff; font: 400 16px var(--home-display); line-height: 1.1; text-shadow: 0 2px 10px rgba(0,0,0,.3); }
+.ed-site-cta { flex-shrink: 0; padding: 6px 10px; border-radius: 2px; background: #24211f; color: #fff; font: 600 8px var(--home-sans); white-space: nowrap; }
+
+/* 03/04 — How it works: ONE compact 3-across row (not stacked large sections) + a short
+   payoff image break. */
+.ed-story { padding: clamp(40px, 6vw, 64px) clamp(24px, 6vw, 88px); scroll-margin-top: 20px; }
+.ed-story-break { display: none; }
+.ed-steps { list-style: none; margin: 0 0 28px; padding: 0; max-width: 1080px; margin-inline: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.ed-step { display: flex; flex-direction: column; gap: 14px; }
+.ed-step-text h3 { margin: 0 0 4px; font: 400 1.15rem/1.25 var(--home-display); color: var(--home-ink); }
+.ed-step-text p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--home-muted); }
+/* Fixed height (not min-height) so all six step mocks read as one consistent set rather than
+   each sizing to its own content - the tallest (the class-details form) sets the height, and
+   every other mock's content fills or centers within it via the per-mock rules below. */
+.ed-mock { height: 280px; display: flex; flex-direction: column; border-radius: 6px; background: white; box-shadow: 0 14px 34px rgba(79,40,48,.1); padding: 16px; font-size: 12px; }
+.ed-mock > strong { display: block; margin-bottom: 10px; font-size: 12px; font-weight: 600; }
+
+/* These four mocks represent real dashboard/booking screens, so - per explicit direction to
+   make them "look more like the actual tool" - their colors, icons and copy are pulled
+   directly from product-ui.css's --product-* tokens and dashboard.js's real markup/icon set,
+   not approximated in the homepage's own rose palette. Inter is the dashboard's actual body
+   font (loaded in index.html's <head> alongside Fraunces/Plus Jakarta Sans for this reason);
+   Georgia is its actual serif, needing no extra font load. */
+.ed-mock-dashboard, .ed-mock-form, .ed-mock-payment, .ed-mock-confirm, .ed-mock-roster { font-family: Inter, Arial, sans-serif; }
+.ed-mock-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.ed-mock-stat-card { display: grid; gap: 4px; border: 1px solid #ece6e1; border-radius: 8px; padding: 10px; background: rgba(255, 253, 251, .78); }
+.ed-mock-stat-icon { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: #ecddd8; color: #8b4d45; }
+.ed-mock-stat-icon svg { width: 12px; height: 12px; }
+.ed-mock-stat-card b { font: 600 16px Inter, Arial, sans-serif; color: #201d1b; }
+.ed-mock-stat-card small { display: block; color: #766d68; font-size: 9px; }
+.ed-mock-stat-flag { display: flex; align-items: center; gap: 8px; border: 1px solid #e3cbc5; border-radius: 8px; padding: 8px 10px; background: #f4e6e2; }
+.ed-mock-stat-flag .ed-mock-stat-icon { background: #e9cec6; color: #7d372c; }
+.ed-mock-stat-flag b { font: 600 13px Inter, Arial, sans-serif; color: #201d1b; }
+.ed-mock-stat-flag small { color: #766d68; font-size: 9px; }
+/* The real Overview page's "Upcoming Classes" list shows an actual class photo thumbnail
+   per row (.owner-overview-class img) - reusing the page's own watermark photo here for the
+   same reason the site mock does, rather than leaving this an all-text/icon mock. */
+.ed-mock-class-row { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 8px; border-top: 1px solid #ece6e1; }
+.ed-mock-class-thumb { width: 36px; height: 28px; flex-shrink: 0; border-radius: 4px; object-fit: cover; }
+.ed-mock-class-row b { display: block; font: 600 11px Inter, Arial, sans-serif; color: #201d1b; }
+.ed-mock-class-row small { color: #766d68; font-size: 9px; }
+
+.ed-mock-eyebrow { margin: 0 0 3px; color: #8b4d45; font: 700 8px Inter, Arial, sans-serif; letter-spacing: .07em; text-transform: uppercase; }
+/* The real Classes page shows "Import from Instagram" as a secondary button next to "+ Add
+   Class" (dashboard.js's classView) - picking a recent post pre-fills this very form's
+   Description and Class Image fields. Shown here alongside the form's own heading since this
+   mock represents the Add Class form itself, not the classes list the real button lives on. */
+.ed-mock-form-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 6px 8px; margin-bottom: 10px; }
+.ed-mock-form-head strong { display: block; font: 400 15px Georgia, serif; }
+/* Both spans here also match `.ed-mock-form span` below (field-label styling: display:block,
+   margin, color, font-weight) since they're descendants of .ed-mock-form too - that rule's
+   higher specificity (class+type vs. this rule's single class) wins for every property it
+   declares, which silently turned this badge into two stacked block rows. Scoped under
+   .ed-mock-form to outrank it explicitly rather than leaving the win to chance. */
+.ed-mock-form .ed-mock-ig-import { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; margin: 2px 0 0; padding: 4px 7px; border: 1px solid #ded7d1; border-radius: 4px; color: #8b4d45; font: 600 8px Inter, Arial, sans-serif; white-space: nowrap; }
+.ed-mock-form .ed-mock-ig-import svg { display: block; width: 10px; height: 10px; flex-shrink: 0; }
+.ed-mock-form .ed-mock-ig-import-label { display: inline; margin: 0; font: inherit; color: inherit; }
+.ed-mock-fieldset { margin-top: 10px; border: 1px solid #ded7d1; border-radius: 4px; padding: 12px 10px 10px; }
+.ed-mock-legend { display: block; margin: -19px 0 8px; padding: 0 5px; width: fit-content; background: white; color: #8b4d45; font: 600 9px Inter, Arial, sans-serif; letter-spacing: .02em; }
+.ed-mock-form span { display: block; font-size: 9px; line-height: 1.2; margin: 7px 0 3px; color: #514641; font-weight: 600; }
+.ed-mock-field { border: 1px solid #d8d0ca; background: rgba(255, 253, 251, .9); border-radius: 3px; padding: 6px 8px; font-size: 11px; line-height: 1.3; color: #2e2927; white-space: nowrap; }
+/* The real form's "Class Image" field (.owner-image-field img) shows an actual upload
+   preview, not a text input. Full 16:9 width (the field's real size) made this card
+   noticeably taller than its row siblings, visibly misaligning the step labels below it -
+   sized down to a thumbnail instead, still the real photo and still clearly a photo field. */
+.ed-mock-photo { display: block; width: 72px; height: 48px; margin-top: 2px; border-radius: 4px; object-fit: cover; }
+
+.ed-mock-payment > strong { font: 400 13px Georgia, serif; }
+.ed-mock-payment-options { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; margin-top: 8px; }
+.ed-mock-payment-option { position: relative; display: grid; gap: 4px; border: 1px solid #ded7d1; border-radius: 8px; padding: 24px 10px 10px 32px; background: rgba(255, 253, 251, .78); }
+.ed-mock-payment-option.is-selected { border-color: #b5746a; background: #ecddd8; }
+.ed-mock-radio { position: absolute; top: 26px; left: 10px; display: inline-block; width: 12px; height: 12px; border: 1.5px solid #c7b8b3; border-radius: 50%; background: white; }
+.ed-mock-payment-option.is-selected .ed-mock-radio { border-color: #b5746a; background: radial-gradient(circle, #b5746a 0 40%, white 42%); }
+.ed-mock-payment-badge { position: absolute; top: 8px; right: 8px; border-radius: 999px; padding: 2px 7px; background: #ecddd8; color: #8b4d45; font: 700 8px Inter, Arial, sans-serif; }
+.ed-mock-payment-option b { display: flex; align-items: center; gap: 6px; color: #2e2927; font: 400 12px Georgia, serif; }
+.ed-mock-payment-icon { display: inline-flex; color: #8b4d45; }
+.ed-mock-payment-icon svg { width: 13px; height: 13px; }
+.ed-mock-payment-option p { margin: 0; color: #766d68; font-size: 9px; line-height: 1.4; }
+
+.ed-mock-confirm { justify-content: center; align-items: center; text-align: center; padding: 18px 12px; }
+.ed-mock-check { display: grid; place-items: center; width: 38px; height: 38px; margin: 0 auto 10px; border-radius: 50%; color: #78473f; background: #eadbd6; font-size: 20px; }
+.ed-mock-confirm strong { display: block; margin-bottom: 6px; font-size: 15px; font-weight: 400; font-family: Georgia, serif; }
+.ed-mock-confirm-detail { margin: 0 0 10px; color: #766d68; font-size: 10px; line-height: 1.4; }
+/* Shows the actual amount charged rather than repeating "confirmed," which the step text
+   ("Card, confirmed automatically") and the payment-method step already say. */
+.ed-mock-confirm-receipt { display: flex; align-items: center; gap: 8px; border: 1px solid #ded7d1; border-radius: 6px; padding: 8px 16px; }
+.ed-mock-confirm-receipt span { color: #766d68; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
+.ed-mock-confirm-receipt b { color: #201d1b; font: 600 15px Inter, Arial, sans-serif; }
+
+.ed-mock-roster-list { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.ed-mock-roster-list > div { display: flex; gap: 10px; align-items: center; font-size: 12px; }
+.ed-mock-initial { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #ecddd8; color: #8b4d45; flex-shrink: 0; font: 700 10px Inter, Arial, sans-serif; }
+.ed-mock-roster small { margin-left: auto; padding: 3px 7px; border-radius: 999px; font: 700 9px Inter, Arial, sans-serif; color: #47765c; background: #edf4ef; }
+/* 06 — Your business: one compact mini-dashboard, not a features list. Per explicit direction
+   to make this "realistic" and "actually helpful" like the other step mocks, it now uses the
+   same real product tokens/fonts (Inter, the --product-* palette) instead of the homepage's
+   own rose styling, and adds two things it was missing: a month-over-month trend (the core
+   thing "analytics" actually means - not just a snapshot) and a "most requested class" line,
+   which closes a gap this section's own copy already promised ("...and what to teach again")
+   but the visual never actually showed. Still framed as representative, not live data - see
+   the HTML comment above this section; the real Analytics tab remains unbuilt. */
+.ed-business { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .85fr); gap: clamp(24px, 5vw, 56px); align-items: center; max-width: 1180px; margin: 0 auto; padding: clamp(40px, 6vw, 64px) clamp(24px, 6vw, 40px); }
+.ed-business-text h2 { margin: 8px 0 10px; font: 400 clamp(1.7rem, 2.9vw, 2.3rem)/1.2 var(--home-display); color: var(--home-ink); text-wrap: balance; }
+.ed-business-text p { margin: 0; max-width: 400px; font-size: 15px; line-height: 1.55; color: var(--home-muted); }
+.ed-business-card { padding: 22px 24px; background: white; border-radius: 10px; box-shadow: 0 20px 50px rgba(79,40,48,.12); font-family: Inter, Arial, sans-serif; }
+.ed-business-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.ed-business-month { margin: 0; font: 700 10px Inter, Arial, sans-serif; text-transform: uppercase; letter-spacing: .05em; color: #766d68; }
+.ed-business-trend { display: inline-flex; align-items: center; gap: 3px; color: #47765c; font: 700 11px Inter, Arial, sans-serif; }
+.ed-business-days { display: flex; align-items: flex-end; gap: 8px; height: 72px; margin-bottom: 12px; }
+.ed-business-days > div { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.ed-business-days i { display: block; width: 100%; height: var(--h); border-radius: 2px 2px 0 0; background: #ecddd8; font-style: normal; }
+.ed-business-days > div:nth-child(6) i { background: #b5746a; }
+.ed-business-days small { font-size: 9px; text-transform: uppercase; letter-spacing: .03em; color: #766d68; }
+.ed-business-next { margin: 0 0 14px; padding-top: 12px; border-top: 1px solid #ece6e1; font-size: 12px; color: #766d68; }
+.ed-business-stats { display: flex; gap: 28px; margin: 0 0 14px; padding-bottom: 14px; border-bottom: 1px solid #ece6e1; }
+.ed-business-stats span { display: block; font: 600 1.4rem/1 Inter, Arial, sans-serif; color: #201d1b; }
+.ed-business-stats small { display: block; margin-top: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: #766d68; }
+.ed-business-popular { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ed-business-popular small { color: #766d68; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
+.ed-business-popular strong { color: #201d1b; font: 400 13px Georgia, serif; }
+
+/* 08 — Pricing: easy to scan, no unnecessary vertical space. */
+.ed-pricing { padding: clamp(40px, 5vw, 64px) clamp(24px, 6vw, 40px); max-width: 1080px; margin: 0 auto; }
+.ed-pricing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.ed-pricing-tier { padding: 22px 20px; border: 1px solid #eee1e5; border-radius: 6px; background: #fffefd; display: flex; flex-direction: column; }
+.ed-pricing-tier-featured { border-color: var(--home-rose); box-shadow: 0 16px 40px rgba(168,103,95,.14); }
+.ed-pricing-name { margin: 0 0 4px; font: 600 12px var(--home-sans); text-transform: uppercase; letter-spacing: .04em; color: var(--home-muted); }
+.ed-pricing-price { margin: 0 0 10px; font: 400 2.1rem/1 var(--home-display); color: var(--home-ink); }
+.ed-pricing-price span { font-size: .9rem; color: var(--home-muted); }
+.ed-pricing-detail { flex: 1; margin: 0 0 16px; font-size: 13px; line-height: 1.5; color: var(--home-muted); }
+.ed-pricing-tier .ed-button { min-width: 0; width: 100%; min-height: 44px; }
+.ed-pricing-compare { display: block; margin: 20px auto 0; background: none; border: 0; padding: 0; font: 600 13px var(--home-sans); color: var(--home-rose); cursor: pointer; }
+
+/* 09 — Final CTA */
+.ed-launch { text-align: center; padding: clamp(48px, 6vw, 72px) 24px clamp(56px, 7vw, 84px); }
+/* Real bug found live: styles.css has a bare `h2 { max-width: 1320px; }` rule (unscoped,
+   meant for other pages) that silently capped this h2's own box width without an auto margin
+   to re-center it - the box sat flush-left within the section, so text-align: center on
+   .ed-launch only centered the text WITHIN that off-center box, not against the full section.
+   Confirmed live: computed max-width was exactly 1320px, margin-left/right both 0px. Same
+   specificity-leak pattern as the hero h1 bug earlier in this redesign - this rule's higher
+   specificity only overrides properties it actually declares, so a property it never mentions
+   (max-width) keeps leaking through. Fixed with an explicit reset. */
+.ed-launch h2 { margin: 12px 0 22px; max-width: none; font: 400 clamp(2rem, 4.2vw, 3rem)/1.08 var(--home-display); color: var(--home-ink); }
+/* A prior pass swapped the "8" into the sans face, reasoning that Fraunces' own glyph (bigger
+   top bowl than bottom) reads upside-down. Confirmed live, side by side at full size in
+   context: the font-mismatch that creates - a visibly different typeface sitting mid-sentence
+   in an otherwise all-serif headline - reads far more wrong than the native digit's bowl
+   proportions ever did. Reverted; the "8" is plain text again, inheriting the serif headline
+   font like every other character in it. */
+.ed-launch h2 em { color: var(--home-rose); font-style: italic; }
+.restyle-footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 32px; padding: 20px max(24px, calc((100% - 1180px)/2)); border-top: 1px solid #eee1e5; color: #667080; font-size: 11px; }
 .restyle-footer nav { display: flex; gap: 24px; }
 .restyle-footer a { color: inherit; text-decoration: none; }
-@media (min-width: 1600px) {
-  .restyle-hero { height: 740px; }
-  .restyle-hero-image { object-position: center 42%; }
-  .restyle-about { min-height: 640px; padding-top: 65px; }
-}
+
 @media (max-width: 1050px) {
-  .home-restyle .site-header { width: calc(100% - 48px); gap: 22px; }
-  .home-restyle .site-nav { gap: 18px; }
+  .home-restyle .site-header { gap: 22px; }
   .home-restyle .header-account { gap: 15px; }
   .home-restyle .brand-name { font-size: 24px; }
-  .restyle-workflow { padding-inline: 24px; }
-  .restyle-steps { gap: 18px; }
-  .restyle-example { padding: 12px; }
-  .restyle-roster > div { gap: 5px; font-size: 10px; }
-  .restyle-confirmation > strong { font-size: 15px; }
-  .restyle-notifications > div { gap: 7px; }
-  .restyle-notifications > div > span { width: 24px; font-size: 26px; }
-  .restyle-about-copy { width: 510px; }
-  .restyle-about h2 { font-size: 42px; }
+  .ed-reality { grid-template-columns: 1fr; }
+  .ed-chaos { margin-top: 20px; }
+  .ed-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ed-business { grid-template-columns: 1fr; }
 }
 @media (max-width: 800px) {
   .home-restyle .site-header { height: 76px; gap: 14px; }
-  .home-restyle .site-nav { display: none; position: absolute; top: 70px; right: 0; min-width: 210px; padding: 20px; background: #fffafa; border: 1px solid #ead7dd; border-radius: 4px; box-shadow: 0 12px 30px #0001; }
-  .home-restyle .site-nav.is-open { display: grid; gap: 12px; }
-  .home-restyle .site-nav button { text-align: left; }
-  .home-restyle .nav-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 40px; height: 40px; order: 3; margin-left: 0; border: 0; border-radius: 4px; background: #ffffffa6; }
-  .home-restyle .nav-toggle span { width: 19px; height: 2px; background: var(--home-ink); }
-  .home-restyle .header-account { margin-left: auto; }
-  .home-restyle .header-account .header-cta { display: none; }
-  .restyle-hero h2 { font-size: 58px; }
-  .restyle-steps { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 30px 24px; max-width: 580px; }
-  .restyle-steps > li:last-child { grid-column: 1 / -1; max-width: 280px; width: 100%; justify-self: center; }
-  .restyle-steps > li:not(:last-child) .restyle-step-heading::after { display: none; }
-  .restyle-example { padding: 18px; }
-  .restyle-roster > div { font-size: 12px; gap: 10px; }
-  .restyle-about { min-height: 610px; padding-top: 40px; }
-  .restyle-about > img { object-position: 62% center; }
-  .restyle-about::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(#fffafae8, #fffafaaf 60%, #fffafa10); }
-  .restyle-about-copy { width: min(520px, 100%); }
+  .ed-pricing-grid { grid-template-columns: 1fr; }
 }
-@media (max-width: 480px) {
-  .home-restyle .site-header { width: calc(100% - 32px); gap: 12px; }
+@media (max-width: 640px) {
   .home-restyle .brand { gap: 4px; }
   .home-restyle .brand-name { font-size: 21px; }
   .home-restyle .brand-tagline { font-size: 8px; }
@@ -145,32 +300,35 @@ body.home-restyle {
   .home-restyle .header-login { font-size: 12px; }
   .home-restyle .header-avatar { display: none; }
   .home-restyle .header-account { gap: 9px; }
-  .restyle-hero { min-height: 560px; height: 86svh; max-height: 710px; padding: 140px 20px 35px; }
-  .restyle-hero-image { object-position: 47% center; }
-  .restyle-hero h2 { font-size: 46px; line-height: 1.06; }
-  .restyle-hero .restyle-eyebrow { font-size: 10px; }
-  .restyle-hero-copy > p { font-size: 14px; margin: 18px auto 23px; }
-  .restyle-button { font-size: 14px; min-height: 50px; min-width: 210px; }
-  .restyle-workflow { padding: 32px 20px 40px; }
-  .restyle-section-heading h2 { font-size: 28px; }
-  .restyle-steps { grid-template-columns: minmax(0,1fr); max-width: 285px; gap: 28px; }
-  .restyle-step-heading { min-height: 84px; }
-  .restyle-step-heading h3 { font-size: 14px; }
-  .restyle-example { height: 280px; padding: 20px; }
-  .restyle-class-form > span { font-size: 11px; }
-  .restyle-example-field { font-size: 11px; }
-  .restyle-notifications { height: 235px; }
-  .restyle-notifications p { font-size: 13px; }
-  .restyle-notifications small { font-size: 11px; }
-  .restyle-about { min-height: 640px; padding: 35px 22px; }
-  .restyle-about h2 { font-size: 35px; }
-  .restyle-about p { font-size: 14px; }
-  .restyle-launch { padding: 36px 24px 42px; }
-  .restyle-launch h2 { font-size: 34px; }
-  .restyle-launch p { font-size: 14px; }
-  .restyle-launch::before { left: -590px; }
-  .restyle-launch::after { right: -590px; }
-  .restyle-footer { flex-wrap: wrap; justify-content: center; font-size: 10px; }
+  /* Real bug found live: with only "Log In" + "Get Started" left in the header (the nav links
+     and hamburger toggle were removed), there's nothing left to collapse at narrow phone
+     widths - and body has a legacy overflow-x: hidden rule, so once the button's min-content
+     width (even wrapped to two lines) outgrows the remaining space next to the brand mark, it
+     doesn't scroll or wrap the row, it gets silently clipped off the right edge. Tightening
+     the header's side padding and the CTA's own padding/font-size below 420px buys back enough
+     room that the button stays fully on-screen down to a 320px viewport. */
+  .ed-hero-sub { white-space: normal; max-width: 460px; text-wrap: pretty; }
+}
+@media (max-width: 420px) {
+  .home-restyle .site-header { padding: 0 14px; gap: 10px; }
+  .home-restyle .header-account { gap: 7px; }
+  .home-restyle .header-cta { padding: 8px 13px; font-size: 11px; }
+  .ed-hero { padding: 108px 20px 40px; }
+  .ed-hero-copy { max-width: none; }
+  .ed-hero-sub { max-width: none; }
+  .ed-reality { padding: 40px 20px; }
+  .ed-chaos { grid-template-columns: 1fr; }
+  .ed-story { padding: 40px 20px; }
+  .ed-steps { grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
+  .ed-step { flex-direction: row; align-items: center; gap: 16px; }
+  .ed-mock { flex-shrink: 0; width: 128px; }
+  /* At 128px even an icon-only badge still doesn't fit beside "Add Class" and wraps to its
+     own row, pushing the form past this fixed-height mock's bottom edge. The step copy below
+     ("...or import one straight from Instagram") already states the feature regardless of
+     mock width, so the badge itself is just dropped here rather than fought for room. */
+  .ed-mock-form .ed-mock-ig-import { display: none; }
+  .ed-business-stats { gap: 24px; }
+  .restyle-footer { font-size: 10px; }
 }
 
 /* The auth modal (Log In / Create Account) and the comparison/pricing modal aren't part of the
@@ -201,6 +359,13 @@ body.home-restyle {
 }
 .home-restyle .demo-form button { background: var(--home-rose); box-shadow: 0 18px 38px rgba(168, 103, 95, 0.24); }
 .home-restyle .form-message { color: #8f5851; }
+/* The per-plan "Request a demo" modal (opened by the pricing tiers' "Book a demo" buttons)
+   is the same story - it previously fell through to the old orange-glow panel background,
+   magenta/orange gradient button, and pink focus ring since nothing scoped it to this page. */
+.home-restyle .plan-demo-panel { background: radial-gradient(circle at 100% 0%, rgba(168, 103, 95, 0.14), transparent 14rem), linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 248, 0.94)); }
+.home-restyle .plan-demo-form input:focus { border-color: var(--home-rose); outline: 3px solid rgba(168, 103, 95, 0.16); }
+.home-restyle .plan-demo-form button { background: var(--home-rose); box-shadow: 0 18px 38px rgba(168, 103, 95, 0.24); }
+.home-restyle .plan-demo-message { color: #8f5851 !important; }
 
 /* Flatten the auth modal / pricing modal buttons to match the redesign's flat corner language
    used everywhere else (dashboard buttons are 4px, onboarding buttons are 2px, the homepage's
@@ -211,8 +376,9 @@ body.home-restyle {
 .home-restyle .modal-close,
 .home-restyle .price-card a,
 .home-restyle .demo-form button,
+.home-restyle .plan-demo-form button,
 .home-restyle .auth-google {
   border-radius: 4px;
 }
 .home-restyle .secondary-button { border-color: rgba(168, 103, 95, 0.22); }
-@media (prefers-reduced-motion: reduce) { .restyle-button { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .ed-button { transition: none; } }
