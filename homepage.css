@@ -116,7 +116,7 @@ body.home-restyle {
    dark "Book a Class" button - reused here (same photo already loaded for the page's own
    watermark, so no extra asset) instead of the earlier flat gradient block, which didn't read
    as an actual website. */
-.ed-site-hero { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px; padding: 12px; background-image: linear-gradient(180deg, rgba(20,18,17,.55) 0%, rgba(20,18,17,.15) 45%, rgba(20,18,17,.55) 100%), url("assets/homepage-dance-studio.png?v=20260930-watermark"); background-size: cover; background-position: center 30%; }
+.ed-site-hero { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 12px; background-image: linear-gradient(180deg, rgba(20,18,17,.55) 0%, rgba(20,18,17,.15) 45%, rgba(20,18,17,.55) 100%), url("assets/homepage-dance-studio.png?v=20260930-watermark"); background-size: cover; background-position: center 30%; }
 .ed-site-wordmark { align-self: flex-start; color: #fff; font: 500 10px var(--home-display); letter-spacing: .14em; text-transform: uppercase; }
 .ed-site-hero-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px; }
 .ed-site-hero-foot span { color: #fff; font: 400 16px var(--home-display); line-height: 1.1; text-shadow: 0 2px 10px rgba(0,0,0,.3); }
@@ -130,7 +130,10 @@ body.home-restyle {
 .ed-step { display: flex; flex-direction: column; gap: 14px; }
 .ed-step-text h3 { margin: 0 0 4px; font: 400 1.15rem/1.25 var(--home-display); color: var(--home-ink); }
 .ed-step-text p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--home-muted); }
-.ed-mock { border-radius: 6px; background: white; box-shadow: 0 14px 34px rgba(79,40,48,.1); padding: 16px; font-size: 12px; }
+/* Fixed height (not min-height) so all six step mocks read as one consistent set rather than
+   each sizing to its own content - the tallest (the class-details form) sets the height, and
+   every other mock's content fills or centers within it via the per-mock rules below. */
+.ed-mock { height: 280px; display: flex; flex-direction: column; border-radius: 6px; background: white; box-shadow: 0 14px 34px rgba(79,40,48,.1); padding: 16px; font-size: 12px; }
 .ed-mock > strong { display: block; margin-bottom: 10px; font-size: 12px; font-weight: 600; }
 
 /* These four mocks represent real dashboard/booking screens, so - per explicit direction to
@@ -153,7 +156,7 @@ body.home-restyle {
 /* The real Overview page's "Upcoming Classes" list shows an actual class photo thumbnail
    per row (.owner-overview-class img) - reusing the page's own watermark photo here for the
    same reason the site mock does, rather than leaving this an all-text/icon mock. */
-.ed-mock-class-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ece6e1; }
+.ed-mock-class-row { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 8px; border-top: 1px solid #ece6e1; }
 .ed-mock-class-thumb { width: 36px; height: 28px; flex-shrink: 0; border-radius: 4px; object-fit: cover; }
 .ed-mock-class-row b { display: block; font: 600 11px Inter, Arial, sans-serif; color: #201d1b; }
 .ed-mock-class-row small { color: #766d68; font-size: 9px; }
@@ -171,7 +174,8 @@ body.home-restyle {
 .ed-mock-photo { display: block; width: 72px; height: 48px; margin-top: 2px; border-radius: 4px; object-fit: cover; }
 
 .ed-mock-payment > strong { font: 400 13px Georgia, serif; }
-.ed-mock-payment-option { position: relative; display: grid; gap: 4px; margin-top: 8px; border: 1px solid #ded7d1; border-radius: 8px; padding: 24px 10px 10px 32px; background: rgba(255, 253, 251, .78); }
+.ed-mock-payment-options { flex: 1; display: flex; flex-direction: column; justify-content: space-between; margin-top: 8px; }
+.ed-mock-payment-option { position: relative; display: grid; gap: 4px; border: 1px solid #ded7d1; border-radius: 8px; padding: 24px 10px 10px 32px; background: rgba(255, 253, 251, .78); }
 .ed-mock-payment-option.is-selected { border-color: #b5746a; background: #ecddd8; }
 .ed-mock-radio { position: absolute; top: 26px; left: 10px; display: inline-block; width: 12px; height: 12px; border: 1.5px solid #c7b8b3; border-radius: 50%; background: white; }
 .ed-mock-payment-option.is-selected .ed-mock-radio { border-color: #b5746a; background: radial-gradient(circle, #b5746a 0 40%, white 42%); }
@@ -181,13 +185,14 @@ body.home-restyle {
 .ed-mock-payment-icon svg { width: 13px; height: 13px; }
 .ed-mock-payment-option p { margin: 0; color: #766d68; font-size: 9px; line-height: 1.4; }
 
-.ed-mock-confirm { text-align: center; padding: 18px 12px; }
+.ed-mock-confirm { justify-content: center; align-items: center; text-align: center; padding: 18px 12px; }
 .ed-mock-check { display: grid; place-items: center; width: 38px; height: 38px; margin: 0 auto 10px; border-radius: 50%; color: #78473f; background: #eadbd6; font-size: 20px; }
 .ed-mock-confirm strong { display: block; margin-bottom: 6px; font-size: 15px; font-weight: 400; font-family: Georgia, serif; }
 .ed-mock-confirm-detail { margin: 0 0 10px; color: #766d68; font-size: 10px; line-height: 1.4; }
 .ed-mock-outline { display: inline-block; border: 1px solid #78473f; color: #78473f; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 11px; }
 
-.ed-mock-roster > div { display: flex; gap: 10px; align-items: center; padding: 5px 0; font-size: 12px; }
+.ed-mock-roster-list { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.ed-mock-roster-list > div { display: flex; gap: 10px; align-items: center; font-size: 12px; }
 .ed-mock-initial { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #ecddd8; color: #8b4d45; flex-shrink: 0; font: 700 10px Inter, Arial, sans-serif; }
 .ed-mock-roster small { margin-left: auto; padding: 3px 7px; border-radius: 999px; font: 700 9px Inter, Arial, sans-serif; color: #47765c; background: #edf4ef; }
 /* 06 — Your business: one compact mini-dashboard, not a features list. */

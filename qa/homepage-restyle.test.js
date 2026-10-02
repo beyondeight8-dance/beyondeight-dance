@@ -94,6 +94,14 @@ assert.match(html, /class="ed-mock-class-thumb"/, "the dashboard mock's upcoming
 assert.match(html, /class="ed-mock-photo"/, "the class-form mock needs a real photo for its Class Image field, matching the real form");
 assert.doesNotMatch(css, /\.ed-mock-photo \{[^}]*width: 100%/, "the class-image thumbnail must not regress to full card width - it visibly misaligned this card's height against its row siblings");
 
+// Uniform-size pass: per explicit direction the six step mocks must all read as one
+// consistent set, not each sizing to its own content (they previously ranged from 157px to
+// 280px tall). A fixed height (not min-height) on .ed-mock is the actual fix; the per-mock
+// fill/center rules below it are necessary too, since a bare fixed height alone just clips or
+// leaves dead space - must not regress to min-height, which would let heights vary again.
+assert.match(css, /\.ed-mock \{[^}]*height: 280px/, "all six step mocks must share one fixed height so they read as a consistent set");
+assert.doesNotMatch(css, /\.ed-mock \{[^}]*min-height: 280px/, "must be a fixed height, not min-height - min-height would let shorter mocks shrink back to their own content size");
+
 // Site-mock pass: per explicit feedback the website step's visual read as a flat gradient
 // block, not an actual website - rebuilt to match the real published Editorial theme
 // (public-site.css: .public-editorial-hero) - a full-bleed photo hero with a dark scrim, an
