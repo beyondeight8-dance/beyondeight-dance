@@ -83,6 +83,24 @@ assert.match(html, /first-time/i);
 assert.doesNotMatch(css, /\.ed-hero \{[^}]*92svh|\.ed-hero \{[^}]*height: 62vh|\.ed-hero \{[^}]*max-height: 600px/, "the hero must not regress to a forced viewport-height box");
 assert.doesNotMatch(css, /clamp\(320px, 44vw, 560px\)/, "the payoff image must not regress to its old tall height");
 
+// One-line headline pass: per explicit direction, the small "BeyondEight · built for
+// dancepreneurs" eyebrow above the headline was dropped, and the black line + the rose
+// <em> line should each render as their own single line at normal desktop widths rather
+// than wrapping. The markup itself must not hard-break the black line into two <br>-
+// separated halves (the old "Starting your own<br>dance class?" split).
+assert.doesNotMatch(html, /BeyondEight &middot; built for dancepreneurs|BeyondEight · built for dancepreneurs/, "the small eyebrow line above the hero headline must stay removed");
+assert.match(html, /<h1 id="hero-title">Starting your own dance class\?<br><em>/, "the black headline must be one unbroken run (no internal <br>), only breaking before the rose <em> line");
+// Real bug found live: styles.css has a bare `h1 { max-width: 840px; letter-spacing:
+// -0.045em; }` rule (an unscoped "Creative typography pass" meant for other pages) that
+// silently capped the hero headline's width and tightened its tracking, forcing it to wrap
+// even once the container was widened - this rule's higher specificity only overrides
+// properties it actually declares, so a property it doesn't mention (here, max-width and
+// letter-spacing) keeps leaking through regardless of container width, the same pattern as
+// the header's backdrop-filter/box-shadow leak earlier in this redesign. Locks in the
+// explicit resets so they can't silently regress.
+assert.match(css, /\.ed-hero-copy h1 \{[^}]*max-width: none/, "the hero h1 must explicitly reset max-width to none - the legacy bare h1 rule in styles.css caps it at 840px and this is the only thing stopping that from leaking through");
+assert.match(css, /\.ed-hero-copy h1 \{[^}]*letter-spacing: normal/, "the hero h1 must explicitly reset letter-spacing to normal - the legacy bare h1 rule in styles.css tightens it and this is the only thing stopping that from leaking through");
+
 // Simplification pass: per explicit direction, the hero's product-panel visual (the
 // Class/Registered/Collected card) was dropped and the hero copy centered instead - the
 // hero is now type-only, relying on the body's watermark photo for visual texture. The

@@ -76,8 +76,14 @@ body.home-restyle {
 /* 01 — Hero: no photography, no product-panel visual - a dark, confident type statement
    centered on its own, letting the body's watermark photo carry the visual weight. */
 .ed-hero { position: relative; padding: clamp(56px, 7vw, 88px) clamp(24px, 6vw, 88px) clamp(64px, 8vw, 96px); display: flex; flex-direction: column; align-items: center; text-align: center; }
-.ed-hero-copy { max-width: 680px; margin: 0 auto; color: var(--home-ink); }
-.ed-hero-copy h1 { margin: 0; font: 400 clamp(2.6rem, 5.6vw, 4.4rem)/1.02 var(--home-display); color: var(--home-ink); }
+.ed-hero-copy { max-width: 1000px; margin: 0 auto; color: var(--home-ink); }
+/* Real bug found live: styles.css has a bare `h1 { max-width: 840px; letter-spacing:
+   -0.045em; }` rule (unscoped "Creative typography pass") that silently capped this
+   headline's width and tightened its tracking - this rule's higher specificity only
+   overrides properties it actually declares, so those two properties kept leaking through
+   until explicitly reset here, the same way the header's backdrop-filter/box-shadow leaked
+   earlier in this redesign. */
+.ed-hero-copy h1 { margin: 0; max-width: none; letter-spacing: normal; font: 400 clamp(2.6rem, 5.6vw, 4.4rem)/1.02 var(--home-display); color: var(--home-ink); }
 .ed-hero-copy h1 em { color: var(--home-rose); font-style: italic; font-weight: 400; }
 .ed-hero-sub { max-width: 440px; margin: 18px auto 26px; font-size: 16px; line-height: 1.55; color: var(--home-muted); text-wrap: pretty; }
 
