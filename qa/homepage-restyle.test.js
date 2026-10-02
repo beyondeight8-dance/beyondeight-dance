@@ -66,6 +66,23 @@ assert.match(html, /class="ed-mock ed-mock-site/, "the website-builder step must
 assert.match(html, /beyond8dance\.com\/maya-flores/, "the mockup must show the real URL pattern the product actually publishes to");
 assert.doesNotMatch(html, /class="ed-site"[ >]|class="ed-site-phone"/, "the website moment must not regress to its own standalone section with a separate phone frame");
 
+// Product-accuracy pass: per explicit direction to make the step mocks "look more like the
+// actual tool," the dashboard/form/payment/confirmation mocks pull colors, icons and copy
+// directly from product-ui.css's --product-* tokens and dashboard.js's real markup (the
+// payment option copy, "Class Name" label, stat-card icon-badge pattern) rather than the
+// homepage's own invented styling. Inter (the dashboard's real body font) must actually be
+// loaded for this, alongside the existing Fraunces/Plus Jakarta Sans pair.
+assert.match(html, /family=Inter/, "Inter must be loaded - it's the real dashboard's body font, used in these product-accurate mocks");
+assert.match(html, /Class Name/, "the class-form mock must use the real field label, not the earlier invented \"Class Title\"");
+assert.match(html, /Accepted cards go straight to your bank/, "the payment mock must use real copy reflecting direct-to-bank Stripe payouts, not generic placeholder text");
+// Real bug found live: at narrow (mobile) widths the payment option's title wraps to two
+// lines, and the absolutely-positioned "Recommended" badge - anchored at a fixed top offset
+// - overlapped the title's first line and visually hid the word "Card". Confirmed fine on
+// desktop (title stays on one line there) but broken on mobile. Fixed by giving the option
+// enough top padding to clear the badge regardless of how many lines the title wraps to, and
+// moving the radio dot down to match. Locks in the clearance so it can't silently shrink back.
+assert.match(css, /\.ed-mock-payment-option \{[^}]*padding: 24px/, "the payment option needs enough top padding to clear the absolutely-positioned badge even when its title wraps to two lines on mobile");
+
 // 06 — Your business: per explicit direction this is now a representative analytics
 // visual (day-of-week registration trend + returning vs. first-time split) rather than a
 // revenue figure - the real Analytics tab in the product doesn't exist yet, so this is an
