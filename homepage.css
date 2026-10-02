@@ -162,7 +162,20 @@ body.home-restyle {
 .ed-mock-class-row small { color: #766d68; font-size: 9px; }
 
 .ed-mock-eyebrow { margin: 0 0 3px; color: #8b4d45; font: 700 8px Inter, Arial, sans-serif; letter-spacing: .07em; text-transform: uppercase; }
-.ed-mock-form > strong { font: 400 15px Georgia, serif; }
+/* The real Classes page shows "Import from Instagram" as a secondary button next to "+ Add
+   Class" (dashboard.js's classView) - picking a recent post pre-fills this very form's
+   Description and Class Image fields. Shown here alongside the form's own heading since this
+   mock represents the Add Class form itself, not the classes list the real button lives on. */
+.ed-mock-form-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 6px 8px; margin-bottom: 10px; }
+.ed-mock-form-head strong { display: block; font: 400 15px Georgia, serif; }
+/* Both spans here also match `.ed-mock-form span` below (field-label styling: display:block,
+   margin, color, font-weight) since they're descendants of .ed-mock-form too - that rule's
+   higher specificity (class+type vs. this rule's single class) wins for every property it
+   declares, which silently turned this badge into two stacked block rows. Scoped under
+   .ed-mock-form to outrank it explicitly rather than leaving the win to chance. */
+.ed-mock-form .ed-mock-ig-import { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; margin: 2px 0 0; padding: 4px 7px; border: 1px solid #ded7d1; border-radius: 4px; color: #8b4d45; font: 600 8px Inter, Arial, sans-serif; white-space: nowrap; }
+.ed-mock-form .ed-mock-ig-import svg { display: block; width: 10px; height: 10px; flex-shrink: 0; }
+.ed-mock-form .ed-mock-ig-import-label { display: inline; margin: 0; font: inherit; color: inherit; }
 .ed-mock-fieldset { margin-top: 10px; border: 1px solid #ded7d1; border-radius: 4px; padding: 12px 10px 10px; }
 .ed-mock-legend { display: block; margin: -19px 0 8px; padding: 0 5px; width: fit-content; background: white; color: #8b4d45; font: 600 9px Inter, Arial, sans-serif; letter-spacing: .02em; }
 .ed-mock-form span { display: block; font-size: 9px; line-height: 1.2; margin: 7px 0 3px; color: #514641; font-weight: 600; }
@@ -174,7 +187,7 @@ body.home-restyle {
 .ed-mock-photo { display: block; width: 72px; height: 48px; margin-top: 2px; border-radius: 4px; object-fit: cover; }
 
 .ed-mock-payment > strong { font: 400 13px Georgia, serif; }
-.ed-mock-payment-options { flex: 1; display: flex; flex-direction: column; justify-content: space-between; margin-top: 8px; }
+.ed-mock-payment-options { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; margin-top: 8px; }
 .ed-mock-payment-option { position: relative; display: grid; gap: 4px; border: 1px solid #ded7d1; border-radius: 8px; padding: 24px 10px 10px 32px; background: rgba(255, 253, 251, .78); }
 .ed-mock-payment-option.is-selected { border-color: #b5746a; background: #ecddd8; }
 .ed-mock-radio { position: absolute; top: 26px; left: 10px; display: inline-block; width: 12px; height: 12px; border: 1.5px solid #c7b8b3; border-radius: 50%; background: white; }
@@ -189,7 +202,11 @@ body.home-restyle {
 .ed-mock-check { display: grid; place-items: center; width: 38px; height: 38px; margin: 0 auto 10px; border-radius: 50%; color: #78473f; background: #eadbd6; font-size: 20px; }
 .ed-mock-confirm strong { display: block; margin-bottom: 6px; font-size: 15px; font-weight: 400; font-family: Georgia, serif; }
 .ed-mock-confirm-detail { margin: 0 0 10px; color: #766d68; font-size: 10px; line-height: 1.4; }
-.ed-mock-outline { display: inline-block; border: 1px solid #78473f; color: #78473f; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 11px; }
+/* Shows the actual amount charged rather than repeating "confirmed," which the step text
+   ("Card, confirmed automatically") and the payment-method step already say. */
+.ed-mock-confirm-receipt { display: flex; align-items: center; gap: 8px; border: 1px solid #ded7d1; border-radius: 6px; padding: 8px 16px; }
+.ed-mock-confirm-receipt span { color: #766d68; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
+.ed-mock-confirm-receipt b { color: #201d1b; font: 600 15px Inter, Arial, sans-serif; }
 
 .ed-mock-roster-list { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
 .ed-mock-roster-list > div { display: flex; gap: 10px; align-items: center; font-size: 12px; }
@@ -269,6 +286,11 @@ body.home-restyle {
   .ed-steps { grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
   .ed-step { flex-direction: row; align-items: center; gap: 16px; }
   .ed-mock { flex-shrink: 0; width: 128px; }
+  /* At 128px even an icon-only badge still doesn't fit beside "Add Class" and wraps to its
+     own row, pushing the form past this fixed-height mock's bottom edge. The step copy below
+     ("...or import one straight from Instagram") already states the feature regardless of
+     mock width, so the badge itself is just dropped here rather than fought for room. */
+  .ed-mock-form .ed-mock-ig-import { display: none; }
   .ed-business-stats { gap: 24px; }
   .restyle-footer { flex-wrap: wrap; justify-content: center; font-size: 10px; }
 }

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260928-embedded-checkout">
-  <link rel="stylesheet" href="homepage.css?v=20261002-uniform-mock-size">
+  <link rel="stylesheet" href="homepage.css?v=20261002-ig-import-centered">
   <link rel="stylesheet" href="onboarding.css?v=20260928-brand-consistency">
   <link rel="stylesheet" href="public-site.css?v=20260921-about-layout">
 </head>
@@ -100,8 +100,10 @@
         </li>
         <li class="ed-step">
           <div class="ed-mock ed-mock-form ed-reveal" aria-label="Example class details">
-            <p class="ed-mock-eyebrow">New class</p>
-            <strong>Add Class</strong>
+            <div class="ed-mock-form-head">
+              <div><p class="ed-mock-eyebrow">New class</p><strong>Add Class</strong></div>
+              <span class="ed-mock-ig-import" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"></rect><path d="M8 7l1.4-2.4h5.2L16 7"></path><circle cx="12" cy="13.5" r="3.4"></circle></svg><span class="ed-mock-ig-import-label">Import from Instagram</span></span>
+            </div>
             <div class="ed-mock-fieldset">
               <span class="ed-mock-legend">Class details</span>
               <span>Class Name</span><div class="ed-mock-field">Heels Workshop</div>
@@ -109,7 +111,7 @@
               <span>Price</span><div class="ed-mock-field">$25</div>
             </div>
           </div>
-          <div class="ed-step-text"><h3>Add a class</h3><p>Title, date, price. Live on your new site in a minute.</p></div>
+          <div class="ed-step-text"><h3>Add a class</h3><p>Title, date, price — or import one straight from Instagram.</p></div>
         </li>
         <li class="ed-step">
           <div class="ed-mock ed-mock-payment ed-reveal" aria-label="Example payment method choice">
@@ -126,7 +128,7 @@
             <span class="ed-mock-check" aria-hidden="true">&#10003;</span>
             <strong>You're registered!</strong>
             <p class="ed-mock-confirm-detail">Saturday Heels<br>Sat, Jun 14 &middot; 10:00am</p>
-            <span class="ed-mock-outline">Payment confirmed</span>
+            <div class="ed-mock-confirm-receipt"><span>Paid</span><b>$25.00</b></div>
           </div>
           <div class="ed-step-text"><h3>People register — and pay</h3><p>Card, confirmed automatically. Venmo works too.</p></div>
         </li>

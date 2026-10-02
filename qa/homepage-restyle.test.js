@@ -102,6 +102,30 @@ assert.doesNotMatch(css, /\.ed-mock-photo \{[^}]*width: 100%/, "the class-image 
 assert.match(css, /\.ed-mock \{[^}]*height: 280px/, "all six step mocks must share one fixed height so they read as a consistent set");
 assert.doesNotMatch(css, /\.ed-mock \{[^}]*min-height: 280px/, "must be a fixed height, not min-height - min-height would let shorter mocks shrink back to their own content size");
 
+// Import-from-Instagram pass: the real Classes page shows this as a secondary button next to
+// "+ Add Class" (dashboard.js's classView) - picking a recent post pre-fills this form's
+// Description/Class Image fields. Added here per explicit direction.
+assert.match(html, /class="ed-mock-ig-import"/, "the Add Class mock needs the real Import from Instagram affordance");
+assert.match(html, />Import from Instagram</, "the badge must use the real feature's actual label");
+// Real bug found live: the badge's two <span>s are also descendants of .ed-mock-form, so they
+// matched `.ed-mock-form span` (the field-label styling rule) too - that selector's higher
+// specificity (class+type vs. this rule's single class) won for every property it declares,
+// silently turning display:inline-flex back to block and stacking the icon/label into two
+// rows, inflating the badge to ~44px tall and overflowing the mock's fixed 280px height. Fixed
+// by scoping the badge rules under .ed-mock-form to outrank it explicitly. Locks in the scope.
+assert.match(css, /\.ed-mock-form \.ed-mock-ig-import \{/, "the badge rule must be scoped under .ed-mock-form to outrank the field-label span rule's higher specificity");
+assert.doesNotMatch(css, /^\.ed-mock-ig-import \{/m, "the badge rule must not regress to an unscoped single-class selector - it loses the specificity fight against .ed-mock-form span");
+
+// Venmo/Stripe-options and confirmation pass, per explicit feedback: the two payment options
+// were spread with justify-content: space-between (one pinned to the top, one to the bottom,
+// with a lot of empty space between) - centered instead. The confirmation mock's "Payment
+// confirmed" pill was also dropped for repeating what the step text right next to it already
+// says ("Card, confirmed automatically") - replaced with the actual amount paid, which is
+// information this mock didn't show anywhere else.
+assert.match(css, /\.ed-mock-payment-options \{[^}]*justify-content: center/, "the two payment options must be centered, not spread to the top/bottom with space-between");
+assert.doesNotMatch(html, /Payment confirmed/, "the confirmation mock must not repeat the step text's own \"confirmed automatically\" wording");
+assert.match(html, /class="ed-mock-confirm-receipt"/, "the confirmation mock should show the actual amount paid instead of a redundant status pill");
+
 // Site-mock pass: per explicit feedback the website step's visual read as a flat gradient
 // block, not an actual website - rebuilt to match the real published Editorial theme
 // (public-site.css: .public-editorial-hero) - a full-bleed photo hero with a dark scrim, an
