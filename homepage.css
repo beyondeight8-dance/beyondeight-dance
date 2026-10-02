@@ -150,6 +150,13 @@ body.home-restyle {
 .ed-mock-stat-flag .ed-mock-stat-icon { background: #e9cec6; color: #7d372c; }
 .ed-mock-stat-flag b { font: 600 13px Inter, Arial, sans-serif; color: #201d1b; }
 .ed-mock-stat-flag small { color: #766d68; font-size: 9px; }
+/* The real Overview page's "Upcoming Classes" list shows an actual class photo thumbnail
+   per row (.owner-overview-class img) - reusing the page's own watermark photo here for the
+   same reason the site mock does, rather than leaving this an all-text/icon mock. */
+.ed-mock-class-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ece6e1; }
+.ed-mock-class-thumb { width: 36px; height: 28px; flex-shrink: 0; border-radius: 4px; object-fit: cover; }
+.ed-mock-class-row b { display: block; font: 600 11px Inter, Arial, sans-serif; color: #201d1b; }
+.ed-mock-class-row small { color: #766d68; font-size: 9px; }
 
 .ed-mock-eyebrow { margin: 0 0 3px; color: #8b4d45; font: 700 8px Inter, Arial, sans-serif; letter-spacing: .07em; text-transform: uppercase; }
 .ed-mock-form > strong { font: 400 15px Georgia, serif; }
@@ -157,6 +164,11 @@ body.home-restyle {
 .ed-mock-legend { display: block; margin: -19px 0 8px; padding: 0 5px; width: fit-content; background: white; color: #8b4d45; font: 600 9px Inter, Arial, sans-serif; letter-spacing: .02em; }
 .ed-mock-form span { display: block; font-size: 9px; line-height: 1.2; margin: 7px 0 3px; color: #514641; font-weight: 600; }
 .ed-mock-field { border: 1px solid #d8d0ca; background: rgba(255, 253, 251, .9); border-radius: 3px; padding: 6px 8px; font-size: 11px; line-height: 1.3; color: #2e2927; white-space: nowrap; }
+/* The real form's "Class Image" field (.owner-image-field img) shows an actual upload
+   preview, not a text input. Full 16:9 width (the field's real size) made this card
+   noticeably taller than its row siblings, visibly misaligning the step labels below it -
+   sized down to a thumbnail instead, still the real photo and still clearly a photo field. */
+.ed-mock-photo { display: block; width: 72px; height: 48px; margin-top: 2px; border-radius: 4px; object-fit: cover; }
 
 .ed-mock-payment > strong { font: 400 13px Georgia, serif; }
 .ed-mock-payment-option { position: relative; display: grid; gap: 4px; margin-top: 8px; border: 1px solid #ded7d1; border-radius: 8px; padding: 24px 10px 10px 32px; background: rgba(255, 253, 251, .78); }

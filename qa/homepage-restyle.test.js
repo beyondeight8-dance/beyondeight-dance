@@ -83,6 +83,17 @@ assert.match(html, /Accepted cards go straight to your bank/, "the payment mock 
 // moving the radio dot down to match. Locks in the clearance so it can't silently shrink back.
 assert.match(css, /\.ed-mock-payment-option \{[^}]*padding: 24px/, "the payment option needs enough top padding to clear the absolutely-positioned badge even when its title wraps to two lines on mobile");
 
+// Per explicit follow-up direction, the dashboard and class-form mocks also got real photo
+// thumbnails (the Overview's upcoming-class row, the Add Class form's image field) matching
+// where the real product actually shows a photo (.owner-overview-class img,
+// .owner-image-field img) - not the homepage's own invented icon-only placeholders. The class
+// form's image was first tried at the real field's full 16:9 width, which made that card
+// visibly taller than its row siblings and misaligned the step labels below it - sized down
+// to a thumbnail instead so the row stays balanced; locks in the smaller size.
+assert.match(html, /class="ed-mock-class-thumb"/, "the dashboard mock's upcoming-class row needs a real photo thumbnail, matching the real Overview page");
+assert.match(html, /class="ed-mock-photo"/, "the class-form mock needs a real photo for its Class Image field, matching the real form");
+assert.doesNotMatch(css, /\.ed-mock-photo \{[^}]*width: 100%/, "the class-image thumbnail must not regress to full card width - it visibly misaligned this card's height against its row siblings");
+
 // Site-mock pass: per explicit feedback the website step's visual read as a flat gradient
 // block, not an actual website - rebuilt to match the real published Editorial theme
 // (public-site.css: .public-editorial-hero) - a full-bleed photo hero with a dark scrim, an
@@ -156,16 +167,20 @@ assert.match(html, /family=Plus\+Jakarta\+Sans/, "the Plus Jakarta Sans font fil
 assert.doesNotMatch(css, /\.ed-hero \{[^}]*background: var\(--home-ink\)/, "the hero must not regress to a solid navy background - navy was dropped for the cream watermark treatment");
 assert.doesNotMatch(css, /\.ed-reality \{[^}]*background:[^;]*var\(--home-ink\)/, "the reality section must not regress to a navy or navy-gradient background");
 
-// Watermark pass: the rooftop photo returns, but not as foreground photography - per explicit
-// direction it's now the page's own backdrop, fixed behind the whole scroll so it "extends
-// throughout the website" rather than being confined to a hero image box. A heavy cream wash
-// keeps it as a faint texture, never a punchy foreground photo, and it must never come back as
-// an <img> tag or a section-scoped foreground image.
-assert.doesNotMatch(html, /<img[^>]*homepage-dance-studio|class="ed-hero-image"|class="ed-secondjob-image"/, "the rooftop photo must not come back as a foreground <img> - only as the page's background watermark");
+// Watermark pass: the rooftop photo returns, but not as foreground photography at hero scale
+// - per explicit direction it's the page's own backdrop, fixed behind the whole scroll so it
+// "extends throughout the website" rather than being confined to a hero image box. A heavy
+// cream wash keeps it as a faint texture, never a punchy foreground photo at that scale.
+// Later, explicit direction ("make the visuals look more like the actual tool/website")
+// reused this same photo as small <img> thumbnails inside the product-accurate step mocks
+// (the site hero, the dashboard's upcoming-class row, the class-image form field) - that's a
+// deliberate, separate decision from the original "no foreground photo" rule, which was about
+// the old hero/second-job full-bleed treatment specifically. Still must never come back as
+// those two large section-scoped foreground classes.
+assert.doesNotMatch(css, /\.ed-hero-image \{|\.ed-hero::before \{|\.ed-secondjob-image \{/, "no leftover photo-era foreground-image styles should exist for the watermark treatment");
 assert.match(css, /body\.home-restyle \{[\s\S]*?url\("assets\/homepage-dance-studio\.png/, "the rooftop photo must be wired in as the body's background watermark");
 assert.match(css, /background-attachment: scroll, fixed/, "the watermark must use background-attachment: fixed so it reads as one continuous backdrop while scrolling, not a photo confined to the hero box");
 assert.match(css, /rgba\(255, 252, 252, \.[78][0-9]\)/, "the photo must stay behind a heavy (~78-86%) cream wash so it reads as a faint watermark, never a punchy foreground photo");
-assert.doesNotMatch(css, /\.ed-hero-image \{|\.ed-hero::before \{|\.ed-secondjob-image \{/, "no leftover photo-era foreground-image styles should exist for the watermark treatment");
 // Real bug found live: styles.css has a legacy `body { background: ... !important }` rule
 // (a shared decorative background meant for other pages) that silently wins over the more-
 // specific body.home-restyle selector and replaces the watermark outright - every opacity
