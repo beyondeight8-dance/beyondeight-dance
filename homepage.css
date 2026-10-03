@@ -101,12 +101,20 @@ body.home-restyle {
    viewports that left its text flush against the browser edge (inset only by the clamp's
    88px ceiling) while the header/hero content above it sat centered in the narrower column,
    so "RIGHT NOW, WITHOUT BEYONDEIGHT" started well left of the logo above it. */
-.ed-reality { position: relative; max-width: 1180px; margin: 0 auto; padding: clamp(36px, 5vw, 56px) clamp(24px, 6vw, 88px); color: var(--home-ink); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(24px, 4vw, 48px); align-items: center; }
+/* Creative pass, per explicit direction: the text sat in its own left column fighting the card
+   cluster for attention in a side-by-side split. Centered instead, stacked above the cards -
+   the same single-focal-point composition the hero above it already uses, so the two sections
+   read as one deliberate visual language rather than the hero being centered and this one
+   being an asymmetric two-column split right under it. The card grid itself stays a plain
+   aligned grid (not scattered/tilted) - only the overall section's layout changed, not the
+   individual cards, which an earlier explicit direction already settled. */
+.ed-reality { position: relative; max-width: 1180px; margin: 0 auto; padding: clamp(36px, 5vw, 56px) clamp(24px, 6vw, 88px); color: var(--home-ink); display: flex; flex-direction: column; align-items: center; text-align: center; }
+.ed-reality-text { max-width: 640px; }
 .ed-reality-text h2 { margin: 0; color: inherit; font: 400 clamp(1.35rem, 2.6vw, 2rem)/1.32 var(--home-display); text-wrap: pretty; }
 .ed-reality-lead { margin: 14px 0 0; color: inherit; font: 400 clamp(1.1rem, 2vw, 1.35rem)/1.4 var(--home-display); text-wrap: pretty; }
 .ed-reality-detail { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; line-height: 1.6; }
 .ed-reality-bridge { margin: 20px 0 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
-.ed-chaos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ed-chaos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 560px; margin: 32px auto 0; text-align: left; }
 /* Real problem reported live: someone scanning the page by its visuals first, before reading
    the paragraph text beside it, could land on real Venmo/Instagram branding here and read it
    as "BeyondEight integrates with these," the opposite of the point - these four cards are the
@@ -118,7 +126,7 @@ body.home-restyle {
    mock's "pending payment" flag elsewhere on this page, not the brand rose used for actual
    product/feature callouts - that color distinction is what keeps it from reading as a
    BeyondEight-branded highlight itself. */
-.ed-chaos-tag { grid-column: 1 / -1; width: fit-content; margin: 0 0 2px; padding: 6px 14px; border-radius: 999px; background: #f4e6e2; color: #7d372c; font: 700 10px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; }
+.ed-chaos-tag { grid-column: 1 / -1; width: fit-content; margin: 0 auto 2px; padding: 6px 14px; border-radius: 999px; background: #f4e6e2; color: #7d372c; font: 700 10px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; }
 .ed-chaos-item { padding: 14px 16px; background: white; border: 1px solid #f3e9e4; border-radius: 8px; box-shadow: 0 14px 34px rgba(17, 27, 43, .1); color: var(--home-ink); font: 500 12px/1.35 var(--home-sans); }
 .ed-chaos-app { display: flex; align-items: center; gap: 6px; margin-bottom: 9px; font: 700 9px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--home-muted); }
 .ed-chaos-icon { display: inline-flex; width: 15px; height: 15px; flex-shrink: 0; }
@@ -342,8 +350,6 @@ body.home-restyle {
   .home-restyle .site-header { gap: 22px; }
   .home-restyle .header-account { gap: 15px; }
   .home-restyle .brand-name { font-size: 24px; }
-  .ed-reality { grid-template-columns: 1fr; }
-  .ed-chaos { margin-top: 20px; }
   .ed-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ed-business { grid-template-columns: 1fr; }
 }

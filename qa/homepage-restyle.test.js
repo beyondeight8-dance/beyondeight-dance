@@ -128,6 +128,16 @@ assert.match(html, /<p class="ed-reality-bridge">It works\. But it's a lot to ke
 // Changed to "Right now" instead, which keeps the same meaning without colliding.
 assert.match(html, /<p class="ed-eyebrow">Right now<\/p>/, "the reality section eyebrow must not duplicate the real How It Works section's own eyebrow text further down the page");
 
+// Creative pass, per explicit direction: the text sat in its own left column fighting the chaos
+// card cluster for attention in a side-by-side split. Centered instead, stacked above the
+// cards, matching the hero's own single-focal-point composition rather than being an
+// asymmetric two-column split right under a centered hero. The card grid itself stays a plain
+// aligned grid - only the section's overall layout changed, not the individual cards (an
+// earlier explicit direction already settled that those must not go back to scattered/tilted).
+assert.match(css, /\.ed-reality \{[^}]*display: flex[^}]*flex-direction: column[^}]*align-items: center[^}]*text-align: center/, "the reality section must be a centered single column, matching the hero's composition, not a left-text/right-cards split");
+assert.match(css, /\.ed-chaos \{[^}]*text-align: left/, "the chaos card cluster must reset text-align back to left - card content (amounts, messages, labels) shouldn't inherit the section's center alignment");
+assert.doesNotMatch(css, /\.ed-chaos-item \{[^}]*text-align: center|\.ed-chaos-item \{[^}]*rotate\(/, "individual chaos cards must stay left-aligned and untilted even after the section-level centering change");
+
 // Build your site: per explicit feedback this is no longer its own standalone section ahead
 // of "How it works" - it's the first step inside that grid, using the same real browser-chrome
 // + hero-block visual language (not a generic mock) so it still reads as the actual product.
