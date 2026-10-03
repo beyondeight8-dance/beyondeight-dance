@@ -93,6 +93,14 @@ assert.match(html, /viewBox="0 9\.726 24 4\.548"/, "the Venmo wordmark must use 
 assert.doesNotMatch(html, />Venmo<\/span>/, "the Venmo card must not pair its wordmark logo with a redundant text label - the logo already reads \"venmo\"");
 assert.match(css, /\.ed-chaos-logo-venmo \{[^}]*color: #008cff/, "the Venmo wordmark must use Venmo's actual brand blue");
 
+// Real bug found live: every other section (.site-header, .ed-business, .ed-pricing,
+// .ed-steps) caps its content to a shared max-width column and centers it with margin: auto -
+// .ed-reality never did, just a clamp()'d side padding with no cap, so at wide viewports its
+// text sat flush against the browser edge while the header/hero content above it stayed
+// centered in the narrower column - "RIGHT NOW, WITHOUT BEYONDEIGHT" visibly started well
+// left of the logo above it.
+assert.match(css, /\.ed-reality \{[^}]*max-width: 1180px[^}]*margin: 0 auto/, "the reality section must share the page's centered content column, or its text runs edge-to-edge at wide viewports instead of lining up with the header/hero above it");
+
 // Build your site: per explicit feedback this is no longer its own standalone section ahead
 // of "How it works" - it's the first step inside that grid, using the same real browser-chrome
 // + hero-block visual language (not a generic mock) so it still reads as the actual product.
