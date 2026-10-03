@@ -93,6 +93,18 @@ assert.match(html, /viewBox="0 9\.726 24 4\.548"/, "the Venmo wordmark must use 
 assert.doesNotMatch(html, />Venmo<\/span>/, "the Venmo card must not pair its wordmark logo with a redundant text label - the logo already reads \"venmo\"");
 assert.match(css, /\.ed-chaos-logo-venmo \{[^}]*color: #008cff/, "the Venmo wordmark must use Venmo's actual brand blue");
 
+// Real problem reported live: someone scanning the page by its visuals first, before reading
+// the .ed-eyebrow paragraph text beside it, could land on real Venmo/Instagram branding here
+// and read it as "BeyondEight integrates with these" - the opposite of the intent, since these
+// four cards are the scattered pre-BeyondEight mess, not a feature list. A tag sitting directly
+// on the card cluster (not just the sidebar text) carries that "this is the problem" signal
+// with the visuals themselves. It must use the warm flag/warning tone already established on
+// the dashboard mock's "pending payment" flag, not the brand rose reserved for actual
+// product/feature callouts - that's what keeps it from reading as a BeyondEight highlight.
+assert.match(html, /<p class="ed-chaos-tag">Without BeyondEight, today<\/p>/, "the chaos card cluster needs its own visible label, not just the sidebar eyebrow text, so a visual-first scan still reads it as the problem");
+assert.match(css, /\.ed-chaos-tag \{[^}]*grid-column: 1 \/ -1/, "the tag must span the full card grid width, not sit inside a single column");
+assert.doesNotMatch(css, /\.ed-chaos-tag \{[^}]*color: var\(--home-rose\)/, "the chaos-cluster tag must not use the brand rose - that would make it read as a BeyondEight feature callout instead of a pain-point label");
+
 // Real bug found live: every other section (.site-header, .ed-business, .ed-pricing,
 // .ed-steps) caps its content to a shared max-width column and centers it with margin: auto -
 // .ed-reality never did, just a clamp()'d side padding with no cap, so at wide viewports its
