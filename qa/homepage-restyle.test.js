@@ -113,6 +113,21 @@ assert.doesNotMatch(css, /\.ed-chaos-tag \{[^}]*color: var\(--home-rose\)/, "the
 // left of the logo above it.
 assert.match(css, /\.ed-reality \{[^}]*max-width: 1180px[^}]*margin: 0 auto/, "the reality section must share the page's centered content column, or its text runs edge-to-edge at wide viewports instead of lining up with the header/hero above it");
 
+// Copy pass, per explicit direction: the old punchy five-clause list ("Posting the class.
+// Collecting payment...") read as a stacked headline, with "BeyondEight brings it all
+// together." as its rose-colored payoff line. Replaced with a narrative version (setup, then
+// the piecing-together line, then the specific tools list, then a "works but it's a lot" close)
+// that builds before the pivot rather than front-loading it as one more headline clause.
+assert.match(html, /<h2 id="reality-title">You put your class out there\. People start signing up\.<\/h2>/, "the reality section headline must use the new narrative opener");
+assert.match(html, /<p class="ed-reality-lead">And then you're piecing everything together yourself\.<\/p>/, "the reality section needs its new lead-in line between the headline and the tool list");
+assert.match(html, /<p class="ed-reality-detail">DMs for questions\. Venmo for payments\. A spreadsheet for your roster\. Messages for reminders\.<\/p>/, "the reality section needs its new specific-tools line");
+assert.match(html, /<p class="ed-reality-bridge">It works\. But it's a lot to keep track of\.<\/p>/, "the reality section's payoff line must be the new close, not the old \"BeyondEight brings it all together\"");
+// The eyebrow was drafted as "How it works today," but the real How It Works section further
+// down the page (id="how-it-works") already uses the eyebrow "How it works" for the actual
+// product walkthrough - having both appear while scrolling reads as a confusing near-duplicate.
+// Changed to "Right now" instead, which keeps the same meaning without colliding.
+assert.match(html, /<p class="ed-eyebrow">Right now<\/p>/, "the reality section eyebrow must not duplicate the real How It Works section's own eyebrow text further down the page");
+
 // Build your site: per explicit feedback this is no longer its own standalone section ahead
 // of "How it works" - it's the first step inside that grid, using the same real browser-chrome
 // + hero-block visual language (not a generic mock) so it still reads as the actual product.

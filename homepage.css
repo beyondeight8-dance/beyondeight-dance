@@ -103,6 +103,8 @@ body.home-restyle {
    so "RIGHT NOW, WITHOUT BEYONDEIGHT" started well left of the logo above it. */
 .ed-reality { position: relative; max-width: 1180px; margin: 0 auto; padding: clamp(36px, 5vw, 56px) clamp(24px, 6vw, 88px); color: var(--home-ink); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(24px, 4vw, 48px); align-items: center; }
 .ed-reality-text h2 { margin: 0; color: inherit; font: 400 clamp(1.35rem, 2.6vw, 2rem)/1.32 var(--home-display); text-wrap: pretty; }
+.ed-reality-lead { margin: 14px 0 0; color: inherit; font: 400 clamp(1.1rem, 2vw, 1.35rem)/1.4 var(--home-display); text-wrap: pretty; }
+.ed-reality-detail { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; line-height: 1.6; }
 .ed-reality-bridge { margin: 20px 0 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
 .ed-chaos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 /* Real problem reported live: someone scanning the page by its visuals first, before reading
