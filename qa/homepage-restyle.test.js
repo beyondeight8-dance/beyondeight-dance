@@ -118,10 +118,15 @@ assert.match(css, /\.ed-reality \{[^}]*max-width: 1180px[^}]*margin: 0 auto/, "t
 // together." as its rose-colored payoff line. Replaced with a narrative version (setup, then
 // the piecing-together line, then the specific tools list, then a "works but it's a lot" close)
 // that builds before the pivot rather than front-loading it as one more headline clause.
-assert.match(html, /<h2 id="reality-title">You put your class out there\. People start signing up\.<\/h2>/, "the reality section headline must use the new narrative opener");
+assert.match(html, /<h2 id="reality-title">You put your class out there\.<br>People start signing up\.<\/h2>/, "the reality section headline must use the new narrative opener");
 assert.match(html, /<p class="ed-reality-lead">And then you're piecing everything together yourself\.<\/p>/, "the reality section needs its new lead-in line between the headline and the tool list");
-assert.match(html, /<p class="ed-reality-detail">DMs for questions\. Venmo for payments\. A spreadsheet for your roster\. Messages for reminders\.<\/p>/, "the reality section needs its new specific-tools line");
-assert.match(html, /<p class="ed-reality-bridge">It works\. But it's a lot to keep track of\.<\/p>/, "the reality section's payoff line must be the new close, not the old \"BeyondEight brings it all together\"");
+assert.match(html, /<p class="ed-reality-detail">DMs for questions\.<br>Venmo for payments\.<br>A spreadsheet for your roster\.<br>Messages for reminders\.<\/p>/, "the reality section needs its new specific-tools line, one sentence per line");
+assert.match(html, /<p class="ed-reality-bridge">It works\.<br>But it's a lot to keep track of\.<\/p>/, "the reality section's payoff line must be the new close, not the old \"BeyondEight brings it all together\"");
+// Per explicit direction, every multi-sentence line in this section uses an explicit <br>
+// between sentences rather than relying on the browser's natural wrap - a plain prose wrap
+// previously broke mid-way through unrelated sentences ("...People start" / "signing up."),
+// which read as an awkward accident rather than a deliberate line break.
+assert.doesNotMatch(html, /<h2 id="reality-title">You put your class out there\. People/, "the reality headline's two sentences must not go back to plain prose wrapping - each needs its own line via <br>");
 // The eyebrow was drafted as "How it works today," but the real How It Works section further
 // down the page (id="how-it-works") already uses the eyebrow "How it works" for the actual
 // product walkthrough - having both appear while scrolling reads as a confusing near-duplicate.
