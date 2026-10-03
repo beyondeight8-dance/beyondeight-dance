@@ -77,11 +77,21 @@ assert.doesNotMatch(css, /\.ed-chaos-venmo \{[^}]*rotate\(|\.ed-chaos-dm \{[^}]*
 // glance. Each now borrows real brand color + a small brand-shaped icon, and the note card
 // drops the app-chrome label entirely (a real sticky note doesn't have one) in favor of a
 // handwriting webfont - all without reintroducing the rotation banned above.
-assert.match(css, /\.ed-chaos-venmo \.ed-chaos-app \{ color: #008cff/, "the Venmo card should use Venmo's actual brand blue for its icon/label");
 assert.match(css, /\.ed-chaos-icon-ig \{ color: #c13584/, "the Instagram card should use Instagram's actual brand color for its icon");
 assert.match(css, /\.ed-chaos-icon-sheet \{ color: #0f9d58/, "the roster card should use Google Sheets' actual brand green for its icon");
 assert.doesNotMatch(html, /ed-chaos-note ed-reveal" data-reveal-delay="360"><span class="ed-chaos-app"/, "a real sticky note has no app-chrome label row - must not regress to one");
 assert.match(css, /\.ed-chaos-note p \{[^}]*"Caveat"/, "the sticky note's text should use a handwriting webfont, not the UI sans-serif every other card uses");
+
+// A first pass at the Venmo card used an invented quill-shaped icon next to a plain "Venmo"
+// text label - not Venmo's actual logo. Replaced with Venmo's real wordmark (Simple Icons,
+// CC0-licensed, built for exactly this use). That mark's own artwork only fills a thin
+// horizontal band of its 24x24 canvas (confirmed via getBBox: y 9.7-14.3 of 24), so the
+// viewBox must be cropped to that real bounding box or it renders as an illegibly tiny smear
+// inside a square icon slot sized for the other cards' square glyphs. The wordmark already
+// reads "venmo", so a separate text label next to it would be redundant - must not come back.
+assert.match(html, /viewBox="0 9\.726 24 4\.548"/, "the Venmo wordmark must use its real cropped bounding box, not the full 24x24 canvas - otherwise it renders illegibly small");
+assert.doesNotMatch(html, />Venmo<\/span>/, "the Venmo card must not pair its wordmark logo with a redundant text label - the logo already reads \"venmo\"");
+assert.match(css, /\.ed-chaos-logo-venmo \{[^}]*color: #008cff/, "the Venmo wordmark must use Venmo's actual brand blue");
 
 // Build your site: per explicit feedback this is no longer its own standalone section ahead
 // of "How it works" - it's the first step inside that grid, using the same real browser-chrome

@@ -106,7 +106,15 @@ body.home-restyle {
 /* Each card borrows its real app's brand color for the icon + label, rather than the same
    neutral gray for all four - this is what actually reads as "Venmo" vs "a spreadsheet" at a
    glance, the way real app notifications/screenshots do. */
-.ed-chaos-venmo .ed-chaos-app { color: #008cff; }
+/* Venmo's actual brand mark (sourced from Simple Icons, CC0) is a wordmark logotype - its own
+   artwork only occupies a thin horizontal band of its 24x24 canvas (confirmed via getBBox():
+   y 9.7-14.3, full 24 width), not a square glyph like Instagram's camera icon. Cropping the
+   viewBox to that real bounding box, rather than forcing it into the same 15x15 icon slot the
+   square icons use, is what makes it render recognizably instead of as an illegibly tiny
+   smear. A separate "Venmo" text label next to it would be redundant - the wordmark already
+   says "venmo" - so this card has no .ed-chaos-app text, just the logo. */
+.ed-chaos-venmo .ed-chaos-app { margin-bottom: 11px; }
+.ed-chaos-logo-venmo { display: block; height: 13px; width: auto; color: #008cff; }
 .ed-chaos-icon-ig { color: #c13584; }
 .ed-chaos-icon-sheet { color: #0f9d58; }
 .ed-chaos-venmo-row, .ed-chaos-dm-row { display: flex; align-items: center; gap: 10px; }
