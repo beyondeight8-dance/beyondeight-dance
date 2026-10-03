@@ -183,7 +183,15 @@ body.home-restyle {
    Georgia is its actual serif, needing no extra font load. */
 .ed-mock-dashboard, .ed-mock-form, .ed-mock-payment, .ed-mock-confirm, .ed-mock-roster { font-family: Inter, Arial, sans-serif; }
 .ed-mock-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-.ed-mock-stat-card { display: grid; gap: 4px; border: 1px solid #ece6e1; border-radius: 8px; padding: 10px; background: rgba(255, 253, 251, .78); }
+/* Real bug found live: grid items default to min-width: auto, which floors their width at
+   their content's min-content size - here, the width of "Registrations" as one unbreakable
+   word. At the 128px mobile mock width (see the 420px breakpoint below) that min-content
+   comfortably exceeds each 1fr track's actual share, so the grid overflowed its own box
+   instead of shrinking the cards to fit, spilling the second stat card out past the mock's
+   right edge and directly into the step text sitting next to it. min-width: 0 lets the grid
+   item actually shrink to its track's width, same fix as the classic flex min-width:auto
+   overflow trap elsewhere on this page. */
+.ed-mock-stat-card { display: grid; gap: 4px; min-width: 0; border: 1px solid #ece6e1; border-radius: 8px; padding: 10px; background: rgba(255, 253, 251, .78); }
 .ed-mock-stat-icon { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: #ecddd8; color: #8b4d45; }
 .ed-mock-stat-icon svg { width: 12px; height: 12px; }
 .ed-mock-stat-card b { font: 600 16px Inter, Arial, sans-serif; color: #201d1b; }
@@ -364,6 +372,17 @@ body.home-restyle {
      ("...or import one straight from Instagram") already states the feature regardless of
      mock width, so the badge itself is just dropped here rather than fought for room. */
   .ed-mock-form .ed-mock-ig-import { display: none; }
+  /* Real bug found live: at 128px, the two-across stat grid left each card only ~44px wide -
+     "Registrations" doesn't fit even with min-width: 0 making the grid shrink to its tracks
+     correctly, so it broke mid-word across three lines ("Regi/strati/ons"). The real dashboard
+     this mocks (product-ui.css's own .owner-stat-cards) collapses to the exact same single
+     column at its own narrowest breakpoint, so this isn't inventing new behavior - it's
+     matching what the real product already does here. The mock's fixed height (shared with
+     the other five step mocks for a consistent desktop grid) no longer needs to match them at
+     this breakpoint, since .ed-step is a single independent row here, not a shared grid cell -
+     so it's freed to grow with the extra stacked-card height instead of clipping it. */
+  .ed-mock-stat-grid { grid-template-columns: 1fr; }
+  .ed-mock-dashboard { height: auto; }
   .ed-business-stats { gap: 24px; }
   .restyle-footer { font-size: 10px; }
 }
