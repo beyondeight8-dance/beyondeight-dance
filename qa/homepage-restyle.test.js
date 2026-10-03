@@ -147,16 +147,23 @@ assert.doesNotMatch(css, /\.ed-mock-photo \{[^}]*width: 100%/, "the class-image 
 assert.match(css, /\.ed-mock \{[^}]*height: 280px/, "all six step mocks must share one fixed height so they read as a consistent set");
 assert.doesNotMatch(css, /\.ed-mock \{[^}]*min-height: 280px/, "must be a fixed height, not min-height - min-height would let shorter mocks shrink back to their own content size");
 
-// Real bug found live: at the 128px mobile mock width, the dashboard mock's two-across stat
-// grid left each card only ~44px wide - even after min-width: 0 made the grid shrink to its
-// tracks correctly (a grid item otherwise floors at its content's min-content width, same trap
-// as the classic flex min-width:auto overflow), "Registrations" as one unbreakable word still
-// didn't fit and spilled out, at one point overlapping the step's own text next to it. Fixed by
-// collapsing to one column at this breakpoint, matching the real dashboard's own stat-card grid
-// (product-ui.css's .owner-stat-cards), which collapses to the same single column at its own
-// narrowest breakpoint - not inventing new behavior, matching the real product's.
+// Real bug found live: squeezing every step mock down to a fixed 128px width on mobile (mock
+// beside its text, not above it) left the dashboard mock's two-across stat grid only ~44px per
+// card - even after min-width: 0 made the grid shrink to its tracks correctly (a grid item
+// otherwise floors at its content's min-content width, same trap as the classic flex
+// min-width:auto overflow), "Registrations" as one unbreakable word still didn't fit and
+// spilled out, overlapping the step's own text next to it. min-width: 0 is still worth keeping
+// as defensive CSS, but the actual fix was dropping the 128px-wide row layout entirely per
+// explicit direction - see the "mock above text on mobile" note below.
 assert.match(css, /\.ed-mock-stat-card \{[^}]*min-width: 0/, "the stat card grid items need min-width: 0 or they floor at their content's width and overflow their 1fr track");
-assert.match(css, /@media \(max-width: 420px\) \{[\s\S]*?\.ed-mock-stat-grid \{ grid-template-columns: 1fr/, "the stat grid must collapse to one column at the 128px mobile mock width, or its cards don't have room for their own labels");
+
+// Mobile step layout: per explicit direction, each step's mock sits above its text (the same
+// column layout every wider breakpoint already uses) rather than squeezed beside it at a fixed
+// 128px - that row layout was also what caused the stat-grid overflow above, and required
+// separately hiding the Instagram-import badge and collapsing the stat grid just to cope with
+// the cramped width. None of that workaround is needed once the mock gets its natural width.
+assert.doesNotMatch(css, /@media \(max-width: 420px\) \{[\s\S]*?\.ed-step \{ flex-direction: row/, "mobile steps must not go back to a row layout with a fixed-width mock - that's what caused the stat-grid overflow bug in the first place");
+assert.doesNotMatch(css, /@media \(max-width: 420px\) \{[\s\S]*?\.ed-mock-form \.ed-mock-ig-import \{ display: none/, "the Instagram-import badge should not need hiding on mobile - that was only necessary to cope with the cramped 128px row layout, which is gone");
 
 // Import-from-Instagram pass: the real Classes page shows this as a secondary button next to
 // "+ Add Class" (dashboard.js's classView) - picking a recent post pre-fills this form's

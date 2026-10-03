@@ -365,24 +365,11 @@ body.home-restyle {
   .ed-chaos { grid-template-columns: 1fr; }
   .ed-story { padding: 40px 20px; }
   .ed-steps { grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
-  .ed-step { flex-direction: row; align-items: center; gap: 16px; }
-  .ed-mock { flex-shrink: 0; width: 128px; }
-  /* At 128px even an icon-only badge still doesn't fit beside "Add Class" and wraps to its
-     own row, pushing the form past this fixed-height mock's bottom edge. The step copy below
-     ("...or import one straight from Instagram") already states the feature regardless of
-     mock width, so the badge itself is just dropped here rather than fought for room. */
-  .ed-mock-form .ed-mock-ig-import { display: none; }
-  /* Real bug found live: at 128px, the two-across stat grid left each card only ~44px wide -
-     "Registrations" doesn't fit even with min-width: 0 making the grid shrink to its tracks
-     correctly, so it broke mid-word across three lines ("Regi/strati/ons"). The real dashboard
-     this mocks (product-ui.css's own .owner-stat-cards) collapses to the exact same single
-     column at its own narrowest breakpoint, so this isn't inventing new behavior - it's
-     matching what the real product already does here. The mock's fixed height (shared with
-     the other five step mocks for a consistent desktop grid) no longer needs to match them at
-     this breakpoint, since .ed-step is a single independent row here, not a shared grid cell -
-     so it's freed to grow with the extra stacked-card height instead of clipping it. */
-  .ed-mock-stat-grid { grid-template-columns: 1fr; }
-  .ed-mock-dashboard { height: auto; }
+  /* Per explicit direction, mobile steps go back to the mock sitting above its text (the same
+     column layout every wider breakpoint already uses), not beside it. That previous row
+     layout was also the source of a real bug: squeezing every mock down to a fixed 128px width
+     left the dashboard mock's stat cards too narrow for their own labels and overflowing into
+     the text next to them. Full-width mocks at their natural size don't have that problem. */
   .ed-business-stats { gap: 24px; }
   .restyle-footer { font-size: 10px; }
 }
