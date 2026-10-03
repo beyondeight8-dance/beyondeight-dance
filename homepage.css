@@ -142,7 +142,7 @@ body.home-restyle {
 .ed-chaos-venmo { top: 36px; left: 360px; width: 220px; z-index: 5; transform: rotate(2deg); }
 .ed-chaos-sheet { top: 200px; left: 250px; width: 310px; z-index: 2; transform: rotate(-1.5deg); }
 .ed-chaos-messages { top: 56px; left: 590px; width: 230px; z-index: 3; transform: rotate(2.5deg); }
-.ed-chaos-note { top: 378px; left: 150px; width: 170px; z-index: 3; transform: rotate(-4deg); }
+.ed-chaos-note { top: 352px; left: 430px; width: 170px; z-index: 3; transform: rotate(-4deg); }
 .ed-chaos-app { display: flex; align-items: center; gap: 6px; margin-bottom: 9px; font: 700 9px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--home-muted); }
 .ed-chaos-icon { display: inline-flex; width: 15px; height: 15px; flex-shrink: 0; }
 .ed-chaos-icon svg { width: 100%; height: 100%; }
@@ -196,7 +196,7 @@ body.home-restyle {
 .ed-chaos-callout { position: absolute; z-index: 6; margin: 0; max-width: 150px; color: #8b4d45; font: 600 15px/1.25 "Caveat", cursive; }
 .ed-chaos-callout-1 { top: 28px; left: 0; transform: rotate(-3deg); }
 .ed-chaos-callout-2 { top: -38px; left: 600px; transform: rotate(3deg); }
-.ed-chaos-callout-3 { top: 430px; left: 0; transform: rotate(-2deg); }
+.ed-chaos-callout-3 { top: 420px; left: 630px; transform: rotate(-2deg); }
 /* The "It works, but..." payoff used to sit inside .ed-reality-text, immediately after the
    headline/detail. It's now its own block below the full card cluster instead, with the new
    "what if it didn't have to be" pivot straight into the BeyondEight name - the reference's
