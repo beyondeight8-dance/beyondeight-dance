@@ -154,7 +154,12 @@ body.home-restyle {
 .ed-chaos-logo-venmo { display: block; height: 18px; width: auto; color: #008cff; }
 .ed-chaos-venmo-row { display: flex; align-items: center; gap: 10px; }
 .ed-chaos-venmo strong { display: block; font-size: 14px; }
-.ed-chaos-venmo span { display: block; color: #333; }
+/* Scoped to the "Class - Sat 4pm" detail line specifically, not a blanket `.ed-chaos-venmo span`
+   - that broader selector also matched .ed-chaos-avatar (also a span, also a descendant of
+   .ed-chaos-venmo), and at equal specificity its `display: block` silently beat the avatar's
+   own `display: inline-flex`, breaking its centered "M" initial without changing anything
+   visibly obviously wrong - confirmed via computed-style check, not just by eye. */
+.ed-chaos-venmo-row > div > span { display: block; color: #333; }
 .ed-chaos-detail { display: block; margin: 10px 0 0 41px; color: #008cff; font-weight: 700; }
 .ed-chaos-messages ul, .ed-chaos-todo ul { list-style: none; margin: 0; padding: 0; }
 .ed-chaos-messages li { display: grid; grid-template-columns: 1fr; padding: 6px 0; border-top: 1px solid #ece8e6; }

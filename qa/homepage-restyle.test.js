@@ -492,4 +492,13 @@ assert.match(html, /<p class="ed-eyebrow">Get started in minutes<\/p>/, "the how
 assert.match(html, /<h2 id="story-title">Go from idea to your first class\.<\/h2>/, "the how-it-works section needs its new headline, per explicit direction");
 assert.match(html, /<p class="ed-section-subtext">A simple setup, built for dance teachers\.<\/p>/, "the how-it-works section needs its new subtext, per explicit direction");
 
+// Real bug found live: `.ed-chaos-venmo span { display: block }` was meant to style the
+// "Class - Sat 4pm" detail line, but as a blanket descendant selector it also matched
+// .ed-chaos-avatar (also a span, also a .ed-chaos-venmo descendant) at equal specificity,
+// silently overriding the avatar's own `display: inline-flex` and breaking its centered "M"
+// initial - confirmed via computed-style check, not visible from the markup alone. Scoped to
+// just the detail line's actual position in the DOM instead.
+assert.doesNotMatch(css, /\.ed-chaos-venmo span \{/, "must not regress to the blanket .ed-chaos-venmo span selector - it silently breaks .ed-chaos-avatar's centering");
+assert.match(css, /\.ed-chaos-venmo-row > div > span \{ display: block/, "the Venmo detail line's display:block must be scoped narrowly, not via a blanket descendant-span selector");
+
 console.log('Homepage editorial redesign structure and existing entry points passed');
