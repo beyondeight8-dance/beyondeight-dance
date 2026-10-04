@@ -178,16 +178,14 @@ body.home-restyle {
 .ed-chaos-todo li::before { content: ""; position: absolute; left: 0; top: 5px; width: 13px; height: 13px; border: 1px solid #b8b19f; border-radius: 50%; background: rgba(255,255,255,.55); }
 /* Hand-drawn-style callouts, per the reference: short handwritten asides naming the specific
    pain point each nearby card represents, rather than leaving the cards to speak for
-   themselves. One per card (five total), each with a small arrow glyph pointing at its card -
-   positioned by eye against the cluster's fixed layout above, using the real margin space
-   around the pile so no callout overlaps a card's actual content. Like the cluster itself,
-   hidden on narrower viewports (see max-width: 1050px below) rather than attempting to
-   reposition them against a reflowed stack, where "pointing near a card" stops meaning
-   anything. */
+   themselves. One per card (five total), positioned by eye against the cluster's fixed layout
+   above, using the real margin space around the pile so no callout overlaps a card's actual
+   content. Like the cluster itself, hidden on narrower viewports (see max-width: 1050px below)
+   rather than attempting to reposition them against a reflowed stack. No arrow glyph pointing
+   at the card anymore (removed per explicit direction) - each callout's own position next to
+   its card is what ties it to that card instead. */
 .ed-chaos-callout { position: absolute; z-index: 3; width: 150px; margin: 0; color: #24201e; font: 600 20px/1.16 "Caveat", cursive; }
-.ed-chaos-callout::after { display: block; margin-top: 3px; color: #3a312e; font: 400 28px/1 var(--home-display); }
 .ed-callout-dm { left: 0; top: 105px; transform: rotate(-4deg); }
-.ed-callout-dm::after { content: "\2198"; margin-left: 80px; }
 /* Codex's own original position for this callout (top: 0, default 150px width) overlaps the
    Venmo card's logo directly - confirmed via zoomed screenshot, the callout's own two-line
    wrapped text runs past the point where the card begins. Widening it to 210px lets "Tracking
@@ -195,7 +193,6 @@ body.home-restyle {
    and raising it 10px clears the card below - verified via re-measurement that both the detail
    paragraph above and the Venmo card below stay clear. */
 .ed-callout-payments { left: 46%; top: -10px; width: 210px; text-align: center; transform: translateX(-50%) rotate(-3deg); }
-.ed-callout-payments::after { content: "\2199"; margin-right: 115px; }
 /* Codex's own original position for this callout (top: 130px, default 150px width) overlaps
    the Messages card's own contact rows directly - confirmed via zoomed screenshot, "Priya -
    Will there be parking?" sat underneath the callout's wrapped text. Widening it so the first
@@ -203,19 +200,15 @@ body.home-restyle {
    header, the one row it still grazes, rather than its actual message content) fixes the
    collision - verified via re-screenshot. */
 .ed-callout-messages { right: 0; top: -8px; width: 240px; text-align: right; transform: rotate(4deg); }
-.ed-callout-messages::after { content: "\2199"; margin-left: -18px; }
 .ed-callout-roster { left: 17%; top: 305px; transform: rotate(-5deg); }
-.ed-callout-roster::after { content: "\2192"; margin-left: 90px; transform: rotate(18deg); }
 .ed-callout-todo { right: 2%; top: 340px; transform: rotate(5deg); }
-.ed-callout-todo::after { content: "\2199"; margin-left: -14px; }
 /* The "It works, but..." payoff used to sit inside .ed-reality-text, immediately after the
    headline/detail. It's now its own block below the full card cluster instead, with the new
    "what if it didn't have to be" pivot straight into the BeyondEight name - the reference's
    own flow builds through the whole messy-desk visual before turning the corner, rather than
    resolving the tension before the visual proof of it even appears. */
 .ed-reality-pivot { max-width: 640px; margin-top: 40px; }
-.ed-reality-chevron { display: block; margin: 16px 0; color: var(--home-rose); font-size: 20px; opacity: .55; }
-.ed-reality-pivot .ed-eyebrow { margin-top: 0; }
+.ed-reality-pivot .ed-eyebrow { margin-top: 16px; }
 .ed-reality-meet { margin: 8px 0 0; font: 400 clamp(1.8rem, 3.4vw, 2.4rem)/1.15 var(--home-display); color: var(--home-ink); }
 .ed-reality-meet em { color: var(--home-rose); font-style: italic; }
 .ed-reality-tagline { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; }

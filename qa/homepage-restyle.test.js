@@ -141,8 +141,12 @@ assert.match(html, /<p class="ed-reality-bridge">It works\.<br>But it's a lot to
 // rather than a deliberate line break.
 assert.doesNotMatch(html, /<h2 id="reality-title">You put your class out there\. Then/, "the reality headline's two sentences must not go back to plain prose wrapping - each needs its own line via <br>");
 // New pivot block, per the supplied reference: after the full card cluster and its payoff
-// line, a small chevron leads into "What if it didn't have to be?" and the BeyondEight name
-// itself - the reference's own transition before the "How It Works" section properly begins.
+// line, "What if it didn't have to be?" leads into the BeyondEight name itself - the
+// reference's own transition before the "How It Works" section properly begins. An earlier
+// pass added a small "⌄" chevron between the two, but it rendered as a broken/missing-glyph
+// box in a real browser rather than the intended character - removed outright rather than
+// swapped for another glyph, since the transition reads fine without one.
+assert.doesNotMatch(html, /ed-reality-chevron/, "the chevron glyph rendered as a broken box in a real browser - must not regress back in");
 assert.match(html, /<p class="ed-reality-meet">Meet <em>BeyondEight<\/em>\.<\/p>/, "the reality section needs its new 'Meet BeyondEight' pivot line");
 assert.match(html, /<p class="ed-reality-tagline">Your classes\. Your community\. All in one place\.<\/p>/, "the reality section needs its new closing tagline");
 assert.match(css, /\.ed-reality-meet em \{ color: var\(--home-rose\)/, "the BeyondEight mention in the pivot line must use the brand rose, matching every other BeyondEight mention on the page");
@@ -455,16 +459,18 @@ assert.match(html, /<th>Attending<\/th>/, "the roster mock needs an Attending co
 assert.match(html, /ed-chaos-item ed-chaos-todo/, "the sticky note must be a To Do checklist card");
 assert.match(css, /\.ed-chaos-icon-messages \{[^}]*background: #20c966/, "the Messages card should use a brand-green badge for its icon, matching a real chat app notification");
 // Hand-drawn-style callouts naming the specific pain point near each relevant card, per the
-// reference image - one per card (five total), each with a small arrow glyph (a ::after
-// pseudo-element, not an image) pointing at its card. A parallel attempt at this same redesign
-// (built independently, then ported in wholesale - cards, callouts, and all - once it became
-// clear a hand-recreated version wasn't actually matching it) is the direct source of this
-// card set's sizing, content, and callout positions; only the section-level wrapper (this
-// page's own flowing-section background, not that version's own full-bleed photo background
-// and boxed transition block) stayed ours.
+// reference image - one per card (five total), positioned next to the card it names. A
+// parallel attempt at this same redesign (built independently, then ported in wholesale -
+// cards, callouts, and all - once it became clear a hand-recreated version wasn't actually
+// matching it) is the direct source of this card set's sizing, content, and callout positions;
+// only the section-level wrapper (this page's own flowing-section background, not that
+// version's own full-bleed photo background and boxed transition block) stayed ours. The
+// callouts originally each had a small arrow glyph (a ::after pseudo-element) pointing at
+// their card, but that was dropped per explicit direction - removed, not hidden, so it can't
+// regress back in by a future pass restoring a "missing" ::after rule.
 assert.match(html, /ed-chaos-callout ed-callout-dm/, "the cluster needs its hand-drawn callout captions, per the supplied reference");
 assert.equal((html.match(/class="ed-chaos-callout /g) || []).length, 5, "every card needs its own callout - one per card, five total");
 assert.match(css, /\.ed-chaos-callout \{[^}]*"Caveat"/, "the callouts must use the handwriting webfont, matching the reference's hand-drawn treatment");
-assert.match(css, /\.ed-chaos-callout::after \{/, "each callout needs its arrow glyph, pointing at its card");
+assert.doesNotMatch(css, /\.ed-chaos-callout::after \{/, "the callout arrow glyphs were removed per explicit direction - must not regress back in");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');
