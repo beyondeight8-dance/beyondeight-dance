@@ -75,22 +75,23 @@ assert.doesNotMatch(css, /\.home-restyle \.brand-mark img \{[^}]*transform:\s*sc
 assert.match(css, /\.ed-chaos-cluster \{[^}]*position: relative/, "the chaos cards need their overlapping cluster container");
 assert.match(css, /\.ed-chaos-item \{[^}]*position: absolute/, "the chaos cards must be absolutely positioned within the cluster to achieve the overlapping layout");
 assert.match(css, /\.ed-chaos-dm \{[^}]*rotate\(|\.ed-chaos-venmo \{[^}]*rotate\(/, "individual chaos cards must be tilted for the messy-desk cluster look, per the supplied reference");
-// The cluster's fixed-pixel positions don't scale down - below 1050px it must fall back to a
-// plain stacked column (every other mock on this page does the same at narrow widths), with
-// the hand-drawn callouts hidden since "pointing near a card" stops meaning anything once the
-// cards reflow into a single column.
-assert.match(css, /@media \(max-width: 1050px\) \{[\s\S]*?\.ed-chaos-item \{ position: static/, "the chaos cluster must collapse to a plain stacked column below 1050px, not keep fixed-pixel absolute positions that were only tuned for the wide cluster");
-assert.match(css, /@media \(max-width: 1050px\) \{[\s\S]*?\.ed-chaos-callout \{ display: none/, "the hand-drawn callouts must be hidden once the cluster collapses to a stack - they can't meaningfully point at a specific card once it's one of several stacked full-width");
+// The cluster's fixed-percentage/pixel positions are tuned for its full-width canvas. Below
+// 1050px it scales the whole canvas down (keeping the cards' relative layout and the callouts'
+// arrow positions intact) rather than reflowing early; below 800px, where even the scaled
+// canvas runs out of room, it falls back to a plain 2-up grid (every other mock on this page
+// does the same at narrow widths), with the hand-drawn callouts hidden since "pointing near a
+// card" stops meaning anything once the cards reflow into a grid/stack.
+assert.match(css, /@media \(max-width: 1050px\) \{[\s\S]*?\.ed-chaos-cluster \{[^}]*transform: scale/, "the chaos cluster must scale down as a whole below 1050px, keeping its collage layout intact");
+assert.match(css, /@media \(max-width: 800px\) \{[\s\S]*?\.ed-chaos-item \{ position: relative/, "the chaos cluster must collapse to a plain grid below 800px, not keep fixed-pixel absolute positions that were only tuned for the wide cluster");
+assert.match(css, /@media \(max-width: 800px\) \{[\s\S]*?\.ed-chaos-callout \{ display: none/, "the hand-drawn callouts must be hidden once the cluster collapses to a grid - they can't meaningfully point at a specific card once it's reflowed");
 
 // Realism pass: the chaos cards all used the same neutral gray label + generic white card
-// treatment, which didn't actually read as Venmo/Instagram/Sheets/a sticky note at a glance.
-// Each now borrows real brand color + a small brand-shaped icon, and the note card drops the
-// app-chrome label entirely (a real sticky note doesn't have one) in favor of a handwriting
-// webfont.
+// treatment, which didn't actually read as Venmo/Instagram/Sheets/a to-do list at a glance.
+// Each now borrows real brand color + a small brand-shaped icon, and the to-do card uses
+// circular checkbox markers instead of a bullet list.
 assert.match(css, /\.ed-chaos-icon-ig \{ color: #c13584/, "the Instagram card should use Instagram's actual brand color for its icon");
 assert.match(css, /\.ed-chaos-icon-sheet \{ color: #0f9d58/, "the roster card should use Google Sheets' actual brand green for its icon");
-assert.doesNotMatch(html, /ed-chaos-note ed-reveal" data-reveal-delay="\d+"><span class="ed-chaos-app"/, "a real sticky note has no app-chrome label row - must not regress to one");
-assert.match(css, /\.ed-chaos-note-list \{[^}]*"Caveat"/, "the sticky note's checklist text should use a handwriting webfont, not the UI sans-serif every other card uses");
+assert.match(css, /\.ed-chaos-todo li::before \{[^}]*border-radius: 50%/, "the to-do card's items should use circular checkbox markers, not a plain bullet list");
 
 // A first pass at the Venmo card used an invented quill-shaped icon next to a plain "Venmo"
 // text label - not Venmo's actual logo. Replaced with Venmo's real wordmark (Simple Icons,
@@ -443,28 +444,27 @@ assert.match(css, /\.ed-launch-digit \{[^}]*font-family: Georgia, serif/, "the '
 // left/right both 0px, h2 center 36px off from the section/eyebrow/button center.
 assert.match(css, /\.ed-launch h2 \{[^}]*max-width: none/, "the closing CTA's h2 must explicitly reset max-width to none - the legacy bare h2 rule in styles.css caps it at 1320px with no auto margin, pulling the text off-center");
 
-// Expanded card set and realism, per the supplied reference: the spreadsheet mock gained a
-// real toolbar/menu row (the reference shows File/Edit/View/Format), and a new Messages card
-// was added to match "Messages for reminders" in the copy, which previously had no visual to
-// back it up - this page's own established principle is that copy should be grounded in a
-// real visual where the product (or in this case, the described reality) actually shows one.
-// The sticky note also became a "To Do" checklist instead of a single handwritten line, closer
-// to the reference's own sticky note.
-assert.match(html, /ed-chaos-sheet-toolbar/, "the roster mock needs a real spreadsheet toolbar row, matching the supplied reference");
+// Expanded card set and realism, per the supplied reference: a Messages card was added to
+// match "Messages for reminders" in the copy, which previously had no visual to back it up -
+// this page's own established principle is that copy should be grounded in a real visual where
+// the product (or in this case, the described reality) actually shows one. The roster card
+// gained an Attending column and a fuller row set, and the old sticky note became a "To Do"
+// checklist with circular checkbox markers instead of a single handwritten line.
 assert.match(html, /ed-chaos-item ed-chaos-messages/, "a Messages card is needed so 'Messages for reminders' in the copy has a visual to point at");
-assert.match(html, /ed-chaos-note-list/, "the sticky note must be a checklist, not a single handwritten line");
-assert.match(css, /\.ed-chaos-icon-messages \{ color: #34c759/, "the Messages card should use Apple Messages' actual brand green for its icon");
+assert.match(html, /<th>Attending<\/th>/, "the roster mock needs an Attending column, matching the supplied reference");
+assert.match(html, /ed-chaos-item ed-chaos-todo/, "the sticky note must be a To Do checklist card");
+assert.match(css, /\.ed-chaos-icon-messages \{[^}]*background: #20c966/, "the Messages card should use a brand-green badge for its icon, matching a real chat app notification");
 // Hand-drawn-style callouts naming the specific pain point near each relevant card, per the
 // reference image - one per card (five total), each with a small arrow glyph (a ::after
-// pseudo-element, not an image) pointing at its card. An independent attempt at this same
-// redesign (ported in, then reverted per explicit direction - its own section-level
-// restructuring and extra content weren't wanted, just this arrow mechanic) proved the
-// technique works fine as long as each callout's position is checked against real rendered
-// bounding boxes rather than assumed safe - ported the mechanic, not that version's content,
-// tuning each of the five positions by eye against this card set's actual layout.
-assert.match(html, /ed-chaos-callout ed-chaos-callout-dm/, "the cluster needs its hand-drawn callout captions, per the supplied reference");
+// pseudo-element, not an image) pointing at its card. A parallel attempt at this same redesign
+// (built independently, then ported in wholesale - cards, callouts, and all - once it became
+// clear a hand-recreated version wasn't actually matching it) is the direct source of this
+// card set's sizing, content, and callout positions; only the section-level wrapper (this
+// page's own flowing-section background, not that version's own full-bleed photo background
+// and boxed transition block) stayed ours.
+assert.match(html, /ed-chaos-callout ed-callout-dm/, "the cluster needs its hand-drawn callout captions, per the supplied reference");
 assert.equal((html.match(/class="ed-chaos-callout /g) || []).length, 5, "every card needs its own callout - one per card, five total");
-assert.match(css, /\.ed-chaos-callout \{[^}]*"Caveat"/, "the callouts must use the handwriting webfont, matching the sticky note's handwritten treatment");
+assert.match(css, /\.ed-chaos-callout \{[^}]*"Caveat"/, "the callouts must use the handwriting webfont, matching the reference's hand-drawn treatment");
 assert.match(css, /\.ed-chaos-callout::after \{/, "each callout needs its arrow glyph, pointing at its card");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');
