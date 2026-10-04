@@ -69,6 +69,7 @@ body.home-restyle {
 .ed-section-heading { text-align: center; max-width: 760px; margin: 0 auto 32px; }
 .ed-section-heading h2 { margin: 0; color: var(--home-ink); font: 400 clamp(1.7rem, 2.9vw, 2.3rem)/1.2 var(--home-display); text-wrap: balance; }
 .ed-section-heading em { color: var(--home-rose); font-style: italic; }
+.ed-section-subtext { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; }
 
 .ed-reveal { opacity: 0; transition: opacity .7s ease; }
 .ed-reveal.is-in { opacity: 1; }
@@ -101,46 +102,151 @@ body.home-restyle {
    viewports that left its text flush against the browser edge (inset only by the clamp's
    88px ceiling) while the header/hero content above it sat centered in the narrower column,
    so "RIGHT NOW, WITHOUT BEYONDEIGHT" started well left of the logo above it. */
-.ed-reality { position: relative; max-width: 1180px; margin: 0 auto; padding: clamp(36px, 5vw, 56px) clamp(24px, 6vw, 88px); color: var(--home-ink); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(24px, 4vw, 48px); align-items: center; }
+/* Creative pass, per explicit direction: the text sat in its own left column fighting the card
+   cluster for attention in a side-by-side split. Centered instead, stacked above the cards -
+   the same single-focal-point composition the hero above it already uses, so the two sections
+   read as one deliberate visual language rather than the hero being centered and this one
+   being an asymmetric two-column split right under it. The card grid itself stays a plain
+   aligned grid (not scattered/tilted) - only the overall section's layout changed, not the
+   individual cards, which an earlier explicit direction already settled. */
+.ed-reality { position: relative; max-width: 1180px; margin: 0 auto; padding: clamp(36px, 5vw, 56px) clamp(24px, 6vw, 88px); color: var(--home-ink); display: flex; flex-direction: column; align-items: center; text-align: center; }
+/* 640px left "Then you piece everything else together yourself." within ~6px of the h2's own
+   wrap width at the clamp's max font-size - fine in this environment's headless rendering, but
+   font-hinting/zoom differences in a real browser tip it onto a second line. Widened with real
+   margin so it reliably stays one line per sentence, matching the rest of the section. */
+.ed-reality-text { max-width: 760px; }
 .ed-reality-text h2 { margin: 0; color: inherit; font: 400 clamp(1.35rem, 2.6vw, 2rem)/1.32 var(--home-display); text-wrap: pretty; }
-.ed-reality-bridge { margin: 20px 0 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
-.ed-chaos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.ed-chaos-item { padding: 14px 16px; background: white; border: 1px solid #f3e9e4; border-radius: 8px; box-shadow: 0 14px 34px rgba(17, 27, 43, .1); color: var(--home-ink); font: 500 12px/1.35 var(--home-sans); }
-.ed-chaos-app { display: flex; align-items: center; gap: 6px; margin-bottom: 9px; font: 700 9px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--home-muted); }
-.ed-chaos-icon { display: inline-flex; width: 15px; height: 15px; flex-shrink: 0; }
+.ed-reality-detail { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; line-height: 1.6; }
+.ed-reality-bridge { margin: 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
+.ed-chaos { width: 100%; }
+/* Creative pass, per reference image supplied live: the card cluster goes back to an
+   overlapping, gently tilted "messy desk" arrangement with hand-drawn-style annotations
+   calling out specific pain points, rather than the plain aligned grid an earlier explicit
+   direction had settled on. That earlier direction is deliberately being reversed here on
+   fresh, explicit creative direction (a reference screenshot), not forgotten - documented so
+   future passes don't "fix" this back into a grid thinking it's an oversight. Absolute
+   positioning within a relative canvas (rather than CSS Grid) is what makes the controlled
+   overlap/rotation per card practical to tune by eye. Collapses to a plain stacked column with
+   no overlap/rotation on narrower viewports (see the max-width: 800px block below) - this kind
+   of composition only reads as "cluttered desk" at a size where several cards are visible at
+   once side by side, not stacked full-width on a phone. */
+.ed-chaos-cluster { position: relative; width: min(1260px, 100%); height: 470px; margin: 28px auto 0; text-align: left; }
+.ed-chaos-item { position: absolute; padding: 14px 16px; overflow: hidden; background: rgba(255,255,255,.97); border: 1px solid rgba(225,214,210,.72); border-radius: 8px; box-shadow: 0 16px 32px rgba(48,37,34,.14); color: #151515; font: 500 12px/1.35 var(--home-sans); }
+.ed-chaos-dm { left: 10%; top: 50px; width: 285px; transform: rotate(-7deg); }
+.ed-chaos-dm .ed-chaos-app { display: grid; grid-template-columns: auto 1fr; }
+.ed-chaos-dm .ed-chaos-app > span:last-child { grid-column: 2; margin: -5px 0 0; color: #999; }
+.ed-chaos-venmo { left: 39%; top: 66px; width: 300px; transform: rotate(5deg); }
+.ed-chaos-messages { right: 8%; top: 44px; width: 270px; transform: rotate(5deg); }
+.ed-chaos-sheet { left: 29%; top: 230px; width: 430px; padding: 12px 14px; transform: rotate(.5deg); }
+.ed-chaos-todo { right: 15%; top: 285px; width: 240px; background: #fff8dc; transform: rotate(5deg); }
+.ed-chaos-todo .ed-chaos-app { padding-bottom: 7px; border-bottom: 1px solid #eedfa9; }
+.ed-chaos-app { display: flex; align-items: center; gap: 7px; margin-bottom: 9px; color: #454545; font: 600 10px var(--home-sans); }
+.ed-chaos-app > span:last-child { margin-left: auto; color: #8f8f8f; font-weight: 400; }
+.ed-chaos-icon { display: inline-flex; width: 18px; height: 18px; flex-shrink: 0; }
 .ed-chaos-icon svg { width: 100%; height: 100%; }
-/* Each card borrows its real app's brand color for the icon + label, rather than the same
-   neutral gray for all four - this is what actually reads as "Venmo" vs "a spreadsheet" at a
-   glance, the way real app notifications/screenshots do. */
-/* Venmo's actual brand mark (sourced from Simple Icons, CC0) is a wordmark logotype - its own
-   artwork only occupies a thin horizontal band of its 24x24 canvas (confirmed via getBBox():
-   y 9.7-14.3, full 24 width), not a square glyph like Instagram's camera icon. Cropping the
-   viewBox to that real bounding box, rather than forcing it into the same 15x15 icon slot the
-   square icons use, is what makes it render recognizably instead of as an illegibly tiny
-   smear. A separate "Venmo" text label next to it would be redundant - the wordmark already
-   says "venmo" - so this card has no .ed-chaos-app text, just the logo. */
-.ed-chaos-venmo .ed-chaos-app { margin-bottom: 11px; }
-.ed-chaos-logo-venmo { display: block; height: 13px; width: auto; color: #008cff; }
+.ed-chaos-icon-messages { align-items: center; justify-content: center; border-radius: 5px; background: #20c966; color: white; font-size: 11px; }
 .ed-chaos-icon-ig { color: #c13584; }
 .ed-chaos-icon-sheet { color: #0f9d58; }
-.ed-chaos-venmo-row, .ed-chaos-dm-row { display: flex; align-items: center; gap: 10px; }
-.ed-chaos-avatar { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: #e8f3ff; color: #008cff; font: 700 13px var(--home-sans); }
-.ed-chaos-avatar-ig { background: linear-gradient(135deg, #f58529, #dd2a7b 55%, #515bd4); color: white; }
-.ed-chaos-venmo strong { display: block; font: 700 17px var(--home-display); color: #0a8a5f; }
-.ed-chaos-venmo span { color: var(--home-muted); }
-.ed-chaos-dm p { margin: 0; padding: 8px 11px; background: #f5f3f1; border-radius: 14px 14px 14px 3px; }
-.ed-chaos-sheet table { width: 100%; border-collapse: collapse; font-size: 10px; }
-.ed-chaos-sheet td { padding: 4px 6px; border: 1px solid #eee3e0; }
-.ed-chaos-sheet td.is-paid { color: #0a8a5f; font-weight: 700; }
-.ed-chaos-sheet td.is-pending { color: #b5762f; font-weight: 700; background: #fff6e6; }
-/* A real sticky note is just a scrap of paper with handwriting on it - no app chrome, no
-   label row - so this one drops the ed-chaos-app row the other three cards use. Caveat (a
-   handwriting webfont) plus a flatter shadow than the other cards (paper lying on a surface,
-   not a UI panel floating above one) sell the "actual sticky note" read. No rotation - per
-   explicit earlier direction the chaos cards are a precise, aligned grid now, not a tilted
-   scrapbook, and that must hold for every card including this one. */
-.ed-chaos-note { background: #fff6cf; box-shadow: 0 6px 16px rgba(17, 27, 43, .14); }
-.ed-chaos-note p { margin: 0; font: 600 19px/1.3 "Caveat", cursive; color: #4a3f1f; }
+.ed-chaos-avatar { display: inline-flex; align-items: center; justify-content: center; width: 31px; height: 31px; flex-shrink: 0; border-radius: 50%; background: #e8f3ff; color: #008cff; font: 700 12px var(--home-sans); }
+.ed-chaos-avatar-ig { background: #27211f; color: white; }
+.ed-chaos-dm-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.ed-chaos-dm-row p { margin: 0; padding: 8px 10px; background: #f2f1f0; border-radius: 13px 13px 13px 3px; }
+.ed-chaos-logo-venmo { display: block; height: 18px; width: auto; color: #008cff; }
+.ed-chaos-venmo-row { display: flex; align-items: center; gap: 10px; }
+.ed-chaos-venmo strong { display: block; font-size: 14px; }
+.ed-chaos-venmo span { display: block; color: #333; }
+.ed-chaos-detail { display: block; margin: 10px 0 0 41px; color: #008cff; font-weight: 700; }
+.ed-chaos-messages ul, .ed-chaos-todo ul { list-style: none; margin: 0; padding: 0; }
+.ed-chaos-messages li { display: grid; grid-template-columns: 1fr; padding: 6px 0; border-top: 1px solid #ece8e6; }
+.ed-chaos-messages li span { color: #555; font-size: 10px; }
+.ed-chaos-sheet table { width: 100%; border-collapse: collapse; font-size: 9px; }
+.ed-chaos-sheet th, .ed-chaos-sheet td { padding: 4px 6px; border: 1px solid #e8e5e2; text-align: left; white-space: nowrap; }
+.ed-chaos-sheet th { background: #f8f8f7; font-weight: 600; }
+.ed-chaos-sheet td.is-paid { color: #0a8a5f; font-weight: 700; background: #dff4df; }
+.ed-chaos-sheet td.is-pending { color: #a84141; font-weight: 700; background: #ffe2e2; }
+.ed-chaos-todo li { position: relative; padding: 5px 0 5px 22px; }
+.ed-chaos-todo li::before { content: ""; position: absolute; left: 0; top: 5px; width: 13px; height: 13px; border: 1px solid #b8b19f; border-radius: 50%; background: rgba(255,255,255,.55); }
+/* Hand-drawn-style callouts, per the reference: short handwritten asides naming the specific
+   pain point each nearby card represents, rather than leaving the cards to speak for
+   themselves. One per card (five total), positioned by eye against the cluster's fixed layout
+   above, using the real margin space around the pile so no callout overlaps a card's actual
+   content. Like the cluster itself, hidden on narrower viewports (see max-width: 1050px below)
+   rather than attempting to reposition them against a reflowed stack. No arrow glyph pointing
+   at the card anymore (removed per explicit direction) - each callout's own position next to
+   its card is what ties it to that card instead. */
+.ed-chaos-callout { position: absolute; z-index: 3; width: 150px; margin: 0; color: #24201e; font: 600 20px/1.16 "Caveat", cursive; }
+.ed-callout-dm { left: 0; top: 105px; transform: rotate(-4deg); }
+/* Codex's own original position for this callout (top: 0, default 150px width) overlaps the
+   Venmo card's logo directly - confirmed via zoomed screenshot, the callout's own two-line
+   wrapped text runs past the point where the card begins. Widening it to 210px lets "Tracking
+   payments (and who still hasn't)" wrap at a natural break instead of a tighter 3-line stack,
+   and raising it 10px clears the card below - verified via re-measurement that both the detail
+   paragraph above and the Venmo card below stay clear. */
+.ed-callout-payments { left: 46%; top: -10px; width: 210px; text-align: center; transform: translateX(-50%) rotate(-3deg); }
+/* Codex's own original position for this callout (top: 130px, default 150px width) overlaps
+   the Messages card's own contact rows directly - confirmed via zoomed screenshot, "Priya -
+   Will there be parking?" sat underneath the callout's wrapped text. Widening it so the first
+   two words share a line, and raising it to sit just above the card (clearing its "Messages"
+   header, the one row it still grazes, rather than its actual message content) fixes the
+   collision - verified via re-screenshot. */
+.ed-callout-messages { right: 0; top: -8px; width: 240px; text-align: right; transform: rotate(4deg); }
+.ed-callout-roster { left: 17%; top: 305px; transform: rotate(-5deg); }
+.ed-callout-todo { right: 2%; top: 340px; transform: rotate(5deg); }
+/* The "It works, but..." payoff used to sit inside .ed-reality-text, immediately after the
+   headline/detail. It's now its own block below the full card cluster instead, with the new
+   "what if it didn't have to be" pivot straight into the BeyondEight name - the reference's
+   own flow builds through the whole messy-desk visual before turning the corner, rather than
+   resolving the tension before the visual proof of it even appears. */
+.ed-reality-pivot { max-width: 640px; margin-top: 40px; }
+.ed-reality-pivot .ed-eyebrow { margin-top: 16px; }
+.ed-reality-meet { margin: 8px 0 0; font: 400 clamp(1.8rem, 3.4vw, 2.4rem)/1.15 var(--home-display); color: var(--home-ink); }
+.ed-reality-meet em { color: var(--home-rose); font-style: italic; }
+.ed-reality-tagline { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; }
+
+/* The "Put it all in one place" pivot line is a promise - this is its visual proof, a realistic
+   dashboard screenshot sitting right after it (same "say it, then show it" pattern as the
+   chaos cluster above), rather than making the reader wait for the "How it works" steps further
+   down the page to see what the product actually looks like. Reuses the real browser-chrome
+   bar styling from the site-preview mock and the same icon/stat-card conventions used
+   elsewhere, scaled up into a standalone product shot instead of a small step-list card. */
+.ed-dash-shot-wrap { width: 100%; max-width: 1040px; margin: 56px auto 0; text-align: left; }
+.ed-dash-shot { border-radius: 10px; overflow: hidden; background: white; box-shadow: 0 24px 56px rgba(48,37,34,.16); border: 1px solid #efe6e1; }
+.ed-dash-browser-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: #f2e9e6; }
+.ed-dash-browser-bar span { width: 7px; height: 7px; border-radius: 50%; background: #d9c4bf; }
+.ed-dash-browser-bar em { margin-left: 10px; font: 400 11px var(--home-sans); font-style: normal; color: #756a68; }
+.ed-dash-body { display: flex; min-height: 420px; font-family: Inter, Arial, sans-serif; }
+.ed-dash-nav { flex-shrink: 0; width: 180px; padding: 20px 14px; display: flex; flex-direction: column; gap: 3px; background: #faf6f3; border-right: 1px solid #ece6e1; }
+.ed-dash-nav-brand { display: block; margin: 0 6px 18px; font: 600 14px var(--home-display); color: var(--home-ink); }
+.ed-dash-nav-brand b { color: var(--home-rose); font-weight: 600; }
+.ed-dash-nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; color: #766d68; font: 600 12px Inter, Arial, sans-serif; }
+.ed-dash-nav a svg { width: 15px; height: 15px; flex-shrink: 0; }
+.ed-dash-nav a.is-active { background: #f4e6e2; color: #7d372c; }
+.ed-dash-main { flex: 1; min-width: 0; padding: 24px 28px; }
+.ed-dash-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.ed-dash-eyebrow { margin: 0; color: #8b4d45; font: 700 10px Inter, Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+.ed-dash-head h3 { margin: 2px 0 0; font: 400 20px var(--home-display); color: var(--home-ink); }
+.ed-dash-avatar { display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; background: #ecddd8; color: #7d372c; font: 700 13px Inter, Arial, sans-serif; }
+.ed-dash-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+.ed-dash-stat { display: grid; gap: 4px; min-width: 0; border: 1px solid #ece6e1; border-radius: 8px; padding: 12px; background: #fff; }
+.ed-dash-stat-icon { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: #ecddd8; color: #8b4d45; }
+.ed-dash-stat-icon svg { width: 14px; height: 14px; }
+.ed-dash-stat b { font: 600 20px Inter, Arial, sans-serif; color: #201d1b; }
+.ed-dash-stat small { display: block; color: #766d68; font-size: 10px; }
+.ed-dash-stat.is-flag { border-color: #e3cbc5; background: #f8efec; }
+.ed-dash-stat.is-flag .ed-dash-stat-icon { background: #e9cec6; color: #7d372c; }
+.ed-dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.ed-dash-panel { border: 1px solid #ece6e1; border-radius: 8px; padding: 16px; background: #fff; }
+.ed-dash-panel > strong { display: block; margin-bottom: 12px; font: 600 13px Inter, Arial, sans-serif; color: #201d1b; }
+.ed-dash-class-row, .ed-dash-reg-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid #f1ece8; }
+.ed-dash-class-row:first-of-type, .ed-dash-reg-row:first-of-type { padding-top: 0; border-top: 0; }
+.ed-dash-class-row img { width: 44px; height: 34px; flex-shrink: 0; border-radius: 5px; object-fit: cover; }
+.ed-dash-class-row b, .ed-dash-reg-row b { display: block; font: 600 12px Inter, Arial, sans-serif; color: #201d1b; }
+.ed-dash-class-row small, .ed-dash-reg-row small { color: #766d68; font-size: 10px; }
+.ed-dash-reg-row > div { flex: 1; min-width: 0; }
+.ed-dash-initial { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; background: #ecddd8; color: #8b4d45; font: 700 11px Inter, Arial, sans-serif; }
+.ed-dash-pill { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; font: 700 10px Inter, Arial, sans-serif; }
+.ed-dash-pill.is-paid { color: #0a8a5f; background: #dff4df; }
+.ed-dash-pill.is-pending { color: #a84141; background: #ffe2e2; }
 
 /* 02.5 — Build your site: folded into the "How it works" step grid as the first (and
    most important) step, rather than its own standalone section - reuses the real browser-
@@ -164,7 +270,6 @@ body.home-restyle {
 /* 03/04 — How it works: ONE compact 3-across row (not stacked large sections) + a short
    payoff image break. */
 .ed-story { padding: clamp(40px, 6vw, 64px) clamp(24px, 6vw, 88px); scroll-margin-top: 20px; }
-.ed-story-break { display: none; }
 .ed-steps { list-style: none; margin: 0 0 28px; padding: 0; max-width: 1080px; margin-inline: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
 .ed-step { display: flex; flex-direction: column; gap: 14px; }
 .ed-step-text h3 { margin: 0 0 4px; font: 400 1.15rem/1.25 var(--home-display); color: var(--home-ink); }
@@ -328,14 +433,36 @@ body.home-restyle {
   .home-restyle .site-header { gap: 22px; }
   .home-restyle .header-account { gap: 15px; }
   .home-restyle .brand-name { font-size: 24px; }
-  .ed-reality { grid-template-columns: 1fr; }
-  .ed-chaos { margin-top: 20px; }
   .ed-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ed-business { grid-template-columns: 1fr; }
+  /* The cluster's cards use fixed-percentage/pixel positions tuned for its full-width canvas.
+     Scaling the whole canvas down (rather than reflowing it early) keeps the collage's layout
+     and the callouts' arrow positions intact down to tablet width. */
+  .ed-chaos-cluster { width: 1120px; left: 50%; margin-left: -560px; margin-bottom: -56px; transform: scale(.88); transform-origin: top center; }
 }
 @media (max-width: 800px) {
   .home-restyle .site-header { height: 76px; gap: 14px; }
   .ed-pricing-grid { grid-template-columns: 1fr; }
+  /* Below tablet width even the scaled-down canvas runs out of room. Switches to a plain 2-up
+     grid instead (same treatment as every other mock elsewhere on this page at narrow widths)
+     rather than trying to maintain a scaled-down version of a layout that only reads as "a
+     messy desk" when several cards are visible side by side at near-full size. The hand-drawn
+     callouts are dropped here too - "pointing near a card" stops meaning anything once the
+     cards reflow into a grid/stack. */
+  /* No fixed height here (Codex's own version used height: 600px) - each card has
+     overflow: hidden from its absolute-positioned-canvas styling above, and a fixed-height
+     grid container combined with overflow: hidden children lets CSS grid's stretch sizing
+     shrink cards below their actual content height instead of growing the section to fit,
+     silently clipping rows (confirmed: the Messages card's real content needs 226px but was
+     being squeezed to 142px). Letting the grid auto-size avoids it. */
+  .ed-chaos-cluster { left: auto; width: 100%; height: auto; margin: 30px auto 0; transform: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+  .ed-chaos-item { position: relative; inset: auto; width: auto; transform: none; }
+  .ed-chaos-dm, .ed-chaos-sheet { grid-column: 1 / -1; }
+  .ed-chaos-sheet { order: 4; }
+  .ed-chaos-todo { order: 5; }
+  .ed-chaos-callout { display: none; }
+  .ed-dash-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ed-dash-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
   .home-restyle .brand { gap: 4px; }
@@ -353,6 +480,12 @@ body.home-restyle {
      the header's side padding and the CTA's own padding/font-size below 420px buys back enough
      room that the button stays fully on-screen down to a 320px viewport. */
   .ed-hero-sub { white-space: normal; max-width: 460px; text-wrap: pretty; }
+  /* The sidebar nav is the first thing to go below tablet width - a 180px column of app
+     navigation eats too much of a narrow viewport's width to stay a sidebar, and it's not
+     load-bearing for what this visual is actually proving (that the dashboard brings
+     everything into one screen), unlike the stats/classes/registrations content next to it. */
+  .ed-dash-nav { display: none; }
+  .ed-dash-main { padding: 20px; }
 }
 @media (max-width: 420px) {
   .home-restyle .site-header { padding: 0 14px; gap: 10px; }
@@ -362,7 +495,11 @@ body.home-restyle {
   .ed-hero-copy { max-width: none; }
   .ed-hero-sub { max-width: none; }
   .ed-reality { padding: 40px 20px; }
-  .ed-chaos { grid-template-columns: 1fr; }
+  .ed-chaos-cluster { height: auto; grid-template-columns: 1fr; }
+  .ed-chaos-dm, .ed-chaos-sheet { grid-column: auto; }
+  .ed-chaos-messages { order: 3; }
+  .ed-chaos-sheet { order: 4; }
+  .ed-chaos-todo { order: 5; }
   .ed-story { padding: 40px 20px; }
   .ed-steps { grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
   /* Per explicit direction, mobile steps go back to the mock sitting above its text (the same
@@ -372,6 +509,8 @@ body.home-restyle {
      the text next to them. Full-width mocks at their natural size don't have that problem. */
   .ed-business-stats { gap: 24px; }
   .restyle-footer { font-size: 10px; }
+  .ed-dash-stats { grid-template-columns: 1fr 1fr; }
+  .ed-dash-head h3 { font-size: 17px; }
 }
 
 /* The auth modal (Log In / Create Account) and the comparison/pricing modal aren't part of the
