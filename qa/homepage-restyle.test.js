@@ -147,9 +147,9 @@ assert.doesNotMatch(html, /<h2 id="reality-title">You put your class out there\.
 // box in a real browser rather than the intended character - removed outright rather than
 // swapped for another glyph, since the transition reads fine without one.
 assert.doesNotMatch(html, /ed-reality-chevron/, "the chevron glyph rendered as a broken box in a real browser - must not regress back in");
-assert.match(html, /<p class="ed-reality-meet">Meet <em>BeyondEight<\/em>\.<\/p>/, "the reality section needs its new 'Meet BeyondEight' pivot line");
-assert.match(html, /<p class="ed-reality-tagline">Your classes\. Your community\. All in one place\.<\/p>/, "the reality section needs its new closing tagline");
-assert.match(css, /\.ed-reality-meet em \{ color: var\(--home-rose\)/, "the BeyondEight mention in the pivot line must use the brand rose, matching every other BeyondEight mention on the page");
+assert.match(html, /<p class="ed-reality-meet">Put it all in <em>one place<\/em>\.<\/p>/, "the reality section needs its pivot headline, per explicit direction");
+assert.match(html, /<p class="ed-reality-tagline">BeyondEight brings your classes, registrations, payments and community together &mdash; so you can spend less time on admin and more time doing what you love\.<\/p>/, "the reality section needs its new closing tagline");
+assert.match(css, /\.ed-reality-meet em \{ color: var\(--home-rose\)/, "the 'one place' emphasis in the pivot line must use the brand rose, matching every other emphasis mention on the page");
 // The eyebrow was drafted as "How it works today," but the real How It Works section further
 // down the page (id="how-it-works") already uses the eyebrow "How it works" for the actual
 // product walkthrough - having both appear while scrolling reads as a confusing near-duplicate.
