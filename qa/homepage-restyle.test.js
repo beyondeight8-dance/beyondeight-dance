@@ -473,4 +473,21 @@ assert.equal((html.match(/class="ed-chaos-callout /g) || []).length, 5, "every c
 assert.match(css, /\.ed-chaos-callout \{[^}]*"Caveat"/, "the callouts must use the handwriting webfont, matching the reference's hand-drawn treatment");
 assert.doesNotMatch(css, /\.ed-chaos-callout::after \{/, "the callout arrow glyphs were removed per explicit direction - must not regress back in");
 
+// A realistic dashboard screenshot sits right after the "Put it all in one place" pivot line,
+// per explicit direction - visual proof of the promise immediately, rather than making the
+// reader wait for the "How it works" steps further down to see the actual product. Reuses the
+// real browser-chrome-bar convention from the site-preview mock, scaled up into a standalone
+// product shot with a working-looking sidebar nav, stat cards, an upcoming-classes list, and a
+// registrations list with payment-status pills.
+assert.match(html, /ed-dash-shot-wrap/, "the reality section needs its dashboard screenshot after the pivot line");
+assert.match(html, /app\.beyond8dance\.com\/dashboard/, "the dashboard shot needs a realistic browser-chrome URL, matching the site-preview mock's convention");
+assert.equal((html.match(/class="ed-dash-stat"/g) || []).length + (html.match(/class="ed-dash-stat is-flag"/g) || []).length, 4, "the dashboard shot needs its four stat cards");
+assert.match(html, /<a class="is-active">/, "the sidebar nav needs an active state so it reads as a real, in-use app rather than a static list");
+assert.match(html, /ed-dash-pill is-paid">Paid/, "the registrations list needs at least one paid status pill");
+assert.match(html, /ed-dash-pill is-pending">Pending/, "the registrations list needs at least one pending status pill, echoing the 'tracking who's paid' pain point from the chaos cluster above");
+// The sidebar nav is a fixed 180px column - below tablet width it eats too much of a narrow
+// viewport to stay usable, and it isn't load-bearing for what this visual proves (that the
+// dashboard brings everything into one screen). Dropped rather than squeezed/scrolled.
+assert.match(css, /@media \(max-width: 640px\) \{[\s\S]*?\.ed-dash-nav \{ display: none/, "the dashboard shot's sidebar nav must be hidden below 640px, not squeezed into an unreadable column");
+
 console.log('Homepage editorial redesign structure and existing entry points passed');

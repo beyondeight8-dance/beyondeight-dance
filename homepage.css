@@ -213,6 +213,52 @@ body.home-restyle {
 .ed-reality-meet em { color: var(--home-rose); font-style: italic; }
 .ed-reality-tagline { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; }
 
+/* The "Put it all in one place" pivot line is a promise - this is its visual proof, a realistic
+   dashboard screenshot sitting right after it (same "say it, then show it" pattern as the
+   chaos cluster above), rather than making the reader wait for the "How it works" steps further
+   down the page to see what the product actually looks like. Reuses the real browser-chrome
+   bar styling from the site-preview mock and the same icon/stat-card conventions used
+   elsewhere, scaled up into a standalone product shot instead of a small step-list card. */
+.ed-dash-shot-wrap { width: 100%; max-width: 1040px; margin: 56px auto 0; text-align: left; }
+.ed-dash-shot-wrap .ed-chaos-tag { margin: 0 auto 20px; }
+.ed-dash-shot { border-radius: 10px; overflow: hidden; background: white; box-shadow: 0 24px 56px rgba(48,37,34,.16); border: 1px solid #efe6e1; }
+.ed-dash-browser-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: #f2e9e6; }
+.ed-dash-browser-bar span { width: 7px; height: 7px; border-radius: 50%; background: #d9c4bf; }
+.ed-dash-browser-bar em { margin-left: 10px; font: 400 11px var(--home-sans); font-style: normal; color: #756a68; }
+.ed-dash-body { display: flex; min-height: 420px; font-family: Inter, Arial, sans-serif; }
+.ed-dash-nav { flex-shrink: 0; width: 180px; padding: 20px 14px; display: flex; flex-direction: column; gap: 3px; background: #faf6f3; border-right: 1px solid #ece6e1; }
+.ed-dash-nav-brand { display: block; margin: 0 6px 18px; font: 600 14px var(--home-display); color: var(--home-ink); }
+.ed-dash-nav-brand b { color: var(--home-rose); font-weight: 600; }
+.ed-dash-nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; color: #766d68; font: 600 12px Inter, Arial, sans-serif; }
+.ed-dash-nav a svg { width: 15px; height: 15px; flex-shrink: 0; }
+.ed-dash-nav a.is-active { background: #f4e6e2; color: #7d372c; }
+.ed-dash-main { flex: 1; min-width: 0; padding: 24px 28px; }
+.ed-dash-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.ed-dash-eyebrow { margin: 0; color: #8b4d45; font: 700 10px Inter, Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+.ed-dash-head h3 { margin: 2px 0 0; font: 400 20px var(--home-display); color: var(--home-ink); }
+.ed-dash-avatar { display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; background: #ecddd8; color: #7d372c; font: 700 13px Inter, Arial, sans-serif; }
+.ed-dash-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+.ed-dash-stat { display: grid; gap: 4px; min-width: 0; border: 1px solid #ece6e1; border-radius: 8px; padding: 12px; background: #fff; }
+.ed-dash-stat-icon { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: #ecddd8; color: #8b4d45; }
+.ed-dash-stat-icon svg { width: 14px; height: 14px; }
+.ed-dash-stat b { font: 600 20px Inter, Arial, sans-serif; color: #201d1b; }
+.ed-dash-stat small { display: block; color: #766d68; font-size: 10px; }
+.ed-dash-stat.is-flag { border-color: #e3cbc5; background: #f8efec; }
+.ed-dash-stat.is-flag .ed-dash-stat-icon { background: #e9cec6; color: #7d372c; }
+.ed-dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.ed-dash-panel { border: 1px solid #ece6e1; border-radius: 8px; padding: 16px; background: #fff; }
+.ed-dash-panel > strong { display: block; margin-bottom: 12px; font: 600 13px Inter, Arial, sans-serif; color: #201d1b; }
+.ed-dash-class-row, .ed-dash-reg-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid #f1ece8; }
+.ed-dash-class-row:first-of-type, .ed-dash-reg-row:first-of-type { padding-top: 0; border-top: 0; }
+.ed-dash-class-row img { width: 44px; height: 34px; flex-shrink: 0; border-radius: 5px; object-fit: cover; }
+.ed-dash-class-row b, .ed-dash-reg-row b { display: block; font: 600 12px Inter, Arial, sans-serif; color: #201d1b; }
+.ed-dash-class-row small, .ed-dash-reg-row small { color: #766d68; font-size: 10px; }
+.ed-dash-reg-row > div { flex: 1; min-width: 0; }
+.ed-dash-initial { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; background: #ecddd8; color: #8b4d45; font: 700 11px Inter, Arial, sans-serif; }
+.ed-dash-pill { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; font: 700 10px Inter, Arial, sans-serif; }
+.ed-dash-pill.is-paid { color: #0a8a5f; background: #dff4df; }
+.ed-dash-pill.is-pending { color: #a84141; background: #ffe2e2; }
+
 /* 02.5 — Build your site: folded into the "How it works" step grid as the first (and
    most important) step, rather than its own standalone section - reuses the real browser-
    chrome + hero-block visual language so it still reads as the actual product, just sized
@@ -427,6 +473,8 @@ body.home-restyle {
   .ed-chaos-sheet { order: 4; }
   .ed-chaos-todo { order: 5; }
   .ed-chaos-callout { display: none; }
+  .ed-dash-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ed-dash-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
   .home-restyle .brand { gap: 4px; }
@@ -444,6 +492,12 @@ body.home-restyle {
      the header's side padding and the CTA's own padding/font-size below 420px buys back enough
      room that the button stays fully on-screen down to a 320px viewport. */
   .ed-hero-sub { white-space: normal; max-width: 460px; text-wrap: pretty; }
+  /* The sidebar nav is the first thing to go below tablet width - a 180px column of app
+     navigation eats too much of a narrow viewport's width to stay a sidebar, and it's not
+     load-bearing for what this visual is actually proving (that the dashboard brings
+     everything into one screen), unlike the stats/classes/registrations content next to it. */
+  .ed-dash-nav { display: none; }
+  .ed-dash-main { padding: 20px; }
 }
 @media (max-width: 420px) {
   .home-restyle .site-header { padding: 0 14px; gap: 10px; }
@@ -467,6 +521,8 @@ body.home-restyle {
      the text next to them. Full-width mocks at their natural size don't have that problem. */
   .ed-business-stats { gap: 24px; }
   .restyle-footer { font-size: 10px; }
+  .ed-dash-stats { grid-template-columns: 1fr 1fr; }
+  .ed-dash-head h3 { font-size: 17px; }
 }
 
 /* The auth modal (Log In / Create Account) and the comparison/pricing modal aren't part of the
