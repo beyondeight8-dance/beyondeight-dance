@@ -485,4 +485,11 @@ assert.match(html, /ed-dash-pill is-pending">Pending/, "the registrations list n
 // dashboard brings everything into one screen). Dropped rather than squeezed/scrolled.
 assert.match(css, /@media \(max-width: 640px\) \{[\s\S]*?\.ed-dash-nav \{ display: none/, "the dashboard shot's sidebar nav must be hidden below 640px, not squeezed into an unreadable column");
 
+// "How it works" section heading replaced per explicit direction - "Go from idea to your first
+// class" plus a subtext naming who it's for, instead of the old "You create the class.
+// BeyondEight takes it from there." two-part line.
+assert.match(html, /<p class="ed-eyebrow">Get started in minutes<\/p>/, "the how-it-works section needs its new eyebrow, per explicit direction");
+assert.match(html, /<h2 id="story-title">Go from idea to your first class\.<\/h2>/, "the how-it-works section needs its new headline, per explicit direction");
+assert.match(html, /<p class="ed-section-subtext">A simple setup, built for dance teachers\.<\/p>/, "the how-it-works section needs its new subtext, per explicit direction");
+
 console.log('Homepage editorial redesign structure and existing entry points passed');
