@@ -118,17 +118,6 @@ body.home-restyle {
 .ed-reality-detail { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; line-height: 1.6; }
 .ed-reality-bridge { margin: 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
 .ed-chaos { width: 100%; }
-/* Real problem reported live: someone scanning the page by its visuals first, before reading
-   the paragraph text beside it, could land on real Venmo/Instagram branding here and read it
-   as "BeyondEight integrates with these," the opposite of the point - these cards are the
-   scattered pre-BeyondEight mess, not a feature list. The .ed-eyebrow text above already says
-   so, but a visual-first scan can miss text that isn't part of the visual itself. This tag
-   sits directly above the card cluster so the "this is the problem" signal travels with the
-   images. Reuses the warm flag/warning tone already established on the dashboard mock's
-   "pending payment" flag elsewhere on this page, not the brand rose used for actual
-   product/feature callouts - that color distinction is what keeps it from reading as a
-   BeyondEight-branded highlight itself. */
-.ed-chaos-tag { display: block; width: fit-content; margin: 36px auto 0; padding: 6px 14px; border-radius: 999px; background: #f4e6e2; color: #7d372c; font: 700 10px var(--home-sans); text-transform: uppercase; letter-spacing: .05em; }
 /* Creative pass, per reference image supplied live: the card cluster goes back to an
    overlapping, gently tilted "messy desk" arrangement with hand-drawn-style annotations
    calling out specific pain points, rather than the plain aligned grid an earlier explicit
@@ -220,7 +209,6 @@ body.home-restyle {
    bar styling from the site-preview mock and the same icon/stat-card conventions used
    elsewhere, scaled up into a standalone product shot instead of a small step-list card. */
 .ed-dash-shot-wrap { width: 100%; max-width: 1040px; margin: 56px auto 0; text-align: left; }
-.ed-dash-shot-wrap .ed-chaos-tag { margin: 0 auto 20px; }
 .ed-dash-shot { border-radius: 10px; overflow: hidden; background: white; box-shadow: 0 24px 56px rgba(48,37,34,.16); border: 1px solid #efe6e1; }
 .ed-dash-browser-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: #f2e9e6; }
 .ed-dash-browser-bar span { width: 7px; height: 7px; border-radius: 50%; background: #d9c4bf; }

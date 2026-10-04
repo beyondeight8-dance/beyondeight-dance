@@ -104,14 +104,12 @@ assert.match(html, /viewBox="0 9\.726 24 4\.548"/, "the Venmo wordmark must use 
 assert.doesNotMatch(html, />Venmo<\/span>/, "the Venmo card must not pair its wordmark logo with a redundant text label - the logo already reads \"venmo\"");
 assert.match(css, /\.ed-chaos-logo-venmo \{[^}]*color: #008cff/, "the Venmo wordmark must use Venmo's actual brand blue");
 
-// An earlier pass added a "Without BeyondEight, today" tag directly on the card cluster, so a
-// visual-first scan (before reading the .ed-eyebrow text beside it) wouldn't mistake the real
-// Venmo/Instagram branding here for "BeyondEight integrates with these." Removed per explicit
-// direction - the .ed-chaos-tag class/styling stays (the dashboard shot below still uses it for
-// its own "Your dashboard" label), just not this particular instance.
-assert.doesNotMatch(html, /Without BeyondEight, today/, "the chaos cluster's pain-point tag was removed per explicit direction - must not regress back in");
-assert.match(css, /\.ed-chaos-tag \{[^}]*width: fit-content[^}]*margin: 36px auto 0/, "the shared tag styling must stay - the dashboard shot below still uses .ed-chaos-tag for its own label");
-assert.doesNotMatch(css, /\.ed-chaos-tag \{[^}]*color: var\(--home-rose\)/, "the tag styling must not use the brand rose - that would make a pain-point label read as a BeyondEight feature callout");
+// An earlier pass added a "Without BeyondEight, today" tag directly on the card cluster, and
+// later a "Your dashboard" tag above the dashboard shot, both using a shared .ed-chaos-tag
+// pill style. Both were removed per explicit direction, and since neither markup instance
+// remains, the now-unused .ed-chaos-tag CSS rule was removed too rather than left dead.
+assert.doesNotMatch(html, /Without BeyondEight, today|Your dashboard/, "both .ed-chaos-tag pill labels were removed per explicit direction - must not regress back in");
+assert.doesNotMatch(css, /\.ed-chaos-tag \{/, "the .ed-chaos-tag rule has no remaining markup to style - must not regress back in as dead CSS");
 
 // Real bug found live: every other section (.site-header, .ed-business, .ed-pricing,
 // .ed-steps) caps its content to a shared max-width column and centers it with margin: auto -
