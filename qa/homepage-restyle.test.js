@@ -104,17 +104,14 @@ assert.match(html, /viewBox="0 9\.726 24 4\.548"/, "the Venmo wordmark must use 
 assert.doesNotMatch(html, />Venmo<\/span>/, "the Venmo card must not pair its wordmark logo with a redundant text label - the logo already reads \"venmo\"");
 assert.match(css, /\.ed-chaos-logo-venmo \{[^}]*color: #008cff/, "the Venmo wordmark must use Venmo's actual brand blue");
 
-// Real problem reported live: someone scanning the page by its visuals first, before reading
-// the .ed-eyebrow paragraph text beside it, could land on real Venmo/Instagram branding here
-// and read it as "BeyondEight integrates with these" - the opposite of the intent, since these
-// four cards are the scattered pre-BeyondEight mess, not a feature list. A tag sitting directly
-// on the card cluster (not just the sidebar text) carries that "this is the problem" signal
-// with the visuals themselves. It must use the warm flag/warning tone already established on
-// the dashboard mock's "pending payment" flag, not the brand rose reserved for actual
-// product/feature callouts - that's what keeps it from reading as a BeyondEight highlight.
-assert.match(html, /<p class="ed-chaos-tag">Without BeyondEight, today<\/p>/, "the chaos card cluster needs its own visible label, not just the sidebar eyebrow text, so a visual-first scan still reads it as the problem");
-assert.match(css, /\.ed-chaos-tag \{[^}]*width: fit-content[^}]*margin: 36px auto 0/, "the tag must sit centered above the card cluster, not inside it");
-assert.doesNotMatch(css, /\.ed-chaos-tag \{[^}]*color: var\(--home-rose\)/, "the chaos-cluster tag must not use the brand rose - that would make it read as a BeyondEight feature callout instead of a pain-point label");
+// An earlier pass added a "Without BeyondEight, today" tag directly on the card cluster, so a
+// visual-first scan (before reading the .ed-eyebrow text beside it) wouldn't mistake the real
+// Venmo/Instagram branding here for "BeyondEight integrates with these." Removed per explicit
+// direction - the .ed-chaos-tag class/styling stays (the dashboard shot below still uses it for
+// its own "Your dashboard" label), just not this particular instance.
+assert.doesNotMatch(html, /Without BeyondEight, today/, "the chaos cluster's pain-point tag was removed per explicit direction - must not regress back in");
+assert.match(css, /\.ed-chaos-tag \{[^}]*width: fit-content[^}]*margin: 36px auto 0/, "the shared tag styling must stay - the dashboard shot below still uses .ed-chaos-tag for its own label");
+assert.doesNotMatch(css, /\.ed-chaos-tag \{[^}]*color: var\(--home-rose\)/, "the tag styling must not use the brand rose - that would make a pain-point label read as a BeyondEight feature callout");
 
 // Real bug found live: every other section (.site-header, .ed-business, .ed-pricing,
 // .ed-steps) caps its content to a shared max-width column and centers it with margin: auto -
