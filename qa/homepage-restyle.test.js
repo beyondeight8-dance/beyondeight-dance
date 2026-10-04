@@ -455,10 +455,16 @@ assert.match(html, /ed-chaos-item ed-chaos-messages/, "a Messages card is needed
 assert.match(html, /ed-chaos-note-list/, "the sticky note must be a checklist, not a single handwritten line");
 assert.match(css, /\.ed-chaos-icon-messages \{ color: #34c759/, "the Messages card should use Apple Messages' actual brand green for its icon");
 // Hand-drawn-style callouts naming the specific pain point near each relevant card, per the
-// reference image - short Caveat-font asides, not literal arrows (which would need exact
-// per-breakpoint tuning against the cluster's fixed-pixel card positions to stay pointed at
-// the right card, and aren't worth that fragility for a decorative aside).
-assert.match(html, /ed-chaos-callout ed-chaos-callout-1/, "the cluster needs its hand-drawn callout captions, per the supplied reference");
+// reference image - one per card (five total), each with a small arrow glyph (a ::after
+// pseudo-element, not an image) pointing at its card. An independent attempt at this same
+// redesign (ported in, then reverted per explicit direction - its own section-level
+// restructuring and extra content weren't wanted, just this arrow mechanic) proved the
+// technique works fine as long as each callout's position is checked against real rendered
+// bounding boxes rather than assumed safe - ported the mechanic, not that version's content,
+// tuning each of the five positions by eye against this card set's actual layout.
+assert.match(html, /ed-chaos-callout ed-chaos-callout-dm/, "the cluster needs its hand-drawn callout captions, per the supplied reference");
+assert.equal((html.match(/class="ed-chaos-callout /g) || []).length, 5, "every card needs its own callout - one per card, five total");
 assert.match(css, /\.ed-chaos-callout \{[^}]*"Caveat"/, "the callouts must use the handwriting webfont, matching the sticky note's handwritten treatment");
+assert.match(css, /\.ed-chaos-callout::after \{/, "each callout needs its arrow glyph, pointing at its card");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');

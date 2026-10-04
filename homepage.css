@@ -189,14 +189,24 @@ body.home-restyle {
 .ed-chaos-note-list li { margin-bottom: 1px; }
 /* Hand-drawn-style callouts, per the reference: short handwritten asides naming the specific
    pain point each nearby card represents, rather than leaving the cards to speak for
-   themselves. Positioned by eye against the cluster's fixed layout above - like the cluster
-   itself, hidden on narrower viewports (see max-width: 800px below) rather than attempting to
-   reposition them against a reflowed stack, where "pointing near a card" stops meaning
-   anything. */
+   themselves. One per card (five total), each with a small arrow glyph pointing at its card -
+   positioned by eye against the cluster's fixed layout above, using the real margin space
+   around the pile (measured via rendered bounding boxes, not guessed) so no callout overlaps a
+   card's actual content. Like the cluster itself, hidden on narrower viewports (see
+   max-width: 1050px below) rather than attempting to reposition them against a reflowed stack,
+   where "pointing near a card" stops meaning anything. */
 .ed-chaos-callout { position: absolute; z-index: 6; margin: 0; max-width: 150px; color: #8b4d45; font: 600 15px/1.25 "Caveat", cursive; }
-.ed-chaos-callout-1 { top: 28px; left: 0; transform: rotate(-3deg); }
-.ed-chaos-callout-2 { top: -38px; left: 600px; transform: rotate(3deg); }
-.ed-chaos-callout-3 { top: 420px; left: 630px; transform: rotate(-2deg); }
+.ed-chaos-callout::after { display: block; margin-top: 2px; font: 400 22px/1 var(--home-display); }
+.ed-chaos-callout-dm { top: 35px; left: 0; transform: rotate(-3deg); }
+.ed-chaos-callout-dm::after { content: "\2198"; margin-left: 100px; }
+.ed-chaos-callout-venmo { top: -38px; left: 600px; transform: rotate(2deg); }
+.ed-chaos-callout-venmo::after { content: "\2199"; margin-left: 90px; }
+.ed-chaos-callout-sheet { top: 195px; left: 0; transform: rotate(-2deg); }
+.ed-chaos-callout-sheet::after { content: "\2192"; margin-left: 110px; }
+.ed-chaos-callout-messages { top: 35px; left: 790px; transform: rotate(3deg); }
+.ed-chaos-callout-messages::after { content: "\2199"; margin-left: -10px; }
+.ed-chaos-callout-note { top: 420px; left: 630px; transform: rotate(-2deg); }
+.ed-chaos-callout-note::after { content: "\2199"; margin-left: 5px; }
 /* The "It works, but..." payoff used to sit inside .ed-reality-text, immediately after the
    headline/detail. It's now its own block below the full card cluster instead, with the new
    "what if it didn't have to be" pivot straight into the BeyondEight name - the reference's
