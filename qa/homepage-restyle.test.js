@@ -65,12 +65,18 @@ assert.ok(!css.includes('font-size: clamp('), 'Typography uses fixed responsive 
 // modal, which shares this same .home-restyle header markup.
 assert.doesNotMatch(css, /\.home-restyle \.brand-mark img \{[^}]*transform:\s*scale\(2\.6\)/, "the old padding-compensation zoom on the logo must not come back");
 
-// The chaos cards used to be scattered and individually rotated (absolute position + a
-// per-item rotate()), which read as a scrapbook mood-board rather than a precise product
-// shot. They're now a plain aligned grid - must not regress to scattered/tilted positioning.
-assert.match(css, /\.ed-chaos \{ display: grid;/, "the chaos cards must be a plain aligned grid, not an absolutely-positioned scatter");
-assert.doesNotMatch(css, /\.ed-chaos-item \{[^}]*position: absolute/, "chaos cards must not go back to absolute positioning");
-assert.doesNotMatch(css, /\.ed-chaos-venmo \{[^}]*rotate\(|\.ed-chaos-dm \{[^}]*rotate\(|\.ed-chaos-sheet \{[^}]*rotate\(|\.ed-chaos-note \{[^}]*rotate\(/, "individual chaos cards must not be tilted");
+// The approved reality-section mockup uses a large editorial statement over a softly washed
+// dance image, with five overlapping admin surfaces and handwritten callouts. Preserve that
+// intentional desktop composition while keeping the mobile fallback as a simple grid.
+assert.match(html, /You put your class out there/);
+assert.match(html, /ed-chaos-messages/);
+assert.match(html, /ed-chaos-todo/);
+assert.equal((html.match(/ed-chaos-callout/g) || []).length, 5);
+assert.match(html, /What if it didn't have to be/);
+assert.match(html, /Meet Beyond<span>Eight\.<\/span>/);
+assert.match(css, /\.ed-reality \{[^}]*width: 100%[^}]*background:/, "the reality section must be a full-width photo-backed composition");
+assert.match(css, /\.ed-chaos-item \{[^}]*position: absolute/, "desktop admin surfaces should overlap like the approved collage");
+assert.match(css, /@media \(max-width: 800px\)[\s\S]*\.ed-chaos \{[^}]*display: grid/, "the collage must become a readable grid on smaller screens");
 
 // Realism pass: the four "chaos" cards all used the same neutral gray label + generic white
 // card treatment, which didn't actually read as Venmo/Instagram/Sheets/a sticky note at a
@@ -79,8 +85,7 @@ assert.doesNotMatch(css, /\.ed-chaos-venmo \{[^}]*rotate\(|\.ed-chaos-dm \{[^}]*
 // handwriting webfont - all without reintroducing the rotation banned above.
 assert.match(css, /\.ed-chaos-icon-ig \{ color: #c13584/, "the Instagram card should use Instagram's actual brand color for its icon");
 assert.match(css, /\.ed-chaos-icon-sheet \{ color: #0f9d58/, "the roster card should use Google Sheets' actual brand green for its icon");
-assert.doesNotMatch(html, /ed-chaos-note ed-reveal" data-reveal-delay="360"><span class="ed-chaos-app"/, "a real sticky note has no app-chrome label row - must not regress to one");
-assert.match(css, /\.ed-chaos-note p \{[^}]*"Caveat"/, "the sticky note's text should use a handwriting webfont, not the UI sans-serif every other card uses");
+assert.match(css, /\.ed-chaos-callout \{[^}]*"Caveat"/, "the mockup callouts should use the handwriting face");
 
 // A first pass at the Venmo card used an invented quill-shaped icon next to a plain "Venmo"
 // text label - not Venmo's actual logo. Replaced with Venmo's real wordmark (Simple Icons,
@@ -93,13 +98,7 @@ assert.match(html, /viewBox="0 9\.726 24 4\.548"/, "the Venmo wordmark must use 
 assert.doesNotMatch(html, />Venmo<\/span>/, "the Venmo card must not pair its wordmark logo with a redundant text label - the logo already reads \"venmo\"");
 assert.match(css, /\.ed-chaos-logo-venmo \{[^}]*color: #008cff/, "the Venmo wordmark must use Venmo's actual brand blue");
 
-// Real bug found live: every other section (.site-header, .ed-business, .ed-pricing,
-// .ed-steps) caps its content to a shared max-width column and centers it with margin: auto -
-// .ed-reality never did, just a clamp()'d side padding with no cap, so at wide viewports its
-// text sat flush against the browser edge while the header/hero content above it stayed
-// centered in the narrower column - "RIGHT NOW, WITHOUT BEYONDEIGHT" visibly started well
-// left of the logo above it.
-assert.match(css, /\.ed-reality \{[^}]*max-width: 1180px[^}]*margin: 0 auto/, "the reality section must share the page's centered content column, or its text runs edge-to-edge at wide viewports instead of lining up with the header/hero above it");
+assert.match(css, /\.ed-reality-intro \{[^}]*max-width: 1040px[^}]*margin: 0 auto/, "the full-width section still needs a centered readable headline column");
 
 // Build your site: per explicit feedback this is no longer its own standalone section ahead
 // of "How it works" - it's the first step inside that grid, using the same real browser-chrome
