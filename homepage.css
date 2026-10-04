@@ -109,7 +109,11 @@ body.home-restyle {
    aligned grid (not scattered/tilted) - only the overall section's layout changed, not the
    individual cards, which an earlier explicit direction already settled. */
 .ed-reality { position: relative; max-width: 1180px; margin: 0 auto; padding: clamp(36px, 5vw, 56px) clamp(24px, 6vw, 88px); color: var(--home-ink); display: flex; flex-direction: column; align-items: center; text-align: center; }
-.ed-reality-text { max-width: 640px; }
+/* 640px left "Then you piece everything else together yourself." within ~6px of the h2's own
+   wrap width at the clamp's max font-size - fine in this environment's headless rendering, but
+   font-hinting/zoom differences in a real browser tip it onto a second line. Widened with real
+   margin so it reliably stays one line per sentence, matching the rest of the section. */
+.ed-reality-text { max-width: 760px; }
 .ed-reality-text h2 { margin: 0; color: inherit; font: 400 clamp(1.35rem, 2.6vw, 2rem)/1.32 var(--home-display); text-wrap: pretty; }
 .ed-reality-detail { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; line-height: 1.6; }
 .ed-reality-bridge { margin: 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
