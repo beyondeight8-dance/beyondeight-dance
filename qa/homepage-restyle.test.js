@@ -65,32 +65,27 @@ assert.ok(!css.includes('font-size: clamp('), 'Typography uses fixed responsive 
 // modal, which shares this same .home-restyle header markup.
 assert.doesNotMatch(css, /\.home-restyle \.brand-mark img \{[^}]*transform:\s*scale\(2\.6\)/, "the old padding-compensation zoom on the logo must not come back");
 
-// Round one: the chaos cards used to be scattered and individually rotated (absolute position
-// + a per-item rotate()), which read as a scrapbook mood-board rather than a precise product
-// shot, so they were moved to a plain aligned grid. Round two, per a reference image supplied
-// live: deliberately reversed back to an overlapping, tilted "messy desk" cluster with
-// hand-drawn-style callouts, closer to the reference's own composition - this was an explicit,
-// considered reversal of the earlier direction, not a regression, so the ban is gone and
-// replaced with assertions locking the new cluster shape instead.
-assert.match(css, /\.ed-chaos-cluster \{[^}]*position: relative/, "the chaos cards need their overlapping cluster container");
-assert.match(css, /\.ed-chaos-item \{[^}]*position: absolute/, "the chaos cards must be absolutely positioned within the cluster to achieve the overlapping layout");
-assert.match(css, /\.ed-chaos-dm \{[^}]*rotate\(|\.ed-chaos-venmo \{[^}]*rotate\(/, "individual chaos cards must be tilted for the messy-desk cluster look, per the supplied reference");
-// The cluster's fixed-pixel positions don't scale down - below 1050px it must fall back to a
-// plain stacked column (every other mock on this page does the same at narrow widths), with
-// the hand-drawn callouts hidden since "pointing near a card" stops meaning anything once the
-// cards reflow into a single column.
-assert.match(css, /@media \(max-width: 1050px\) \{[\s\S]*?\.ed-chaos-item \{ position: static/, "the chaos cluster must collapse to a plain stacked column below 1050px, not keep fixed-pixel absolute positions that were only tuned for the wide cluster");
-assert.match(css, /@media \(max-width: 1050px\) \{[\s\S]*?\.ed-chaos-callout \{ display: none/, "the hand-drawn callouts must be hidden once the cluster collapses to a stack - they can't meaningfully point at a specific card once it's one of several stacked full-width");
+// The approved reality-section mockup uses a large editorial statement over a softly washed
+// dance image, with five overlapping admin surfaces and handwritten callouts. Preserve that
+// intentional desktop composition while keeping the mobile fallback as a simple grid.
+assert.match(html, /You put your class out there/);
+assert.match(html, /ed-chaos-messages/);
+assert.match(html, /ed-chaos-todo/);
+assert.equal((html.match(/ed-chaos-callout/g) || []).length, 5);
+assert.match(html, /What if it didn't have to be/);
+assert.match(html, /Meet Beyond<span>Eight\.<\/span>/);
+assert.match(css, /\.ed-reality \{[^}]*width: 100%[^}]*background:/, "the reality section must be a full-width photo-backed composition");
+assert.match(css, /\.ed-chaos-item \{[^}]*position: absolute/, "desktop admin surfaces should overlap like the approved collage");
+assert.match(css, /@media \(max-width: 800px\)[\s\S]*\.ed-chaos \{[^}]*display: grid/, "the collage must become a readable grid on smaller screens");
 
-// Realism pass: the chaos cards all used the same neutral gray label + generic white card
-// treatment, which didn't actually read as Venmo/Instagram/Sheets/a sticky note at a glance.
-// Each now borrows real brand color + a small brand-shaped icon, and the note card drops the
-// app-chrome label entirely (a real sticky note doesn't have one) in favor of a handwriting
-// webfont.
+// Realism pass: the four "chaos" cards all used the same neutral gray label + generic white
+// card treatment, which didn't actually read as Venmo/Instagram/Sheets/a sticky note at a
+// glance. Each now borrows real brand color + a small brand-shaped icon, and the note card
+// drops the app-chrome label entirely (a real sticky note doesn't have one) in favor of a
+// handwriting webfont - all without reintroducing the rotation banned above.
 assert.match(css, /\.ed-chaos-icon-ig \{ color: #c13584/, "the Instagram card should use Instagram's actual brand color for its icon");
 assert.match(css, /\.ed-chaos-icon-sheet \{ color: #0f9d58/, "the roster card should use Google Sheets' actual brand green for its icon");
-assert.doesNotMatch(html, /ed-chaos-note ed-reveal" data-reveal-delay="\d+"><span class="ed-chaos-app"/, "a real sticky note has no app-chrome label row - must not regress to one");
-assert.match(css, /\.ed-chaos-note-list \{[^}]*"Caveat"/, "the sticky note's checklist text should use a handwriting webfont, not the UI sans-serif every other card uses");
+assert.match(css, /\.ed-chaos-callout \{[^}]*"Caveat"/, "the mockup callouts should use the handwriting face");
 
 // A first pass at the Venmo card used an invented quill-shaped icon next to a plain "Venmo"
 // text label - not Venmo's actual logo. Replaced with Venmo's real wordmark (Simple Icons,
@@ -103,61 +98,21 @@ assert.match(html, /viewBox="0 9\.726 24 4\.548"/, "the Venmo wordmark must use 
 assert.doesNotMatch(html, />Venmo<\/span>/, "the Venmo card must not pair its wordmark logo with a redundant text label - the logo already reads \"venmo\"");
 assert.match(css, /\.ed-chaos-logo-venmo \{[^}]*color: #008cff/, "the Venmo wordmark must use Venmo's actual brand blue");
 
-// Real problem reported live: someone scanning the page by its visuals first, before reading
-// the .ed-eyebrow paragraph text beside it, could land on real Venmo/Instagram branding here
-// and read it as "BeyondEight integrates with these" - the opposite of the intent, since these
-// four cards are the scattered pre-BeyondEight mess, not a feature list. A tag sitting directly
-// on the card cluster (not just the sidebar text) carries that "this is the problem" signal
-// with the visuals themselves. It must use the warm flag/warning tone already established on
-// the dashboard mock's "pending payment" flag, not the brand rose reserved for actual
-// product/feature callouts - that's what keeps it from reading as a BeyondEight highlight.
-assert.match(html, /<p class="ed-chaos-tag">Without BeyondEight, today<\/p>/, "the chaos card cluster needs its own visible label, not just the sidebar eyebrow text, so a visual-first scan still reads it as the problem");
-assert.match(css, /\.ed-chaos-tag \{[^}]*width: fit-content[^}]*margin: 36px auto 0/, "the tag must sit centered above the card cluster, not inside it");
-assert.doesNotMatch(css, /\.ed-chaos-tag \{[^}]*color: var\(--home-rose\)/, "the chaos-cluster tag must not use the brand rose - that would make it read as a BeyondEight feature callout instead of a pain-point label");
+assert.match(css, /\.ed-reality-intro \{[^}]*max-width: 1040px[^}]*margin: 0 auto/, "the full-width section still needs a centered readable headline column");
 
-// Real bug found live: every other section (.site-header, .ed-business, .ed-pricing,
-// .ed-steps) caps its content to a shared max-width column and centers it with margin: auto -
-// .ed-reality never did, just a clamp()'d side padding with no cap, so at wide viewports its
-// text sat flush against the browser edge while the header/hero content above it stayed
-// centered in the narrower column - "RIGHT NOW, WITHOUT BEYONDEIGHT" visibly started well
-// left of the logo above it.
-assert.match(css, /\.ed-reality \{[^}]*max-width: 1180px[^}]*margin: 0 auto/, "the reality section must share the page's centered content column, or its text runs edge-to-edge at wide viewports instead of lining up with the header/hero above it");
-
-// Copy pass, per explicit direction and then a supplied reference image: the headline now
-// folds both opening sentences into one h2 (the standalone lead paragraph was merged in), the
-// tool list groups into two lines of two sentences each, and the payoff line moved out of
-// .ed-reality-text entirely into its own .ed-reality-pivot block below the full card cluster,
-// where it now leads into a new "what if it didn't have to be / meet BeyondEight" close -
-// matching the reference's own build-then-pivot structure instead of resolving the tension
-// before the visual proof of it even appears.
-assert.match(html, /<h2 id="reality-title">You put your class out there\.<br>Then you piece everything else together yourself\.<\/h2>/, "the reality section headline must use the new narrative opener");
-assert.match(html, /<p class="ed-reality-detail">DMs for questions\. Venmo for payments\. A spreadsheet for your roster\.<br>Messages for reminders\. All in different places\.<\/p>/, "the reality section needs its new specific-tools line");
-assert.doesNotMatch(html, /class="ed-reality-lead"/, "the standalone lead paragraph was folded into the h2 - must not come back as a separate element");
-assert.match(html, /<p class="ed-reality-bridge">It works\.<br>But it's a lot to keep track of\.<\/p>/, "the reality section's payoff line must stay the narrative close, not the old \"BeyondEight brings it all together\"");
-// Per explicit direction, every multi-sentence line in this section uses an explicit <br>
-// between sentences rather than relying on the browser's natural wrap - a plain prose wrap
-// previously broke mid-way through unrelated sentences, which read as an awkward accident
-// rather than a deliberate line break.
-assert.doesNotMatch(html, /<h2 id="reality-title">You put your class out there\. Then/, "the reality headline's two sentences must not go back to plain prose wrapping - each needs its own line via <br>");
-// New pivot block, per the supplied reference: after the full card cluster and its payoff
-// line, a small chevron leads into "What if it didn't have to be?" and the BeyondEight name
-// itself - the reference's own transition before the "How It Works" section properly begins.
-assert.match(html, /<p class="ed-reality-meet">Meet <em>BeyondEight<\/em>\.<\/p>/, "the reality section needs its new 'Meet BeyondEight' pivot line");
-assert.match(html, /<p class="ed-reality-tagline">Your classes\. Your community\. All in one place\.<\/p>/, "the reality section needs its new closing tagline");
-assert.match(css, /\.ed-reality-meet em \{ color: var\(--home-rose\)/, "the BeyondEight mention in the pivot line must use the brand rose, matching every other BeyondEight mention on the page");
-// The eyebrow was drafted as "How it works today," but the real How It Works section further
-// down the page (id="how-it-works") already uses the eyebrow "How it works" for the actual
-// product walkthrough - having both appear while scrolling reads as a confusing near-duplicate.
-// Changed to "Right now" instead, which keeps the same meaning without colliding.
-assert.match(html, /<p class="ed-eyebrow">Right now<\/p>/, "the reality section eyebrow must not duplicate the real How It Works section's own eyebrow text further down the page");
-
-// Creative pass, per explicit direction: the text sat in its own left column fighting the chaos
-// card cluster for attention in a side-by-side split. Centered instead, stacked above the
-// cards, matching the hero's own single-focal-point composition rather than being an
-// asymmetric two-column split right under a centered hero.
-assert.match(css, /\.ed-reality \{[^}]*display: flex[^}]*flex-direction: column[^}]*align-items: center[^}]*text-align: center/, "the reality section must be a centered single column, matching the hero's composition, not a left-text/right-cards split");
-assert.match(css, /\.ed-chaos-cluster \{[^}]*text-align: left/, "the chaos card cluster must reset text-align back to left - card content (amounts, messages, labels) shouldn't inherit the section's center alignment");
-assert.doesNotMatch(css, /\.ed-chaos-item \{[^}]*text-align: center/, "individual chaos cards must stay left-aligned even after the section-level centering change");
+// Two real bugs found live after porting this reality-section redesign in: (1) the "Tracking
+// payments (and who still hasn't)." callout sat directly on top of the Venmo card's wordmark
+// at desktop widths - confirmed via a cropped screenshot showing both texts superimposed.
+// Widening the callout so its text wraps to 2 lines instead of 4, and nudging it up slightly,
+// fits it cleanly in the gap between the paragraph above and the card below. (2) the headline
+// and detail paragraph use <br> between sentences for desktop line breaks, but the mobile
+// breakpoint explicitly hides those <br>s (letting text reflow naturally) - the source text had
+// no space around them, so hiding the <br> glued the sentences together ("...there.Then you...",
+// "...roster.Messages for..."). A space before each <br> fixes it without affecting desktop,
+// where trailing whitespace before a line break doesn't render as a visible gap.
+assert.match(css, /\.ed-callout-payments \{[^}]*width: 210px/, "the payments callout needs a wider box so its text wraps to 2 lines, not 4 - at 4 lines it's tall enough to collide with the Venmo card below it");
+assert.match(html, /out there\. <br>Then you piece/, "a space is needed before this <br> - the mobile breakpoint hides it, and without the space the sentences run together with no gap");
+assert.match(html, /your roster\. <br>Messages for reminders/, "a space is needed before this <br> too, for the same reason");
 
 // Build your site: per explicit feedback this is no longer its own standalone section ahead
 // of "How it works" - it's the first step inside that grid, using the same real browser-chrome
@@ -442,23 +397,5 @@ assert.match(css, /\.ed-launch-digit \{[^}]*font-family: Georgia, serif/, "the '
 // against the full section. Confirmed live: computed max-width was exactly 1320px, margin-
 // left/right both 0px, h2 center 36px off from the section/eyebrow/button center.
 assert.match(css, /\.ed-launch h2 \{[^}]*max-width: none/, "the closing CTA's h2 must explicitly reset max-width to none - the legacy bare h2 rule in styles.css caps it at 1320px with no auto margin, pulling the text off-center");
-
-// Expanded card set and realism, per the supplied reference: the spreadsheet mock gained a
-// real toolbar/menu row (the reference shows File/Edit/View/Format), and a new Messages card
-// was added to match "Messages for reminders" in the copy, which previously had no visual to
-// back it up - this page's own established principle is that copy should be grounded in a
-// real visual where the product (or in this case, the described reality) actually shows one.
-// The sticky note also became a "To Do" checklist instead of a single handwritten line, closer
-// to the reference's own sticky note.
-assert.match(html, /ed-chaos-sheet-toolbar/, "the roster mock needs a real spreadsheet toolbar row, matching the supplied reference");
-assert.match(html, /ed-chaos-item ed-chaos-messages/, "a Messages card is needed so 'Messages for reminders' in the copy has a visual to point at");
-assert.match(html, /ed-chaos-note-list/, "the sticky note must be a checklist, not a single handwritten line");
-assert.match(css, /\.ed-chaos-icon-messages \{ color: #34c759/, "the Messages card should use Apple Messages' actual brand green for its icon");
-// Hand-drawn-style callouts naming the specific pain point near each relevant card, per the
-// reference image - short Caveat-font asides, not literal arrows (which would need exact
-// per-breakpoint tuning against the cluster's fixed-pixel card positions to stay pointed at
-// the right card, and aren't worth that fragility for a decorative aside).
-assert.match(html, /ed-chaos-callout ed-chaos-callout-1/, "the cluster needs its hand-drawn callout captions, per the supplied reference");
-assert.match(css, /\.ed-chaos-callout \{[^}]*"Caveat"/, "the callouts must use the handwriting webfont, matching the sticky note's handwritten treatment");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');
