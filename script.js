@@ -2232,6 +2232,16 @@ requestAnimationFrame(revealVisibleItems);
 // Homepage redesign: a small, self-contained fade-in for the new .ed-* sections (chaos
 // snippets, product-UI mocks, the business card) - separate from revealVisibleItems above,
 // which targets older section classes this redesign doesn't use.
+//
+// Most .ed-reveal elements are one-shot: reveal once, then unobserve, matching the long-
+// standing pattern on this page. A few are marked .ed-reveal-repeat instead, per explicit
+// direction - the pivot/dashboard-shot rise and the six "how it works" mocks' stagger should
+// replay every time the reader scrolls them back into view, not just the first time, since
+// scrolling away and back otherwise left them sitting there with no transition at all (real
+// bug found live right after the chaos cluster's own fade was made reversible the same way -
+// the inconsistency between "this one replays, these don't" read as broken). Repeat elements
+// keep their data-reveal-delay stagger on every re-entry, and cancel a pending reveal if the
+// reader scrolls back out before its delay elapses.
 const edRevealItems = document.querySelectorAll(".ed-reveal");
 if (edRevealItems.length) {
   if (prefersReducedMotion.matches || !("IntersectionObserver" in window)) {
@@ -2240,14 +2250,49 @@ if (edRevealItems.length) {
     const edObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          const target = entry.target;
+          if (target.classList.contains("ed-reveal-repeat")) {
+            clearTimeout(target._edRevealTimeout);
+            if (entry.isIntersecting) {
+              const delay = Number(target.dataset.revealDelay) || 0;
+              target._edRevealTimeout = setTimeout(() => target.classList.add("is-in"), delay);
+            } else {
+              target.classList.remove("is-in");
+            }
+            return;
+          }
           if (!entry.isIntersecting) return;
-          const delay = Number(entry.target.dataset.revealDelay) || 0;
-          setTimeout(() => entry.target.classList.add("is-in"), delay);
-          edObserver.unobserve(entry.target);
+          const delay = Number(target.dataset.revealDelay) || 0;
+          setTimeout(() => target.classList.add("is-in"), delay);
+          edObserver.unobserve(target);
         });
       },
       { threshold: 0.2, rootMargin: "0px 0px -8% 0px" }
     );
     edRevealItems.forEach((item) => edObserver.observe(item));
   }
+}
+
+// Lets the reality section's "pain" card cluster soften in place once the reader reaches the
+// pivot ("It works. But it's a lot to keep track of." / "Put it all in one place."), per
+// explicit direction - the cluster isn't hidden, just recedes as .ed-chaos.is-settling (see
+// homepage.css) while the pivot and the dashboard shot become the focal point. Separate from
+// the generic .ed-reveal observer above since this toggles a class on a different element
+// (.ed-chaos) than the one being observed (.ed-reality-pivot). Unlike every one-shot .ed-reveal
+// on this page, this one toggles both ways (real bug found live: an initial one-shot version
+// left the cluster permanently faded after scrolling back up past the pivot, which read as
+// broken rather than intentional) - it's tied to the pivot's current visibility, not a single
+// "reached it once" moment, so scrolling back up restores the cluster.
+const edPivotMarker = document.querySelector(".ed-reality-pivot");
+const edChaosCluster = document.querySelector(".ed-chaos");
+if (edPivotMarker && edChaosCluster && !prefersReducedMotion.matches && "IntersectionObserver" in window) {
+  const edPivotObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        edChaosCluster.classList.toggle("is-settling", entry.isIntersecting);
+      });
+    },
+    { threshold: 0.3 }
+  );
+  edPivotObserver.observe(edPivotMarker);
 }

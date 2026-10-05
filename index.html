@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260928-embedded-checkout">
-  <link rel="stylesheet" href="homepage.css?v=20261004-venmo-avatar-centering-fix">
+  <link rel="stylesheet" href="homepage.css?v=20261005-repeatable-reveals">
   <link rel="stylesheet" href="onboarding.css?v=20260928-brand-consistency">
   <link rel="stylesheet" href="public-site.css?v=20260921-about-layout">
 </head>
@@ -85,14 +85,14 @@
           </div>
         </div>
       </div>
-      <div class="ed-reality-pivot">
+      <div class="ed-reality-pivot ed-reveal ed-reveal-rise ed-reveal-repeat">
         <p class="ed-reality-bridge">It works.<br>But it's a lot to keep track of.</p>
-        <p class="ed-eyebrow">What if it didn't have to be?</p>
+        <p class="ed-eyebrow">It doesn't have to work this way.</p>
         <p class="ed-reality-meet">Put it all in <em>one place</em>.</p>
         <p class="ed-reality-tagline">BeyondEight brings your classes, registrations, payments and community together &mdash; so you can spend less time on admin and more time doing what you love.</p>
       </div>
       <div class="ed-dash-shot-wrap">
-        <div class="ed-dash-shot ed-reveal" aria-hidden="true">
+        <div class="ed-dash-shot ed-reveal ed-reveal-rise ed-reveal-repeat" data-reveal-delay="180" aria-hidden="true">
           <div class="ed-dash-browser-bar"><span></span><span></span><span></span><em>app.beyond8dance.com/dashboard</em></div>
           <div class="ed-dash-body">
             <nav class="ed-dash-nav">
@@ -144,7 +144,7 @@
 
       <ol class="ed-steps" id="features">
         <li class="ed-step">
-          <div class="ed-mock ed-mock-site ed-reveal" aria-label="Example business website">
+          <div class="ed-mock ed-mock-site ed-reveal ed-reveal-repeat" data-reveal-delay="0" aria-label="Example business website">
             <div class="ed-site-browser-bar"><span></span><span></span><span></span><em>beyond8dance.com/maya-flores</em></div>
             <div class="ed-site-hero">
               <span class="ed-site-wordmark">Maya Flores</span>
@@ -154,7 +154,7 @@
           <div class="ed-step-text"><h3>Build your site</h3><p>Your classes, story, and photos — live on your own page in minutes.</p></div>
         </li>
         <li class="ed-step">
-          <div class="ed-mock ed-mock-dashboard ed-reveal" aria-label="Example dashboard overview">
+          <div class="ed-mock ed-mock-dashboard ed-reveal ed-reveal-repeat" data-reveal-delay="90" aria-label="Example dashboard overview">
             <strong>Overview</strong>
             <div class="ed-mock-stat-grid">
               <div class="ed-mock-stat-card"><span class="ed-mock-stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3"></circle><path d="M3.5 19c0-3 2.5-5.3 5.5-5.3s5.5 2.3 5.5 5.3"></path><circle cx="17" cy="9" r="2.3"></circle><path d="M15.3 13.4c2.3.3 4.2 2.2 4.2 4.7"></path></svg></span><b>24</b><small>Registrations</small></div>
@@ -166,7 +166,7 @@
           <div class="ed-step-text"><h3>Your own dashboard</h3><p>Classes, registrations, and payments — one place to run it all.</p></div>
         </li>
         <li class="ed-step">
-          <div class="ed-mock ed-mock-form ed-reveal" aria-label="Example class details">
+          <div class="ed-mock ed-mock-form ed-reveal ed-reveal-repeat" data-reveal-delay="180" aria-label="Example class details">
             <div class="ed-mock-form-head">
               <div><p class="ed-mock-eyebrow">New class</p><strong>Add Class</strong></div>
               <span class="ed-mock-ig-import" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"></rect><path d="M8 7l1.4-2.4h5.2L16 7"></path><circle cx="12" cy="13.5" r="3.4"></circle></svg><span class="ed-mock-ig-import-label">Import from Instagram</span></span>
@@ -181,7 +181,7 @@
           <div class="ed-step-text"><h3>Add a class</h3><p>Title, date, price — or import one straight from Instagram.</p></div>
         </li>
         <li class="ed-step">
-          <div class="ed-mock ed-mock-payment ed-reveal" aria-label="Example payment method choice">
+          <div class="ed-mock ed-mock-payment ed-reveal ed-reveal-repeat" data-reveal-delay="0" aria-label="Example payment method choice">
             <strong>Choose how you get paid</strong>
             <div class="ed-mock-payment-options">
               <div class="ed-mock-payment-option is-selected"><span class="ed-mock-radio"></span><span class="ed-mock-payment-badge">Recommended</span><b><span class="ed-mock-payment-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.2"></rect><path d="M3 10.5h18"></path><path d="M7 15h4"></path></svg></span>Card payments (Stripe)</b><p>Accepted cards go straight to your bank.</p></div>
@@ -191,7 +191,7 @@
           <div class="ed-step-text"><h3>Venmo or Stripe — your call</h3><p>Pick whichever fits your business. Switch anytime.</p></div>
         </li>
         <li class="ed-step">
-          <div class="ed-mock ed-mock-confirm ed-reveal" aria-label="Example registration confirmation">
+          <div class="ed-mock ed-mock-confirm ed-reveal ed-reveal-repeat" data-reveal-delay="90" aria-label="Example registration confirmation">
             <span class="ed-mock-check" aria-hidden="true">&#10003;</span>
             <strong>You're registered!</strong>
             <p class="ed-mock-confirm-detail">Saturday Heels<br>Sat, Jun 14 &middot; 10:00am</p>
@@ -200,7 +200,7 @@
           <div class="ed-step-text"><h3>People register — and pay</h3><p>Card, confirmed automatically. Venmo works too.</p></div>
         </li>
         <li class="ed-step">
-          <div class="ed-mock ed-mock-roster ed-reveal" aria-label="Example class roster">
+          <div class="ed-mock ed-mock-roster ed-reveal ed-reveal-repeat" data-reveal-delay="180" aria-label="Example class roster">
             <strong>Roster (24)</strong>
             <div class="ed-mock-roster-list">
               <div><span class="ed-mock-initial">A</span><span>Ava Patel</span><small>Paid</small></div>
@@ -559,6 +559,6 @@
   <script src="app-config.js?v=20260928-embedded-checkout"></script>
   <script src="app-services.js?v=20260928-embedded-checkout"></script>
   <script src="website-template.js?v=20260921-about-simplify"></script>
-  <script src="script.js?v=20260928-editorial-redesign"></script>
+  <script src="script.js?v=20261005-repeatable-reveals"></script>
 </body>
 </html>

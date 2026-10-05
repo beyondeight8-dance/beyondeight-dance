@@ -5,6 +5,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'homepage.css'), 'utf8');
+const js = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
 
 assert.match(html, /class="home-restyle"/);
 assert.match(html, /homepage\.css/);
@@ -136,12 +137,13 @@ assert.match(html, /<p class="ed-reality-bridge">It works\.<br>But it's a lot to
 // rather than a deliberate line break.
 assert.doesNotMatch(html, /<h2 id="reality-title">You put your class out there\. Then/, "the reality headline's two sentences must not go back to plain prose wrapping - each needs its own line via <br>");
 // New pivot block, per the supplied reference: after the full card cluster and its payoff
-// line, "What if it didn't have to be?" leads into the BeyondEight name itself - the
+// line, "It doesn't have to work this way." leads into the BeyondEight name itself - the
 // reference's own transition before the "How It Works" section properly begins. An earlier
 // pass added a small "⌄" chevron between the two, but it rendered as a broken/missing-glyph
 // box in a real browser rather than the intended character - removed outright rather than
 // swapped for another glyph, since the transition reads fine without one.
 assert.doesNotMatch(html, /ed-reality-chevron/, "the chevron glyph rendered as a broken box in a real browser - must not regress back in");
+assert.match(html, /<p class="ed-eyebrow">It doesn't have to work this way\.<\/p>/, "the pivot eyebrow needs its updated copy, per explicit direction");
 assert.match(html, /<p class="ed-reality-meet">Put it all in <em>one place<\/em>\.<\/p>/, "the reality section needs its pivot headline, per explicit direction");
 assert.match(html, /<p class="ed-reality-tagline">BeyondEight brings your classes, registrations, payments and community together &mdash; so you can spend less time on admin and more time doing what you love\.<\/p>/, "the reality section needs its new closing tagline");
 assert.match(css, /\.ed-reality-meet em \{ color: var\(--home-rose\)/, "the 'one place' emphasis in the pivot line must use the brand rose, matching every other emphasis mention on the page");
@@ -500,5 +502,49 @@ assert.match(html, /<p class="ed-section-subtext">A simple setup, built for danc
 // just the detail line's actual position in the DOM instead.
 assert.doesNotMatch(css, /\.ed-chaos-venmo span \{/, "must not regress to the blanket .ed-chaos-venmo span selector - it silently breaks .ed-chaos-avatar's centering");
 assert.match(css, /\.ed-chaos-venmo-row > div > span \{ display: block/, "the Venmo detail line's display:block must be scoped narrowly, not via a blanket descendant-span selector");
+
+// Scroll choreography pass, per explicit direction: the pain->solution pivot should "breathe"
+// (the chaos cluster softens once the reader reaches it, rather than cutting hard into "Put it
+// all in one place"), the six product-journey mocks should reveal row-by-row with a small
+// stagger instead of popping in as a flat 3x2 catalogue grid, and the photo watermark behind
+// the page should recede through analytics/pricing and return by the final CTA as a callback
+// to the hero.
+assert.match(css, /\.ed-reveal-rise \{ opacity: 0; transform: translateY\(26px\)/, "the rise reveal variant needs its translateY starting state for the pivot/dashboard-shot entrance");
+assert.match(html, /ed-reality-pivot ed-reveal ed-reveal-rise ed-reveal-repeat/, "the pivot block needs the rise-reveal treatment so it (and the dashboard shot below it) arrive with a gentle rise, not a hard cut");
+assert.match(html, /ed-dash-shot ed-reveal ed-reveal-rise ed-reveal-repeat" data-reveal-delay="180"/, "the dashboard shot must rise in just after the pivot text, not simultaneously with it");
+// Real bug found live: the pivot/dashboard-shot rise and the step mocks' stagger (below) were
+// one-shot like every other .ed-reveal, which meant scrolling away and back showed them just
+// sitting there with no transition at all - especially noticeable right after the chaos
+// cluster's own fade (above) was made reversible the same way, since the inconsistency between
+// "this one replays, these don't" read as broken. .ed-reveal-repeat opts specific elements
+// into toggling .is-in both ways in script.js instead of add-then-unobserve.
+assert.match(js, /target\.classList\.contains\("ed-reveal-repeat"\)/, "script.js needs the repeat-aware branch so marked elements replay their reveal on every scroll-into-view, not just the first");
+assert.match(js, /target\.classList\.remove\("is-in"\)/, "repeat-marked elements must clear is-in when scrolled out of view so the reveal can replay on the way back in");
+// Real bug found live: a first attempt at the cluster's "soften" effect combined opacity with
+// `filter: saturate() blur()`, which produced a sharp rectangular seam at the cluster's own
+// bounding box - confirmed by removing just the filter property and re-screenshotting, which
+// made the seam disappear completely. Root cause: the body's background-attachment: fixed
+// watermark doesn't composite the same way behind an element that filter has forced onto its
+// own layer, a known Chromium quirk. Opacity alone (used everywhere else on this page against
+// the same fixed background with no issue) still reads as "soften."
+assert.match(css, /\.ed-chaos\.is-settling \{ opacity: \.42; \}/, "the cluster's soften effect must be opacity-only - filter caused a real rendering seam, confirmed live");
+assert.doesNotMatch(css, /\.ed-chaos\.is-settling \{[^}]*filter/, "must not regress the filter property back into the cluster's soften effect - it breaks the fixed-background watermark behind it");
+assert.match(js, /edPivotMarker.*ed-reality-pivot/, "script.js needs the observer that triggers the cluster's soften effect once the reader reaches the pivot");
+// Real bug found live: an initial one-shot version (add the class, then unobserve) left the
+// cluster permanently faded after the reader scrolled back up past the pivot, which read as
+// broken rather than intentional. Must toggle both ways instead, tied to the pivot's current
+// visibility.
+assert.match(js, /edChaosCluster\.classList\.toggle\("is-settling", entry\.isIntersecting\)/, "script.js must toggle is-settling both ways so scrolling back up restores the cluster, not just add it once");
+assert.doesNotMatch(js, /edChaosCluster\.classList\.add\("is-settling"\)/, "must not regress to a one-shot add - the cluster stayed faded on scroll-up, confirmed live");
+// Six product-journey mocks (site, dashboard, add-class / payment, confirm, roster) each get a
+// small reveal-delay so a row reveals with a slight stagger rather than all three cards in it
+// flashing in at once, which read as a static catalogue rather than the product "unfolding." -
+// and ed-reveal-repeat so that stagger replays every time the reader scrolls back to this row,
+// not just the first time.
+assert.equal((html.match(/ed-mock ed-mock-\w+ ed-reveal ed-reveal-repeat" data-reveal-delay="(0|90|180)"/g) || []).length, 6, "all six product-journey mocks need a staggered, repeatable reveal-delay, not a flat one-shot reveal");
+assert.match(css, /\.ed-business::before \{[^}]*linear-gradient\(180deg, rgba\(255,252,252,0\) 0%, rgba\(255,252,252,\.55\) 100%\)/, "the analytics section needs its increased cream wash, deepening toward its own bottom edge");
+assert.match(css, /\.ed-business-card \{[^}]*box-shadow: 0 26px 64px rgba\(79,40,48,\.18\)/, "the analytics card's shadow must be deepened so it reads as the sharpest element once the background behind it recedes");
+assert.match(css, /\.ed-pricing::before \{[^}]*linear-gradient\(180deg, rgba\(255,252,252,\.55\) 0%, rgba\(255,252,252,\.82\) 100%\)/, "pricing needs the watermark continuing to fade toward 'very faint' by its own bottom edge");
+assert.match(css, /\.ed-launch \{[^}]*linear-gradient\(180deg, rgba\(255,252,252,\.82\) 0%, rgba\(255,252,252,0\) 100%\)/, "the final CTA needs the watermark fading back to the page's baseline (no extra wash) by its own bottom edge - the callback to the hero");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');
