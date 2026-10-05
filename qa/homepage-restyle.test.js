@@ -547,4 +547,13 @@ assert.match(css, /\.ed-business-card \{[^}]*box-shadow: 0 26px 64px rgba\(79,40
 assert.match(css, /\.ed-pricing::before \{[^}]*linear-gradient\(180deg, rgba\(255,252,252,\.55\) 0%, rgba\(255,252,252,\.82\) 100%\)/, "pricing needs the watermark continuing to fade toward 'very faint' by its own bottom edge");
 assert.match(css, /\.ed-launch \{[^}]*linear-gradient\(180deg, rgba\(255,252,252,\.82\) 0%, rgba\(255,252,252,0\) 100%\)/, "the final CTA needs the watermark fading back to the page's baseline (no extra wash) by its own bottom edge - the callback to the hero");
 
+// Real bug found live: the "Compare every feature" modal (shared markup, not part of this
+// redesign's own templates) still fell through to the legacy palette on its table header
+// (dark plum), eyebrow and heading (hot-magenta accent, bold-weight Fraunces), and borders -
+// an earlier pass only reskinned the table body's accent color and group-row background,
+// leaving the rest visibly clashing with every other reworked surface on this page.
+assert.match(css, /\.home-restyle \.comparison-table thead th \{ background: var\(--home-rose\)/, "the comparison modal's table header must use the redesign's rose, not the legacy plum");
+assert.match(css, /\.home-restyle \.comparison-header \.eyebrow \{ color: var\(--home-muted\)/, "the comparison modal's eyebrow must use the redesign's muted gray, not the legacy magenta accent");
+assert.match(css, /\.home-restyle \.comparison-header h2 \{[^}]*font-weight: 400/, "the comparison modal's heading must use this page's own lighter heading weight, not the site-wide bold 700");
+
 console.log('Homepage editorial redesign structure and existing entry points passed');

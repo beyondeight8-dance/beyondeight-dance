@@ -587,9 +587,21 @@ body.home-restyle {
   box-shadow: 0 18px 38px rgba(168, 103, 95, 0.24);
 }
 .home-restyle .comparison-panel { border-color: rgba(168, 103, 95, 0.2); }
+/* Real bug found live: the comparison modal's table header and eyebrow still fell through to
+   the legacy palette (dark plum header, hot-magenta eyebrow/accent) - visibly clashing with
+   every other reworked surface on this page. Lines above this comment were an earlier, partial
+   pass (just the table body's accent color and the group-row background); these finish the
+   job: the header background, the eyebrow, the heading weight (this page's own h2s are a
+   lighter 400, not the site-wide bold 700), and the pink-tinted borders. */
+.home-restyle .comparison-header .eyebrow { color: var(--home-muted); font-family: var(--home-sans); }
+.home-restyle .comparison-header h2 { font-family: var(--home-display); font-weight: 400; color: var(--home-ink); }
+.home-restyle .comparison-table thead th { background: var(--home-rose); }
 .home-restyle .comparison-table thead span { color: #f3e2dd; }
+.home-restyle .comparison-table th, .home-restyle .comparison-table td { border-color: rgba(168, 103, 95, 0.16); }
+.home-restyle .comparison-table tbody td:first-child { color: var(--home-muted); }
 .home-restyle .comparison-table tbody td:not(:first-child) { color: var(--home-rose); }
-.home-restyle .compare-group th { background: #f3e8e4; }
+.home-restyle .compare-group th { background: #f3e8e4; color: var(--home-ink); }
+.home-restyle .comparison-modal .modal-close { color: var(--home-ink); border-color: rgba(168, 103, 95, 0.22); }
 .home-restyle .demo-section { background: radial-gradient(circle at 80% 0%, rgba(168, 103, 95, 0.1), transparent 22rem), transparent; }
 .home-restyle .demo-form input:focus,
 .home-restyle .demo-form select:focus {
