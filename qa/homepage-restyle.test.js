@@ -510,8 +510,16 @@ assert.match(css, /\.ed-chaos-venmo-row > div > span \{ display: block/, "the Ve
 // the page should recede through analytics/pricing and return by the final CTA as a callback
 // to the hero.
 assert.match(css, /\.ed-reveal-rise \{ opacity: 0; transform: translateY\(26px\)/, "the rise reveal variant needs its translateY starting state for the pivot/dashboard-shot entrance");
-assert.match(html, /ed-reality-pivot ed-reveal ed-reveal-rise/, "the pivot block needs the rise-reveal treatment so it (and the dashboard shot below it) arrive with a gentle rise, not a hard cut");
-assert.match(html, /ed-dash-shot ed-reveal ed-reveal-rise" data-reveal-delay="180"/, "the dashboard shot must rise in just after the pivot text, not simultaneously with it");
+assert.match(html, /ed-reality-pivot ed-reveal ed-reveal-rise ed-reveal-repeat/, "the pivot block needs the rise-reveal treatment so it (and the dashboard shot below it) arrive with a gentle rise, not a hard cut");
+assert.match(html, /ed-dash-shot ed-reveal ed-reveal-rise ed-reveal-repeat" data-reveal-delay="180"/, "the dashboard shot must rise in just after the pivot text, not simultaneously with it");
+// Real bug found live: the pivot/dashboard-shot rise and the step mocks' stagger (below) were
+// one-shot like every other .ed-reveal, which meant scrolling away and back showed them just
+// sitting there with no transition at all - especially noticeable right after the chaos
+// cluster's own fade (above) was made reversible the same way, since the inconsistency between
+// "this one replays, these don't" read as broken. .ed-reveal-repeat opts specific elements
+// into toggling .is-in both ways in script.js instead of add-then-unobserve.
+assert.match(js, /target\.classList\.contains\("ed-reveal-repeat"\)/, "script.js needs the repeat-aware branch so marked elements replay their reveal on every scroll-into-view, not just the first");
+assert.match(js, /target\.classList\.remove\("is-in"\)/, "repeat-marked elements must clear is-in when scrolled out of view so the reveal can replay on the way back in");
 // Real bug found live: a first attempt at the cluster's "soften" effect combined opacity with
 // `filter: saturate() blur()`, which produced a sharp rectangular seam at the cluster's own
 // bounding box - confirmed by removing just the filter property and re-screenshotting, which
@@ -530,8 +538,10 @@ assert.match(js, /edChaosCluster\.classList\.toggle\("is-settling", entry\.isInt
 assert.doesNotMatch(js, /edChaosCluster\.classList\.add\("is-settling"\)/, "must not regress to a one-shot add - the cluster stayed faded on scroll-up, confirmed live");
 // Six product-journey mocks (site, dashboard, add-class / payment, confirm, roster) each get a
 // small reveal-delay so a row reveals with a slight stagger rather than all three cards in it
-// flashing in at once, which read as a static catalogue rather than the product "unfolding."
-assert.equal((html.match(/ed-mock ed-mock-\w+ ed-reveal" data-reveal-delay="(0|90|180)"/g) || []).length, 6, "all six product-journey mocks need a staggered reveal-delay, not a flat simultaneous reveal");
+// flashing in at once, which read as a static catalogue rather than the product "unfolding." -
+// and ed-reveal-repeat so that stagger replays every time the reader scrolls back to this row,
+// not just the first time.
+assert.equal((html.match(/ed-mock ed-mock-\w+ ed-reveal ed-reveal-repeat" data-reveal-delay="(0|90|180)"/g) || []).length, 6, "all six product-journey mocks need a staggered, repeatable reveal-delay, not a flat one-shot reveal");
 assert.match(css, /\.ed-business::before \{[^}]*linear-gradient\(180deg, rgba\(255,252,252,0\) 0%, rgba\(255,252,252,\.55\) 100%\)/, "the analytics section needs its increased cream wash, deepening toward its own bottom edge");
 assert.match(css, /\.ed-business-card \{[^}]*box-shadow: 0 26px 64px rgba\(79,40,48,\.18\)/, "the analytics card's shadow must be deepened so it reads as the sharpest element once the background behind it recedes");
 assert.match(css, /\.ed-pricing::before \{[^}]*linear-gradient\(180deg, rgba\(255,252,252,\.55\) 0%, rgba\(255,252,252,\.82\) 100%\)/, "pricing needs the watermark continuing to fade toward 'very faint' by its own bottom edge");
