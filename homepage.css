@@ -74,6 +74,14 @@ body.home-restyle {
 .ed-reveal { opacity: 0; transition: opacity .7s ease; }
 .ed-reveal.is-in { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .ed-reveal { opacity: 1; transition: none; } }
+/* A quieter variant for the "pain -> solution" pivot: the same .is-in toggle from the
+   IntersectionObserver in script.js, but also rising ~26px into place rather than just fading,
+   per explicit direction ("gently rising into view... no dramatic animation"). Combine with
+   .ed-reveal on the same element (the observer only looks for .ed-reveal) and optionally a
+   data-reveal-delay to stagger it after a sibling. */
+.ed-reveal-rise { opacity: 0; transform: translateY(26px); transition: opacity .8s ease, transform .8s cubic-bezier(.16,.84,.44,1); }
+.ed-reveal-rise.is-in { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { .ed-reveal-rise { opacity: 1; transform: none; transition: none; } }
 
 /* 01 — Hero: no photography, no product-panel visual - a dark, confident type statement
    centered on its own, letting the body's watermark photo carry the visual weight. */
@@ -118,7 +126,23 @@ body.home-restyle {
 .ed-reality-text h2 { margin: 0; color: inherit; font: 400 clamp(1.35rem, 2.6vw, 2rem)/1.32 var(--home-display); text-wrap: pretty; }
 .ed-reality-detail { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; line-height: 1.6; }
 .ed-reality-bridge { margin: 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
-.ed-chaos { width: 100%; }
+/* Lets the "pain" visual breathe as the reader reaches the pivot, per explicit direction - not
+   a hard cut, the cluster softens in place while "Put it all in one place" and the dashboard
+   shot take over as the focal point. Triggered once (script.js observes .ed-reality-pivot
+   entering the viewport) rather than toggling back and forth on scroll direction, matching the
+   one-shot .ed-reveal pattern already used throughout this page. */
+.ed-chaos { width: 100%; transition: opacity 1.1s ease; }
+/* Real bug found live: a first pass added `filter: saturate(.75) blur(.5px)` alongside the
+   opacity drop, which produced a sharp rectangular seam at the cluster's own bounding box - the
+   body's fixed-attachment watermark rendered visibly different in brightness inside vs. outside
+   that box while the filter transition ran. Confirmed by removing just the filter property and
+   re-screenshotting: the seam disappeared completely, isolating it to `filter` specifically
+   (not `opacity`, which is used all over this page against the same fixed background with no
+   such issue). This is a known Chromium compositing quirk - `filter` forces the element onto
+   its own layer, which doesn't sample a `background-attachment: fixed` ancestor the same way
+   as normal paint does. Opacity alone still reads as "soften," just without the extra blur. */
+.ed-chaos.is-settling { opacity: .42; }
+@media (prefers-reduced-motion: reduce) { .ed-chaos.is-settling { opacity: 1; transition: none; } }
 /* Creative pass, per reference image supplied live: the card cluster goes back to an
    overlapping, gently tilted "messy desk" arrangement with hand-drawn-style annotations
    calling out specific pain points, rather than the plain aligned grid an earlier explicit
@@ -377,10 +401,26 @@ body.home-restyle {
    which closes a gap this section's own copy already promised ("...and what to teach again")
    but the visual never actually showed. Still framed as representative, not live data - see
    the HTML comment above this section; the real Analytics tab remains unbuilt. */
-.ed-business { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .85fr); gap: clamp(24px, 5vw, 56px); align-items: center; max-width: 1180px; margin: 0 auto; padding: clamp(40px, 6vw, 64px) clamp(24px, 6vw, 40px); }
+/* The photo watermark behind the page is a single fixed body background shared by every
+   section (see the comment at the top of this file), so it reads at the same faint intensity
+   everywhere by default. From here through pricing, a local wash on top of it deepens
+   section-by-section, per explicit direction - "running your classes" recedes further into the
+   background as "understanding your business" (this section) and then pricing take over, and
+   .ed-launch below ramps the same wash back down to the page's baseline, reintroducing the
+   dancers behind the closing line as a callback to the hero. .ed-business and .ed-pricing are
+   centered, width-capped columns, so the wash needs its own full-bleed ::before (the standard
+   "break out of a centered container" trick: left/right 50% + negative 50vw margins) rather
+   than a plain background-color on the section itself, which would only paint within that
+   narrow column and leave bare photo showing on either side. Safe because html/body already
+   carry `overflow-x: hidden` (styles.css) to clip the intentional overflow this trick causes. */
+.ed-business { position: relative; z-index: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .85fr); gap: clamp(24px, 5vw, 56px); align-items: center; max-width: 1180px; margin: 0 auto; padding: clamp(40px, 6vw, 64px) clamp(24px, 6vw, 40px); }
+.ed-business::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; background: linear-gradient(180deg, rgba(255,252,252,0) 0%, rgba(255,252,252,.55) 100%); }
 .ed-business-text h2 { margin: 8px 0 10px; font: 400 clamp(1.7rem, 2.9vw, 2.3rem)/1.2 var(--home-display); color: var(--home-ink); text-wrap: balance; }
 .ed-business-text p { margin: 0; max-width: 400px; font-size: 15px; line-height: 1.55; color: var(--home-muted); }
-.ed-business-card { padding: 22px 24px; background: white; border-radius: 10px; box-shadow: 0 20px 50px rgba(79,40,48,.12); font-family: Inter, Arial, sans-serif; }
+/* Shadow deepened slightly (was 0 20px 50px / .12) so the card reads as the sharpest element
+   on the page once the background behind it recedes further via .ed-business::before above -
+   the photo stays visible, just further back, per explicit direction. */
+.ed-business-card { padding: 22px 24px; background: white; border-radius: 10px; box-shadow: 0 26px 64px rgba(79,40,48,.18); font-family: Inter, Arial, sans-serif; }
 .ed-business-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
 .ed-business-month { margin: 0; font: 700 10px Inter, Arial, sans-serif; text-transform: uppercase; letter-spacing: .05em; color: #766d68; }
 .ed-business-trend { display: inline-flex; align-items: center; gap: 3px; color: #47765c; font: 700 11px Inter, Arial, sans-serif; }
@@ -398,7 +438,12 @@ body.home-restyle {
 .ed-business-popular strong { color: #201d1b; font: 400 13px Georgia, serif; }
 
 /* 08 — Pricing: easy to scan, no unnecessary vertical space. */
-.ed-pricing { padding: clamp(40px, 5vw, 64px) clamp(24px, 6vw, 40px); max-width: 1080px; margin: 0 auto; }
+.ed-pricing { position: relative; z-index: 0; padding: clamp(40px, 5vw, 64px) clamp(24px, 6vw, 40px); max-width: 1080px; margin: 0 auto; }
+/* Continues the wash ramp from .ed-business::before above - by the end of pricing the photo is
+   "very faint," per explicit direction, before .ed-launch below fades it back toward the
+   page's baseline. Same full-bleed ::before trick as .ed-business, for the same reason (this
+   is also a centered, width-capped column). */
+.ed-pricing::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; background: linear-gradient(180deg, rgba(255,252,252,.55) 0%, rgba(255,252,252,.82) 100%); }
 .ed-pricing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .ed-pricing-tier { padding: 22px 20px; border: 1px solid #eee1e5; border-radius: 6px; background: #fffefd; display: flex; flex-direction: column; }
 .ed-pricing-tier-featured { border-color: var(--home-rose); box-shadow: 0 16px 40px rgba(168,103,95,.14); }
@@ -410,7 +455,14 @@ body.home-restyle {
 .ed-pricing-compare { display: block; margin: 20px auto 0; background: none; border: 0; padding: 0; font: 600 13px var(--home-sans); color: var(--home-rose); cursor: pointer; }
 
 /* 09 — Final CTA */
-.ed-launch { text-align: center; padding: clamp(48px, 6vw, 72px) 24px clamp(56px, 7vw, 84px); }
+/* The narrative payoff of the wash ramp started at .ed-business::before: fades the extra
+   cream wash from pricing's "very faint" level back down to nothing by the bottom of this
+   section, letting the dancers in the body's own fixed watermark become visible again behind
+   "We handle everything beyond" - a deliberate callback to the hero, which carries no extra
+   wash of its own (the page's baseline). .ed-launch has no max-width of its own (unlike
+   .ed-business/.ed-pricing above), so it's already full-bleed - a direct gradient background
+   works here without the ::before trick those two needed. */
+.ed-launch { position: relative; text-align: center; padding: clamp(48px, 6vw, 72px) 24px clamp(56px, 7vw, 84px); background: linear-gradient(180deg, rgba(255,252,252,.82) 0%, rgba(255,252,252,0) 100%); }
 /* Real bug found live: styles.css has a bare `h2 { max-width: 1320px; }` rule (unscoped,
    meant for other pages) that silently capped this h2's own box width without an auto margin
    to re-center it - the box sat flush-left within the section, so text-align: center on

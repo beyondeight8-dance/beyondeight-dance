@@ -2251,3 +2251,26 @@ if (edRevealItems.length) {
     edRevealItems.forEach((item) => edObserver.observe(item));
   }
 }
+
+// Lets the reality section's "pain" card cluster soften in place once the reader reaches the
+// pivot ("It works. But it's a lot to keep track of." / "Put it all in one place."), per
+// explicit direction - the cluster isn't hidden, just recedes as .ed-chaos.is-settling (see
+// homepage.css) while the pivot and the dashboard shot become the focal point. Separate from
+// the generic .ed-reveal observer above since this toggles a class on a different element
+// (.ed-chaos) than the one being observed (.ed-reality-pivot), and is one-shot like every other
+// reveal on this page rather than reversing on scroll-up.
+const edPivotMarker = document.querySelector(".ed-reality-pivot");
+const edChaosCluster = document.querySelector(".ed-chaos");
+if (edPivotMarker && edChaosCluster && !prefersReducedMotion.matches && "IntersectionObserver" in window) {
+  const edPivotObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        edChaosCluster.classList.add("is-settling");
+        edPivotObserver.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.3 }
+  );
+  edPivotObserver.observe(edPivotMarker);
+}
