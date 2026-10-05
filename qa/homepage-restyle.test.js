@@ -522,7 +522,12 @@ assert.match(html, /ed-dash-shot ed-reveal ed-reveal-rise" data-reveal-delay="18
 assert.match(css, /\.ed-chaos\.is-settling \{ opacity: \.42; \}/, "the cluster's soften effect must be opacity-only - filter caused a real rendering seam, confirmed live");
 assert.doesNotMatch(css, /\.ed-chaos\.is-settling \{[^}]*filter/, "must not regress the filter property back into the cluster's soften effect - it breaks the fixed-background watermark behind it");
 assert.match(js, /edPivotMarker.*ed-reality-pivot/, "script.js needs the observer that triggers the cluster's soften effect once the reader reaches the pivot");
-assert.match(js, /edChaosCluster\.classList\.add\("is-settling"\)/, "script.js must actually toggle is-settling on the chaos cluster when the pivot is reached");
+// Real bug found live: an initial one-shot version (add the class, then unobserve) left the
+// cluster permanently faded after the reader scrolled back up past the pivot, which read as
+// broken rather than intentional. Must toggle both ways instead, tied to the pivot's current
+// visibility.
+assert.match(js, /edChaosCluster\.classList\.toggle\("is-settling", entry\.isIntersecting\)/, "script.js must toggle is-settling both ways so scrolling back up restores the cluster, not just add it once");
+assert.doesNotMatch(js, /edChaosCluster\.classList\.add\("is-settling"\)/, "must not regress to a one-shot add - the cluster stayed faded on scroll-up, confirmed live");
 // Six product-journey mocks (site, dashboard, add-class / payment, confirm, roster) each get a
 // small reveal-delay so a row reveals with a slight stagger rather than all three cards in it
 // flashing in at once, which read as a static catalogue rather than the product "unfolding."

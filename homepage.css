@@ -128,9 +128,9 @@ body.home-restyle {
 .ed-reality-bridge { margin: 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
 /* Lets the "pain" visual breathe as the reader reaches the pivot, per explicit direction - not
    a hard cut, the cluster softens in place while "Put it all in one place" and the dashboard
-   shot take over as the focal point. Triggered once (script.js observes .ed-reality-pivot
-   entering the viewport) rather than toggling back and forth on scroll direction, matching the
-   one-shot .ed-reveal pattern already used throughout this page. */
+   shot take over as the focal point. script.js toggles this both ways as .ed-reality-pivot
+   enters/leaves the viewport, so scrolling back up restores the cluster rather than leaving it
+   permanently faded (real bug found live with an earlier one-shot version). */
 .ed-chaos { width: 100%; transition: opacity 1.1s ease; }
 /* Real bug found live: a first pass added `filter: saturate(.75) blur(.5px)` alongside the
    opacity drop, which produced a sharp rectangular seam at the cluster's own bounding box - the

@@ -2257,17 +2257,18 @@ if (edRevealItems.length) {
 // explicit direction - the cluster isn't hidden, just recedes as .ed-chaos.is-settling (see
 // homepage.css) while the pivot and the dashboard shot become the focal point. Separate from
 // the generic .ed-reveal observer above since this toggles a class on a different element
-// (.ed-chaos) than the one being observed (.ed-reality-pivot), and is one-shot like every other
-// reveal on this page rather than reversing on scroll-up.
+// (.ed-chaos) than the one being observed (.ed-reality-pivot). Unlike every one-shot .ed-reveal
+// on this page, this one toggles both ways (real bug found live: an initial one-shot version
+// left the cluster permanently faded after scrolling back up past the pivot, which read as
+// broken rather than intentional) - it's tied to the pivot's current visibility, not a single
+// "reached it once" moment, so scrolling back up restores the cluster.
 const edPivotMarker = document.querySelector(".ed-reality-pivot");
 const edChaosCluster = document.querySelector(".ed-chaos");
 if (edPivotMarker && edChaosCluster && !prefersReducedMotion.matches && "IntersectionObserver" in window) {
   const edPivotObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        edChaosCluster.classList.add("is-settling");
-        edPivotObserver.unobserve(entry.target);
+        edChaosCluster.classList.toggle("is-settling", entry.isIntersecting);
       });
     },
     { threshold: 0.3 }
