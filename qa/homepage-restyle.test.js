@@ -562,4 +562,8 @@ assert.match(css, /\.home-restyle \.comparison-table thead th \{ background: var
 assert.match(css, /\.home-restyle \.comparison-header \.eyebrow \{ color: var\(--home-muted\)/, "the comparison modal's eyebrow must use the redesign's muted gray, not the legacy magenta accent");
 assert.match(css, /\.home-restyle \.comparison-header h2 \{[^}]*font-weight: 400/, "the comparison modal's heading must use this page's own lighter heading weight, not the site-wide bold 700");
 
+// Per explicit direction: the "It works..." bridge line should land as its own dramatic beat,
+// not a quiet subtitle - sized up from the original 1.05rem to near-headline scale.
+assert.match(css, /\.ed-reality-bridge \{[^}]*font: 700 clamp\(1\.7rem, 3\.6vw, 2\.6rem\)/, "the bridge line needs its larger, more dramatic scale, per explicit direction");
+
 console.log('Homepage editorial redesign structure and existing entry points passed');

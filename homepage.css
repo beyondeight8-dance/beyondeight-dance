@@ -125,7 +125,11 @@ body.home-restyle {
 .ed-reality-text { max-width: 760px; }
 .ed-reality-text h2 { margin: 0; color: inherit; font: 400 clamp(1.35rem, 2.6vw, 2rem)/1.32 var(--home-display); text-wrap: pretty; }
 .ed-reality-detail { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; line-height: 1.6; }
-.ed-reality-bridge { margin: 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
+/* Sized up significantly from the original 1.05rem subtitle scale, per explicit direction -
+   this line is its own dramatic beat ("it works, but...") building tension before "Put it all
+   in one place" resolves it, not a quiet aside, so it needs to read as a near-headline moment
+   in its own right rather than body-copy-sized text. */
+.ed-reality-bridge { margin: 0; font: 700 clamp(1.7rem, 3.6vw, 2.6rem)/1.3 var(--home-sans); color: var(--home-rose); }
 /* Lets the "pain" visual breathe as the reader reaches the pivot, per explicit direction - not
    a hard cut, the cluster softens in place while "Put it all in one place" and the dashboard
    shot take over as the focal point. script.js toggles this both ways as .ed-reality-pivot
