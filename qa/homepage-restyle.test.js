@@ -130,7 +130,7 @@ assert.match(css, /\.ed-reality \{[^}]*max-width: 1180px[^}]*margin: 0 auto/, "t
 assert.match(html, /<h2 id="reality-title">You put your class out there\.<br>Then you piece everything else together yourself\.<\/h2>/, "the reality section headline must use the new narrative opener");
 assert.match(html, /<p class="ed-reality-detail">DMs for questions\. Venmo for payments\. A spreadsheet for your roster\.<br>Messages for reminders\. All in different places\.<\/p>/, "the reality section needs its new specific-tools line");
 assert.doesNotMatch(html, /class="ed-reality-lead"/, "the standalone lead paragraph was folded into the h2 - must not come back as a separate element");
-assert.match(html, /<p class="ed-reality-bridge">It works\.<br>But it's a lot to keep track of\.<\/p>/, "the reality section's payoff line must stay the narrative close, not the old \"BeyondEight brings it all together\"");
+assert.match(html, /class="ed-reality-bridge[^>]*>It works\.<br>But it's a lot to keep track of\.<\/p>/, "the reality section's payoff line must stay the narrative close, not the old \"BeyondEight brings it all together\"");
 // Per explicit direction, every multi-sentence line in this section uses an explicit <br>
 // between sentences rather than relying on the browser's natural wrap - a plain prose wrap
 // previously broke mid-way through unrelated sentences, which read as an awkward accident
@@ -510,7 +510,13 @@ assert.match(css, /\.ed-chaos-venmo-row > div > span \{ display: block/, "the Ve
 // the page should recede through analytics/pricing and return by the final CTA as a callback
 // to the hero.
 assert.match(css, /\.ed-reveal-rise \{ opacity: 0; transform: translateY\(26px\)/, "the rise reveal variant needs its translateY starting state for the pivot/dashboard-shot entrance");
-assert.match(html, /ed-reality-pivot ed-reveal ed-reveal-rise ed-reveal-repeat/, "the pivot block needs the rise-reveal treatment so it (and the dashboard shot below it) arrive with a gentle rise, not a hard cut");
+// The pivot was originally one reveal group (bridge + eyebrow + headline + tagline arriving
+// together). Per explicit direction, the rose "It works..." bridge line is now its own
+// transitional beat - it rises in first, then the resolution (eyebrow/headline/tagline,
+// wrapped in .ed-reality-resolve) rises in afterward with a deliberate pause, rather than
+// everything landing in one simultaneous block.
+assert.match(html, /ed-reality-bridge ed-reveal ed-reveal-rise ed-reveal-repeat" data-reveal-delay="0"/, "the 'It works...' bridge line needs its own reveal, arriving first as its own beat");
+assert.match(html, /ed-reality-resolve ed-reveal ed-reveal-rise ed-reveal-repeat" data-reveal-delay="550"/, "the resolution (eyebrow/headline/tagline) must rise in well after the bridge line, not simultaneously with it");
 assert.match(html, /ed-dash-shot ed-reveal ed-reveal-rise ed-reveal-repeat" data-reveal-delay="180"/, "the dashboard shot must rise in just after the pivot text, not simultaneously with it");
 // Real bug found live: the pivot/dashboard-shot rise and the step mocks' stagger (below) were
 // one-shot like every other .ed-reveal, which meant scrolling away and back showed them just
