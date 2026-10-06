@@ -564,6 +564,12 @@ assert.match(css, /\.home-restyle \.comparison-header h2 \{[^}]*font-weight: 400
 
 // Per explicit direction: the "It works..." bridge line should land as its own dramatic beat,
 // not a quiet subtitle - sized up from the original 1.05rem to near-headline scale.
-assert.match(css, /\.ed-reality-bridge \{[^}]*font: 700 clamp\(1\.7rem, 3\.6vw, 2\.6rem\)/, "the bridge line needs its larger, more dramatic scale, per explicit direction");
+// Font switched from the sans to the same serif display face/weight as .ed-reality-meet ("Put
+// it all in one place") below it, per explicit direction - the two beats should read as the
+// same voice. Also more separation above the bridge (cluster -> bridge) and between the bridge
+// and the resolution group, per explicit direction.
+assert.match(css, /\.ed-reality-bridge \{[^}]*font: 400 clamp\(1\.9rem, 3\.8vw, 2\.7rem\)\/1\.3 var\(--home-display\)/, "the bridge line must share .ed-reality-meet's serif display font/weight, not the sans");
+assert.match(css, /\.ed-reality-pivot \{ max-width: 640px; margin-top: 140px; \}/, "needs more space between the chaos cluster and the bridge line, per explicit direction");
+assert.match(css, /\.ed-reality-resolve \{ margin-top: 56px; \}/, "needs visible space between the bridge beat and the resolution group, not just a timing gap");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');

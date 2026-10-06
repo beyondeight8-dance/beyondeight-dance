@@ -128,8 +128,10 @@ body.home-restyle {
 /* Sized up significantly from the original 1.05rem subtitle scale, per explicit direction -
    this line is its own dramatic beat ("it works, but...") building tension before "Put it all
    in one place" resolves it, not a quiet aside, so it needs to read as a near-headline moment
-   in its own right rather than body-copy-sized text. */
-.ed-reality-bridge { margin: 0; font: 700 clamp(1.7rem, 3.6vw, 2.6rem)/1.3 var(--home-sans); color: var(--home-rose); }
+   in its own right rather than body-copy-sized text. Font switched from the sans to the same
+   serif display face/weight as .ed-reality-meet ("Put it all in one place") below it, per
+   explicit direction - the two beats should feel like the same voice, not two different fonts. */
+.ed-reality-bridge { margin: 0; font: 400 clamp(1.9rem, 3.8vw, 2.7rem)/1.3 var(--home-display); color: var(--home-rose); }
 /* Lets the "pain" visual breathe as the reader reaches the pivot, per explicit direction - not
    a hard cut, the cluster softens in place while "Put it all in one place" and the dashboard
    shot take over as the focal point. script.js toggles this both ways as .ed-reality-pivot
@@ -230,8 +232,13 @@ body.home-restyle {
    "what if it didn't have to be" pivot straight into the BeyondEight name - the reference's
    own flow builds through the whole messy-desk visual before turning the corner, rather than
    resolving the tension before the visual proof of it even appears. */
-.ed-reality-pivot { max-width: 640px; margin-top: 80px; }
-.ed-reality-pivot .ed-eyebrow { margin-top: 16px; }
+.ed-reality-pivot { max-width: 640px; margin-top: 140px; }
+/* More separation between the two staggered beats (the bridge line, then this resolution
+   group) than the 16px that was just enough for two lines sitting inside one single block -
+   per explicit direction, now that they're already timed apart they need visible space apart
+   too, not just a brief pause. */
+.ed-reality-resolve { margin-top: 56px; }
+.ed-reality-pivot .ed-eyebrow { margin-top: 0; }
 .ed-reality-meet { margin: 8px 0 0; font: 400 clamp(1.8rem, 3.4vw, 2.4rem)/1.15 var(--home-display); color: var(--home-ink); }
 .ed-reality-meet em { color: var(--home-rose); font-style: italic; }
 .ed-reality-tagline { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; }
