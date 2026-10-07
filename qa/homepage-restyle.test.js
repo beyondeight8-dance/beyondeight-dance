@@ -585,9 +585,10 @@ assert.match(css, /\.ed-reality-resolve \{ margin-top: 90px; \}/, "needs visible
 
 // Per explicit direction: the "Answering the same questions over and over." callout first
 // overlapped the DM card's own content (hurting readability), then a fully non-overlapping fix
-// pushed it "far off" instead - the reference wants it back to its original 3-line wrap, sat
+// pushed it "far off" instead - the reference wants it back to its original wrap, sat
 // diagonally at the card's top-left corner with just a touch of overlap, not floating apart
-// from it entirely.
-assert.match(css, /\.ed-callout-dm \{ left: 15px; top: 15px; width: 160px; transform: rotate\(-8deg\); \}/, "the DM callout needs its tucked-corner position, per explicit direction");
+// from it entirely. Widened further (160px -> 230px) so "over and over." joins "questions" on
+// one line instead of "over." spilling to its own third line.
+assert.match(css, /\.ed-callout-dm \{ left: 15px; top: 15px; width: 230px; transform: rotate\(-8deg\); \}/, "the DM callout needs its tucked-corner position and two-line wrap, per explicit direction");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');

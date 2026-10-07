@@ -210,7 +210,7 @@ body.home-restyle {
    at the card anymore (removed per explicit direction) - each callout's own position next to
    its card is what ties it to that card instead. */
 .ed-chaos-callout { position: absolute; z-index: 3; width: 150px; margin: 0; color: #24201e; font: 600 20px/1.16 "Caveat", cursive; }
-.ed-callout-dm { left: 15px; top: 15px; width: 160px; transform: rotate(-8deg); }
+.ed-callout-dm { left: 15px; top: 15px; width: 230px; transform: rotate(-8deg); }
 /* Codex's own original position for this callout (top: 0, default 150px width) overlaps the
    Venmo card's logo directly - confirmed via zoomed screenshot, the callout's own two-line
    wrapped text runs past the point where the card begins. Widening it to 210px lets "Tracking
