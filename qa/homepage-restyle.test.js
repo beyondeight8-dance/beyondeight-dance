@@ -569,7 +569,10 @@ assert.match(css, /\.home-restyle \.comparison-header h2 \{[^}]*font-weight: 400
 // same voice. Also more separation above the bridge (cluster -> bridge) and between the bridge
 // and the resolution group, per explicit direction.
 assert.match(css, /\.ed-reality-bridge \{[^}]*font: 400 clamp\(1\.9rem, 3\.8vw, 2\.7rem\)\/1\.3 var\(--home-display\)/, "the bridge line must share .ed-reality-meet's serif display font/weight, not the sans");
-assert.match(css, /\.ed-reality-pivot \{ max-width: 640px; margin-top: 140px; \}/, "needs more space between the chaos cluster and the bridge line, per explicit direction");
-assert.match(css, /\.ed-reality-resolve \{ margin-top: 56px; \}/, "needs visible space between the bridge beat and the resolution group, not just a timing gap");
+// Real feedback found live via screenshot: even at 140px/56px the faded cards still crowded
+// "It works...", since the opacity fade happens quickly and doesn't itself read as scene
+// separation - bumped further so physical distance does the work instead.
+assert.match(css, /\.ed-reality-pivot \{ max-width: 640px; margin-top: 220px; \}/, "needs more space between the chaos cluster and the bridge line, per explicit direction");
+assert.match(css, /\.ed-reality-resolve \{ margin-top: 90px; \}/, "needs visible space between the bridge beat and the resolution group, not just a timing gap");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');

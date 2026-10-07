@@ -232,12 +232,16 @@ body.home-restyle {
    "what if it didn't have to be" pivot straight into the BeyondEight name - the reference's
    own flow builds through the whole messy-desk visual before turning the corner, rather than
    resolving the tension before the visual proof of it even appears. */
-.ed-reality-pivot { max-width: 640px; margin-top: 140px; }
+/* Per explicit direction (live screenshot showed the faded cards still crowding "It works..."):
+   the opacity fade on the cluster happens quickly, so physical distance is what actually
+   separates the two "scenes" - the cards need to feel like a different moment, not a stack
+   bleeding straight into the text below it. */
+.ed-reality-pivot { max-width: 640px; margin-top: 220px; }
 /* More separation between the two staggered beats (the bridge line, then this resolution
    group) than the 16px that was just enough for two lines sitting inside one single block -
    per explicit direction, now that they're already timed apart they need visible space apart
    too, not just a brief pause. */
-.ed-reality-resolve { margin-top: 56px; }
+.ed-reality-resolve { margin-top: 90px; }
 .ed-reality-pivot .ed-eyebrow { margin-top: 0; }
 .ed-reality-meet { margin: 8px 0 0; font: 400 clamp(1.8rem, 3.4vw, 2.4rem)/1.15 var(--home-display); color: var(--home-ink); }
 .ed-reality-meet em { color: var(--home-rose); font-style: italic; }
