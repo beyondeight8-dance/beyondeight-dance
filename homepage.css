@@ -457,7 +457,6 @@ body.home-restyle {
 .ed-pricing::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; background: linear-gradient(180deg, rgba(255,252,252,.55) 0%, rgba(255,252,252,.82) 100%); }
 .ed-pricing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .ed-pricing-tier { padding: 22px 20px; border: 1px solid #eee1e5; border-radius: 6px; background: #fffefd; display: flex; flex-direction: column; }
-.ed-pricing-tier-featured { border-color: var(--home-rose); box-shadow: 0 16px 40px rgba(168,103,95,.14); }
 .ed-pricing-name { margin: 0 0 4px; font: 600 12px var(--home-sans); text-transform: uppercase; letter-spacing: .04em; color: var(--home-muted); }
 .ed-pricing-price { margin: 0 0 10px; font: 400 2.1rem/1 var(--home-display); color: var(--home-ink); }
 .ed-pricing-price span { font-size: .9rem; color: var(--home-muted); }
