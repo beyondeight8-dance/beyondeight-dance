@@ -125,7 +125,13 @@ body.home-restyle {
 .ed-reality-text { max-width: 760px; }
 .ed-reality-text h2 { margin: 0; color: inherit; font: 400 clamp(1.35rem, 2.6vw, 2rem)/1.32 var(--home-display); text-wrap: pretty; }
 .ed-reality-detail { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; line-height: 1.6; }
-.ed-reality-bridge { margin: 0; font: 600 1.05rem/1.4 var(--home-sans); color: var(--home-rose); }
+/* Sized up significantly from the original 1.05rem subtitle scale, per explicit direction -
+   this line is its own dramatic beat ("it works, but...") building tension before "Put it all
+   in one place" resolves it, not a quiet aside, so it needs to read as a near-headline moment
+   in its own right rather than body-copy-sized text. Font switched from the sans to the same
+   serif display face/weight as .ed-reality-meet ("Put it all in one place") below it, per
+   explicit direction - the two beats should feel like the same voice, not two different fonts. */
+.ed-reality-bridge { margin: 0; font: 400 clamp(1.9rem, 3.8vw, 2.7rem)/1.3 var(--home-display); color: var(--home-rose); }
 /* Lets the "pain" visual breathe as the reader reaches the pivot, per explicit direction - not
    a hard cut, the cluster softens in place while "Put it all in one place" and the dashboard
    shot take over as the focal point. script.js toggles this both ways as .ed-reality-pivot
@@ -204,7 +210,7 @@ body.home-restyle {
    at the card anymore (removed per explicit direction) - each callout's own position next to
    its card is what ties it to that card instead. */
 .ed-chaos-callout { position: absolute; z-index: 3; width: 150px; margin: 0; color: #24201e; font: 600 20px/1.16 "Caveat", cursive; }
-.ed-callout-dm { left: 0; top: 105px; transform: rotate(-4deg); }
+.ed-callout-dm { left: 15px; top: 15px; width: 230px; transform: rotate(-8deg); }
 /* Codex's own original position for this callout (top: 0, default 150px width) overlaps the
    Venmo card's logo directly - confirmed via zoomed screenshot, the callout's own two-line
    wrapped text runs past the point where the card begins. Widening it to 210px lets "Tracking
@@ -226,8 +232,17 @@ body.home-restyle {
    "what if it didn't have to be" pivot straight into the BeyondEight name - the reference's
    own flow builds through the whole messy-desk visual before turning the corner, rather than
    resolving the tension before the visual proof of it even appears. */
-.ed-reality-pivot { max-width: 640px; margin-top: 40px; }
-.ed-reality-pivot .ed-eyebrow { margin-top: 16px; }
+/* Per explicit direction (live screenshot showed the faded cards still crowding "It works..."):
+   the opacity fade on the cluster happens quickly, so physical distance is what actually
+   separates the two "scenes" - the cards need to feel like a different moment, not a stack
+   bleeding straight into the text below it. */
+.ed-reality-pivot { max-width: 640px; margin-top: 220px; }
+/* More separation between the two staggered beats (the bridge line, then this resolution
+   group) than the 16px that was just enough for two lines sitting inside one single block -
+   per explicit direction, now that they're already timed apart they need visible space apart
+   too, not just a brief pause. */
+.ed-reality-resolve { margin-top: 90px; }
+.ed-reality-pivot .ed-eyebrow { margin-top: 0; }
 .ed-reality-meet { margin: 8px 0 0; font: 400 clamp(1.8rem, 3.4vw, 2.4rem)/1.15 var(--home-display); color: var(--home-ink); }
 .ed-reality-meet em { color: var(--home-rose); font-style: italic; }
 .ed-reality-tagline { margin: 10px 0 0; color: var(--home-muted); font-size: 15px; }
@@ -446,7 +461,6 @@ body.home-restyle {
 .ed-pricing::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; background: linear-gradient(180deg, rgba(255,252,252,.55) 0%, rgba(255,252,252,.82) 100%); }
 .ed-pricing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .ed-pricing-tier { padding: 22px 20px; border: 1px solid #eee1e5; border-radius: 6px; background: #fffefd; display: flex; flex-direction: column; }
-.ed-pricing-tier-featured { border-color: var(--home-rose); box-shadow: 0 16px 40px rgba(168,103,95,.14); }
 .ed-pricing-name { margin: 0 0 4px; font: 600 12px var(--home-sans); text-transform: uppercase; letter-spacing: .04em; color: var(--home-muted); }
 .ed-pricing-price { margin: 0 0 10px; font: 400 2.1rem/1 var(--home-display); color: var(--home-ink); }
 .ed-pricing-price span { font-size: .9rem; color: var(--home-muted); }

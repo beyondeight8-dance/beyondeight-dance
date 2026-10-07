@@ -130,7 +130,7 @@ assert.match(css, /\.ed-reality \{[^}]*max-width: 1180px[^}]*margin: 0 auto/, "t
 assert.match(html, /<h2 id="reality-title">You put your class out there\.<br>Then you piece everything else together yourself\.<\/h2>/, "the reality section headline must use the new narrative opener");
 assert.match(html, /<p class="ed-reality-detail">DMs for questions\. Venmo for payments\. A spreadsheet for your roster\.<br>Messages for reminders\. All in different places\.<\/p>/, "the reality section needs its new specific-tools line");
 assert.doesNotMatch(html, /class="ed-reality-lead"/, "the standalone lead paragraph was folded into the h2 - must not come back as a separate element");
-assert.match(html, /<p class="ed-reality-bridge">It works\.<br>But it's a lot to keep track of\.<\/p>/, "the reality section's payoff line must stay the narrative close, not the old \"BeyondEight brings it all together\"");
+assert.match(html, /class="ed-reality-bridge[^>]*>It works\.<br>But it's a lot to keep track of\.<\/p>/, "the reality section's payoff line must stay the narrative close, not the old \"BeyondEight brings it all together\"");
 // Per explicit direction, every multi-sentence line in this section uses an explicit <br>
 // between sentences rather than relying on the browser's natural wrap - a plain prose wrap
 // previously broke mid-way through unrelated sentences, which read as an awkward accident
@@ -510,7 +510,13 @@ assert.match(css, /\.ed-chaos-venmo-row > div > span \{ display: block/, "the Ve
 // the page should recede through analytics/pricing and return by the final CTA as a callback
 // to the hero.
 assert.match(css, /\.ed-reveal-rise \{ opacity: 0; transform: translateY\(26px\)/, "the rise reveal variant needs its translateY starting state for the pivot/dashboard-shot entrance");
-assert.match(html, /ed-reality-pivot ed-reveal ed-reveal-rise ed-reveal-repeat/, "the pivot block needs the rise-reveal treatment so it (and the dashboard shot below it) arrive with a gentle rise, not a hard cut");
+// The pivot was originally one reveal group (bridge + eyebrow + headline + tagline arriving
+// together). Per explicit direction, the rose "It works..." bridge line is now its own
+// transitional beat - it rises in first, then the resolution (eyebrow/headline/tagline,
+// wrapped in .ed-reality-resolve) rises in afterward with a deliberate pause, rather than
+// everything landing in one simultaneous block.
+assert.match(html, /ed-reality-bridge ed-reveal ed-reveal-rise ed-reveal-repeat" data-reveal-delay="0"/, "the 'It works...' bridge line needs its own reveal, arriving first as its own beat");
+assert.match(html, /ed-reality-resolve ed-reveal ed-reveal-rise ed-reveal-repeat" data-reveal-delay="550"/, "the resolution (eyebrow/headline/tagline) must rise in well after the bridge line, not simultaneously with it");
 assert.match(html, /ed-dash-shot ed-reveal ed-reveal-rise ed-reveal-repeat" data-reveal-delay="180"/, "the dashboard shot must rise in just after the pivot text, not simultaneously with it");
 // Real bug found live: the pivot/dashboard-shot rise and the step mocks' stagger (below) were
 // one-shot like every other .ed-reveal, which meant scrolling away and back showed them just
@@ -519,7 +525,15 @@ assert.match(html, /ed-dash-shot ed-reveal ed-reveal-rise ed-reveal-repeat" data
 // "this one replays, these don't" read as broken. .ed-reveal-repeat opts specific elements
 // into toggling .is-in both ways in script.js instead of add-then-unobserve.
 assert.match(js, /target\.classList\.contains\("ed-reveal-repeat"\)/, "script.js needs the repeat-aware branch so marked elements replay their reveal on every scroll-into-view, not just the first");
-assert.match(js, /target\.classList\.remove\("is-in"\)/, "repeat-marked elements must clear is-in when scrolled out of view so the reveal can replay on the way back in");
+// Real bug found live, caught from a screen recording: the first version cleared is-in on ANY
+// exit from the viewport, including exiting through the TOP while scrolling normally further
+// down the page past something already fully shown - IntersectionObserver can't tell that
+// apart from scrolling up away from it. That made already-revealed elements (the dashboard
+// shot was the one caught on camera) visibly fade out mid-scroll for no reason the reader
+// caused. Fixed by only clearing is-in when boundingClientRect.top >= 0 (exiting through the
+// bottom - i.e. scrolled up away from it), never when top < 0 (exiting through the top).
+assert.match(js, /entry\.boundingClientRect\.top >= 0/, "repeat-marked elements must only reset when exiting through the bottom of the viewport (scrolled away from), not the top (scrolled past) - confirmed as a real bug from a screen recording");
+assert.match(js, /target\.classList\.remove\("is-in"\)/, "repeat-marked elements must clear is-in when scrolled away from so the reveal can replay on the way back");
 // Real bug found live: a first attempt at the cluster's "soften" effect combined opacity with
 // `filter: saturate() blur()`, which produced a sharp rectangular seam at the cluster's own
 // bounding box - confirmed by removing just the filter property and re-screenshotting, which
@@ -555,5 +569,26 @@ assert.match(css, /\.ed-launch \{[^}]*linear-gradient\(180deg, rgba\(255,252,252
 assert.match(css, /\.home-restyle \.comparison-table thead th \{ background: var\(--home-rose\)/, "the comparison modal's table header must use the redesign's rose, not the legacy plum");
 assert.match(css, /\.home-restyle \.comparison-header \.eyebrow \{ color: var\(--home-muted\)/, "the comparison modal's eyebrow must use the redesign's muted gray, not the legacy magenta accent");
 assert.match(css, /\.home-restyle \.comparison-header h2 \{[^}]*font-weight: 400/, "the comparison modal's heading must use this page's own lighter heading weight, not the site-wide bold 700");
+
+// Per explicit direction: the "It works..." bridge line should land as its own dramatic beat,
+// not a quiet subtitle - sized up from the original 1.05rem to near-headline scale.
+// Font switched from the sans to the same serif display face/weight as .ed-reality-meet ("Put
+// it all in one place") below it, per explicit direction - the two beats should read as the
+// same voice. Also more separation above the bridge (cluster -> bridge) and between the bridge
+// and the resolution group, per explicit direction.
+assert.match(css, /\.ed-reality-bridge \{[^}]*font: 400 clamp\(1\.9rem, 3\.8vw, 2\.7rem\)\/1\.3 var\(--home-display\)/, "the bridge line must share .ed-reality-meet's serif display font/weight, not the sans");
+// Real feedback found live via screenshot: even at 140px/56px the faded cards still crowded
+// "It works...", since the opacity fade happens quickly and doesn't itself read as scene
+// separation - bumped further so physical distance does the work instead.
+assert.match(css, /\.ed-reality-pivot \{ max-width: 640px; margin-top: 220px; \}/, "needs more space between the chaos cluster and the bridge line, per explicit direction");
+assert.match(css, /\.ed-reality-resolve \{ margin-top: 90px; \}/, "needs visible space between the bridge beat and the resolution group, not just a timing gap");
+
+// Per explicit direction: the "Answering the same questions over and over." callout first
+// overlapped the DM card's own content (hurting readability), then a fully non-overlapping fix
+// pushed it "far off" instead - the reference wants it back to its original wrap, sat
+// diagonally at the card's top-left corner with just a touch of overlap, not floating apart
+// from it entirely. Widened further (160px -> 230px) so "over and over." joins "questions" on
+// one line instead of "over." spilling to its own third line.
+assert.match(css, /\.ed-callout-dm \{ left: 15px; top: 15px; width: 230px; transform: rotate\(-8deg\); \}/, "the DM callout needs its tucked-corner position and two-line wrap, per explicit direction");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');
