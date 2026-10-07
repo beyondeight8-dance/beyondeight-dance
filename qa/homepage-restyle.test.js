@@ -525,7 +525,15 @@ assert.match(html, /ed-dash-shot ed-reveal ed-reveal-rise ed-reveal-repeat" data
 // "this one replays, these don't" read as broken. .ed-reveal-repeat opts specific elements
 // into toggling .is-in both ways in script.js instead of add-then-unobserve.
 assert.match(js, /target\.classList\.contains\("ed-reveal-repeat"\)/, "script.js needs the repeat-aware branch so marked elements replay their reveal on every scroll-into-view, not just the first");
-assert.match(js, /target\.classList\.remove\("is-in"\)/, "repeat-marked elements must clear is-in when scrolled out of view so the reveal can replay on the way back in");
+// Real bug found live, caught from a screen recording: the first version cleared is-in on ANY
+// exit from the viewport, including exiting through the TOP while scrolling normally further
+// down the page past something already fully shown - IntersectionObserver can't tell that
+// apart from scrolling up away from it. That made already-revealed elements (the dashboard
+// shot was the one caught on camera) visibly fade out mid-scroll for no reason the reader
+// caused. Fixed by only clearing is-in when boundingClientRect.top >= 0 (exiting through the
+// bottom - i.e. scrolled up away from it), never when top < 0 (exiting through the top).
+assert.match(js, /entry\.boundingClientRect\.top >= 0/, "repeat-marked elements must only reset when exiting through the bottom of the viewport (scrolled away from), not the top (scrolled past) - confirmed as a real bug from a screen recording");
+assert.match(js, /target\.classList\.remove\("is-in"\)/, "repeat-marked elements must clear is-in when scrolled away from so the reveal can replay on the way back");
 // Real bug found live: a first attempt at the cluster's "soften" effect combined opacity with
 // `filter: saturate() blur()`, which produced a sharp rectangular seam at the cluster's own
 // bounding box - confirmed by removing just the filter property and re-screenshotting, which

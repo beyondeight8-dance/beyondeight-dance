@@ -2256,7 +2256,14 @@ if (edRevealItems.length) {
             if (entry.isIntersecting) {
               const delay = Number(target.dataset.revealDelay) || 0;
               target._edRevealTimeout = setTimeout(() => target.classList.add("is-in"), delay);
-            } else {
+            } else if (entry.boundingClientRect.top >= 0) {
+              // Real bug found live (from a screen recording): only reset when the element
+              // exits through the BOTTOM of the viewport (boundingClientRect.top >= 0 means it
+              // hasn't scrolled above the top yet) - i.e. the reader scrolled up away from it.
+              // Exiting through the TOP (top < 0, scrolled past it while moving down) must NOT
+              // reset it - that's just normal forward scrolling past something already shown in
+              // full, and resetting here made already-revealed elements visibly fade out mid-
+              // scroll for no reason the reader caused.
               target.classList.remove("is-in");
             }
             return;
