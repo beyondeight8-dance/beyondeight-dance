@@ -583,10 +583,11 @@ assert.match(css, /\.ed-reality-bridge \{[^}]*font: 400 clamp\(1\.9rem, 3\.8vw, 
 assert.match(css, /\.ed-reality-pivot \{ max-width: 640px; margin-top: 220px; \}/, "needs more space between the chaos cluster and the bridge line, per explicit direction");
 assert.match(css, /\.ed-reality-resolve \{ margin-top: 90px; \}/, "needs visible space between the bridge beat and the resolution group, not just a timing gap");
 
-// Per explicit direction: the "Answering the same questions over and over." callout overlapped
-// the DM card's own content, hurting readability. Tilted further, narrowed, and shifted left
-// into the cluster's own side margin so its rotated bounding box clears the card entirely
-// (measured live: callout.right ~274px vs. dm.left ~287px, a clean gap).
-assert.match(css, /\.ed-callout-dm \{ left: -48px; top: 100px; width: 120px; transform: rotate\(-8deg\); \}/, "the DM callout needs its repositioned, non-overlapping tilt, per explicit direction");
+// Per explicit direction: the "Answering the same questions over and over." callout first
+// overlapped the DM card's own content (hurting readability), then a fully non-overlapping fix
+// pushed it "far off" instead - the reference wants it back to its original 3-line wrap, sat
+// diagonally at the card's top-left corner with just a touch of overlap, not floating apart
+// from it entirely.
+assert.match(css, /\.ed-callout-dm \{ left: 15px; top: 15px; width: 160px; transform: rotate\(-8deg\); \}/, "the DM callout needs its tucked-corner position, per explicit direction");
 
 console.log('Homepage editorial redesign structure and existing entry points passed');
