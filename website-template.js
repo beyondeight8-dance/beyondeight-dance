@@ -758,7 +758,12 @@
     ["TikTok", content.tiktok, "tiktok"],
     ["YouTube", content.youtube, "youtube"]
   ].filter(([, value]) => value);
-  const socialLinks = (content, compact = false) => socialRecords(content).map(([label, value, platform]) => `<a href="${esc(externalHref(value, platform))}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)}">${compact ? esc(label.slice(0, 2).toUpperCase()) : esc(label)}</a>`).join("");
+  const SOCIAL_ICONS = {
+    instagram: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.1" cy="6.9" r="0.6" fill="currentColor" stroke="none"></circle></svg>`,
+    tiktok: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3v10.8a3.6 3.6 0 1 1-3-3.55"></path><path d="M15 3a5 5 0 0 0 5 5"></path></svg>`,
+    youtube: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="4"></rect><path d="M10.3 9.3v5.4l4.8-2.7Z" fill="currentColor" stroke="currentColor" stroke-linejoin="round"></path></svg>`
+  };
+  const socialLinks = (content, compact = false) => socialRecords(content).map(([label, value, platform]) => `<a href="${esc(externalHref(value, platform))}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)}">${compact ? `<span class="public-editorial-social-icon" aria-hidden="true">${SOCIAL_ICONS[platform] || ""}</span>` : esc(label)}</a>`).join("");
   const editorialHeadline = (headline = "") => {
     const words = String(headline).trim().split(/\s+/).filter(Boolean);
     if (!words.length) return "";
@@ -870,7 +875,7 @@
 </head>
 <body class="${themeClassFor(content.theme.name)}">
   ${renderSharedPublicSite(content)}
-  <script src="/website-template.js?v=20260921-about-simplify"><\/script>
+  <script src="/website-template.js?v=20261013-social-icons"><\/script>
   <script>
     (() => {
       const businessId = ${businessId};

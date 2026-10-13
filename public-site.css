@@ -78,8 +78,10 @@
 .approved-public-site .public-editorial-footer > nav a { color: #252529; font-size: 0.72rem; font-weight: 500; white-space: nowrap; }
 .approved-public-site .public-editorial-header > nav a:first-child { text-decoration: underline; text-underline-offset: 8px; }
 .public-editorial-header-actions { display: flex; align-items: center; justify-content: flex-end; gap: 20px; }
-.public-editorial-header-actions > span { display: flex; gap: 12px; }
-.public-editorial-header-actions > span a { font-size: 0.68rem; font-weight: 700; }
+.public-editorial-header-actions > span { display: flex; align-items: center; gap: 14px; }
+.public-editorial-header-actions > span a { display: inline-flex; }
+.public-editorial-social-icon { display: inline-flex; width: 18px; height: 18px; }
+.public-editorial-social-icon svg { width: 100%; height: 100%; }
 
 /* White text/icons while the header blends over the hero photo; back to dark ink once there's
    no image behind it (.has-no-hero-image, a solid bar per the fallback rule above). */
@@ -244,8 +246,8 @@
 
 .public-editorial-footer { display: grid; grid-template-columns: minmax(190px, 1fr) auto auto; align-items: center; gap: 28px; border-top: 1px solid var(--public-line); padding: 28px clamp(28px, 6vw, 96px) 20px; background: var(--public-paper); }
 .public-editorial-footer > div:first-child p { margin: 8px 0 0; color: var(--public-muted); font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; }
-.public-editorial-footer-socials { display: flex; gap: 12px; }
-.public-editorial-footer-socials a { font-size: 0.65rem; font-weight: 700; }
+.public-editorial-footer-socials { display: flex; align-items: center; gap: 14px; }
+.public-editorial-footer-socials a { display: inline-flex; color: var(--public-ink); }
 .public-editorial-footer > p,
 .public-editorial-footer > span { margin: 0; color: var(--public-muted); font-size: 0.56rem; }
 .public-editorial-footer > p { grid-column: 1 / 3; border-top: 1px solid var(--public-line); padding-top: 15px; }
