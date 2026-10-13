@@ -260,26 +260,22 @@
     const classOptions = registrationClassOptions();
     return `<section class="owner-dashboard-section"><header><div><p class="eyebrow">Students</p><h1>Registrations</h1><p>Bookings from your published website.</p></div><div class="owner-header-actions"><button class="primary-button" type="button" data-export-registrations><span aria-hidden="true">${ICONS.download}</span> Export Registrations</button></div></header><div class="owner-stat-cards">${statCardsMarkup}</div><div class="owner-list-filters"><label class="owner-search-field"><span aria-hidden="true">${ICONS.search}</span><input type="search" placeholder="Search by name, email or class..." data-registration-search value="${esc(registrationFilter.search)}"></label><select data-registration-class-filter>${[["all","All classes"], ...classOptions.map((option) => [option.id, option.title])].map(([value,label]) => `<option value="${esc(value)}"${registrationFilter.classId === value ? " selected" : ""}>${esc(label)}</option>`).join("")}</select><select data-registration-status-filter>${[["all","All statuses"],["payment_pending_verification","Pending verification"],["paid","Paid"],["registered","Registered"]].map(([value,label]) => `<option value="${value}"${registrationFilter.status === value ? " selected" : ""}>${label}</option>`).join("")}</select><select data-registration-sort>${[["newest","Newest first"],["oldest","Oldest first"]].map(([value,label]) => `<option value="${value}"${registrationFilter.sort === value ? " selected" : ""}>${label}</option>`).join("")}</select></div><div class="owner-registration-list" data-registration-list>${registrationListMarkup()}</div></section>`;
   };
-  // Classes = what you teach (managed exclusively on the Classes tab above); Website = how you
+  // Classes = what you teach (managed exclusively on the Classes tab above); Website is how you
   // look. This panel is intentionally limited to appearance/brand - no section labels, no
-  // header/footer controls, no class management. Picking a theme here also restyles class cards
-  // on the public site, since setup-preview-class-card is themed by data-theme-key already.
+  // header/footer controls, no class management. Every business renders through the one
+  // approved public site design (see website-template.js's renderApprovedPublicSite), so there
+  // is no theme choice here anymore.
   const wfield = (label, name, value = "", type = "text", placeholder = "") => `<label>${esc(label)}<input type="${type}" name="${esc(name)}" value="${esc(value)}"${placeholder ? ` placeholder="${esc(placeholder)}"` : ""}></label>`;
   const warea = (label, name, value = "", rows = 4, placeholder = "") => `<label>${esc(label)}<textarea name="${esc(name)}" rows="${rows}"${placeholder ? ` placeholder="${esc(placeholder)}"` : ""}>${esc(value)}</textarea></label>`;
   const photoCard = (label, key, current = "", ratio = "16/9") => `<div class="owner-photo-card" data-photo-field><span class="owner-photo-label">${esc(label)}</span><div class="owner-photo-preview" style="aspect-ratio:${esc(ratio)}">${current ? `<img src="${esc(current)}" alt="">` : `<span class="owner-photo-placeholder" aria-hidden="true">🖼️</span>`}<label class="owner-photo-upload">Change photo<input type="file" accept="image/jpeg,image/png,image/webp" data-photo-upload="${esc(key)}" hidden></label></div><input type="hidden" name="${esc(key)}" value="${esc(current)}"><small data-upload-status>JPG, PNG, or WEBP up to 5MB</small></div>`;
   const galleryGrid = (images) => images.length ? `<div class="owner-gallery-manager">${images.map((src, index) => `<article><img src="${esc(src)}" alt="Gallery image ${index + 1}"><div><button type="button" data-gallery-move="${index}" data-direction="-1">Up</button><button type="button" data-gallery-move="${index}" data-direction="1">Down</button><button type="button" data-gallery-remove="${index}">Remove</button></div></article>`).join("")}</div>` : `<div class="owner-empty-state"><strong>No gallery images yet.</strong><p>Upload your first photo below.</p></div>`;
   const instagramControls = () => `<section class="owner-instagram" data-owner-instagram><div><small>Instagram feed</small><strong data-instagram-status>Checking connection...</strong><p data-instagram-help>Connect a Creator or Business account to show recent posts.</p></div><div data-instagram-settings hidden><label><input type="checkbox" data-instagram-visible> Show on website</label><label>Posts<select data-instagram-limit><option value="4">4</option><option value="6">6</option></select></label></div><div class="owner-instagram-actions"><button type="button" data-instagram-connect>Connect Instagram</button><button type="button" data-instagram-refresh hidden>Refresh</button><button type="button" data-instagram-disconnect hidden>Disconnect</button></div><small data-instagram-message></small></section>`;
-  const websiteTabs = [["look", "Look & Theme"], ["hero", "Hero"], ["about", "About Me"], ["gallery", "Gallery"], ["socials", "Socials"]];
+  const websiteTabs = [["look", "Brand"], ["hero", "Hero"], ["about", "About Me"], ["gallery", "Gallery"], ["socials", "Socials"]];
   const websiteTabNav = () => `<nav class="owner-website-tabs" aria-label="Website sections">${websiteTabs.map(([key, label]) => `<button type="button" class="${websiteTab === key ? "is-active" : ""}" data-website-tab="${key}">${label}</button>`).join("")}</nav>`;
   const websiteBanner = () => dirty() ? `<section class="owner-draft-banner"><div><strong>Unpublished changes</strong><span>Your website draft is private until you publish.</span></div><button data-publish>Publish Changes</button></section>` : `<p class="owner-published-state">✓ Published and up to date</p>`;
   const websiteLookTab = () => {
     const c = content(draftState);
     return `<div class="owner-website-panel">
-      <div class="owner-theme-picker-wrap">
-        <h3>Theme</h3>
-        <p>Pick the overall look. Your class cards on the live site automatically match this theme.</p>
-        <div class="setup-theme-picker" data-theme-picker>${templates.renderThemePicker(draftState.theme || c.theme.name)}</div>
-      </div>
       <form class="owner-settings-form" data-website-form="look">
         <h3>Brand</h3>
         ${wfield("Business name", "businessName", draftState.businessName || business.business_name)}

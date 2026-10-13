@@ -33,10 +33,12 @@ assert.doesNotMatch(publicSite, /data-class-edit|data-add-class|data-class-save|
 assert.match(dashboard, /const classView = \(\)/, "classes stay managed exclusively on the dashboard's Classes tab");
 
 // Style Your Website: a tabbed, appearance-only panel with exactly the five approved areas -
-// Look/Theme, Hero, About Me, Gallery, Socials - and nothing else (no section labels/headings,
+// Brand, Hero, About Me, Gallery, Socials - and nothing else (no section labels/headings,
 // no header/footer controls, no benefits/testimonials/FAQ/contact forms).
-assert.match(dashboard, /const websiteTabs = \[\["look", "Look & Theme"\], \["hero", "Hero"\], \["about", "About Me"\], \["gallery", "Gallery"\], \["socials", "Socials"\]\]/, "the website panel must expose exactly the five approved areas");
-assert.match(dashboard, /templates\.renderThemePicker\(draftState\.theme \|\| c\.theme\.name\)/, "the Look & Theme tab must offer a visual theme picker");
+assert.match(dashboard, /const websiteTabs = \[\["look", "Brand"\], \["hero", "Hero"\], \["about", "About Me"\], \["gallery", "Gallery"\], \["socials", "Socials"\]\]/, "the website panel must expose exactly the five approved areas");
+// Every business now renders through the one approved public site design regardless of its
+// stored theme value, so the Look tab no longer offers a theme picker.
+assert.doesNotMatch(dashboard, /templates\.renderThemePicker\(draftState\.theme \|\| c\.theme\.name\)/, "the Look tab must not resurface the retired theme picker");
 assert.match(dashboard, /photoCard\("Hero photo", "heroImage"/, "the Hero tab must offer a hero photo");
 assert.match(dashboard, /photoCard\("Your photo", "instructorImage"/, "the About Me tab must offer an instructor photo");
 assert.match(dashboard, /websiteGalleryTab/, "the Gallery tab must remain available");

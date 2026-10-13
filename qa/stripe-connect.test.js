@@ -182,9 +182,9 @@ assert.match(styles, /\.booking-fact-icon \{/, "the fact rows must use icon badg
 assert.match(publicSite, /item\.image \|\| \[content\.images\?\.gallery, content\.images\?\.workshop, content\.images\?\.performance, content\.images\?\.hero\]/, "the booking card's photo must come from the business's real configured images");
 assert.match(publicSite, /booking-visual-media is-empty/, "must degrade gracefully to an initial when no class image is configured");
 // The embedded Stripe form previously used Stripe's generic default blue button, which
-// clashed inside our own rose/cream-styled card. Must stay on-brand.
+// clashed inside our own Editorial Neutral-styled card. Must stay on-brand.
 assert.doesNotMatch(publicSite, /colorPrimary: "#0570de"/, "the Stripe form's primary color must not regress to Stripe's generic default blue");
-assert.match(publicSite, /colorPrimary: "#a8675f"/, "the Stripe form's primary color must match the booking dialog's own rose brand color");
+assert.match(publicSite, /colorPrimary: "#252529"/, "the Stripe form's primary color must match the booking dialog's own primary-button brand color");
 
 // Live bug: Stripe rejected the embedded Checkout Session with "You must provide a
 // `returnUrl` on confirm() or `return_url` when initializing the Checkout Session" - needed

@@ -113,7 +113,7 @@
     dialog.querySelector("[data-confirm-booking]").addEventListener("click", () => completeBooking(item, details));
   };
   // Configured in Checkout Studio - see STRIPE_INTEGRATION_TODO.md. Colors match the
-  // booking dialog's own rose/cream palette (see .public-site-route's booking-dialog
+  // booking dialog's own Editorial Neutral palette (see .public-site-route's booking-dialog
   // overrides in public-site.css) rather than Stripe's default blue, since this form is
   // mounted directly inside our own styled card, not a separate Stripe-hosted page.
   const STRIPE_FORM_APPEARANCE = {
@@ -124,9 +124,9 @@
       borderRadius: "8px",
       colorBackground: "#ffffff",
       colorDanger: "#df1b41",
-      colorPrimary: "#a8675f",
+      colorPrimary: "#252529",
       colorSuccess: "#00c853",
-      colorText: "#24211f",
+      colorText: "#252529",
       fontFamily: "default",
       fontSizeBase: "16px",
       spacingUnit: "4px"
