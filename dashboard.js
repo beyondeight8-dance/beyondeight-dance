@@ -291,7 +291,7 @@
         <h3>Hero</h3>
         ${photoCard("Hero photo", "heroImage", draftState.heroImage || c.images.hero)}
         ${wfield("Headline", "tagline", draftState.tagline || "", "text", c.headline)}
-        <p>Leave blank to use your business name (set under Look & Theme). Only fill this in if you want different hero text.</p>
+        <p>Leave blank to use your business name (set under Brand). Only fill this in if you want different hero text.</p>
         <button type="submit" class="primary-button">Save Changes</button>
       </form>
     </div>`;
